@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+source "$BASE_DIR/lib/infra.inc.bash"
+
+
+# Determine IP address and wait for target to respond to ping
+
+JUMPBOX_IP=${JUMPBOX_IP:-$(bosh2 int <(bbl_invoke bosh-deployment-vars) --path /external_ip)}
+while ! ping -q -c 1 -t 3 "$JUMPBOX_IP" > /dev/null; do
+    echo "$(date +'%F %T') waiting $JUMPBOX_IP to respond to ping"
+    sleep 2
+    status=$?
+    if [ "$status" -gt 128 ]; then
+        # When interrupted by a signal, abort with same status
+        exit $status
+    fi
+done
+
+
+# Extract the SSH private key
+
+restrict_permissions "$BASE_DIR/state/jumpbox.key"
+bosh2 int "$BASE_DIR/state/env-creds.yml" --path /jumpbox_ssh/private_key \
+    > "$BASE_DIR/state/jumpbox.key"
+
+
+# Invoke SSH
+
+TERM=xterm-color ssh \
+    -i "$BASE_DIR/state/jumpbox.key" \
+    "jumpbox@$JUMPBOX_IP" \
+    "$@"
+
+exit $?

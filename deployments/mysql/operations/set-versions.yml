@@ -1,0 +1,20 @@
+---
+
+# Stemcell and Releases versions
+
+- path: /releases/name=cf-mysql/version
+  type: replace
+  value: ((cf_mysql_version))
+
+- path: /releases/name=cf-mysql/url
+  type: replace
+  value: http://bosh.io/d/github.com/cloudfoundry/cf-mysql-release?v=((cf_mysql_version))
+
+- path: /releases/name=cf-mysql/sha1
+  type: replace
+  value: ((cf_mysql_sha1))
+
+
+- path: /stemcells/alias=default/version
+  type: replace
+  value: ((stemcell_version))

@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+source "$BASE_DIR/lib/infra.inc.bash"
+source "$BASE_DIR/lib/colors.inc.bash"
+
+set -e
+
+
+echo -e "\n${BLUE}Running ${BOLD}bbl up$RESET to create infrastructure for the BOSH environment\n"
+
+bbl_invoke up \
+    --gcp-region "$(infra_var /region)" \
+    --gcp-zone "$(infra_var /zone)" \
+    --gcp-service-account-key "$BASE_DIR/conf/gcp-service-account.key.json" \
+    --gcp-project-id "$(infra_var /project_id)" \
+    --iaas gcp \
+    --no-director
+
+# Ensure restricted permissions for state files containing sensitive
+# informations. Please not that 'bbl-state.json' must not be created before
+# invoking `bbl up`.
+restrict_permissions \
+    "$BASE_DIR/state/bbl-state.json" \
+    "$BASE_DIR/state/env-creds.yml"
+
+bosh2_ro_invoke interpolate > "$BASE_DIR/state/env-depl-manifest.yml"
+
+
+echo -e "\n${BLUE}Running ${BOLD}bosh create-env$RESET to create the BOSH environment\n"
+
+bosh2_rw_invoke create-env
+
+
+echo -e "\n${BLUE}Aliasing the created BOSH environment to ${BOLD}'$BOSH_ENVIRONMENT'$RESET\n"
+
+bosh2 -e "$(bosh2 int <(bbl_invoke bosh-deployment-vars) --path /external_ip)" \
+    --ca-cert <(bosh2 int "$BASE_DIR/state/env-creds.yml" --path /director_ssl/ca) \
+    alias-env "$BOSH_ENVIRONMENT"

@@ -1,0 +1,26 @@
+---
+- path: /vm_extensions/-
+  type: replace
+  value:
+    name: mysql-proxy-lb
+    cloud_properties:
+      ports:
+        - host: 3306
+
+- path: /networks/-
+  type: replace
+  value:
+    name: mysql-network
+    subnets:
+    - az: z1
+      range: 10.244.17.0/24
+      gateway: 10.244.17.1
+      cloud_properties: { name: random }
+    - az: z2
+      range: 10.244.18.0/24
+      gateway: 10.244.18.1
+      cloud_properties: { name: random }
+    - az: z3
+      range: 10.244.19.0/24
+      gateway: 10.244.19.1
+      cloud_properties: { name: random }

@@ -1,0 +1,7 @@
+- path: /name
+  type: replace
+  value: ((deployment_name))
+
+- path: /stemcells/alias=default/version
+  type: replace
+  value: ((stemcell_version))

@@ -1,0 +1,22 @@
+---
+deployment_name: gstack-one-mysql
+
+
+# User-facing settings
+
+cf_mysql_external_host: mysql.cf.gstack.io
+
+
+# Versions
+
+cf_mysql_version: "35"
+cf_mysql_sha1: af8e2bd9b288f9efff8630463cbaa6101b655e29
+stemcell_version: "3421.9"
+stemcell_sha1: 1396d7877204e630b9e77ae680f492d26607461d
+stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+
+
+# Plumbery
+
+cf_deployment_name: gstack-one-cf
+cf_api_url: https://api.cf.gstack.io

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+source "$BASE_DIR/lib/infra.inc.bash"
+source "$BASE_DIR/lib/colors.inc.bash"
+
+# Ensure restricted permissions for state files containing sensitive informations
+restrict_permissions \
+    "$BASE_DIR"/state/{bbl,env-creds}-state.json
+
+bosh2_ro_invoke interpolate > "$BASE_DIR/state/env-depl-manifest.yml"
+
+bosh2_ro_invoke interpolate \
+    --vars-file <(bbl_invoke bosh-deployment-vars) \
+    --vars-store "$BASE_DIR/state/env-creds.yml" \
+    --var-errs > /dev/null
+status=$?
+if [ $status -eq 0 ]; then
+    echo "$BOLD${GREEN}OK$RESET" >&2
+else
+    echo "$BOLD${RED}KO$RESET" >&2
+fi
+exit $status

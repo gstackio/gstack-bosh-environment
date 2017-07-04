@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+source "$BASE_DIR/lib/infra.inc.bash"
+source "$BASE_DIR/lib/colors.inc.bash"
+
+set -e
+
+bosh2_ro_invoke interpolate > "$BASE_DIR/state/env-depl-manifest.yml"
+
+
+echo -e "\n${BLUE}Running ${BOLD}bosh delete-env$RESET to destroy the BOSH environment\n"
+
+bosh2_rw_invoke delete-env
+rm -vf "$BASE_DIR/state/env-creds.yml"
+
+
+if [ ! -e "$BASE_DIR/state/bbl-state.json" ]; then
+    echo -e "\n${BLUE}Skipping ${BOLD}bbl destroy$RESET, as the 'state/bbl-state.json' file is absent\n"
+else
+    echo -e "\n${BLUE}Running ${BOLD}bbl destroy$RESET to destroy infrastructure for the BOSH environment\n"
+    bbl_invoke destroy
+fi

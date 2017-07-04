@@ -1,0 +1,12 @@
+---
+- path: /instance_groups/name=web/networks/name=private/name
+  type: replace
+  value: ((network_name))
+
+- path: /instance_groups/name=db/networks/name=private/name
+  type: replace
+  value: ((network_name))
+
+- path: /instance_groups/name=worker/networks/name=private/name
+  type: replace
+  value: ((network_name))

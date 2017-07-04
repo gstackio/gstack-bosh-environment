@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+source "$BASE_DIR/lib/common.inc.bash"
+assert runtime-config "$RUNTIME_CONFG_DIR"
+
+source "$RUNTIME_CONFG_DIR/conf/operations-layout.inc.bash"
+upstream_operations=() # There is no upstream for runtime-config
+DEPL_DIR=$RUNTIME_CONFG_DIR # The 'build_operations_arguments' is expecting this
+build_operations_arguments
+
+bosh2 interpolate "$RUNTIME_CONFG_FILE" \
+    "${operations_arguments[@]}" \
+    > "$RUNTIME_CONFG_DIR/state/runtime-config.yml"
+
+bosh2 update-runtime-config "$RUNTIME_CONFG_DIR/state/runtime-config.yml"

@@ -1,0 +1,12 @@
+---
+
+- path: /instance_groups/name=web/jobs/name=atc/properties/external_url
+  type: replace
+  value: http://((external_url_hostname))
+
+- path: /instance_groups/name=web/jobs/name=atc/properties/tls_cert
+  type: remove
+
+- path: /instance_groups/name=web/jobs/name=atc/properties/tls_key
+  type: remove
+

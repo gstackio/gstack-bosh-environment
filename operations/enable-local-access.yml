@@ -1,0 +1,8 @@
+---
+
+# Allow targetting the BOSH director locally when connected to the BOSH
+# server, using the 127.0.0.1 IP
+
+- path: /variables/name=director_ssl/options/alternative_names/-
+  type: replace
+  value: 127.0.0.1
