@@ -1,11 +1,62 @@
 GBE — Gstack BOSH Environment
 =============================
 
-This project proposes conventions and an opinionated workflow in order to
-create BOSH 2 environments. Configuration is located in the `conf/` directory,
-and infrastructure and deployment state are in the `state/` directory.
+This project establishes conventions and an opinionated workflow to help
+creating and interacting with BOSH v2 environments.
 
-Currently, only BOSH-Lite on GCP is supported as a target infrastructure.
+The idea is for you to clone this Git repository, and use its structure as the
+base of your own BOSH deployments. Examples are included for deploying
+Concourse, Cloud Foundry, and a classical CF-MySQL cluster with its Cloud
+Foundry service broker.
+
+
+### Main goals
+
+- Be able to rebase deployment manifests customizations onto new versions of
+  upstream base deployment manifests, when these happen to evolve over time.
+
+- Be able to work several environments: sandox, ci-drone, pre-prod,
+  production, etc. Elegantly express in separate places the configurations or
+  layouts that are different, and factor all sources of deployment manifests
+  for what is similar.
+
+- Integrate with Continuous Integration and Continuous Deployment (CI & CD)
+  workflows: changes to the deployed infrastructure are first tried by team
+  members in personal sandbox environments, then deployed in a CI-driven ci-
+  drone environment and thoroughly tested by CI with automated test suites,
+  then continuously deployed in production.
+
+Note: GBE is work in progress and all these goals are not completely addressed
+yet.
+
+
+### Directories structure in a GBE
+
+The base directory describes the deployment of the BOSH server, and under
+`deployments/`, several directories describe the deployments that are managed
+by the BOSH server. As a general convention in those places, configuration is
+located in `conf/`, BOSH v2 operation files are located in `operations/`, and
+infrastructure state are in `state/`.
+
+[Direnv](https://direnv.net/) is used all over the place. The convention is
+that when you enter a given directory, then the helper scripts located in the
+`bin/` subdirectory are available on your path. Direnv also provides many
+wiring environment variables depending on where you are, i.e. what is your
+current working directory. As an example, these environment variables have you
+automatically connected to the BOSH server when you enter the `deployments/`
+directory.
+
+
+### Limitations
+
+- Currently, only BOSH-Lite on GCP is supported as a target infrastructure.
+
+- Upstream base deployment manifests are pointed to as directories where
+  `*-deployment` repositories are checked out, but the exact versions of these
+  repos are not pinned down by GBE, nor tracked in Git.
+
+- GBE doesn't suggest yet an elegant way of expressing differences between
+  environments.
 
 
 Prerequisites
@@ -182,3 +233,24 @@ Targeting the CF, you'll need to skip SSL validation.
 
 You'll need the DNS for CF to have converged before deploying CF-MySQL, as the
 broker registrat will need the DNS name to register to CF.
+
+
+Contributing
+------------
+
+Please feel free to submit issues and pull requests.
+
+
+Author and License
+------------------
+
+Copyright © 2017, Benjamin Gandon
+
+Like the rest of BOSH, the Gstack BOSH environment is released under the terms
+of the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0).
+
+<!--
+# Local Variables:
+# indent-tabs-mode: nil
+# End:
+-->
