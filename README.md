@@ -71,8 +71,11 @@ Prerequisites
   repo, next to this one. Its path will be configured in
   `UPSTREAM_DEPLOYMENT_DIR`.
 
-- Install [bbl](https://github.com/cloudfoundry/bosh-bootloader) v3, which is
-  no more the simple `brew install cloudfoundry/tap/bbl` or similar way,
+- Install Terraform `0.9.11`, as you won't make it with the newer Terraform
+  `0.10.x` yet, sadly.
+
+- Install [bbl](https://github.com/cloudfoundry/bosh-bootloader) v3.2.6, which
+  is no more the simple `brew install cloudfoundry/tap/bbl` or similar way,
   sadly. Instead, you'll need to fetch the
   [v3.2.6 binary](https://github.com/cloudfoundry/bosh-bootloader/releases/tag/v3.2.6)
   manually and put it to the `bin/` subdir at the root of the project.
