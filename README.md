@@ -71,8 +71,11 @@ Prerequisites
   repo, next to this one. Its path will be configured in
   `UPSTREAM_DEPLOYMENT_DIR`.
 
-- Install [bbl](https://github.com/cloudfoundry/bosh-bootloader), like
-  `brew install cloudfoundry/tap/bbl` or anyhting similar.
+- Install [bbl](https://github.com/cloudfoundry/bosh-bootloader) v3, which is
+  not the simple `brew install cloudfoundry/tap/bbl` or similar way, sadly.
+  You'll need to fetch the
+  [v3.2.6 binary](https://github.com/cloudfoundry/bosh-bootloader/releases/tag/v3.2.6)
+  manually.
 
 - Install the `gcloud` CLI utility, like `brew cask install google-cloud-sdk`
   or anything similar.
