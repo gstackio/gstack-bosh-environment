@@ -11,7 +11,7 @@ source "$BASE_DIR/lib/common.inc.bash"
 function infra_var() {
     local path=$1
 
-    bosh2 int "$BASE_DIR/conf/env-infra-vars.yml" \
+    bosh int "$BASE_DIR/conf/env-infra-vars.yml" \
         --path "$path"
 }
 
@@ -25,7 +25,7 @@ function bosh2_ro_invoke() {
 
     build_operations_arguments
 
-    bosh2 "$verb" "$MAIN_DEPLOYMENT_FILE" \
+    bosh "$verb" "$MAIN_DEPLOYMENT_FILE" \
         "${operations_arguments[@]}" \
         --vars-file "$BASE_DIR/conf/env-infra-vars.yml" \
         "$@" \

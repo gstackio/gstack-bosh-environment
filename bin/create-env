@@ -33,6 +33,6 @@ bosh2_rw_invoke create-env
 
 echo -e "\n${BLUE}Aliasing the created BOSH environment to ${BOLD}'$BOSH_ENVIRONMENT'$RESET\n"
 
-bosh2 -e "$(bosh2 int <(bbl_invoke bosh-deployment-vars) --path /external_ip)" \
-    --ca-cert <(bosh2 int "$BASE_DIR/state/env-creds.yml" --path /director_ssl/ca) \
+bosh -e "$(bosh int <(bbl_invoke bosh-deployment-vars) --path /external_ip)" \
+    --ca-cert <(bosh int "$BASE_DIR/state/env-creds.yml" --path /director_ssl/ca) \
     alias-env "$BOSH_ENVIRONMENT"

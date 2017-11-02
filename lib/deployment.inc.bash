@@ -4,7 +4,7 @@ source "$BASE_DIR/lib/common.inc.bash"
 function depl_var() {
     local path=$1
 
-    bosh2 int "$DEPL_DIR/conf/depl-vars.yml" \
+    bosh int "$DEPL_DIR/conf/depl-vars.yml" \
         --path "$path"
 }
 
@@ -14,7 +14,7 @@ function bosh2_ro_invoke() {
 
     build_operations_arguments
 
-    bosh2 "$verb" "$MAIN_DEPLOYMENT_FILE" \
+    bosh "$verb" "$MAIN_DEPLOYMENT_FILE" \
         "${operations_arguments[@]}" \
         --vars-file "$DEPL_DIR/conf/depl-vars.yml" \
         "$@"
