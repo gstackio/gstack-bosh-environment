@@ -5,6 +5,8 @@ set -e
 source "$BASE_DIR/lib/deployment.inc.bash"
 assert deployment "$DEPL_DIR"
 
+fetch_ubdms
+
 source "$DEPL_DIR/conf/operations-layout.inc.bash"
 build_operations_arguments
 
