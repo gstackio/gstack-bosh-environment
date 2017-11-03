@@ -5,12 +5,13 @@ source "$BASE_DIR/lib/colors.inc.bash"
 
 set -e
 
-bosh2_ro_invoke interpolate > "$BASE_DIR/state/env-depl-manifest.yml"
+
+bosh_ro_invoke interpolate > "$BASE_DIR/state/env-depl-manifest.yml"
 
 
 echo -e "\n${BLUE}Running ${BOLD}bosh delete-env$RESET to destroy the BOSH environment\n"
 
-bosh2_rw_invoke delete-env
+bosh_rw_invoke delete-env
 rm -vf "$BASE_DIR/state/env-creds.yml"
 
 

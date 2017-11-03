@@ -8,7 +8,7 @@ function depl_var() {
         --path "$path"
 }
 
-function bosh2_ro_invoke() {
+function bosh_ro_invoke() {
     local verb=$1
     shift
 
@@ -20,11 +20,11 @@ function bosh2_ro_invoke() {
         "$@"
 }
 
-function bosh2_rw_invoke() {
+function bosh_rw_invoke() {
     local verb=$1
     shift
 
-    bosh2_ro_invoke "$verb" \
+    bosh_ro_invoke "$verb" \
         --vars-store "$DEPL_DIR/state/depl-creds.yml" \
         "$@"
 }

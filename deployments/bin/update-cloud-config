@@ -8,8 +8,8 @@ upstream_operations=() # There is no upstream for cloud-config
 DEPL_DIR=$CLOUD_CONFG_DIR # The 'build_operations_arguments' is expecting this
 build_operations_arguments
 
-bosh2 interpolate "$BASE_CLOUD_CONFG_FILE" \
+bosh interpolate "$BASE_CLOUD_CONFG_FILE" \
     "${operations_arguments[@]}" \
     > "$CLOUD_CONFG_DIR/state/cloud-config.yml"
 
-bosh2 update-cloud-config "$CLOUD_CONFG_DIR/state/cloud-config.yml"
+bosh update-cloud-config "$CLOUD_CONFG_DIR/state/cloud-config.yml"

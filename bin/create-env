@@ -23,12 +23,12 @@ restrict_permissions \
     "$BASE_DIR/state/bbl-state.json" \
     "$BASE_DIR/state/env-creds.yml"
 
-bosh2_ro_invoke interpolate > "$BASE_DIR/state/env-depl-manifest.yml"
+bosh_ro_invoke interpolate > "$BASE_DIR/state/env-depl-manifest.yml"
 
 
 echo -e "\n${BLUE}Running ${BOLD}bosh create-env$RESET to create the BOSH environment\n"
 
-bosh2_rw_invoke create-env
+bosh_rw_invoke create-env
 
 
 echo -e "\n${BLUE}Aliasing the created BOSH environment to ${BOLD}'$BOSH_ENVIRONMENT'$RESET\n"

@@ -9,6 +9,6 @@ source "$DEPL_DIR/conf/operations-layout.inc.bash"
 build_operations_arguments
 
 restrict_permissions "$DEPL_DIR/state/depl-creds.yml"
-bosh2_ro_invoke interpolate > "$DEPL_DIR/state/depl-manifest.yml"
+bosh_ro_invoke interpolate > "$DEPL_DIR/state/depl-manifest.yml"
 
-bosh2 delete-deployment
+bosh delete-deployment

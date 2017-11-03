@@ -205,7 +205,7 @@ to the list of allowed TCP ports.
 You'll need a DNS wildcard record for `*.((system_domain))` (the
 `system_domain` is set in `depl-var.yml`) pointing to the address returned by:
 
-    bosh2 int <(bbl --state-dir state bosh-deployment-vars) --path /external_ip
+    bosh int <(bbl --state-dir state bosh-deployment-vars) --path /external_ip
 
 We suggest you use `dnscontrol` for keeping things “as-code”. You'll find a
 `dnsconfig.js` example below.
@@ -232,7 +232,7 @@ go.
 
 Targeting the CF, you'll need to skip SSL validation.
 
-    cf api --skip-ssl-validation https://api.$(bosh2 int "$DEPL_DIR/conf/depl-vars.yml" --path /system_domain)
+    cf api --skip-ssl-validation https://api.$(bosh int "$DEPL_DIR/conf/depl-vars.yml" --path /system_domain)
 
 
 ### CF-MySQL deployment note

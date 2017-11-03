@@ -9,7 +9,7 @@ stemcell_name=$(depl_var /stemcell_name)
 stemcell_version=$(depl_var /stemcell_version)
 stemcell_sha1=$(depl_var /stemcell_sha1)
 
-bosh2 upload-stemcell \
+bosh upload-stemcell \
     --name "$stemcell_name" \
     --version "$stemcell_version" \
     --sha1 "$stemcell_sha1" \

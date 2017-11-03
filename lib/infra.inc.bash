@@ -19,7 +19,7 @@ function bbl_invoke() {
     bbl --state-dir "$BASE_DIR/state" "$@"
 }
 
-function bosh2_ro_invoke() {
+function bosh_ro_invoke() {
     local verb=$1
     shift
 
@@ -32,11 +32,11 @@ function bosh2_ro_invoke() {
         --vars-file "$BASE_DIR/conf/env-depl-vars.yml" # override bbl defaults
 }
 
-function bosh2_rw_invoke() {
+function bosh_rw_invoke() {
     local verb=$1
     shift
 
-    bosh2_ro_invoke "$verb" \
+    bosh_ro_invoke "$verb" \
         --vars-file <(bbl_invoke bosh-deployment-vars) \
         --vars-store "$BASE_DIR/state/env-creds.yml" \
         --state "$BASE_DIR/state/env-infra-state.json" \
