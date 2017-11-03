@@ -1,3 +1,4 @@
+/.cache/
 creds.yml
 *-creds.yml
 bbl-state.json

@@ -1,4 +1,9 @@
 ---
+upstream_base_deployment_manifests:
+  local_dir: conf
+  main_deployment_file: concourse-deployment.yml
+
+
 deployment_name: gstack-one-concourse
 
 

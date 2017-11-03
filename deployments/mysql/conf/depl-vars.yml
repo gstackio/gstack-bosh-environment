@@ -1,4 +1,11 @@
 ---
+upstream_base_deployment_manifests:
+  name: cf-mysql-deployment
+  git_repo: https://github.com/cloudfoundry/cf-myqsl-deployment.git
+  version: v36
+  main_deployment_file: cf-mysql-deployment.yml
+
+
 deployment_name: gstack-one-mysql
 
 

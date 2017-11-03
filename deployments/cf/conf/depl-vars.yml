@@ -1,4 +1,11 @@
 ---
+upstream_base_deployment_manifests:
+  name: cf-deployment
+  git_repo: https://github.com/cloudfoundry/cf-deployment.git
+  version: v0.8.0
+  main_deployment_file: cf-deployment.yml
+
+
 deployment_name: gstack-one-cf
 
 stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
