@@ -62,7 +62,7 @@ directory.
 Prerequisites
 -------------
 
-- Install the [bosh-cli](https://github.com/cloudfoundry/bosh-cli), like
+- Install the [Bosh v2 CLI](https://github.com/cloudfoundry/bosh-cli), like
   `brew install cloudfoundry/tap/bosh-cli` or anyhting similar.
 
 - Install `direnv`. Like `brew install direnv` or anything similar.

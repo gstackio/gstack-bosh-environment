@@ -2,6 +2,9 @@
 
 source "$BASE_DIR/lib/infra.inc.bash"
 
+assert_terraform_version
+assert_bbl_version
+
 
 # Determine IP address and wait for target to respond to ping
 

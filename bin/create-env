@@ -5,6 +5,9 @@ source "$BASE_DIR/lib/colors.inc.bash"
 
 set -e
 
+assert_terraform_version
+assert_bbl_version
+
 
 echo -e "\n${BLUE}Running ${BOLD}bbl up$RESET to create infrastructure for the BOSH environment\n"
 
