@@ -1,16 +1,122 @@
 GBE — Gstack BOSH Environment
 =============================
 
-This project establishes conventions and an opinionated workflow to help
-creating and interacting with BOSH v2 environments.
+This project establishes conventions and a simple workflow to help you create
+and work with a BOSH v2 environment, whose desired stated will be tracked in
+Git.
 
-The idea is for you to clone this Git repository, and use its structure as the
-base of your own BOSH deployments. Examples are included for deploying
-Concourse, Cloud Foundry, and a classical CF-MySQL cluster with its Cloud
-Foundry service broker.
+The GBE repository provides examples for deploying [Concourse](concourse-site),
+[Cloud Foundry](cf-site), and a typical [CF-MySQL](cf-mysql-repo) cluster that
+provides MySQL Database-as-a-Service thanks to the included
+[service broker](osbapi-site).
 
 
-### Main goals
+[concourse-site]: https://concourse.ci/
+[cf-site]: https://cloudfoundry.org
+[cf-mysql-repo]: https://github.com/cloudfoundry/cf-mysql-release
+[osbapi-site]: https://www.openservicebrokerapi.org/
+
+
+What problems does GBE solve?
+-----------------------------
+
+You'll find below some details about what we mean by *environment* and
+*deployment* here.
+
+
+### The problems
+
+Usually operators that manage BOSH environments start with a rough and unclear
+view of the whole picture. They begin their project scattering the various
+pieces here and there in an unorganized manner.
+
+Once they start putting those pieces into Git, it's often a headache to get it
+right at organizing the whole thing in a meaningful manner.
+
+Plus, deployment manifests are most of the time based on 3rd party base
+manifests because they evolve with the software that is deployed. Tracking
+those 3rd-party base manifests and keeping the process easy when it comes to
+upgrading (the software along with its base deployment manifests) is not
+straightforward. Should the base manifests be copied/pasted into the
+environment repository? Should they be submoduled? Or kept aside, as separate
+Git clones?
+
+Finally, the various BOSH v2 commands involved in day-to-day interactions with
+a BOSH environment quickly tend to become complicated, with lots of arguments.
+These are really part of the desired state of the environment. The naive way
+of traching that in Git is to put them in plain shell scripts, which creates
+duplication for commands that share similar (and related) sets of arguments.
+
+All in all, getting it right at versioning the bosh command arguments *and*
+avoiding duplication is not easy.
+
+
+### What solution does GBE bring?
+
+The point with GBE is to follow an “infrastructure-as-code“ pattern where a
+Git repository describes accurately the overall environment that is deployed.
+BOSH will take care for converging your actual infrastructure towards the
+*desired state* that is described.
+
+When it comes to starting this Git repository, GBE helps you organize and
+version the different pieces in a meaningful and consistent manner. As the
+*desired state* is also made of command-line arguments, GBE captures them in a
+meneangful way that avoids duplication.
+
+Consequently, GBE also provides you with simple compound commands that easy
+the interaction involved when managing the filecycle of your BOSH environment
+and its managed deployments.
+
+
+### What do we mean by BOSH environment?
+
+Working with BOSH, what we call an *environemnt* is the combination of these
+components:
+
+1. A BOSH server, who is responsible for driving an underlying automated
+   infrastructure (most of the time a IaaS, many of those are supported).
+
+2. One or many *deployments* (of distributed software), made on that uderlying
+   infrastructure. The lifecycle of these deployments is fully managed by the
+   BOSH server above. So that you rarely need interacting directly with the
+   underlying infrastructure in your day-to-day work.
+
+Tricky detail: the BOSH server above is itself described as a BOSH deployment,
+that is managed by the `bosh` command-line tool, because it has the ability to
+behave locally like a small BOSH server. This solves the chicken-and-egg
+problem when it comes to deploying BOSH with BOSH.
+
+
+### How is a BOSH deployment described?
+
+With BOSH v2, your “infrastructure-as-code” is made of one or many
+*deployments* and BOSH will take care for converging these towards a desired
+state. Each of these desired states are composed of several pieces:
+
+1. A base deployment manifest (usually provided by a 3rd party `*-deployment`
+   Git repository).
+
+2. Any standard set patches to be applied to the base deployment manifest,
+   that will implement specific features that are relevant to your context.
+   These are expressed as *operation files* (from the 3rd party `*-deployment`
+   repository).
+
+3. Possibly some custom operation files that you'll provide in order to
+   implement non-standard variants to the base deployment.
+
+4. Custom values for any variables that need being defined. These will be
+   provided by you, and shall reflect your use-cases.
+
+Those 4 types of pieces are tied toghether when they get passed as arguments
+to the BOSH commands that are involved in the day-to-day work with the
+deployments. In the end, these arguments are part of the desired state that
+needs to be captured in Git.
+
+
+### Other (non-trivial) goals for GBE
+
+Note: GBE is work in progress and all these goals are not completely addressed
+yet.
 
 - Be able to rebase deployment manifests customizations onto new versions of
   upstream base deployment manifests, when these happen to evolve over time.
@@ -26,26 +132,6 @@ Foundry service broker.
   drone environment and thoroughly tested by CI with automated test suites,
   then continuously deployed in production.
 
-Note: GBE is work in progress and all these goals are not completely addressed
-yet.
-
-
-### Directories structure in a GBE
-
-The base directory describes the deployment of the BOSH server, and under
-`deployments/`, several directories describe the deployments that are managed
-by the BOSH server. As a general convention in those places, configuration is
-located in `conf/`, BOSH v2 operation files are located in `operations/`, and
-infrastructure state are in `state/`.
-
-[Direnv](https://direnv.net/) is used all over the place. The convention is
-that when you enter a given directory, then the helper scripts located in the
-`bin/` subdirectory are available on your path. Direnv also provides many
-wiring environment variables depending on where you are, i.e. what is your
-current working directory. As an example, these environment variables have you
-automatically connected to the BOSH server when you enter the `deployments/`
-directory.
-
 
 ### Limitations
 
@@ -59,8 +145,19 @@ directory.
   environments.
 
 
-Prerequisites
--------------
+Getting started
+---------------
+
+The idea is for you to clone the GBE repository, and use it as the base for
+your project.
+
+For this, there are several requisites that you need to check first.
+
+Then you'll need to get familiar with the overall directory structure of GBE
+and the implemented conventions.
+
+
+### Prerequisites
 
 - Install the [Bosh v2 CLI](https://github.com/cloudfoundry/bosh-cli), like
   `brew install cloudfoundry/tap/bosh-cli` or anyhting similar.
@@ -84,13 +181,133 @@ Prerequisites
   or anything similar.
 
 - Configure your GCP service account as in the
-  [Configure GCP](https://github.com/cloudfoundry/bosh-bootloader#configure-gcp)
+  [Configure GCP](https://github.com/cloudfoundry/bosh-bootloader/tree/v3.2.6#configure-gcp)
   section of the [bosh-bootloader](https://github.com/cloudfoundry/bosh-bootloader)
   README, so that you have a `<service account name>.key.json` file.
 
 
-How to configure
-----------------
+### Quick start
+
+Here are the typical and complete command sequences used to create your
+environment, deploy Concourse, Cloud Foundry and CF-MySQL, then destroy youe
+environment.
+
+
+#### 1. Check the prerequisites
+
+```bash
+$ bbl --version
+bbl 3.2.6 (darwin/amd64)
+
+$ terraform --version
+Terraform v0.9.11
+```
+
+#### 2. Prepare the project
+
+```bash
+git https://github.com/cloudfoundry/bosh-deployment.git
+
+git clone https://github.com/gstackio/gstack-bosh-environment.git my-project
+cd my-project/
+direnv allow # (the current state of .envrc will be permanently allowed)
+
+
+# Prepare the GCP credentials
+gcloud iam service-accounts create '<service account name>'
+gcloud iam service-accounts keys create \
+    --iam-account='<service account name>@<project id>.iam.gserviceaccount.com' \
+    ./conf/service-account.key.json
+chmod 600 ./conf/service-account.key.json
+gcloud projects add-iam-policy-binding '<project id>' \
+    --member='serviceAccount:<service account name>@<project id>.iam.gserviceaccount.com' \
+    --role='roles/editor'
+```
+
+#### 3. Configure and create your BOSH environment
+
+```bash
+vi ./conf/env-config.inc.bash
+direnv allow # (to refresh any values modified above)
+vi ./conf/env-infra-vars.yml
+create-env
+```
+
+#### 4. Prepare the deployments
+
+```bash
+cd deployments/
+direnv allow # (will be necessary only once in this directory)
+
+# Now you're connected to your BOSH server as soon as you enter the
+# 'deployments/' directory.
+
+cd _cloud-config/
+direnv allow # (will be necessary only once in this directory)
+update-cloud-config
+
+cd ../_runtime-config/
+direnv allow # (will be necessary only once in this directory)
+udpate-runtime-config
+```
+
+#### 5. Deploy the Concourse CI server
+
+```bash
+cd ../concourse/
+direnv allow # (will be necessary only once in this directory)
+upload-stemcell
+deploy
+```
+
+#### 6. Deploy Cloud Foundry platform
+
+```bash
+cd ../cf/
+direnv allow # (will be necessary only once in this directory)
+upload-stemcell
+deploy
+```
+
+#### 7. Deploy the CF-MySQL DBaaS
+
+```bash
+cd ../mysql/
+direnv allow # (will be necessary only once in this directory)
+upload-stemcell
+deploy
+```
+
+#### 8. When finished, delete the complete environment altogether
+
+```bash
+cd ..
+delete-env
+```
+
+
+Reference documentation
+-----------------------
+
+
+### Directories structure in a GBE
+
+The base directory describes the deployment of the BOSH server, and under
+`deployments/`, several directories describe the deployments that are managed
+by the BOSH server. As a general convention in those places, configuration is
+located in `conf/`, BOSH v2 operation files are located in `operations/`, and
+infrastructure state are in `state/`.
+
+[Direnv](https://direnv.net/) is used all over the place. The convention is
+that when you enter a given directory, then the helper scripts located in the
+`bin/` subdirectory are available on your path. Direnv also provides many
+wiring environment variables depending on where you are, i.e. what is your
+current working directory. As an example, these environment variables have you
+automatically connected to the BOSH server when you enter the `deployments/`
+directory.
+
+
+### How to configure
 
 Configuration files are located in the `conf/` directory.
 
@@ -123,10 +340,9 @@ Configuration files are located in the `conf/` directory.
   injected into the patched deployment manifest for your BOSH environement.
 
 
-Usage workflow
---------------
+### Usage workflow
 
-### Basic usage
+#### Basic usage
 
 1. Create your environment with the `create-env` command.
 
@@ -134,12 +350,12 @@ Usage workflow
 
 3. Go inside `deployments/` and play with your BOSH 2
 
-   - If necessary, you can log into your BOSH running `jumpbox`.
+   - If necessary, you can log into your BOSH Virtual Machine running `jumpbox`.
 
 4. Destroy your environment with the `delete-env` command.
 
 
-### Advanced usage
+#### Advanced usage
 
 1. Tweak your BOSH deployment, adding custom variables in `env-depl-vars.yml`,
    custom layout of operation files in `env-operations-layout.inc.bash`,
@@ -151,8 +367,7 @@ Usage workflow
    environment.
 
 
-A note on state and credential files
-------------------------------------
+### A note on state and credential files
 
 State files are located in the `state/` directory. These are generated runtime
 files. Some need to be tracked in version control, some not, and for some it
@@ -178,8 +393,7 @@ The `jumpbox.key` is the private SSH key used to log into the BOSH server. Its
 permissions are restricted and it is excluded from version control.
 
 
-Deployments
------------
+### Deployments
 
 1. Go inside a deployment directory.
 
