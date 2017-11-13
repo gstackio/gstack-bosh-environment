@@ -31,25 +31,25 @@ write several pieces of YAML manifests and run `bosh` commands with many
 arguments. As they are learning BOSH, it's hard for them to get rapidly
 organized.
 
-So, operators often begin their project, scattering the various pieces in an
-unorganized manner. Once they start putting these into Git, it's hard for them
-to reorganizing the whole thing in a meaningful manner. They are lacking
-recommendations for best practice in organizing their manifests, operations
-files, and command arguments.
+So, they start their project scattering the various pieces in an unorganized
+manner. Once they start putting these into Git, it's hard for them to
+reorganize the whole thing in a meaningful manner. They are lacking
+recommendations and best practice at organizing BOSH manifests, Ops files, and
+command arguments.
 
 Then come day-2 concerns. Because deployment manifests are in most cases based
-on 3rd party base manifests, as they evolve to stay in line with the software
-that is deployed. Tracking those 3rd-party base manifests and keeping the
-process easy when it comes to upgrading (the software along with its base
-deployment manifests) is not straightforward. Should the base manifests be
-copied/pasted into the environment repository? Should they be submoduled? Or
-kept aside, as separate Git clones?
+on 3rd party base manifests, shipped in Git repositories. They evolve along
+with the software that is deployed. And it's not straightforward to track
+those 3rd-party base manifests and keep the process easy when it comes to
+upgrading the software along with its base deployment manifests. Should the
+base manifests be copied/pasted into the environment repository? Should they
+be submoduled? Or kept aside, as separate Git clones?
 
 Finally, the various BOSH v2 commands involved in day-to-day interactions with
-a BOSH environment quickly tend to become complicated, with lots of arguments.
-These are really part of the desired state of the environment. The naive way
-of tracking that in Git is to put them in plain shell scripts. But this
-creates duplication for commands that share similar (and related) sets of
+a BOSH environment quickly tend to involve lots of arguments, which are
+definitely part of the desired state of the environment. The usual way of
+versionning these, is to use simple shell scripts. But this naive approach
+creates duplication for commands that share similar and related sets of
 arguments. So, getting it right at versioning the `bosh` command arguments
 *and* avoiding duplication is not easy.
 
