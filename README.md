@@ -50,8 +50,8 @@ a BOSH environment quickly tend to involve lots of arguments, which are
 definitely part of the desired state of the environment. The usual way of
 versionning these, is to use simple shell scripts. But this naive approach
 creates duplication for commands that share similar and related sets of
-arguments. So, getting it right at versioning the `bosh` command arguments
-*and* avoiding duplication is not easy.
+arguments. In this regard, getting it right at avoiding duplication is not
+easy.
 
 
 ### What solution does GBE bring?
