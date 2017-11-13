@@ -20,35 +20,38 @@ provides MySQL Database-as-a-Service thanks to the included
 What problems does GBE solve?
 -----------------------------
 
-You'll find below some details about what we mean by *environment* and
-*deployment* here.
+We do think that people need *structure* when dealing with BOSH manifests.
 
 
 ### The problems
 
-Usually operators that manage BOSH environments start with a rough and unclear
-view of the whole picture. They begin their project scattering the various
-pieces here and there in an unorganized manner.
+Usually operators that start creating a BOSH environment have a rough and
+unclear view of the whole picture, because BOSH in new to them. They have to
+write several pieces of YAML manifests and run `bosh` commands with many
+arguments. As they are learning BOSH, it's hard for them to get rapidly
+organized.
 
-Once they start putting those pieces into Git, it's often a headache to get it
-right at organizing the whole thing in a meaningful manner.
+So, operators often begin their project, scattering the various pieces in an
+unorganized manner. Once they start putting these into Git, it's hard for them
+to reorganizing the whole thing in a meaningful manner. They are lacking
+recommendations for best practice in organizing their manifests, operations
+files, and command arguments.
 
-Plus, deployment manifests are most of the time based on 3rd party base
-manifests because they evolve with the software that is deployed. Tracking
-those 3rd-party base manifests and keeping the process easy when it comes to
-upgrading (the software along with its base deployment manifests) is not
-straightforward. Should the base manifests be copied/pasted into the
-environment repository? Should they be submoduled? Or kept aside, as separate
-Git clones?
+Then come day-2 concerns. Because deployment manifests are in most cases based
+on 3rd party base manifests, as they evolve to stay in line with the software
+that is deployed. Tracking those 3rd-party base manifests and keeping the
+process easy when it comes to upgrading (the software along with its base
+deployment manifests) is not straightforward. Should the base manifests be
+copied/pasted into the environment repository? Should they be submoduled? Or
+kept aside, as separate Git clones?
 
 Finally, the various BOSH v2 commands involved in day-to-day interactions with
 a BOSH environment quickly tend to become complicated, with lots of arguments.
 These are really part of the desired state of the environment. The naive way
-of traching that in Git is to put them in plain shell scripts, which creates
-duplication for commands that share similar (and related) sets of arguments.
-
-All in all, getting it right at versioning the bosh command arguments *and*
-avoiding duplication is not easy.
+of tracking that in Git is to put them in plain shell scripts. But this
+creates duplication for commands that share similar (and related) sets of
+arguments. So, getting it right at versioning the `bosh` command arguments
+*and* avoiding duplication is not easy.
 
 
 ### What solution does GBE bring?
