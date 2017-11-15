@@ -153,6 +153,12 @@ function setup_gcp() {
     if [ -z "$had_dash_e" ]; then
         set +e
     fi
+
+    local temp_file=$(mktemp)
+    sed -e "s/^project_id:.*$/project_id: $project_id/" "$BASE_DIR/conf/env-infra-vars.yml" > "$temp_file"
+    cp "$temp_file" "$BASE_DIR/conf/env-infra-vars.yml"
+    rm "$temp_file"
+
     echo -e "$GREEN${BOLD}OK$RESET"
 }
 
@@ -177,7 +183,7 @@ function gcp_usage() {
     echo "    ${UNDERLINE}service-account-name$NOUNDERLINE   A name for the service account to be created"
     echo "    ${UNDERLINE}project-id$NOUNDERLINE             The identifier of your GCP project, like 'alpha-sandbox-717101'"
     echo
-    echo "Setup the necessary GCP credentials for GBE:"
+    echo "Sets the necessary GCP credentials for GBE:"
     echo "    1. Create the designated service account in GCP."
     echo "    2. Create a service account key in 'conf/gcp-service-account.key.json'."
     echo "    3. Grant to the service account an 'editor' role on the project."
