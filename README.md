@@ -5,16 +5,16 @@ This project establishes conventions and a simple workflow to help you create
 and work with a BOSH v2 environment, whose desired stated will be tracked in
 Git.
 
-The GBE repository provides examples for deploying [Concourse](concourse-site),
-[Cloud Foundry](cf-site), and a typical [CF-MySQL](cf-mysql-repo) cluster that
+The GBE repository provides examples for deploying [Concourse](https://concourse.ci),
+[Cloud Foundry](https://cloudfoundry.org), and a typical [CF-MySQL](https://github.com/cloudfoundry/cf-mysql-release) cluster that
 provides MySQL Database-as-a-Service thanks to the included
-[service broker](osbapi-site).
+[service broker](https://www.openservicebrokerapi.org).
 
 
-[concourse-site]: https://concourse.ci/
-[cf-site]: https://cloudfoundry.org
-[cf-mysql-repo]: https://github.com/cloudfoundry/cf-mysql-release
-[osbapi-site]: https://www.openservicebrokerapi.org/
+[concourse-site]: <https://concourse.ci>
+[cf-site]: <https://cloudfoundry.org>
+[cf-mysql-repo]: <https://github.com/cloudfoundry/cf-mysql-release>
+[osbapi-site]: <https://www.openservicebrokerapi.org>
 
 
 What problems does GBE solve?
@@ -22,7 +22,7 @@ What problems does GBE solve?
 
 We do believe that people need *structure* when dealing with BOSH manifests.
 
-Usually operators that start creating a [BOSH environment](bosh_env_def) have
+Usually operators that start creating a [BOSH environment](./docs/faq.md#what-do-we-mean-by-bosh-environment) have
 a rough and unclear view of the whole picture, because BOSH in new to them.
 They have to write several pieces of YAML manifests and run `bosh` commands
 with many arguments. As they are learning BOSH, it's hard for them to get
@@ -34,7 +34,7 @@ reorganize the whole thing in a meaningful manner. They are lacking
 recommendations and best practice at organizing BOSH manifests, Ops files, and
 command arguments.
 
-Then come day-2 concerns. Because [deployment](dosh_depl_def) manifests are in
+Then come day-2 concerns. Because [deployment](./docs/faq.md#how-is-a-bosh-deployment-described) manifests are in
 most cases based on 3rd party base manifests, shipped in Git repositories.
 They evolve along with the software that is deployed. And it's not
 straightforward to track those 3rd-party base manifests and keep the process
@@ -50,8 +50,8 @@ creates duplication for commands that share similar and related sets of
 arguments. In this regard, getting it right at avoiding duplication is not
 easy.
 
-[bosh_env_def]: ./docs/faq.md#what-do-we-mean-by-bosh-environment
-[dosh_depl_def]: ./docs/faq.md#how-is-a-bosh-deployment-described
+[bosh_env_def]: <./docs/faq.md#what-do-we-mean-by-bosh-environment>
+[dosh_depl_def]: <./docs/faq.md#how-is-a-bosh-deployment-described>
 
 
 ### What solution does GBE bring?
@@ -86,19 +86,19 @@ and the implemented conventions.
 
 ### Prerequisites
 
-- Install the [Bosh v2 CLI](bosh_cli_v2), like
+- Install the [Bosh v2 CLI](https://github.com/cloudfoundry/bosh-cli), like
   `brew install cloudfoundry/tap/bosh-cli` or anyhting similar.
 
 - Install `direnv`. Like `brew install direnv` on macOS. For other platforms,
-  refer to [this direnv documentation](install_direnv).
+  refer to [this direnv documentation](https://github.com/direnv/direnv#install).
 
 - Install the `gcloud` CLI utility, like `brew cask install google-cloud-sdk`
   on macOS. For other platforms, go read
-  [this GCP documentation](instal_cloud_sdk).
+  [this GCP documentation](https://cloud.google.com/sdk/downloads).
 
-[bosh_cli_v2]: https://github.com/cloudfoundry/bosh-cli
-[install_direnv]: https://github.com/direnv/direnv#install
-[instal_cloud_sdk]: https://cloud.google.com/sdk/downloads
+[bosh_cli_v2]: <https://github.com/cloudfoundry/bosh-cli>
+[install_direnv]: <https://github.com/direnv/direnv#install>
+[instal_cloud_sdk]: <https://cloud.google.com/sdk/downloads>
 
 
 ### Quick start

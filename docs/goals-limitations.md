@@ -1,7 +1,7 @@
 # Goals and limitations of GBE
 
 Before you read this, please make sure you have read the
-[main problem statement](main_goals) first.
+[main problem statement](../README.md#what-problems-does-gbe-solve) first.
 
 [main_goals]: ../README.md#what-problems-does-gbe-solve
 
