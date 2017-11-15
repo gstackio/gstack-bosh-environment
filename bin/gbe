@@ -189,6 +189,33 @@ function gcp_usage() {
     echo "    3. Grant to the service account an 'editor' role on the project."
 }
 
+function update_usage() {
+    echo "Usage:"
+    echo "  gbe  update  [ cloud-config | runtime-config ]"
+    echo
+    echo "Updates the BOSH cloud-config or the runtime-config."
+}
+
+function converge_usage() {
+    echo "Usage:"
+    echo "  gbe  converge  [${UNDERLINE}deployment-name${NOUNDERLINE}]"
+    echo
+    echo "    ${UNDERLINE}deployment-name$NOUNDERLINE   The name of a deployment to converge. Optional."
+    echo
+    echo "Converges a deployment towards a new desired state,"
+    echo "or converge the BOSH environment if no deployment is specified."
+}
+
+function source_env() { # shim
+    local rel_dir=$1
+
+    pushd "$rel_dir"
+    if [ -f .envrc ]; then
+        source .envrc
+    fi
+    popd
+}
+
 case $1 in
     env)        env_exports ;;
     bbl)        setup_bbl v3.2.6 ;;
@@ -201,9 +228,62 @@ case $1 in
         fi
         setup_gcp "$@"
         ;;
-    up)         create-env ;;
-    down)       delete-env ;;
-    ssh)        jumpbox ;;
+    up)
+        setup_bbl v3.2.6
+        setup_terraform 0.9.11
+        pushd "$BASE_DIR"
+            source .envrc
+            create-env
+        popd
+        ;;
+    down)
+        pushd "$BASE_DIR"
+            source .envrc
+            delete-env
+        popd
+        ;;
+    ssh)
+        pushd "$BASE_DIR"
+            source .envrc
+            jumpbox
+        popd
+        ;;
+    update)
+        shift
+        case $1 in
+            cloud-config|cc)
+                pushd "$BASE_DIR/deployments/_cloud-config"
+                    source .envrc
+                    update-cloud-config
+                popd
+                ;;
+            runtime-config|rc)
+                pushd "$BASE_DIR/deployments/_runtime-config"
+                    source .envrc
+                    update-runtime-config
+                popd
+                ;;
+            *)
+                update_usage ;;
+        esac
+        ;;
+    converge)
+        shift
+        case $1 in
+            -h)
+                converge_usage ;;
+            "")
+                create-env ;;
+            *)
+                depl_name=$1
+                pushd "$BASE_DIR/deployments/$depl_name"
+                    source .envrc
+                    upload-stemcell
+                    deploy
+                popd
+                ;;
+        esac
+        ;;
     *)          usage; exit 2 ;;
 esac
 

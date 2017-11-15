@@ -111,16 +111,12 @@ deploy Concourse, Cloud Foundry and CF-MySQL into it.
 
 ```bash
 git clone https://github.com/cloudfoundry/bosh-deployment.git
+
 git clone https://github.com/gstackio/gstack-bosh-environment.git my-project
 
 cd my-project/
-direnv allow # if using direnv (recommended)
-             # (the current state of .envrc will be permanently allowed)
-# otherwise:
-source <(gbe env) # (only if not using direnv)
 
-gbe bbl       # installs bbl 3.2.6 locally in your GBE project
-gbe terraform # installs Terraform v0.9.11 locally in your GBE project
+source <(gbe env) # (only if not using direnv)
 ```
 
 #### 2. Configure GCP access
@@ -142,12 +138,8 @@ This is a once-for-all setup that will create the private
 
 #### 3. Configure and create your BOSH environment
 
-Starting from here and after, you'll require `direnv` to be installed.
-
 ```bash
-vi ./conf/env-config.inc.bash
-direnv allow # (to refresh any values modified above)
-vi ./conf/env-infra-vars.yml
+vi ./conf/env-infra-vars.yml # set GCP region & zone, and also check GCP project ID
 
 gbe up
 ```
@@ -155,46 +147,26 @@ gbe up
 #### 4. Prepare the deployments
 
 ```bash
-cd deployments/
-direnv allow # (will be necessary only once in this directory)
-
-# Now you're connected to your BOSH server as soon as you enter the
-# 'deployments/' directory.
-
-cd _cloud-config/
-direnv allow # (will be necessary only once in this directory)
-update-cloud-config
-
-cd ../_runtime-config/
-direnv allow # (will be necessary only once in this directory)
-udpate-runtime-config
+gbe update cloud-config
+gbe udpate runtime-config
 ```
 
 #### 5. Deploy the Concourse CI server
 
 ```bash
-cd ../concourse/
-direnv allow # (will be necessary only once in this directory)
-upload-stemcell
-deploy
+gbe converge concourse
 ```
 
-#### 6. Deploy Cloud Foundry platform
+#### 6. Deploy a simple Cloud Foundry platform
 
 ```bash
-cd ../cf/
-direnv allow # (will be necessary only once in this directory)
-upload-stemcell
-deploy
+gbe converge cf
 ```
 
 #### 7. Deploy the CF-MySQL DBaaS
 
 ```bash
-cd ../mysql/
-direnv allow # (will be necessary only once in this directory)
-upload-stemcell
-deploy
+gbe converge mysql
 ```
 
 #### 8. Destroy the BOSH environment
