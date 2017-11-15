@@ -20,16 +20,13 @@ provides MySQL Database-as-a-Service thanks to the included
 What problems does GBE solve?
 -----------------------------
 
-We do think that people need *structure* when dealing with BOSH manifests.
+We do believe that people need *structure* when dealing with BOSH manifests.
 
-
-### The problems
-
-Usually operators that start creating a BOSH environment have a rough and
-unclear view of the whole picture, because BOSH in new to them. They have to
-write several pieces of YAML manifests and run `bosh` commands with many
-arguments. As they are learning BOSH, it's hard for them to get rapidly
-organized.
+Usually operators that start creating a [BOSH environment](bosh_env_def) have
+a rough and unclear view of the whole picture, because BOSH in new to them.
+They have to write several pieces of YAML manifests and run `bosh` commands
+with many arguments. As they are learning BOSH, it's hard for them to get
+rapidly organized.
 
 So, they start their project scattering the various pieces in an unorganized
 manner. Once they start putting these into Git, it's hard for them to
@@ -37,13 +34,13 @@ reorganize the whole thing in a meaningful manner. They are lacking
 recommendations and best practice at organizing BOSH manifests, Ops files, and
 command arguments.
 
-Then come day-2 concerns. Because deployment manifests are in most cases based
-on 3rd party base manifests, shipped in Git repositories. They evolve along
-with the software that is deployed. And it's not straightforward to track
-those 3rd-party base manifests and keep the process easy when it comes to
-upgrading the software along with its base deployment manifests. Should the
-base manifests be copied/pasted into the environment repository? Should they
-be submoduled? Or kept aside, as separate Git clones?
+Then come day-2 concerns. Because [deployment](dosh_depl_def) manifests are in
+most cases based on 3rd party base manifests, shipped in Git repositories.
+They evolve along with the software that is deployed. And it's not
+straightforward to track those 3rd-party base manifests and keep the process
+easy when it comes to upgrading the software along with its base deployment
+manifests. Should the base manifests be copied/pasted into the environment
+repository? Should they be submoduled? Or kept aside, as separate Git clones?
 
 Finally, the various BOSH v2 commands involved in day-to-day interactions with
 a BOSH environment quickly tend to involve lots of arguments, which are
@@ -52,6 +49,9 @@ versionning these, is to use simple shell scripts. But this naive approach
 creates duplication for commands that share similar and related sets of
 arguments. In this regard, getting it right at avoiding duplication is not
 easy.
+
+[bosh_env_def]: #what-do-we-mean-by-bosh-environment
+[dosh_depl_def]: #how-is-a-bosh-deployment-described
 
 
 ### What solution does GBE bring?
@@ -71,82 +71,6 @@ the interaction involved when managing the filecycle of your BOSH environment
 and its managed deployments.
 
 
-### What do we mean by BOSH environment?
-
-Working with BOSH, what we call an *environemnt* is the combination of these
-components:
-
-1. A BOSH server, who is responsible for driving an underlying automated
-   infrastructure (most of the time a IaaS, many of those are supported).
-
-2. One or many *deployments* (of distributed software), made on that uderlying
-   infrastructure. The lifecycle of these deployments is fully managed by the
-   BOSH server above. So that you rarely need interacting directly with the
-   underlying infrastructure in your day-to-day work.
-
-Tricky detail: the BOSH server above is itself described as a BOSH deployment,
-that is managed by the `bosh` command-line tool, because it has the ability to
-behave locally like a small BOSH server. This solves the chicken-and-egg
-problem when it comes to deploying BOSH with BOSH.
-
-
-### How is a BOSH deployment described?
-
-With BOSH v2, your “infrastructure-as-code” is made of one or many
-*deployments* and BOSH will take care for converging these towards a desired
-state. Each of these desired states are composed of several pieces:
-
-1. A base deployment manifest (usually provided by a 3rd party `*-deployment`
-   Git repository).
-
-2. Any standard set patches to be applied to the base deployment manifest,
-   that will implement specific features that are relevant to your context.
-   These are expressed as *operation files* (from the 3rd party `*-deployment`
-   repository).
-
-3. Possibly some custom operation files that you'll provide in order to
-   implement non-standard variants to the base deployment.
-
-4. Custom values for any variables that need being defined. These will be
-   provided by you, and shall reflect your use-cases.
-
-Those 4 types of pieces are tied toghether when they get passed as arguments
-to the BOSH commands that are involved in the day-to-day work with the
-deployments. In the end, these arguments are part of the desired state that
-needs to be captured in Git.
-
-
-### Other (non-trivial) goals for GBE
-
-Note: GBE is work in progress and all these goals are not completely addressed
-yet.
-
-- Be able to rebase deployment manifests customizations onto new versions of
-  upstream base deployment manifests, when these happen to evolve over time.
-
-- Be able to work several environments: sandox, ci-drone, pre-prod,
-  production, etc. Elegantly express in separate places the configurations or
-  layouts that are different, and factor all sources of deployment manifests
-  for what is similar.
-
-- Integrate with Continuous Integration and Continuous Deployment (CI & CD)
-  workflows: changes to the deployed infrastructure are first tried by team
-  members in personal sandbox environments, then deployed in a CI-driven ci-
-  drone environment and thoroughly tested by CI with automated test suites,
-  then continuously deployed in production.
-
-
-### Limitations
-
-- Currently, only BOSH-Lite on GCP is supported as a target infrastructure.
-
-- Upstream base deployment manifests are pointed to as directories where
-  `*-deployment` repositories are checked out, but the exact versions of these
-  repos are not pinned down by GBE, nor tracked in Git.
-
-- GBE doesn't suggest yet an elegant way of expressing differences between
-  environments.
-
 
 Getting started
 ---------------
@@ -165,13 +89,15 @@ and the implemented conventions.
 - Install the [Bosh v2 CLI](bosh_cli_v2), like
   `brew install cloudfoundry/tap/bosh-cli` or anyhting similar.
 
-- Install `direnv`. Like `brew install direnv` or anything similar.
+- Install `direnv`. Like `brew install direnv` on macOS. For other platforms,
+  refer to [this direnv documentation](install_direnv).
 
 - Install the `gcloud` CLI utility, like `brew cask install google-cloud-sdk`
-  or anything similar. For other methods, go read
-  “[Installing Cloud SDK](instal_cloud_sdk)” in the GCP documentation.
+  on macOS. For other platforms, go read
+  [this GCP documentation](instal_cloud_sdk).
 
 [bosh_cli_v2]: https://github.com/cloudfoundry/bosh-cli
+[install_direnv]: https://github.com/direnv/direnv#install
 [instal_cloud_sdk]: https://cloud.google.com/sdk/downloads
 
 
@@ -444,10 +370,99 @@ You'll need the DNS for CF to have converged before deploying CF-MySQL, as the
 broker registrat will need the DNS name to register to CF.
 
 
+
+Frequently Asked Questions
+--------------------------
+
+
+### What do we mean by BOSH environment?
+
+Working with BOSH, what we call an *environemnt* is the combination of these
+components:
+
+1. A BOSH server, who is responsible for driving an underlying automated
+   infrastructure (most of the time a IaaS, many of those are supported).
+
+2. One or many *deployments* (of distributed software), made on that uderlying
+   infrastructure. The lifecycle of these deployments is fully managed by the
+   BOSH server above. So that you rarely need interacting directly with the
+   underlying infrastructure in your day-to-day work.
+
+Tricky detail: the BOSH server above is itself described as a BOSH deployment,
+that is managed by the `bosh` command-line tool, because it has the ability to
+behave locally like a small BOSH server. This solves the chicken-and-egg
+problem when it comes to deploying BOSH with BOSH.
+
+
+### How is a BOSH deployment described?
+
+With BOSH v2, your “infrastructure-as-code” is made of one or many
+*deployments* and BOSH will take care for converging these towards a desired
+state. Each of these desired states are composed of several pieces:
+
+1. A base deployment manifest (usually provided by a 3rd party `*-deployment`
+   Git repository).
+
+2. Any standard set patches to be applied to the base deployment manifest,
+   that will implement specific features that are relevant to your context.
+   These are expressed as *operation files* (from the 3rd party `*-deployment`
+   repository).
+
+3. Possibly some custom operation files that you'll provide in order to
+   implement non-standard variants to the base deployment.
+
+4. Custom values for any variables that need being defined. These will be
+   provided by you, and shall reflect your use-cases.
+
+Those 4 types of pieces are tied toghether when they get passed as arguments
+to the BOSH commands that are involved in the day-to-day work with the
+deployments. In the end, these arguments are part of the desired state that
+needs to be captured in Git.
+
+
+
+Goals and limitations of the project
+------------------------------------
+
+
+### Other (non-trivial) goals for GBE
+
+Note: GBE is work in progress and all these goals are not completely addressed
+yet.
+
+- Be able to rebase deployment manifests customizations onto new versions of
+  upstream base deployment manifests, when these happen to evolve over time.
+
+- Be able to work several environments: sandox, ci-drone, pre-prod,
+  production, etc. Elegantly express in separate places the configurations or
+  layouts that are different, and factor all sources of deployment manifests
+  for what is similar.
+
+- Integrate with Continuous Integration and Continuous Deployment (CI & CD)
+  workflows: changes to the deployed infrastructure are first tried by team
+  members in personal sandbox environments, then deployed in a CI-driven ci-
+  drone environment and thoroughly tested by CI with automated test suites,
+  then continuously deployed in production.
+
+
+### Limitations
+
+- Currently, only BOSH-Lite on GCP is supported as a target infrastructure.
+
+- Upstream base deployment manifests are pointed to as directories where
+  `*-deployment` repositories are checked out, but the exact versions of these
+  repos are not pinned down by GBE, nor tracked in Git.
+
+- GBE doesn't suggest yet an elegant way of expressing differences between
+  environments.
+
+
+
 Contributing
 ------------
 
 Please feel free to submit issues and pull requests.
+
 
 
 Author and License
