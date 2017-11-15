@@ -55,6 +55,14 @@ function env_exports() {
 function setup_bbl() {
     local bbl_version=$1
 
+    if which bbl > /dev/null 2>&1; then
+        local existing_bbl_version
+        existing_bbl_version=$(bbl --version | head -n 1 | cut -d' ' -f2)
+        if [[ $existing_bbl_version =~ ^3\.2\..*$ ]]; then
+            return 0
+        fi
+    fi
+
     local bbl_bin=$BASE_DIR/bin/bbl
     if [ -f "$bbl_bin" ]; then
         return 0
@@ -79,6 +87,14 @@ function setup_bbl() {
 
 function setup_terraform() {
     local tf_version=$1
+
+    if which terraform > /dev/null 2>&1; then
+        local existing_tf_version
+        existing_tf_version=$(terraform --version | head -n 1 | cut -d' ' -f2)
+        if [[ $existing_tf_version =~ ^v0\.9\..*$ ]]; then
+            return 0
+        fi
+    fi
 
     local tf_bin=$BASE_DIR/bin/terraform
     if [ -f "$tf_bin" ]; then
