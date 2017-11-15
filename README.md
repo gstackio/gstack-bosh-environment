@@ -162,29 +162,23 @@ and the implemented conventions.
 
 ### Prerequisites
 
-- Install the [Bosh v2 CLI](https://github.com/cloudfoundry/bosh-cli), like
+- Install the [Bosh v2 CLI](bosh_cli_v2), like
   `brew install cloudfoundry/tap/bosh-cli` or anyhting similar.
 
 - Install `direnv`. Like `brew install direnv` or anything similar.
 
-- Clone the [bosh-deployment](https://github.com/cloudfoundry/bosh-deployment)
-  repo, next to this one. Its path will be configured in
-  `UPSTREAM_DEPLOYMENT_DIR`.
-
 - Install the `gcloud` CLI utility, like `brew cask install google-cloud-sdk`
-  or anything similar.
+  or anything similar. For other methods, go read
+  “[Installing Cloud SDK](instal_cloud_sdk)” in the GCP documentation.
 
-- Configure your GCP service account as demonstrated in the
-  [Configure GCP](https://github.com/cloudfoundry/bosh-bootloader/tree/v3.2.6#configure-gcp)
-  section of the [bosh-bootloader v3.2.6](https://github.com/cloudfoundry/bosh-bootloader/tree/v3.2.6)
-  README, so that you have a `<service account name>.key.json` file.
+[bosh_cli_v2]: https://github.com/cloudfoundry/bosh-cli
+[instal_cloud_sdk]: https://cloud.google.com/sdk/downloads
 
 
 ### Quick start
 
-Here are the typical and complete command sequences used to create your
-environment, deploy Concourse, Cloud Foundry and CF-MySQL, then destroy youe
-environment.
+Here are the typical commands used to bootstrap your BOSH environment, then
+deploy Concourse, Cloud Foundry and CF-MySQL into it.
 
 
 #### 1. Start your project and install prerequisites
@@ -215,8 +209,9 @@ gbe terraform # installs Terraform v0.9.11 locally in your GBE project
 gbe gcp "my-service-account" "alpha-sandbox-717101"
 ```
 
-This is a once-for-all setup that will will create the private
-`./conf/gcp-service-account.key.json` file.
+This is a once-for-all setup that will create the private
+`./conf/gcp-service-account.key.json` file
+[as recommended](https://github.com/cloudfoundry/bosh-bootloader/tree/v3.2.6#configure-gcp).
 
 
 #### 3. Configure and create your BOSH environment
