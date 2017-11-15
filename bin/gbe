@@ -100,7 +100,7 @@ function setup_terraform() {
         mv terraform "$tf_bin"
         chmod +x "$tf_bin"
     popd
-    rm -rf "$tempdir"
+    rm -rf "$temp_dir"
 }
 
 function setup_gcp() {
