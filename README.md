@@ -2,13 +2,16 @@ GBE — Gstack BOSH Environment
 =============================
 
 This project establishes conventions and a simple workflow to help you create
-and work with a BOSH v2 environment, whose desired stated will be tracked in
-Git.
+and work with a BOSH v2
+[environment](./docs/faq.md#what-do-you-mean-by-bosh-environment) along with
+any [deployments](./docs/faq.md#how-is-a-bosh-deployment-described), whose
+desired stated will be tracked in Git.
 
-The GBE repository provides examples for deploying [Concourse](https://concourse.ci),
-[Cloud Foundry](https://cloudfoundry.org), and a typical [CF-MySQL](https://github.com/cloudfoundry/cf-mysql-release) cluster that
-provides MySQL Database-as-a-Service thanks to the included
-[service broker](https://www.openservicebrokerapi.org).
+The GBE repository provides examples for deploying
+[Concourse](https://concourse.ci), [Cloud Foundry](https://cloudfoundry.org),
+and a typical [CF-MySQL](https://github.com/cloudfoundry/cf-mysql-release)
+cluster that provides MySQL Database-as-a-Service to Cloud Foundry
+applications.
 
 
 [concourse-site]: <https://concourse.ci>
@@ -22,7 +25,7 @@ What problems does GBE solve?
 
 We do believe that people need *structure* when dealing with BOSH manifests.
 
-Usually operators that start creating a [BOSH environment](./docs/faq.md#what-do-we-mean-by-bosh-environment) have
+Usually operators that start creating a [BOSH environment](./docs/faq.md#what-do-you-mean-by-bosh-environment) have
 a rough and unclear view of the whole picture, because BOSH in new to them.
 They have to write several pieces of YAML manifests and run `bosh` commands
 with many arguments. As they are learning BOSH, it's hard for them to get
@@ -50,15 +53,15 @@ creates duplication for commands that share similar and related sets of
 arguments. In this regard, getting it right at avoiding duplication is not
 easy.
 
-[bosh_env_def]: <./docs/faq.md#what-do-we-mean-by-bosh-environment>
+[bosh_env_def]: <./docs/faq.md#what-do-you-mean-by-bosh-environment>
 [dosh_depl_def]: <./docs/faq.md#how-is-a-bosh-deployment-described>
 
 
-### What solution does GBE bring?
+### What solutions does GBE bring?
 
 The point with GBE is to follow an “infrastructure-as-code“ pattern where a
-Git repository describes accurately the overall environment that is deployed.
-BOSH will take care for converging your actual infrastructure towards the
+Git repository describes accurately the overall things that are deployed. BOSH
+will take care for converging your actual infrastructure towards the
 *desired state* that is described.
 
 When it comes to starting this Git repository, GBE helps you organize and
@@ -66,8 +69,8 @@ version the different pieces in a meaningful and consistent manner. As the
 *desired state* is also made of command-line arguments, GBE captures them in a
 meneangful way that avoids duplication.
 
-Consequently, GBE also provides you with simple compound commands that easy
-the interaction involved when managing the filecycle of your BOSH environment
+Consequently, GBE also provides you with simple compound commands that ease
+the interactions involved when managing the filecycle of your BOSH environment
 and its managed deployments.
 
 
@@ -107,7 +110,7 @@ Here are the typical commands used to bootstrap your BOSH environment, then
 deploy Concourse, Cloud Foundry and CF-MySQL into it.
 
 
-#### 1. Start your project and install prerequisites
+#### 1. Start your project
 
 ```bash
 git clone https://github.com/cloudfoundry/bosh-deployment.git
@@ -134,6 +137,8 @@ gbe gcp "my-service-account" "alpha-sandbox-717101"
 This is a once-for-all setup that will create the private
 `./conf/gcp-service-account.key.json` file
 [as recommended](https://github.com/cloudfoundry/bosh-bootloader/tree/v3.2.6#configure-gcp).
+The `conf/env-infra-vars.yml` file will also be updated with your specific GCP
+project ID.
 
 
 #### 3. Configure and create your BOSH environment
@@ -144,6 +149,9 @@ vi ./conf/env-infra-vars.yml # set GCP region & zone, and also check GCP project
 gbe up
 ```
 
+This will install the supported versions of `bbl` and `terraform` locally, if
+necessary.
+
 #### 4. Prepare the deployments
 
 ```bash
@@ -151,25 +159,27 @@ gbe update cloud-config
 gbe udpate runtime-config
 ```
 
-#### 5. Deploy the Concourse CI server
+#### 5. Converge any deployment
+
+Deploy a Concourse CI server.
 
 ```bash
 gbe converge concourse
 ```
 
-#### 6. Deploy a simple Cloud Foundry platform
+Deploy a simple Cloud Foundry platform.
 
 ```bash
 gbe converge cf
 ```
 
-#### 7. Deploy the CF-MySQL DBaaS
+Deploy the CF-MySQL DBaaS cluster along with its service broker.
 
 ```bash
 gbe converge mysql
 ```
 
-#### 8. Destroy the BOSH environment
+#### 6. Destroy the BOSH environment
 
 When finished, you can delete the BOSH environment altogether.
 
