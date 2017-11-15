@@ -1,0 +1,185 @@
+#!/usr/bin/env bash
+
+BASE_DIR=$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)")
+
+if ! echo "$PATH" | tr : '\n' | grep -qF "$BASE_DIR/bin"; then
+    # update PATH is not already done by direnv
+    PATH=$BASE_DIR/bin:$PATH
+fi
+
+source "$BASE_DIR/lib/colors.inc.bash"
+
+function pushd() {
+    command pushd "$@" > /dev/null
+}
+
+function popd() {
+    command popd "$@" > /dev/null
+}
+
+function fatal() {
+    echo "$@" >&2
+    exit 1
+}
+
+function platform() {
+    local system=$(uname -s | tr A-Z a-z)
+    if [ "$system" == darwin -o "$system" == linux ]; then
+        echo $system
+    else
+        fatal "ERROR: unsupported platform: '$system'. Aborting."
+    fi
+}
+
+function assert_utilities() {
+    local utilities=()
+
+    while # NOTE: emulating do-while, see <https://stackoverflow.com/a/27761760>
+        utilities+=("$1"); shift
+        [ $# -gt 1 ]
+    do :; done
+    local reason=$1; shift # last argument
+
+    for utility in "${utilities[@]}"; do
+        if ! which "$utility" > /dev/null; then
+            fatal "ERROR: GBE requires '$utility'${reason:+" $reason"}." \
+                "Please install it first. Aborting."
+        fi
+    done
+}
+
+function env_exports() {
+    echo "export PATH=$PATH"
+}
+
+function setup_bbl() {
+    local bbl_version=$1
+
+    local bbl_bin=$BASE_DIR/bin/bbl
+    if [ -f "$bbl_bin" ]; then
+        return 0
+    fi
+
+    assert_utilities curl "to install bosh-bootloader"
+
+    local bbl_repo=https://github.com/cloudfoundry/bosh-bootloader
+    local linux_bin=bbl-${bbl_version}_linux_x86-64
+    local darwin_bin=bbl-${bbl_version}_osx
+
+    echo "${BLUE}Installing ${BOLD}bosh-bootloader CLI$RESET $bbl_version as: $bbl_bin"
+    local url
+    case $(platform) in
+        darwin) url=$bbl_repo/releases/download/$bbl_version/$darwin_bin;;
+        linux)  url=$bbl_repo/releases/download/$bbl_version/$linux_bin;;
+    esac
+
+    curl -sL -o "$bbl_bin" "$url"
+    chmod +x "$bbl_bin"
+}
+
+function setup_terraform() {
+    local tf_version=$1
+
+    local tf_bin=$BASE_DIR/bin/terraform
+    if [ -f "$tf_bin" ]; then
+        return 0
+    fi
+
+    assert_utilities curl unzip "to install terraform"
+
+    local base_url=https://releases.hashicorp.com/terraform
+
+    echo -e "${BLUE}Installing ${BOLD}terraform CLI$RESET v$tf_version as: $tf_bin"
+    local url=$base_url/$tf_version/terraform_${tf_version}_$(platform)_amd64.zip
+
+    local temp_dir=$(mktemp -d)
+    pushd "$temp_dir"
+        curl -sL -o tf.zip "$url"
+        unzip tf.zip
+        rm tf.zip
+        mv terraform "$tf_bin"
+        chmod +x "$tf_bin"
+    popd
+    rm -rf "$tempdir"
+}
+
+function setup_gcp() {
+    local service_account_name=$1
+    local project_id=$2
+
+    local service_account_key=$BASE_DIR/conf/gcp-service-account.key.json
+    if [ -f "$service_account_key" ]; then
+        echo -e "INFO: the 'gcp-service-account.key.json' credentials file" \
+            "already exists in directory '$BASE_DIR/conf/'. ${BLUE}Skipping${RESET}."
+        return 0
+    fi
+
+    assert_utilities gcloud "to setup GCP credentials"
+
+    echo -e "${BLUE}Setting ${BOLD}GCP credentials$RESET" \
+        "for service account '$service_account_name' and project '$project_id'"
+
+    local had_dash_e=$(echo $- | tr -Cd e)
+    set -e
+    gcloud iam service-accounts create "$service_account_name"
+    gcloud iam service-accounts keys create \
+        --iam-account="${service_account_name}@${project_id}.iam.gserviceaccount.com" \
+        "$service_account_key"
+    chmod 600 "$service_account_key"
+    gcloud projects add-iam-policy-binding "$project_id" \
+        --member="serviceAccount:${service_account_name}@${project_id}.iam.gserviceaccount.com" \
+        --role='roles/editor'
+    if [ -z "$had_dash_e" ]; then
+        set +e
+    fi
+    echo -e "$GREEN${BOLD}OK$RESET"
+}
+
+function usage() {
+    echo "GBE (Gstack BOSH Environment) CLI"
+    echo "  $BOLD${MAGENTA}SETUP:$RESET"
+    echo "  env         Sourceable envrionment variables for CLI clients"
+    echo "  bbl         Installs locally the supported version of Bosh-Bootloader CLI"
+    echo "  terraform   Installs locally the supported version of Terraform CLI"
+    echo "  gcp         Configures the Google Cloud credentials"
+    echo
+    echo "  $BOLD${MAGENTA}BOSH ENVIRONMENT:$RESET"
+    echo "  up          Creates the BOSH environment VM with 'bosh create-env'"
+    echo "  down        Deletes the BOSH environment VM with 'bosh delete-env'"
+    echo "  ssh         Logs into the BOSH Environment VM with SSH"
+}
+
+function gcp_usage() {
+    echo "Usage:"
+    echo "  gbe  gcp  ${UNDERLINE}service-account-name$NOUNDERLINE  ${UNDERLINE}project-id$NOUNDERLINE"
+    echo
+    echo "    ${UNDERLINE}service-account-name$NOUNDERLINE   A name for the service account to be created"
+    echo "    ${UNDERLINE}project-id$NOUNDERLINE             The identifier of your GCP project, like 'alpha-sandbox-717101'"
+    echo
+    echo "Setup the necessary GCP credentials for GBE:"
+    echo "    1. Create the designated service account in GCP."
+    echo "    2. Create a service account key in 'conf/gcp-service-account.key.json'."
+    echo "    3. Grant to the service account an 'editor' role on the project."
+}
+
+case $1 in
+    env)        env_exports ;;
+    bbl)        setup_bbl v3.2.6 ;;
+    terraform)  setup_terraform 0.9.11 ;;
+    gcp)
+        shift
+        if [[ $# -ne 2 ]]; then
+            gcp_usage
+            exit 2
+        fi
+        setup_gcp "$@"
+        ;;
+    up)         create-env ;;
+    down)       delete-env ;;
+    ssh)        jumpbox ;;
+    *)          usage; exit 2 ;;
+esac
+
+# Local Variables:
+# indent-tabs-mode: nil
+# End:

@@ -45,30 +45,34 @@ function bosh_rw_invoke() {
 
 function assert_terraform_version() {
     if ! which terraform > /dev/null 2>&1; then
-        echo "Error: missing terraform. Please install version v0.9.11 first." >&2
-        exit 1
+        echo "Warning: missing terraform. GBE requires version v0.9.11." >&2
+        gbe terraform
+        return
     fi
 
     local tf_version=$(terraform --version | head -n 1 | cut -d' ' -f2)
 
     if [[ ! $tf_version =~ ^v0\.9\..*$ ]]; then
-        echo "Error: unsupported terraform version '$tf_version'." \
-            "Please use terraform v0.9.11 instead." >&2
-        exit 1
+        echo "Warning: unsupported terraform version '$tf_version'." \
+            "GBE requires version v0.9.11." >&2
+        gbe terraform
+        return
     fi
 }
 
 function assert_bbl_version() {
     if ! which bbl > /dev/null 2>&1; then
-        echo "Error: missing bbl. Please install version 3.2.6 first." >&2
-        exit 1
+        echo "Warning: missing bbl. GBE requires version 3.2.6." >&2
+        gbe bbl
+        return
     fi
 
     local bbl_version=$(bbl --version | head -n 1 | cut -d' ' -f2)
 
     if [[ ! $bbl_version =~ ^3\..*\..*$ ]]; then
-        echo "Error: unsupported bbl version '$bbl_version'." \
-            "Please use bbl 3.2.6 instead." >&2
-        exit 1
+        echo "Warning: unsupported bbl version '$bbl_version'." \
+            "GBE requires version 3.2.6." >&2
+        gbe bbl
+        return
     fi
 }

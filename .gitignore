@@ -1,4 +1,6 @@
 /.cache/
+/bin/bbl
+/bin/terraform
 creds.yml
 *-creds.yml
 bbl-state.json

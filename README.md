@@ -171,21 +171,12 @@ and the implemented conventions.
   repo, next to this one. Its path will be configured in
   `UPSTREAM_DEPLOYMENT_DIR`.
 
-- Install Terraform `0.9.11`, as you won't make it with the newer Terraform
-  `0.10.x` yet, sadly.
-
-- Install [bbl](https://github.com/cloudfoundry/bosh-bootloader) v3.2.6, which
-  is no more the simple `brew install cloudfoundry/tap/bbl` or similar way,
-  sadly. Instead, you'll need to fetch the
-  [v3.2.6 binary](https://github.com/cloudfoundry/bosh-bootloader/releases/tag/v3.2.6)
-  manually and put it to the `bin/` subdir at the root of the project.
-
 - Install the `gcloud` CLI utility, like `brew cask install google-cloud-sdk`
   or anything similar.
 
-- Configure your GCP service account as in the
+- Configure your GCP service account as demonstrated in the
   [Configure GCP](https://github.com/cloudfoundry/bosh-bootloader/tree/v3.2.6#configure-gcp)
-  section of the [bosh-bootloader](https://github.com/cloudfoundry/bosh-bootloader)
+  section of the [bosh-bootloader v3.2.6](https://github.com/cloudfoundry/bosh-bootloader/tree/v3.2.6)
   README, so that you have a `<service account name>.key.json` file.
 
 
@@ -196,44 +187,48 @@ environment, deploy Concourse, Cloud Foundry and CF-MySQL, then destroy youe
 environment.
 
 
-#### 1. Check the prerequisites
+#### 1. Start your project and install prerequisites
 
 ```bash
-$ bbl --version
-bbl 3.2.6 (darwin/amd64)
-
-$ terraform --version
-Terraform v0.9.11
-```
-
-#### 2. Prepare the project
-
-```bash
-git https://github.com/cloudfoundry/bosh-deployment.git
-
+git clone https://github.com/cloudfoundry/bosh-deployment.git
 git clone https://github.com/gstackio/gstack-bosh-environment.git my-project
+
 cd my-project/
-direnv allow # (the current state of .envrc will be permanently allowed)
+direnv allow # if using direnv (recommended)
+             # (the current state of .envrc will be permanently allowed)
+# otherwise:
+source <(gbe env) # (only if not using direnv)
 
-
-# Prepare the GCP credentials
-gcloud iam service-accounts create '<service account name>'
-gcloud iam service-accounts keys create \
-    --iam-account='<service account name>@<project id>.iam.gserviceaccount.com' \
-    ./conf/service-account.key.json
-chmod 600 ./conf/service-account.key.json
-gcloud projects add-iam-policy-binding '<project id>' \
-    --member='serviceAccount:<service account name>@<project id>.iam.gserviceaccount.com' \
-    --role='roles/editor'
+gbe bbl       # installs bbl 3.2.6 locally in your GBE project
+gbe terraform # installs Terraform v0.9.11 locally in your GBE project
 ```
+
+#### 2. Configure GCP access
+
+1. Pick your own service account name, instead of the example
+   `my-service-account` below.
+
+2. Get your project ID from Google Cloud, and use it instead of the example
+   `alpha-sandbox-717101` below.
+
+```bash
+gbe gcp "my-service-account" "alpha-sandbox-717101"
+```
+
+This is a once-for-all setup that will will create the private
+`./conf/gcp-service-account.key.json` file.
+
 
 #### 3. Configure and create your BOSH environment
+
+Starting from here and after, you'll require `direnv` to be installed.
 
 ```bash
 vi ./conf/env-config.inc.bash
 direnv allow # (to refresh any values modified above)
 vi ./conf/env-infra-vars.yml
-create-env
+
+gbe up
 ```
 
 #### 4. Prepare the deployments
@@ -281,11 +276,12 @@ upload-stemcell
 deploy
 ```
 
-#### 8. When finished, delete the complete environment altogether
+#### 8. Destroy the BOSH environment
+
+When finished, you can delete the BOSH environment altogether.
 
 ```bash
-cd ..
-delete-env
+gbe down
 ```
 
 
@@ -313,11 +309,6 @@ directory.
 ### How to configure
 
 Configuration files are located in the `conf/` directory.
-
-- In `service-account.key.json`, you put your GCP service account key, as
-  created above.
-  Something like `mv <service account name>.key.json conf/service-account.key.json`
-  and `chmod 600 service-account.key.json`.
 
 - In `env-config.inc.bash`, set a few variables and don't forget to re-run
   `direnv allow` after that.
