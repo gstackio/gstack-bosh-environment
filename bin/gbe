@@ -23,9 +23,11 @@ function fatal() {
 }
 
 function platform() {
-    local system=$(uname -s | tr A-Z a-z)
-    if [ "$system" == darwin -o "$system" == linux ]; then
-        echo $system
+    local system
+    # shellcheck disable=SC2018,SC2019
+    system=$(uname -s | tr A-Z a-z)
+    if [[ $system == darwin || $system == linux ]]; then
+        echo "$system"
     else
         fatal "ERROR: unsupported platform: '$system'. Aborting."
     fi
@@ -106,9 +108,11 @@ function setup_terraform() {
     local base_url=https://releases.hashicorp.com/terraform
 
     echo -e "${BLUE}Installing ${BOLD}terraform CLI$RESET v$tf_version as: $tf_bin"
-    local url=$base_url/$tf_version/terraform_${tf_version}_$(platform)_amd64.zip
+    local url
+    url=$base_url/$tf_version/terraform_${tf_version}_$(platform)_amd64.zip
 
-    local temp_dir=$(mktemp -d)
+    local temp_dir
+    temp_dir=$(mktemp -d)
     pushd "$temp_dir"
         curl -sL -o tf.zip "$url"
         unzip tf.zip
@@ -135,7 +139,8 @@ function setup_gcp() {
     echo -e "${BLUE}Setting ${BOLD}GCP credentials$RESET" \
         "for service account '$service_account_name' and project '$project_id'"
 
-    local had_dash_e=$(echo $- | tr -Cd e)
+    local had_dash_e
+    had_dash_e=$(echo $- | tr -Cd e)
     set -e
     gcloud iam service-accounts create "$service_account_name"
     gcloud iam service-accounts keys create \
