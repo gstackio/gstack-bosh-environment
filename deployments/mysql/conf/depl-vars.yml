@@ -1,8 +1,8 @@
 ---
 upstream_base_deployment_manifests:
   name: cf-mysql-deployment
-  git_repo: https://github.com/cloudfoundry/cf-myqsl-deployment.git
-  version: v36
+  git_repo: https://github.com/cloudfoundry/cf-mysql-deployment.git
+  version: 720c27e38acd3e5d99afa0e535b04a6994ee4e57 # v35++
   main_deployment_file: cf-mysql-deployment.yml
 
 
