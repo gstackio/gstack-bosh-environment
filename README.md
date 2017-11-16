@@ -176,10 +176,10 @@ gbe converge cf
 
 Deploy the **CF-MySQL DBaaS** cluster along with its service broker.
 
-For this to properly deploy, you'll need to go to your GCP console, in VPC
-Network › Firewall rules, find the `bbl-env-*-bosh-open` rule and modify it
-from `icmp, tcp:22,6868,25555` to
-`icmp, tcp:22,80,443,2222,3306,4443,6868,8080,25555`.
+For this to properly deploy, you'll need to go to your GCP console, in “VPC
+Network” › “Firewall rules”, find the `bbl-env-*-bosh-open` rule and modify it
+from `tcp:22,6868,25555` to
+`tcp:22,80,443,2222,3306,4443,6868,8080,25555`.
 
 ```bash
 gbe converge mysql
