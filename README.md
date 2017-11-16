@@ -79,12 +79,10 @@ Getting started
 ---------------
 
 The idea is for you to clone the GBE repository, and use it as the base for
-your project.
+your project. There are some requisites to this, so please review them first.
 
-For this, there are several requisites that you need to check first.
-
-Then you'll need to get familiar with the overall directory structure of GBE
-and the implemented conventions.
+Then go read the [reference documentation](./docs/reference.md) to get
+familiar with the directory structure and conventions of GBE.
 
 
 ### Prerequisites
@@ -92,22 +90,23 @@ and the implemented conventions.
 - Install the [Bosh v2 CLI](https://github.com/cloudfoundry/bosh-cli), like
   `brew install cloudfoundry/tap/bosh-cli` or anyhting similar.
 
-- Install `direnv`. Like `brew install direnv` on macOS. For other platforms,
-  refer to [this direnv documentation](https://github.com/direnv/direnv#install).
-
 - Install the `gcloud` CLI utility, like `brew cask install google-cloud-sdk`
   on macOS. For other platforms, go read
   [this GCP documentation](https://cloud.google.com/sdk/downloads).
 
+- Installing `direnv` is optional. In case you do, run `brew install direnv`
+  on macOS. For other platforms, refer to
+  [this direnv documentation](https://github.com/direnv/direnv#install).
+
 [bosh_cli_v2]: <https://github.com/cloudfoundry/bosh-cli>
-[install_direnv]: <https://github.com/direnv/direnv#install>
 [instal_cloud_sdk]: <https://cloud.google.com/sdk/downloads>
+[install_direnv]: <https://github.com/direnv/direnv#install>
 
 
 ### Quick start
 
 Here are the typical commands used to bootstrap your BOSH environment, then
-deploy Concourse, Cloud Foundry and CF-MySQL into it.
+deploy Concourse, Cloud Foundry and CF-MySQL with it.
 
 
 #### 1. Start your project
@@ -161,23 +160,31 @@ gbe udpate runtime-config
 
 #### 5. Converge any deployment
 
-Deploy a Concourse CI server.
+Deploy a **Concourse CI** server.
 
 ```bash
 gbe converge concourse
 ```
 
-Deploy a simple Cloud Foundry platform.
+
+Deploy a simple **Cloud Foundry** platform.
 
 ```bash
 gbe converge cf
 ```
 
-Deploy the CF-MySQL DBaaS cluster along with its service broker.
+
+Deploy the **CF-MySQL DBaaS** cluster along with its service broker.
+
+For this to properly deploy, you'll need to go to your GCP console, in VPC
+Network › Firewall rules, find the `bbl-env-*-bosh-open` rule and modify it
+from `icmp, tcp:22,6868,25555` to
+`icmp, tcp:22,80,443,2222,3306,4443,6868,8080,25555`.
 
 ```bash
 gbe converge mysql
 ```
+
 
 #### 6. Destroy the BOSH environment
 
@@ -188,9 +195,11 @@ gbe down
 ```
 
 
+
 Other Documentation
 -------------------
 
+- [How to tests the created deployments](./docs/deployments-tests.md)
 - [GBE reference documentation](./docs/reference.md)
 - [GBE frequently asked questions](./docs/faq.md)
 - [GBE goals and limitations](./docs/goals-limitations.md)
