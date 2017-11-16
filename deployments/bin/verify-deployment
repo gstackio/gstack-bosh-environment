@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+source "$BASE_DIR/lib/deployment.inc.bash"
+assert deployment "$DEPL_DIR"
+
+fetch_ubdms
+
+source "$DEPL_DIR/conf/operations-layout.inc.bash"
+build_operations_arguments
+
+bosh_ro_invoke interpolate > "$DEPL_DIR/state/depl-manifest.yml"
+
+bosh_rw_invoke interpolate --var-errs > /dev/null
+status=$?
+if [ $status -eq 0 ]; then
+    echo "$BOLD${GREEN}OK$RESET" >&2
+else
+    echo "$BOLD${RED}KO$RESET" >&2
+fi
+exit $status
