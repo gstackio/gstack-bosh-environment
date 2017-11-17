@@ -216,6 +216,27 @@ function source_env() { # shim
     popd
 }
 
+function bbl_invoke() {
+    bbl --state-dir "$BASE_DIR/state" "$@"
+}
+
+function setup_firewall() {
+    assert_utilities gcloud "to update firewall rules"
+
+    local fw_rule_name
+    fw_rule_name=$(bbl_invoke env-id)-bosh-open
+
+    local allowed=icmp
+    # Note: the 'gcloud' CLI v165.0.0 doesn't support the shorter syntax with
+    #       semicolons, like "icmp; tcp:22,6868,25555". So we revert to the
+    #       more verbose syntax here, e.g. "icmp,tcp:22,tcp:6868,tcp:25555".
+    for tcp_port in 22 80 443 2222 3306 4443 6868 8080 25555; do
+        allowed=$allowed,tcp:$tcp_port
+    done
+
+    gcloud compute firewall-rules update "$fw_rule_name" --allow="$allowed"
+}
+
 case $1 in
     env)        env_exports ;;
     bbl)        setup_bbl v3.2.6 ;;
@@ -235,12 +256,16 @@ case $1 in
             source .envrc
             create-env
         popd
+        setup_firewall
         ;;
     down)
         pushd "$BASE_DIR"
             source .envrc
             delete-env
         popd
+        ;;
+    firewall)
+        setup_firewall
         ;;
     ssh)
         pushd "$BASE_DIR"

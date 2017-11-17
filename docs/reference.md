@@ -9,18 +9,29 @@ by the BOSH server. As a general convention in those places, configuration is
 located in `conf/`, BOSH v2 operation files are located in `operations/`, and
 infrastructure state are in `state/`.
 
-[Direnv](https://direnv.net/) is used all over the place. The convention is
+[Direnv](https://direnv.net/) is used all over the place, but has become
+optional since the `gbe` CLI was introduced. The convention with `direnv` is
 that when you enter a given directory, then the helper scripts located in the
-`bin/` subdirectory are available on your path. Direnv also provides many
-wiring environment variables depending on where you are, i.e. what is your
-current working directory. As an example, these environment variables have you
-automatically connected to the BOSH server when you enter the `deployments/`
-directory.
+`bin/` subdirectory are available on your path.
+
+Direnv also provides many `bosh`-related environment variables depending on
+the current working directory.
+
+- When you are under the `deployments/` directory, then you are automagically
+  connected to the bosh server. Any `bosh` commands will be aware of the
+  correct credentials.
+
+- When you are the subdirectory of a specific deployment, then all the
+  deployment-related `bosh` commands will be aware of that and tharget *that*
+  deployment.
 
 
-## How to configure
+## Configuration
 
-Configuration files are located in the `conf/` directory.
+### Configuring the base envrionment
+
+As a general convention, configuration files are located in `conf/`
+directories.
 
 - In `env-config.inc.bash`, set a few variables and don't forget to re-run
   `direnv allow` after that.
@@ -45,12 +56,50 @@ Configuration files are located in the `conf/` directory.
 - In `env-depl-vars.yml` you set the configuration variables that will be
   injected into the patched deployment manifest for your BOSH environement.
 
+### Configuring the managed deployments
+
+Reminder: Deployments are located in subdirectories of `deployments/` and
+their subdirectory name donesn't start with an underscore `_` character.
+
+In deployments directories, the configuration is grouped into the
+`conf/depl-vars.yaml` file.
+
+The `upstream_base_deployment_manifests:` root YAML key describes where to
+find the base deployment manifest, which is usually provided by a 3rd party in
+a Git repository.
+
+- The base deployment manifest is often provide by a 3rd party Git repository.
+  In this case, the configuration is as follows.
+
+  - `name`: a name for the upstream git repository, used when cloning it into
+    GBE cache.
+
+  - `git_repo`: a Git remote (usually a URL) that specifies where to fetch the
+    Git repository.
+
+  - `version`: anything that can be accepted by `git checkout` to fetch the
+    correct revision of the git repository. E.g., a tag name or a Git hash.
+    Branch name are possible but not recommended as it might change over time
+    and thus break the reproductibility of your deployment.
+
+  - `main_deployment_file`: the file name of the base deployment manifest,
+    within the designated Git repository
+
+- The base deployment manifest can be a plain file, provided in you GBE-based
+  project.
+
+  - `local_dir`: the directory (relative to the deployment directory) where to
+    find the base manifest file.
+
+  - `main_deployment_file`: the file name of the base deployment manifest.
+
 
 ## Usage workflow
 
 ### Basic usage
 
-1. Create your environment with the `create-env` command.
+1. Create your environment with the `gbe up` command. This is a compoound
+   for `gbe bbl`, `gbe terraform`, `create-env`, and `gbe firewall`.
 
 2. Setup your shell with `source bin/shell-setup.inc.bash`.
 
@@ -115,10 +164,22 @@ permissions are restricted and it is excluded from version control.
 
 ## CF deployment notes
 
-### Missing firewal rules
+### A note on firewal rules
 
-With CF, you need to tweak the firewall rule in GCP to add ports `80,443,2222`
-to the list of allowed TCP ports.
+As a user, you only need to use `gbe firewall` in order to fix firewal rules,
+and this is already done by `gbe up` for you. The rest of this section gives
+you hints about what is actually done by the `gbe firewall` command.
+
+With CF, you need to tweak the firewall rule in GCP to add ports
+`80,443,2222,4443` to the list of allowed TCP ports.
+
+To access Concourse, you'll need the `8080` port to be open. And for MySQL to
+properly deploy, you'll need CF to be accessible.
+
+All in all, you'll need to go to your GCP console, in “VPC Network” ›
+“Firewall rules”, find the `bbl-env-*-bosh-open` rule and modify it
+from `icmp; tcp:22,6868,25555` to
+`icmp; tcp:22,80,443,2222,3306,4443,6868,8080,25555`.
 
 ### Set DNS wildcard
 

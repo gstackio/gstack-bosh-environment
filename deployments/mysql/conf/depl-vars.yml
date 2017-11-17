@@ -29,4 +29,4 @@ cf_deployment_name: gstack-one-cf
 cf_api_url: https://api.cf.gstack.io
 cf_skip_ssl_validation: true
 cf_admin_username: admin
-cf_admin_password: ~
+cf_admin_password: ~ # set here the 'cf_admin_password' found in deployments/cf/state/depl-creds.yml
