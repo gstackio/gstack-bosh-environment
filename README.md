@@ -87,16 +87,16 @@ familiar with the directory structure and conventions of GBE.
 
 ### Prerequisites
 
-- Install the [Bosh v2 CLI](https://github.com/cloudfoundry/bosh-cli), like
-  `brew install cloudfoundry/tap/bosh-cli` or anyhting similar.
+1. Install the [Bosh v2 CLI](https://github.com/cloudfoundry/bosh-cli), like
+   `brew install cloudfoundry/tap/bosh-cli` or anyhting similar.
 
-- Install the `gcloud` CLI utility, like `brew cask install google-cloud-sdk`
-  on macOS. For other platforms, go read
-  [this GCP documentation](https://cloud.google.com/sdk/downloads).
+2. Install the `gcloud` CLI utility, like `brew cask install google-cloud-sdk`
+   on macOS. For other platforms, go read
+   [this GCP documentation](https://cloud.google.com/sdk/downloads).
 
-- Installing `direnv` is optional. In case you do, run `brew install direnv`
-  on macOS. For other platforms, refer to
-  [this direnv documentation](https://github.com/direnv/direnv#install).
+3. Installing `direnv` is optional. In case you do, run `brew install direnv`
+   on macOS. For other platforms, refer to
+   [this Direnv documentation](https://github.com/direnv/direnv#install).
 
 [bosh_cli_v2]: <https://github.com/cloudfoundry/bosh-cli>
 [instal_cloud_sdk]: <https://cloud.google.com/sdk/downloads>
@@ -148,8 +148,9 @@ vi ./conf/env-infra-vars.yml # set GCP region & zone, and also check GCP project
 gbe up
 ```
 
-This will install the supported versions of `bbl` and `terraform` locally, if
-necessary.
+If necessary, this will install the supported versions of `bbl` and
+`terraform`, as local binaries for your project. The necessary firewall rules
+will also be set, calling `gbe firwall` for you.
 
 #### 4. Prepare the deployments
 
