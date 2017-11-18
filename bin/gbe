@@ -227,7 +227,7 @@ function setup_firewall() {
     fw_rule_name=$(bbl_invoke env-id)-bosh-open
 
     local allowed=icmp
-    # Note: the 'gcloud' CLI v165.0.0 doesn't support the shorter syntax with
+    # Note: the 'gcloud' CLI v180.0.0 doesn't support the shorter syntax with
     #       semicolons, like "icmp; tcp:22,6868,25555". So we revert to the
     #       more verbose syntax here, e.g. "icmp,tcp:22,tcp:6868,tcp:25555".
     for tcp_port in 22 80 443 2222 3306 4443 6868 8080 25555; do
