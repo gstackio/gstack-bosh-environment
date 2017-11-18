@@ -24,5 +24,5 @@ if [ ! -e "$BASE_DIR/state/bbl-state.json" ]; then
     echo -e "\n${BLUE}Skipping ${BOLD}bbl destroy$RESET, as the 'state/bbl-state.json' file is absent\n"
 else
     echo -e "\n${BLUE}Running ${BOLD}bbl destroy$RESET to destroy infrastructure for the BOSH environment\n"
-    bbl_invoke destroy
+    bbl_invoke destroy --no-confirm --skip-if-missing
 fi
