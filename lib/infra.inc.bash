@@ -29,7 +29,7 @@ function bosh_ro_invoke() {
         "${operations_arguments[@]}" \
         --vars-file "$BASE_DIR/conf/env-infra-vars.yml" \
         "$@" \
-        --vars-file "$BASE_DIR/conf/env-depl-vars.yml" # override bbl defaults
+        --vars-file "$BASE_DIR/conf/depl-vars.yml" # override bbl defaults
 }
 
 function bosh_rw_invoke() {

@@ -112,8 +112,6 @@ deploy Concourse, Cloud Foundry and CF-MySQL with it.
 #### 1. Start your project
 
 ```bash
-git clone https://github.com/cloudfoundry/bosh-deployment.git
-
 git clone https://github.com/gstackio/gstack-bosh-environment.git my-project
 
 cd my-project/

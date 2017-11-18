@@ -1,0 +1,8 @@
+---
+upstream_base_deployment_manifests:
+  name: bosh-deployment
+  git_repo: https://github.com/cloudfoundry/bosh-deployment.git
+  version: bedbfc9 # as of Jun 21st, 2017
+  main_deployment_file: bosh.yml
+
+director_name: "GCP BOSH Lite Director"

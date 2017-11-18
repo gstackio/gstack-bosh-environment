@@ -9,6 +9,11 @@ assert_terraform_version
 assert_bbl_version
 
 
+echo -e "\n${BLUE}Fetching ${BOLD}upstream base deployment manifests$RESET\n"
+
+fetch_ubdms
+
+
 echo -e "\n${BLUE}Running ${BOLD}bbl up$RESET to create infrastructure for the BOSH environment\n"
 
 bbl_invoke up \

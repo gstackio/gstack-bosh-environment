@@ -2,7 +2,15 @@
 
 source "$BASE_DIR/lib/infra.inc.bash"
 
-assert_terraform_version
+
+# Assert prerequisites
+
+if [ ! -f "$BASE_DIR/state/env-creds.yml" ]; then
+    echo "$(basename $0): ERROR: the base BOSH environment is not created yet" \
+        "Please create it first. Aborting." >&2
+    exit 1
+fi
+
 assert_bbl_version
 
 

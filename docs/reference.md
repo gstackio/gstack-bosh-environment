@@ -53,7 +53,7 @@ directories.
   [go-patch](https://github.com/cppforlife/go-patch/blob/master/docs/examples.md))
   the main deployment file.
 
-- In `env-depl-vars.yml` you set the configuration variables that will be
+- In `depl-vars.yml` you set the configuration variables that will be
   injected into the patched deployment manifest for your BOSH environement.
 
 ### Configuring the managed deployments
@@ -112,7 +112,7 @@ a Git repository.
 
 ### Advanced usage
 
-1. Tweak your BOSH deployment, adding custom variables in `env-depl-vars.yml`,
+1. Tweak your BOSH deployment, adding custom variables in `depl-vars.yml`,
    custom layout of operation files in `env-operations-layout.inc.bash`,
    possibly refering custom operation files in the `operation/` subdirectory.
 

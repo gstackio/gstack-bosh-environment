@@ -6,6 +6,9 @@ source "$BASE_DIR/lib/colors.inc.bash"
 assert_terraform_version
 assert_bbl_version
 
+fetch_ubdms
+
+
 # Ensure restricted permissions for state files containing sensitive informations
 restrict_permissions \
     "$BASE_DIR"/state/{bbl,env-creds}-state.json

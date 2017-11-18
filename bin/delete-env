@@ -8,6 +8,8 @@ set -e
 assert_terraform_version
 assert_bbl_version
 
+fetch_ubdms
+
 
 bosh_ro_invoke interpolate > "$BASE_DIR/state/env-depl-manifest.yml"
 
