@@ -119,6 +119,7 @@ cd my-project/
 source <(gbe env) # (only if not using direnv)
 ```
 
+
 #### 2. Configure GCP access
 
 1. Pick your own service account name, instead of the example
@@ -150,37 +151,32 @@ If necessary, this will install the supported versions of `bbl` and
 `terraform`, as local binaries for your project. The necessary firewall rules
 will also be set, calling `gbe firwall` for you.
 
-#### 4. Prepare the deployments
+
+#### 4. Converge your deployments
+
+There is a compound command for converging all the deployments that are
+defined in your project. By default, 3 of those are given as examples.
 
 ```bash
+gbe converge all
+```
+
+This is basically all you need to do.
+
+Or, you can run through converging these deployments one by one:
+
+```bash
+# Prepare the deployments
 gbe update cloud-config
 gbe udpate runtime-config
-```
 
-#### 5. Converge any deployment
-
-Deploy a **Concourse CI** server.
-
-```bash
-gbe converge concourse
+gbe converge concourse  # Deploy a Concourse CI server
+gbe converge cf         # Deploy a simple Cloud Foundry platform.
+gbe converge mysql      # Deploy the CF-MySQL DBaaS cluster
 ```
 
 
-Deploy a simple **Cloud Foundry** platform.
-
-```bash
-gbe converge cf
-```
-
-
-Deploy the **CF-MySQL DBaaS** cluster along with its service broker.
-
-```bash
-gbe converge mysql
-```
-
-
-#### 6. Destroy the BOSH environment
+#### 5. Destroy the BOSH environment
 
 When finished, you can delete the BOSH environment altogether.
 
