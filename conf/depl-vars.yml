@@ -9,6 +9,9 @@ upstream_base_deployment_manifests:
 director_name: "GCP BOSH Lite Director"
 
 
+bosh_version: "264.2.0"
+bosh_sha1: "702537f942a09caabcb21d85cf1093cb0dcb9434"
+
 stemcell_name: bosh-google-kvm-ubuntu-trusty-go_agent
 stemcell_version: "3468.5"
 stemcell_sha1: 53cc03a3ab829f8538b527f3c7c02b2340897aa4 # this is a light stemcell actually

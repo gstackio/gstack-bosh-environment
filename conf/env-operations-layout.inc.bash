@@ -2,7 +2,9 @@
 # this project. The '.yml' extension is implied.
 local_operations=(
     enable-local-access
-    inject-versions
+    custom-stemcell-version
+    custom-bosh-version
+    disable-resurrector
 )
 # These operation files are relative to the UPSTREAM_DEPLOYMENT_DIR set in
 # the '.envrc' config file. The '.yml' extension is implied.
