@@ -1,0 +1,4 @@
+---
+upstream_base_deployment_manifests:
+  local_dir: conf
+  main_deployment_file: base-runtime-config.yml
