@@ -75,9 +75,15 @@ Set the `cf_admin_password` property in `deployments/mysql/conf/depl-vars.yml`
 to the one found for the same name in `deployments/cf/state/depl-creds.yml`.
 Then converge the deployment running `gbe converge mysql`.
 
-Make sure you have `direnv` installed, and from the `mysql` deployment
-directory, run `bosh run-errand broker-registrar` to register the CF-MySQL
-service offering in Cloud Foundry.
+To register the MySQL services in Cloud Foundry
+
+```
+bosh -d gstack-one-mysql run-errand broker-registrar
+```
+
+Or when using `direnv`, go inside the `mysql` deployment directory, and run
+`bosh run-errand broker-registrar` to register the CF-MySQL service offering
+in Cloud Foundry.
 
 When logged in to Cloud Foundry (see above), create a space with
 `cf create-space system`, target it with `cf target -s system`, and list the
@@ -87,10 +93,10 @@ available services:
 cf marketplace
 ```
 
-You should see that the `p-mysql` service is now registered.
+You should see that the `mysql-shared` service is now registered.
 
-Then, list the available plans for the `p-mysql` service:
+Then, list the available plans for the `mysql-shared` service:
 
 ```bash
-cf marketplace -s p-mysql
+cf marketplace -s mysql-shared
 ```
