@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+BASE_DIR=$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)")
+
+source "$BASE_DIR/lib/colors.inc.bash"
+
+
+stemcell=$(bosh stemcells \
+            | awk '{sub("\\*$", "", $2); print $3 "/" $2}' \
+            | head -n1)
+
+deployments_json=$(bosh deployments --json)
+
+deployments=$(echo "$deployments_json" | jq -r '.Tables[0].Rows[] | .name')
+
+mkdir -p "$BASE_DIR/.cache/compiled-releases"
+pushd "$BASE_DIR/.cache/compiled-releases" > /dev/null
+
+for depl_name in $deployments; do
+
+    depl_info_json=$(echo "$deployments_json" \
+        | jq '.Tables[0].Rows[] | select(.name == "'"$depl_name"'")')
+
+    for release in $(echo "$depl_info_json" | jq -r '.release_s'); do
+
+        base_filename=$(echo "$release" | tr / -)-$(echo "$stemcell" | tr / -)
+        if [ -n "$(ls "${base_filename}"-*.tgz 2> /dev/null)" ]; then
+            echo -e "\n${RED}Existing release$RESET $BOLD$BLUE$release$RESET" \
+                "for stemcell $BOLD$GREEN$stemcell$RESET. Skipping.\n"
+            continue
+        fi
+
+        echo -e "\n${BLUE}Exporting release $BOLD$release$RESET" \
+            "compiled on stemcell $GREEN$BOLD$stemcell$RESET\n"
+
+        bosh -d "$depl_name" export-release "$release" "$stemcell"
+    done
+done
+
+popd > /dev/null
