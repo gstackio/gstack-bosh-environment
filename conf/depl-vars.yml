@@ -5,7 +5,9 @@ upstream_base_deployment_manifests:
   version: dc7fa0a # v264.1 (as of Nov 17th, 2017)
   main_deployment_file: bosh.yml
 
+
 director_name: "GCP BOSH Lite Director"
+
 
 stemcell_name: bosh-google-kvm-ubuntu-trusty-go_agent
 stemcell_version: "3468.5"

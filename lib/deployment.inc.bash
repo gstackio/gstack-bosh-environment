@@ -2,8 +2,7 @@
 source "$BASE_DIR/lib/common.inc.bash"
 
 function bosh_ro_invoke() {
-    local verb=$1
-    shift
+    local verb=$1; shift
 
     build_operations_arguments
 
@@ -14,8 +13,7 @@ function bosh_ro_invoke() {
 }
 
 function bosh_rw_invoke() {
-    local verb=$1
-    shift
+    local verb=$1; shift
 
     bosh_ro_invoke "$verb" \
         --vars-store "$DEPL_DIR/state/depl-creds.yml" \

@@ -20,8 +20,7 @@ function bbl_invoke() {
 }
 
 function bosh_ro_invoke() {
-    local verb=$1
-    shift
+    local verb=$1; shift
 
     build_operations_arguments
 
@@ -33,8 +32,7 @@ function bosh_ro_invoke() {
 }
 
 function bosh_rw_invoke() {
-    local verb=$1
-    shift
+    local verb=$1; shift
 
     bosh_ro_invoke "$verb" \
         --vars-file <(bbl_invoke bosh-deployment-vars) \
