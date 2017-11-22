@@ -52,6 +52,21 @@ function assert_utilities() {
 
 function env_exports() {
     echo "export PATH=$PATH"
+
+    local env_creds=$BASE_DIR/state/env-creds.yml
+    if [[ ! -f $env_creds ]]; then
+        return 0
+    fi
+
+    function get_var() {
+        local path=$1
+        bosh int "$env_creds" --path "$path"
+    }
+
+    echo "export BOSH_CA_CERT=\"$(get_var /default_ca/ca)\""
+    echo "export BOSH_CLIENT=admin"
+    echo "export BOSH_CLIENT_SECRET=$(get_var /admin_password)"
+    echo "export BOSH_GW_PRIVATE_KEY=\"$BASE_DIR/state/jumpbox.key\""
 }
 
 function setup_bbl() {
@@ -76,7 +91,7 @@ function setup_bbl() {
     local linux_bin=bbl-${bbl_version}_linux_x86-64
     local darwin_bin=bbl-${bbl_version}_osx
 
-    echo "${BLUE}Installing ${BOLD}bosh-bootloader CLI$RESET $bbl_version as: $bbl_bin"
+    echo -e "\n${BLUE}Installing ${BOLD}bosh-bootloader CLI$RESET $bbl_version as: $bbl_bin\n"
     local url
     case $(platform) in
         darwin) url=$bbl_repo/releases/download/$bbl_version/$darwin_bin;;
@@ -169,45 +184,94 @@ function usage() {
     echo "  bbl         Installs locally the supported version of Bosh-Bootloader CLI"
     echo "  terraform   Installs locally the supported version of Terraform CLI"
     echo "  gcp         Configures the Google Cloud credentials"
+    echo "  firewall    Configures the Google Cloud firewall rules"
     echo
     echo "  $BOLD${MAGENTA}BOSH ENVIRONMENT:$RESET"
     echo "  up          Creates the BOSH environment VM with 'bosh create-env'"
     echo "  down        Deletes the BOSH environment VM with 'bosh delete-env'"
     echo "  ssh         Logs into the BOSH Environment VM with SSH"
+    echo
+    echo "  $BOLD${MAGENTA}MANAGED DEPLOYMENTS:$RESET"
+    echo "  update      Updates the cloud config or the runtime config"
+    echo "  converge    Converges one or all BOSH deployments towards their desired states"
+    echo "  delete      Deletes one or all BOSH deployments"
 }
 
 function gcp_usage() {
+    local ul=$UNDERLINE
+    local noul=$NOUNDERLINE
     echo "Usage:"
-    echo "  gbe  gcp  ${UNDERLINE}service-account-name$NOUNDERLINE  ${UNDERLINE}project-id$NOUNDERLINE"
+    echo "  ${ul}gbe$noul  ${ul}gcp$noul  <service-account-name>  <project-id>"
     echo
-    echo "    ${UNDERLINE}service-account-name$NOUNDERLINE   A name for the service account to be created"
-    echo "    ${UNDERLINE}project-id$NOUNDERLINE             The identifier of your GCP project, like 'alpha-sandbox-717101'"
+    echo "    <service-account-name>   A name for the service account to be created"
+    echo "    <project-id>             The identifier of your GCP project, like 'alpha-sandbox-717101'"
     echo
     echo "Sets the necessary GCP credentials for GBE:"
     echo "    1. Create the designated service account in GCP."
     echo "    2. Create a service account key in 'conf/gcp-service-account.key.json'."
     echo "    3. Grant to the service account an 'editor' role on the project."
+    echo
 }
 
 function update_usage() {
+    local ul=$UNDERLINE
+    local noul=$NOUNDERLINE
     echo "Usage:"
-    echo "  gbe  update  [ cloud-config | runtime-config ]"
+    echo "  ${ul}gbe$noul  ${ul}update$noul  cloud-config    [-n]"
+    echo "  ${ul}gbe$noul  ${ul}update$noul  runtime-config  [-n]"
     echo
-    echo "Updates the BOSH cloud-config or the runtime-config."
+    echo "Updates the cloud config or the runtime config in BOSH server."
+    echo
+    echo "    -n"
+    echo "        Don't ask for user input"
+    echo
+    echo "See also:"
+    echo "  ${ul}https://bosh.io/docs/cloud-config.html$noul"
+    echo "  ${ul}https://bosh.io/docs/runtime-config.html$noul"
+    echo
 }
 
 function converge_usage() {
+    local ul=$UNDERLINE
+    local noul=$NOUNDERLINE
+    local b=$BOLD
+    local rst=$RESET
     echo "Usage:"
-    echo "  gbe  converge  [${UNDERLINE}deployment-name${NOUNDERLINE}]"
+    echo "  ${ul}gbe$noul  ${ul}converge$noul  [<deployment-name>]  [-n]"
+    echo "  ${ul}gbe$noul  ${ul}converge$noul  all                  [-n]"
     echo
-    echo "    ${UNDERLINE}deployment-name$NOUNDERLINE   The name of a deployment to converge, or 'all'. Optional."
+    echo "    <deployment-name>   The name of a deployment to converge."
     echo
-    echo "Converges a deployment towards a new desired state, or converge"
-    echo "the BOSH environment if no deployment is specified."
+    echo "Converges one or all deployments towards their desired states,"
+    echo "or converge the BOSH environment if no deployment is specified."
     echo
-    echo "When specifying 'all' as deployment name, then the cloud-config and"
-    echo "runtime-config wil be updated, then all available deployments in the"
-    echo "project will be converged."
+    echo "When specifying ${b}all$rst, then both cloud config and runtime config"
+    echo "will be updated, and all deployments will be converged."
+    echo
+    echo "    -n"
+    echo "        Run unattended. Don't ask for user input."
+    echo
+}
+
+function delete_usage() {
+    local ul=$UNDERLINE
+    local noul=$NOUNDERLINE
+    local b=$BOLD
+    local rst=$RESET
+    echo "Usage:"
+    echo "  ${ul}gbe$noul  ${ul}delete$noul  [<deployment-name>]  [-n]"
+    echo "  ${ul}gbe$noul  ${ul}delete$noul  all                  [-n]"
+    echo
+    echo "    <deployment-name>   The name of a deployment to delete."
+    echo
+    echo "Deletes one or all deployments. Persistent disks will typically"
+    echo "be kept as orphaned disks for 5 days, but it's hard to rebuild"
+    echo "any deployment with those, so this ${b}delete$rst operation is"
+    echo "VERY DESTRUCTIVE."
+    echo
+    echo "    -n"
+    echo "        Run unattended. Don't ask for user input. NOT RECOMMENDED."
+    echo
 }
 
 function source_env() { # shim
@@ -242,21 +306,45 @@ function setup_firewall() {
 }
 
 function update_config() {
-    local cfg_type=$1 # 'cloud' or 'runtime'
+    local cfg_type=$1; shift # 'cloud' or 'runtime'
 
+    echo -e "\n${BLUE}Updating $BOLD$cfg_type config$RESET in Bosh server.\n"
     pushd "$BASE_DIR/deployments/_${cfg_type}-config"
         source .envrc
-        update-${cfg_type}-config
+        update-${cfg_type}-config "$@"
     popd
 }
 
-function converge() {
-    local depl_name=$1
+function each_deployment() {
+    local cmd=$1; shift
 
+    local deployments
+    deployments=($(find "$BASE_DIR/deployments" -mindepth 1 -maxdepth 1 -type d \
+            ! -name '_*' \( -name bin -prune -o -print \) \
+        | xargs -n 1 basename))
+    for depl_name in "${deployments[@]}"; do
+        "$cmd" "$depl_name" "$@"
+    done
+}
+
+function converge() {
+    local depl_name=$1; shift
+
+    echo -e "\n${BLUE}Converging the $BOLD'$depl_name'$RESET deployment.\n"
     pushd "$BASE_DIR/deployments/$depl_name"
         source .envrc
         upload-stemcell
-        deploy
+        deploy "$@"
+    popd
+}
+
+function delete() {
+    local depl_name=$1; shift
+
+    echo -e "\n${BLUE}Deleting the $BOLD'$depl_name'$RESET deployment.\n"
+    pushd "$BASE_DIR/deployments/$depl_name"
+        source .envrc
+        delete-deployment "$@"
     popd
 }
 
@@ -287,9 +375,7 @@ case $1 in
             delete-env
         popd
         ;;
-    firewall)
-        setup_firewall
-        ;;
+    firewall)   setup_firewall ;;
     ssh)
         pushd "$BASE_DIR"
             source .envrc
@@ -299,8 +385,8 @@ case $1 in
     update)
         shift
         case $1 in
-            cloud-config)   update_config cloud ;;
-            runtime-config) update_config runtime ;;
+            cloud-config)   shift; update_config cloud "$@";;
+            runtime-config) shift; update_config runtime "$@";;
             *)              update_usage ;;
         esac
         ;;
@@ -312,18 +398,24 @@ case $1 in
             "")
                 create-env ;;
             all)
-                update_config cloud
-                update_config runtime
+                update_config cloud -n
+                update_config runtime -n
 
-                deployments=($(find "$BASE_DIR/deployments" -mindepth 1 -maxdepth 1 -type d \
-                        ! -name '_*' \( -name bin -prune -o -print \) \
-                    | xargs -n 1 basename))
-                for depl_name in "${deployments[@]}"; do
-                    converge "$depl_name"
-                done
+                each_deployment converge -n
                 ;;
             *)
-                converge "$1" ;;
+                converge "$@" ;;
+        esac
+        ;;
+    delete)
+        shift
+        case $1 in
+            -h)
+                delete_usage ;;
+            all)
+                each_deployment delete -n ;;
+            *)
+                delete "$@" ;;
         esac
         ;;
     *)          usage; exit 2 ;;

@@ -13,4 +13,4 @@ build_operations_arguments
 restrict_permissions "$DEPL_DIR/state/depl-creds.yml"
 bosh_ro_invoke interpolate > "$DEPL_DIR/state/depl-manifest.yml"
 
-bosh delete-deployment
+bosh delete-deployment "$@"
