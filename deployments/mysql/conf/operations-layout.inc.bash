@@ -1,6 +1,7 @@
 local_operations=(
     inject-variables
     set-versions
+    customize-service
 )
 upstream_operations=(
     operations/bosh-lite
