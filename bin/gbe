@@ -50,12 +50,38 @@ function assert_utilities() {
     done
 }
 
+function env_usage() {
+    local b=$BOLD
+    local u=$UNDERLINE
+    local rst=$RESET
+    local bash_usage="source /dev/stdin <<<\"\$(gbe env)\""
+    local zsh_usage="source <\"\$(gbe env)\""
+    echo
+    local shell_name=$(basename "$SHELL" | tr '[:upper:]' '[:lower:]')
+    case $shell_name in
+        bash|sh)    usage="$b${u}$bash_usage$rst" ;;
+        zsh)        usage="$b${u}$zsh_usage$rst" ;;
+        *)          usage="$b${u}$zsh_usage$rst or $b${u}$bash_usage$rst"
+    esac
+    echo "# Usage: run $usage in your $shell_name shell."
+    echo
+    echo "# Hint: see the actual environment variables exports" \
+        "with $b${u}gbe env | cat$rst"
+    echo
+}
+
 function env_exports() {
+    if [ -t 1 ]; then
+        # When running in a terminal
+        env_usage
+        return
+    fi
+
     echo "export PATH=$PATH"
 
     local env_creds=$BASE_DIR/state/env-creds.yml
     if [[ ! -f $env_creds ]]; then
-        return 0
+        return
     fi
 
     function get_var() {
