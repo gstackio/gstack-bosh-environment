@@ -2,11 +2,11 @@
 
 - type: replace
   path: /instance_groups/name=broker/jobs/name=cf-mysql-broker/properties/cf_mysql/broker/services
-  value:
-    - name: shared-mysql
+  value: &mysql_services
+    - name: mysql-shared
       id: e5e3fc4b-4695-4ad1-9dcd-da4ebf8f8957
       dashboard_client:
-        id: shared-mysql
+        id: mysql-shared
         secret: ((cf_mysql_shared_mysql_dashboard_secret))
       description: On-demand MySQL databases on a shared cluster
       metadata:
@@ -38,10 +38,22 @@
           max_user_connections: 40
           name: 1gb-40cnx
         - description:
-            Medium database (10 GB / 80 connections) on a shared MySQL cluster
+            Big database (10 GB / 80 connections) on a shared MySQL cluster
           id: f0f7b502-c924-4ba3-b8a8-f74f1200e8cb
           max_storage_mb: 10000
           max_user_connections: 80
           name: 10gb-80cnx
       tags:
         - mysql
+
+- type: replace
+  path: /instance_groups/name=broker-registrar-vm/jobs/name=broker-registrar/properties/cf_mysql/broker/services
+  value: *mysql_services
+
+- type: replace
+  path: /instance_groups/name=deregister-and-purge-instances-vm/jobs/name=deregister-and-purge-instances/properties/cf_mysql/broker/services
+  value: *mysql_services
+
+- type: replace
+  path: /instance_groups/name=smoke-tests-vm/jobs/name=smoke-tests/properties/cf_mysql/broker?/services
+  value: *mysql_services
