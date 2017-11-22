@@ -405,6 +405,18 @@ function delete() {
     popd
 }
 
+function upload_compiled_releases() {
+    if [ ! -d "$BASE_DIR/.cache/compiled-releases" ]; then
+        return
+    fi
+    echo -e "\n${BLUE}Uploading all ${BOLD}compiled releases$RESET found in cache.\n"
+    pushd "$BASE_DIR/.cache/compiled-releases"
+        for compiled_release in *.tgz; do
+            bosh -n upload-release "$compiled_release"
+        done
+    popd
+}
+
 case $1 in
     env)        env_exports ;;
     bbl)        setup_bbl v3.2.6 ;;
@@ -457,7 +469,7 @@ case $1 in
             all)
                 update_config cloud -n
                 update_config runtime -n
-
+                upload_compiled_releases
                 each_deployment converge -n
                 ;;
             *)
