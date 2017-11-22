@@ -325,7 +325,11 @@ function setup_firewall() {
     # Note: the 'gcloud' CLI v180.0.0 doesn't support the shorter syntax with
     #       semicolons, like "icmp; tcp:22,6868,25555". So we revert to the
     #       more verbose syntax here, e.g. "icmp,tcp:22,tcp:6868,tcp:25555".
-    for tcp_port in 22 80 443 2222 3306 4443 6868 8080 25555; do
+    local bosh_ports="22 6868 25555"
+    local cf_ports="80 443 2222" # seems that 4443 is not used anymore, for good!
+    local concourse_ports="8080"
+    local mysql_ports="3306"
+    for tcp_port in $bosh_ports $cf_ports $concourse_ports $mysql_ports; do
         allowed=$allowed,tcp:$tcp_port
     done
 
