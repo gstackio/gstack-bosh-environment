@@ -194,6 +194,7 @@ function usage() {
     echo "  $BOLD${MAGENTA}MANAGED DEPLOYMENTS:$RESET"
     echo "  update      Updates the cloud config or the runtime config"
     echo "  converge    Converges one or all BOSH deployments towards their desired states"
+    echo "  recreate    Recreates one or all BOSH deployments towards their desired states"
     echo "  delete      Deletes one or all BOSH deployments"
 }
 
@@ -238,15 +239,38 @@ function converge_usage() {
     local rst=$RESET
     echo "Usage:"
     echo "  ${ul}gbe$noul  ${ul}converge$noul  [<deployment-name>]  [-n]"
-    echo "  ${ul}gbe$noul  ${ul}converge$noul  all                  [-n]"
+    echo "  ${ul}gbe$noul  ${ul}converge$noul  all"
     echo
     echo "    <deployment-name>   The name of a deployment to converge."
     echo
     echo "Converges one or all deployments towards their desired states,"
     echo "or converge the BOSH environment if no deployment is specified."
     echo
-    echo "When specifying ${b}all$rst, then both cloud config and runtime config"
-    echo "will be updated, and all deployments will be converged."
+    echo "When specifying ${b}all$rst, the recreation will not ask for any user"
+    echo "input. Both cloud config and runtime config will be updated,"
+    echo "and all deployments will be converged."
+    echo
+    echo "    -n"
+    echo "        Run unattended. Don't ask for user input."
+    echo
+}
+
+function recreate_usage() {
+    local ul=$UNDERLINE
+    local noul=$NOUNDERLINE
+    local b=$BOLD
+    local rst=$RESET
+    echo "Usage:"
+    echo "  ${ul}gbe$noul  ${ul}recreate$noul  <deployment-name>  [-n]"
+    echo "  ${ul}gbe$noul  ${ul}recreate$noul  all"
+    echo
+    echo "    <deployment-name>   The name of a deployment to recreate."
+    echo
+    echo "Recreates one or all deployments towards their desired states."
+    echo "This command is supposed to recreate deployments that were"
+    echo "previously deployed with no errors."
+    echo "When specifying ${b}all$rst, the recreation will not ask for any"
+    echo "user input."
     echo
     echo "    -n"
     echo "        Run unattended. Don't ask for user input."
@@ -260,7 +284,7 @@ function delete_usage() {
     local rst=$RESET
     echo "Usage:"
     echo "  ${ul}gbe$noul  ${ul}delete$noul  [<deployment-name>]  [-n]"
-    echo "  ${ul}gbe$noul  ${ul}delete$noul  all                  [-n]"
+    echo "  ${ul}gbe$noul  ${ul}delete$noul  all"
     echo
     echo "    <deployment-name>   The name of a deployment to delete."
     echo
@@ -268,6 +292,9 @@ function delete_usage() {
     echo "be kept as orphaned disks for 5 days, but it's hard to rebuild"
     echo "any deployment with those, so this ${b}delete$rst operation is"
     echo "VERY DESTRUCTIVE."
+    echo
+    echo "When destroying ${b}all$rst deployments, the deletion will not ask"
+    echo "for any user input."
     echo
     echo "    -n"
     echo "        Run unattended. Don't ask for user input. NOT RECOMMENDED."
@@ -405,6 +432,17 @@ case $1 in
                 ;;
             *)
                 converge "$@" ;;
+        esac
+        ;;
+    recreate)
+        shift
+        case $1 in
+            -h)
+                recreate_usage ;;
+            all)
+                each_deployment converge -n --recreate --fix --canaries=0 ;;
+            *)
+                converge "$@" --recreate --fix --canaries=0 ;;
         esac
         ;;
     delete)
