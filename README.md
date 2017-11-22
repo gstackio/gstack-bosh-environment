@@ -116,7 +116,7 @@ git clone https://github.com/gstackio/gstack-bosh-environment.git my-project
 
 cd my-project/
 
-source <(gbe env) # (only if not using direnv)
+source /dev/stdin <<<"$(gbe env)" # a Bash workaround for: `source <(gbe env)`
 ```
 
 
@@ -188,6 +188,8 @@ gbe down
 
 Other Documentation
 -------------------
+
+For more information, run `gbe help`.
 
 - [How to tests the created deployments](./docs/deployments-tests.md)
 - [GBE reference documentation](./docs/reference.md)

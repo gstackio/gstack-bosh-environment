@@ -98,16 +98,17 @@ a Git repository.
 
 ### Basic usage
 
-1. Create your environment with the `gbe up` command. This is a compoound
-   for `gbe bbl`, `gbe terraform`, `create-env`, and `gbe firewall`.
+1. Create your environment with the `gbe up` command. (This is a compoound
+   for `gbe bbl`, `gbe terraform`, `create-env`, and `gbe firewall`.)
 
-2. Setup your shell with `source bin/shell-setup.inc.bash`.
+3. Run `source /dev/stdin <<<"$(gbe env)"` (or go inside `deployments/`, when
+   using Direnv) and play with your BOSH 2
 
-3. Go inside `deployments/` and play with your BOSH 2
+   - If necessary, you can log into your BOSH Virtual Machine running `gbe ssh`
+     or `jumpbox`.
 
-   - If necessary, you can log into your BOSH Virtual Machine running `jumpbox`.
-
-4. Destroy your environment with the `delete-env` command.
+4. Destroy your environment with `gbe down` (or `delete-env` when using
+   Direnv).
 
 
 ### Advanced usage
@@ -120,6 +121,14 @@ a Git repository.
 
 3. Go to [basic usage](#basic-usage) and have fun with your customized BOSH
    environment.
+
+
+## How to get connected to the BOSH server
+
+Either go inside the `deployments/` directory (when using `direnv`).
+
+Or (when not using `direnv`) you can run `source /dev/stdin <<<"$(gbe env)"`
+(in Bash), or the simpler `source <(gbe env)` in Zsh.
 
 
 ## A note on state and credentials files
@@ -149,6 +158,17 @@ permissions are restricted and it is excluded from version control.
 
 
 ## Deployments
+
+1. Configure your deployment config and operations layout in the
+   `deployments/<deployment-name>/conf/` directory.
+
+2. Run `gbe converge <deployment-name>`.
+
+3. Play with your deployment.
+
+4. Delete the deployment with `gbe delete <deployment-name>`.
+
+### Direnv-based (alternate) workflow
 
 1. Go inside a deployment directory.
 
@@ -218,5 +238,5 @@ Targeting the CF, you'll need to skip SSL validation.
 
 ## CF-MySQL deployment note
 
-You'll need the DNS for CF to have converged before deploying CF-MySQL, as the
+You'll need the DNS for CF to have *converged* before deploying CF-MySQL, as the
 broker registrat will need the DNS name to register to CF.
