@@ -2,14 +2,23 @@
 upstream_base_deployment_manifests:
   name: cf-deployment
   git_repo: https://github.com/cloudfoundry/cf-deployment.git
-  version: v0.8.0
+  version: v1.0.0
   main_deployment_file: cf-deployment.yml
 
 
 deployment_name: gstack-one-cf
 
-stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
-stemcell_version: "3421.9"
-stemcell_sha1: 1396d7877204e630b9e77ae680f492d26607461d
+
+# User-facing settings
 
 system_domain: cf.gstack.io
+
+
+# Versions
+
+cf_mysql_version: "36.9.0"
+cf_mysql_sha1: adf3ad18f608cd0f045c4feeb08422947c1481a7
+
+stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+stemcell_version: "3468.5"
+stemcell_sha1: b95fac2b5d27a3c91b762b1df3747110b058a145

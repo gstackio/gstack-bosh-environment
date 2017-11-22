@@ -2,7 +2,7 @@
 upstream_base_deployment_manifests:
   name: cf-mysql-deployment
   git_repo: https://github.com/cloudfoundry/cf-mysql-deployment.git
-  version: 720c27e38acd3e5d99afa0e535b04a6994ee4e57 # v35++
+  version: v36.9.0
   main_deployment_file: cf-mysql-deployment.yml
 
 
@@ -16,10 +16,14 @@ cf_mysql_external_host: mysql.cf.gstack.io
 
 # Versions
 
-cf_mysql_version: "35"
-cf_mysql_sha1: af8e2bd9b288f9efff8630463cbaa6101b655e29
-stemcell_version: "3421.9"
-stemcell_sha1: 1396d7877204e630b9e77ae680f492d26607461d
+cf_mysql_version: "36.9.0"
+cf_mysql_sha1: adf3ad18f608cd0f045c4feeb08422947c1481a7
+
+routing_version: "0.166.0"
+routing_sha1: 281941aa133070cbbfa6b494e68d0d53121c0a9a
+
+stemcell_version: "3468.5"
+stemcell_sha1: b95fac2b5d27a3c91b762b1df3747110b058a145
 stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
 
 

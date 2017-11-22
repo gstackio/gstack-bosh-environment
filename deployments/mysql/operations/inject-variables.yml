@@ -12,6 +12,6 @@
 - path: /instance_groups/name=proxy/jobs/name=route_registrar/consumes/nats/deployment
   type: replace
   value: ((cf_deployment_name))
-- path: /instance_groups/name=smoke-tests/jobs/name=smoke-tests/consumes/cloud_controller/deployment
+- path: /instance_groups/name=smoke-tests-vm/jobs/name=smoke-tests/consumes/cloud_controller/deployment
   type: replace
   value: ((cf_deployment_name))

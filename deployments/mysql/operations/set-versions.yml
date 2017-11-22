@@ -2,17 +2,21 @@
 
 # Stemcell and Releases versions
 
-- path: /releases/name=cf-mysql/version
+- path: /releases/name=cf-mysql
   type: replace
-  value: ((cf_mysql_version))
+  value:
+    name: cf-mysql
+    version: ((cf_mysql_version))
+    url: https://bosh.io/d/github.com/cloudfoundry/cf-mysql-release?v=((cf_mysql_version))
+    sha1: ((cf_mysql_sha1))
 
-- path: /releases/name=cf-mysql/url
+- path: /releases/name=routing
   type: replace
-  value: http://bosh.io/d/github.com/cloudfoundry/cf-mysql-release?v=((cf_mysql_version))
-
-- path: /releases/name=cf-mysql/sha1
-  type: replace
-  value: ((cf_mysql_sha1))
+  value:
+    name: routing
+    version: ((routing_version))
+    url: https://bosh.io/d/github.com/cloudfoundry-incubator/cf-routing-release?v=((routing_version))
+    sha1: ((routing_sha1))
 
 
 - path: /stemcells/alias=default/version

@@ -2,7 +2,11 @@
 upstream_base_deployment_manifests:
   name: bosh-deployment
   git_repo: https://github.com/cloudfoundry/bosh-deployment.git
-  version: bedbfc9 # as of Jun 21st, 2017
+  version: dc7fa0a # v264.1 (as of Nov 17th, 2017)
   main_deployment_file: bosh.yml
 
 director_name: "GCP BOSH Lite Director"
+
+stemcell_name: bosh-google-kvm-ubuntu-trusty-go_agent
+stemcell_version: "3468.5"
+stemcell_sha1: 53cc03a3ab829f8538b527f3c7c02b2340897aa4 # this is a light stemcell actually

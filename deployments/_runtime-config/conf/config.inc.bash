@@ -1,1 +1,0 @@
-export BASE_RUNTIME_CONFG_FILE=$RUNTIME_CONFG_DIR/conf/base-runtime-config.yml

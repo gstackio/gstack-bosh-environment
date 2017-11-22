@@ -3,6 +3,7 @@ local_operations=(
     set-versions
 )
 upstream_operations=(
+    operations/bosh-lite
     operations/add-broker
     operations/no-arbitrator
     operations/register-proxy-route

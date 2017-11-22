@@ -15,21 +15,21 @@ basic_auth_username: benjamin
 
 # Versions
 
-concourse_version: "3.2.1"
-concourse_sha1: 5d4fa5907d3733445ea0e8f9852e4fd3296b1ec7
-garden_runc_version: "1.6.0"
-garden_runc_sha1: 58fbc64aff303e6d76899441241dd5dacef50cb7
-stemcell_version: "3421.9"
-stemcell_sha1: 1396d7877204e630b9e77ae680f492d26607461d
+concourse_version: "3.6.0"
+concourse_sha1: 1257bdcd3181ab0a669bc9e34cd87aff584f007b
+garden_runc_version: "1.9.6"
+garden_runc_sha1: d5ddb4eaf7c04705cd1c07445b1668556783774f
+stemcell_version: "3468.5"
+stemcell_sha1: b95fac2b5d27a3c91b762b1df3747110b058a145
 stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
 
 
 # Scaling properties
 
-web_vm_type: t2.nano      # 1 CPU, 0.5GB RAM
-db_vm_type: t2.micro      # 1 CPU, 1GB RAM
+web_vm_type: default    # t2.nano      # 1 CPU, 0.5GB RAM
+db_vm_type: default     # t2.micro     # 1 CPU, 1GB RAM
 db_persistent_disk_type: 1GB
-worker_vm_type: m3.medium # 1 CPU, 3.75GB RAM
+worker_vm_type: default # m3.medium    # 1 CPU, 3.75GB RAM
 # A VM extension from your BOSH Director's cloud config that will attach
 # sufficient ephemeral storage to worker VMs.
 worker_vm_extension: 50GB_ephemeral_disk # consider 100GB for production systems

@@ -24,3 +24,8 @@
       range: 10.244.19.0/24
       gateway: 10.244.19.1
       cloud_properties: { name: random }
+
+- path: /vm_types/name=default?
+  type: replace
+  value:
+    name: default
