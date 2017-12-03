@@ -412,6 +412,7 @@ function upload_compiled_releases() {
     echo -e "\n${BLUE}Uploading all ${BOLD}compiled releases$RESET found in cache.\n"
     pushd "$BASE_DIR/.cache/compiled-releases"
         for compiled_release in *.tgz; do
+            echo -e "\n${BLUE}Uploading compiled release $BOLD$compiled_release$RESET\n"
             bosh -n upload-release "$compiled_release"
         done
     popd
