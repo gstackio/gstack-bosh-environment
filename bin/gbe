@@ -460,6 +460,8 @@ case $1 in
             *)              update_usage ;;
         esac
         ;;
+    upload-compiled-releases)
+        upload_compiled_releases ;;
     converge)
         shift
         case $1 in
