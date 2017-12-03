@@ -19,8 +19,8 @@ concourse_version: "3.6.0"
 concourse_sha1: 1257bdcd3181ab0a669bc9e34cd87aff584f007b
 garden_runc_version: "1.9.6"
 garden_runc_sha1: d5ddb4eaf7c04705cd1c07445b1668556783774f
-stemcell_version: "3468.5"
-stemcell_sha1: b95fac2b5d27a3c91b762b1df3747110b058a145
+stemcell_version: "3468.11"
+stemcell_sha1: 74592d4c2b7f2aebacd767112dd0ef28b028532b
 stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
 
 
