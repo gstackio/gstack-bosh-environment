@@ -6,7 +6,7 @@ upstream_base_deployment_manifests:
   main_deployment_file: bosh.yml
 
 
-director_name: "GCP BOSH Lite Director"
+director_name: "Gstack One BOSH Lite Director"
 
 
 ## When the release is available on the `bosh-compiled-release-tarballs` S3
