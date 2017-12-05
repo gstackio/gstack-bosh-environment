@@ -247,6 +247,10 @@ function usage() {
     echo "  converge    Converges one or all BOSH deployments towards their desired states"
     echo "  recreate    Recreates one or all BOSH deployments towards their desired states"
     echo "  delete      Deletes one or all BOSH deployments"
+    echo
+    echo "  $BOLD${MAGENTA}EXPERIMENTAL:$RESET"
+    echo "  export-releases             Export in the cache all releases as compiled releases"
+    echo "  upload-compiled-releases    Import all compiled releases from the cache"
 }
 
 function gcp_usage() {
@@ -487,6 +491,8 @@ case $1 in
             *)              update_usage ;;
         esac
         ;;
+    export-releases)
+        export-releases ;;
     upload-compiled-releases)
         upload_compiled_releases ;;
     converge)
