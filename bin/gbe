@@ -54,8 +54,8 @@ function env_usage() {
     local b=$BOLD
     local u=$UNDERLINE
     local rst=$RESET
-    local bash_usage="source /dev/stdin <<<\"\$(gbe env)\""
-    local zsh_usage="source <\"\$(gbe env)\""
+    local bash_usage="source /dev/stdin <<<\"\$(./bin/gbe env)\""
+    local zsh_usage="source <\"\$(./bin/gbe env)\""
     echo
     local shell_name=$(basename "$SHELL" | tr '[:upper:]' '[:lower:]')
     case $shell_name in

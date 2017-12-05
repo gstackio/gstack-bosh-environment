@@ -116,7 +116,7 @@ git clone https://github.com/gstackio/gstack-bosh-environment.git my-project
 
 cd my-project/
 
-source /dev/stdin <<<"$(gbe env)" # a Bash workaround for: `source <(gbe env)`
+source /dev/stdin <<<"$(./bin/gbe env)" # a Bash workaround for: `source <(./bin/gbe env)`
 ```
 
 
