@@ -14,10 +14,17 @@ fi
 assert_bbl_version
 
 
+case $(uname -s | tr A-Z a-z) in
+    darwin) timeout_arg=-t ;;
+    linux)  timeout_arg=-W ;;
+    *) echo "ERROR: unsupported platform: '$system'. Aborting." >&2 ; exit 1 ;;
+esac
+
+
 # Determine IP address and wait for target to respond to ping
 
 JUMPBOX_IP=${JUMPBOX_IP:-$(bosh int <(bbl_invoke bosh-deployment-vars) --path /external_ip)}
-while ! ping -q -c 1 -t 3 "$JUMPBOX_IP" > /dev/null; do
+while ! ping -q -c 1 $timeout_arg 3 "$JUMPBOX_IP" > /dev/null; do
     echo "$(date +'%F %T') waiting $JUMPBOX_IP to respond to ping"
     sleep 2
     status=$?
