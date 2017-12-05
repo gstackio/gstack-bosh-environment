@@ -406,8 +406,9 @@ function each_deployment() {
     local cmd=$1; shift
 
     local deployments
-    deployments=($(find "$BASE_DIR/deployments" -mindepth 1 -maxdepth 1 -type d \
-            ! -name '_*' \( -name bin -prune -o -print \) \
+    deployments=($(find "$BASE_DIR/deployments" -mindepth 1 -maxdepth 1 \
+            -type d \! -name bin \! -name '_*' \! -name 'zzz-*' \
+            -print \
         | xargs -n 1 basename))
     for depl_name in "${deployments[@]}"; do
         "$cmd" "$depl_name" "$@"
