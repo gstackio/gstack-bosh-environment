@@ -2,7 +2,7 @@
 
 BASE_DIR=$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)")
 
-if ! echo "$PATH" | tr : '\n' | grep -qF "$BASE_DIR/bin"; then
+if ! echo "$PATH" | tr : '\n' | grep -q "^$BASE_DIR/bin$"; then
     # update PATH is not already done by direnv
     PATH=$BASE_DIR/bin:$PATH
 fi
