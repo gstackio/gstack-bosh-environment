@@ -14,10 +14,13 @@ fetch_ubdms
 bosh_ro_invoke interpolate > "$BASE_DIR/state/env-depl-manifest.yml"
 
 
-echo -e "\n${BLUE}Running ${BOLD}bosh delete-env$RESET to destroy the BOSH environment\n"
-
-bosh_rw_invoke delete-env
-rm -vf "$BASE_DIR/state/env-creds.yml"
+if [ ! -e "$BASE_DIR/state/env-creds.yml" ]; then
+    echo -e "\n${BLUE}Skipping ${BOLD}bosh delete-env$RESET, as the 'state/env-creds.yml' file is absent\n"
+else
+    echo -e "\n${BLUE}Running ${BOLD}bosh delete-env$RESET to destroy the BOSH environment\n"
+    bosh_rw_invoke delete-env
+    rm -vf "$BASE_DIR/state/env-creds.yml"
+fi
 
 
 if [ ! -e "$BASE_DIR/state/jumpbox.key" ]; then
