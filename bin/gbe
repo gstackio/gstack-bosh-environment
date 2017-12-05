@@ -240,6 +240,7 @@ function usage() {
     echo "  $BOLD${MAGENTA}BOSH ENVIRONMENT:$RESET"
     echo "  up          Creates the BOSH environment VM with 'bosh create-env'"
     echo "  down        Deletes the BOSH environment VM with 'bosh delete-env'"
+    echo "  ip          Outputs the main exernal IP address of the environment"
     echo "  ssh         Logs into the BOSH Environment VM with SSH"
     echo
     echo "  $BOLD${MAGENTA}MANAGED DEPLOYMENTS:$RESET"
@@ -470,6 +471,9 @@ case $1 in
         popd
         setup_firewall
         ;;
+    ip)
+        assert_utilities jq "to fetch the main external IP address"
+        jq -r .tfState "$BASE_DIR/state/bbl-state.json" | jq -r .modules[0].outputs.external_ip.value ;;
     down)
         pushd "$BASE_DIR"
             source .envrc
