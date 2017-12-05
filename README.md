@@ -87,12 +87,12 @@ familiar with the directory structure and conventions of GBE.
 
 ### Prerequisites
 
-1. Install the [Bosh v2 CLI](https://github.com/cloudfoundry/bosh-cli), like
-   `brew install cloudfoundry/tap/bosh-cli` or anyhting similar.
-
-2. Install the `gcloud` CLI utility, like `brew cask install google-cloud-sdk`
+1. Install the `gcloud` CLI utility, like `brew cask install google-cloud-sdk`
    on macOS. For other platforms, go read
    [this GCP documentation](https://cloud.google.com/sdk/downloads).
+
+2. Target a Google Cloud account with `gcloud config set account ...` and
+   authenticate with `gcloud auth login`
 
 3. Installing `direnv` is optional. In case you do, run `brew install direnv`
    on macOS. For other platforms, refer to
