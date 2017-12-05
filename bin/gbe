@@ -2,6 +2,11 @@
 
 BASE_DIR=$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)")
 
+# White-labeling settings
+SCRIPT_NAME=$(basename "${BASH_SOURCE[0]}")
+project_name=GBE
+project_desc="Gstack BOSH Environment"
+
 if ! echo "$PATH" | tr : '\n' | grep -q "^$BASE_DIR/bin$"; then
     # update PATH is not already done by direnv
     PATH=$BASE_DIR/bin:$PATH
@@ -44,7 +49,7 @@ function assert_utilities() {
 
     for utility in "${utilities[@]}"; do
         if ! which "$utility" > /dev/null; then
-            fatal "ERROR: GBE requires '$utility'${reason:+" $reason"}." \
+            fatal "ERROR: $project_name requires '$utility'${reason:+" $reason"}." \
                 "Please install it first. Aborting."
         fi
     done
@@ -54,8 +59,8 @@ function env_usage() {
     local b=$BOLD
     local u=$UNDERLINE
     local rst=$RESET
-    local bash_usage="source /dev/stdin <<<\"\$(./bin/gbe env)\""
-    local zsh_usage="source <\"\$(./bin/gbe env)\""
+    local bash_usage="source /dev/stdin <<<\"\$(./bin/$SCRIPT_NAME env)\""
+    local zsh_usage="source <\"\$(./bin/$SCRIPT_NAME env)\""
     echo
     local shell_name=$(basename "$SHELL" | tr '[:upper:]' '[:lower:]')
     case $shell_name in
@@ -66,7 +71,7 @@ function env_usage() {
     echo "# Usage: run $usage in your $shell_name shell."
     echo
     echo "# Hint: see the actual environment variables exports" \
-        "with $b${u}gbe env | cat$rst"
+        "with $b${u}$SCRIPT_NAME env | cat$rst"
     echo
 }
 
@@ -228,7 +233,7 @@ function setup_gcp() {
 }
 
 function usage() {
-    echo "GBE (Gstack BOSH Environment) CLI"
+    echo "$project_name ($project_desc) CLI"
     echo "  $BOLD${MAGENTA}SETUP:$RESET"
     echo "  env         Sourceable envrionment variables for CLI clients"
     echo "  bbl         Installs locally the supported version of Bosh-Bootloader CLI"
@@ -258,12 +263,12 @@ function gcp_usage() {
     local ul=$UNDERLINE
     local noul=$NOUNDERLINE
     echo "Usage:"
-    echo "  ${ul}gbe$noul  ${ul}gcp$noul  <service-account-name>  <project-id>"
+    echo "  ${ul}$SCRIPT_NAME$noul  ${ul}gcp$noul  <service-account-name>  <project-id>"
     echo
     echo "    <service-account-name>   A name for the service account to be created"
     echo "    <project-id>             The identifier of your GCP project, like 'alpha-sandbox-717101'"
     echo
-    echo "Sets the necessary GCP credentials for GBE:"
+    echo "Sets the necessary GCP credentials for $project_name:"
     echo "    1. Create the designated service account in GCP."
     echo "    2. Create a service account key in 'conf/gcp-service-account.key.json'."
     echo "    3. Grant to the service account an 'editor' role on the project."
@@ -274,8 +279,8 @@ function update_usage() {
     local ul=$UNDERLINE
     local noul=$NOUNDERLINE
     echo "Usage:"
-    echo "  ${ul}gbe$noul  ${ul}update$noul  cloud-config    [-n]"
-    echo "  ${ul}gbe$noul  ${ul}update$noul  runtime-config  [-n]"
+    echo "  ${ul}$SCRIPT_NAME$noul  ${ul}update$noul  cloud-config    [-n]"
+    echo "  ${ul}$SCRIPT_NAME$noul  ${ul}update$noul  runtime-config  [-n]"
     echo
     echo "Updates the cloud config or the runtime config in BOSH server."
     echo
@@ -294,8 +299,8 @@ function converge_usage() {
     local b=$BOLD
     local rst=$RESET
     echo "Usage:"
-    echo "  ${ul}gbe$noul  ${ul}converge$noul  [<deployment-name>]  [-n]"
-    echo "  ${ul}gbe$noul  ${ul}converge$noul  all"
+    echo "  ${ul}$SCRIPT_NAME$noul  ${ul}converge$noul  [<deployment-name>]  [-n]"
+    echo "  ${ul}$SCRIPT_NAME$noul  ${ul}converge$noul  all"
     echo
     echo "    <deployment-name>   The name of a deployment to converge."
     echo
@@ -317,8 +322,8 @@ function recreate_usage() {
     local b=$BOLD
     local rst=$RESET
     echo "Usage:"
-    echo "  ${ul}gbe$noul  ${ul}recreate$noul  <deployment-name>  [-n]"
-    echo "  ${ul}gbe$noul  ${ul}recreate$noul  all"
+    echo "  ${ul}$SCRIPT_NAME$noul  ${ul}recreate$noul  <deployment-name>  [-n]"
+    echo "  ${ul}$SCRIPT_NAME$noul  ${ul}recreate$noul  all"
     echo
     echo "    <deployment-name>   The name of a deployment to recreate."
     echo
@@ -339,8 +344,8 @@ function delete_usage() {
     local b=$BOLD
     local rst=$RESET
     echo "Usage:"
-    echo "  ${ul}gbe$noul  ${ul}delete$noul  [<deployment-name>]  [-n]"
-    echo "  ${ul}gbe$noul  ${ul}delete$noul  all"
+    echo "  ${ul}$SCRIPT_NAME$noul  ${ul}delete$noul  [<deployment-name>]  [-n]"
+    echo "  ${ul}$SCRIPT_NAME$noul  ${ul}delete$noul  all"
     echo
     echo "    <deployment-name>   The name of a deployment to delete."
     echo
