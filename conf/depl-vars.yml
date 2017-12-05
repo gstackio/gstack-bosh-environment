@@ -11,15 +11,19 @@ director_name: "Gstack One BOSH Lite Director"
 
 ## When the release is available on the `bosh-compiled-release-tarballs` S3
 ## bucket:
-bosh_precompiled_version: "264.3.0"
-bosh_precompiled_url: https://s3.amazonaws.com/bosh-compiled-release-tarballs/bosh-264.3.0-ubuntu-trusty-3468.11-20171129-221922-037689141-20171129221925.tgz
-# bosh_precompiled_url: file://../../compiled-releases/bosh-264.3.0-ubuntu-trusty-3468.11-20171129-221922-037689141-20171129221925.tgz
-bosh_precompiled_sha1: "8dff3f38acba0947e764f8afd51c2efbef6c608c" # compiled release
+bosh_precompiled_version: "264.4.0"
+bosh_precompiled_url: https://s3.amazonaws.com/bosh-compiled-release-tarballs/bosh-264.4.0-ubuntu-trusty-3468.11-20171204-211303-173868826-20171204211307.tgz
+bosh_precompiled_sha1: "12f50c6d196a80d1a31eedb34ba1a1acd6904b56" # compiled release
 
 ## When the release is not available yet on the `bosh-compiled-release-tarballs`
 ## S3 bucket:
 # bosh_version: "264.3.0"
 # bosh_sha1: "dc0accf852839e16f17c4a88a8dc1213c79564b9" # standard release
+
+## When the release is not available yet on the `bosh-compiled-release-tarballs`
+## S3 bucket, and you have a compiled release in your cache:
+# bosh_precompiled_version: "264.3.0"
+# bosh_precompiled_url: file://../../compiled-releases/bosh-264.3.0-ubuntu-trusty-3468.11-20171129-221922-037689141-20171129221925.tgz
 
 stemcell_name: bosh-google-kvm-ubuntu-trusty-go_agent
 stemcell_version: "3468.11"
