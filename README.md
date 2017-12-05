@@ -87,14 +87,18 @@ familiar with the directory structure and conventions of GBE.
 
 ### Prerequisites
 
-1. Install the `gcloud` CLI utility, like `brew cask install google-cloud-sdk`
+1. A high-bandwidth network access, for the machine that will run GBE.
+   Especially a minimum of 50 Mbits/s when uploading to the cloud, giving
+   approximatively 5 MB/s uploads.
+
+2. Install the `gcloud` CLI utility, like `brew cask install google-cloud-sdk`
    on macOS. For other platforms, go read
    [this GCP documentation](https://cloud.google.com/sdk/downloads).
 
-2. Target a Google Cloud account with `gcloud config set account ...` and
+3. Target a Google Cloud account with `gcloud config set account ...` and
    authenticate with `gcloud auth login`
 
-3. Installing `direnv` is optional. In case you do, run `brew install direnv`
+4. Installing `direnv` is optional. In case you do, run `brew install direnv`
    on macOS. For other platforms, refer to
    [this Direnv documentation](https://github.com/direnv/direnv#install).
 
