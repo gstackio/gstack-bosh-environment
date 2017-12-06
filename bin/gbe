@@ -495,6 +495,7 @@ function export_release_to_cache() {
 }
 
 function export_releases() {
+    assert_utilities jq "to export compiled releases"
     mkdir -p "$BASE_DIR/.cache/compiled-releases"
     each_used_release export_release_to_cache
 }
@@ -532,6 +533,7 @@ function echo_stale_release_files() {
 function cleanup_compiled_releases() {
     local dry_run_arg=$1 # '-n' or something
 
+    assert_utilities jq "to cleanup compiled releases"
     pushd "$BASE_DIR/.cache/compiled-releases"
         declare -a stale_files
         stale_files=($(each_used_release echo_stale_release_files))
