@@ -59,7 +59,7 @@ To target Cloud Foundry, using `direnv`:
 ```bash
 cd deployments/cf
 
-cf api --skip-ssl-validation https://api.$(bosh int "$DEPL_DIR/conf/depl-vars.yml" --path /system_domain)
+cf api --skip-ssl-validation https://api.$(bosh int ./conf/depl-vars.yml --path /system_domain)
 ```
 
 Then you can login with username `admin`, push apps, browse marketplace, etc.
@@ -81,7 +81,7 @@ To register the MySQL services in Cloud Foundry
 bosh -d gstack-one-mysql run-errand broker-registrar
 ```
 
-Or when using `direnv`, go inside the `mysql` deployment directory, and run
+Or when using `direnv`, go inside the `deployments/mysql` directory, and run
 `bosh run-errand broker-registrar` to register the CF-MySQL service offering
 in Cloud Foundry.
 
@@ -99,4 +99,25 @@ Then, list the available plans for the `mysql-shared` service:
 
 ```bash
 cf marketplace -s mysql-shared
+```
+
+
+### Deploy Stratos web console
+
+Connect to your Cloud Foundry first, as detailed above. Then simply run:
+
+```
+git clone https://github.com/SUSE/stratos-ui.git
+pushd stratos-ui
+cf push
+popd
+```
+
+Now the web console is getting pushed to Cloud Foundry, which takes
+approximatively 4 minutes and 30 seconds. One it is done, access it like this:
+
+```
+pushd deployments/cf
+open https://console.$(bosh int ./conf/depl-vars.yml --path /system_domain)
+popd
 ```
