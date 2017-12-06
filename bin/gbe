@@ -523,7 +523,7 @@ function echo_stale_release_files() {
 }
 
 function cleanup_compiled_releases() {
-    local dry_run_arg=$1
+    local dry_run_arg=$1 # '-n' or something
 
     pushd "$BASE_DIR/.cache/compiled-releases"
         declare -a stale_files
@@ -535,7 +535,11 @@ function cleanup_compiled_releases() {
                             | sed -e 's`^\./``' \
                             | grep -v "^bosh-${bosh_version}-"))
 
-        du -sk "${stale_files[@]}" \
+        if [[ ${#stale_files[@]} -le 0 ]]; then
+            echo 0
+        else
+            du -sk "${stale_files[@]}"
+        fi \
             | awk '{T+=$1} END{print "==> This operation is to free approximately " T/1024 " MiB of disk space."}'
         for f in "${stale_files[@]}"; do
             if [ -n "$dry_run_arg" ]; then
