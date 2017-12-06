@@ -594,13 +594,6 @@ case $1 in
             *)              update_usage ;;
         esac
         ;;
-    export)
-        export_releases ;;
-    import)
-        upload_compiled_releases ;;
-    cleanup)
-        shift
-        cleanup_compiled_releases "$@";;
     converge)
         shift
         case $1 in
@@ -640,7 +633,15 @@ case $1 in
                 delete "$@" ;;
         esac
         ;;
-    *)          usage; exit 2 ;;
+    export)
+        export_releases ;;
+    import)
+        upload_compiled_releases ;;
+    cleanup)
+        shift
+        cleanup_compiled_releases "$@";;
+    *)
+        usage; exit 2 ;;
 esac
 
 # Local Variables:
