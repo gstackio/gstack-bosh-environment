@@ -28,6 +28,25 @@ function build_operations_arguments() {
     done
 }
 
+function bosh_ro_invoke() {
+    local verb=$1; shift
+
+    build_operations_arguments
+
+    bosh "$verb" "$MAIN_DEPLOYMENT_FILE" \
+        "${operations_arguments[@]}" \
+        --vars-file "$DEPL_DIR/conf/depl-vars.yml" \
+        "$@"
+}
+
+function bosh_rw_invoke() {
+    local verb=$1; shift
+
+    bosh_ro_invoke "$verb" \
+        --vars-store "$DEPL_DIR/state/depl-creds.yml" \
+        "$@"
+}
+
 # Find a value in deployment configuration variables.
 #
 # Exits with status 0 in case a value is found, and the value is outputed to
