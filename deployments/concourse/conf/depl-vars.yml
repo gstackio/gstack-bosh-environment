@@ -9,7 +9,7 @@ deployment_name: gstack-one-concourse
 
 # User-facing settings
 
-external_url_hostname: ci.cf.gstack.io
+external_url_hostname: ci.easyfoundry.prototyp.it
 basic_auth_username: benjamin
 
 

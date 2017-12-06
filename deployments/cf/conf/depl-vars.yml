@@ -11,7 +11,7 @@ deployment_name: gstack-one-cf
 
 # User-facing settings
 
-system_domain: cf.gstack.io
+system_domain: cf.easyfoundry.prototyp.it
 
 
 # Versions

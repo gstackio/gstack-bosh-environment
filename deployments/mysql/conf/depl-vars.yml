@@ -11,7 +11,7 @@ deployment_name: gstack-one-mysql
 
 # User-facing settings
 
-cf_mysql_external_host: mysql.cf.gstack.io
+cf_mysql_external_host: mysql.easyfoundry.prototyp.it
 
 
 # Versions
@@ -30,7 +30,7 @@ stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
 # Plumbery
 
 cf_deployment_name: gstack-one-cf
-cf_api_url: https://api.cf.gstack.io
+cf_api_url: https://api.cf.easyfoundry.prototyp.it
 cf_skip_ssl_validation: true
 cf_admin_username: admin
 cf_admin_password: ~ # set here the 'cf_admin_password' found in deployments/cf/state/depl-creds.yml
