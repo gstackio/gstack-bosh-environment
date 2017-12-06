@@ -4,7 +4,7 @@ upstream_base_deployment_manifests:
   main_deployment_file: concourse-deployment.yml
 
 
-deployment_name: gstack-one-concourse
+deployment_name: easyfoundry-concourse
 
 
 # User-facing settings

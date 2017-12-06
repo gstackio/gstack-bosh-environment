@@ -6,7 +6,7 @@ upstream_base_deployment_manifests:
   main_deployment_file: cf-deployment.yml
 
 
-deployment_name: gstack-one-cf
+deployment_name: easyfoundry-cf
 
 
 # User-facing settings

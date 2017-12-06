@@ -6,7 +6,7 @@ upstream_base_deployment_manifests:
   main_deployment_file: cf-mysql-deployment.yml
 
 
-deployment_name: gstack-one-mysql
+deployment_name: easyfoundry-durable-mysql
 
 
 # User-facing settings
@@ -29,7 +29,7 @@ stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
 
 # Plumbery
 
-cf_deployment_name: gstack-one-cf
+cf_deployment_name: easyfoundry-cf
 cf_api_url: https://api.cf.easyfoundry.prototyp.it
 cf_skip_ssl_validation: true
 cf_admin_username: admin
