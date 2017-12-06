@@ -243,20 +243,21 @@ function usage() {
     echo "  firewall    Configures the Google Cloud firewall rules"
     echo
     echo "  $BOLD${MAGENTA}BOSH ENVIRONMENT:$RESET"
-    echo "  up          Creates the BOSH environment VM with 'bosh create-env'"
-    echo "  down        Deletes the BOSH environment VM with 'bosh delete-env'"
+    echo "  up          Creates the Bosh environment VM with 'bosh create-env'"
+    echo "  down        Deletes the Bosh environment VM with 'bosh delete-env'"
     echo "  ip          Outputs the main exernal IP address of the environment"
-    echo "  ssh         Logs into the BOSH Environment VM with SSH"
+    echo "  ssh         Logs into the Bosh environment VM with SSH"
     echo
     echo "  $BOLD${MAGENTA}MANAGED DEPLOYMENTS:$RESET"
     echo "  update      Updates the cloud config or the runtime config"
-    echo "  converge    Converges one or all BOSH deployments towards their desired states"
-    echo "  recreate    Recreates one or all BOSH deployments towards their desired states"
-    echo "  delete      Deletes one or all BOSH deployments"
+    echo "  converge    Converges one or all Bosh deployments towards their desired states"
+    echo "  recreate    Recreates one or all Bosh deployments towards their desired states"
+    echo "  delete      Deletes one or all Bosh deployments"
     echo
-    echo "  $BOLD${MAGENTA}EXPERIMENTAL:$RESET"
-    echo "  export-releases             Export in the cache all releases as compiled releases"
-    echo "  upload-compiled-releases    Import all compiled releases from the cache"
+    echo "  $BOLD${MAGENTA}COMPILED RELEASES:$RESET"
+    echo "  export      Popoulate the local cache with all compiled releases"
+    echo "  import      Import all compiled releases from the cache to the Bosh server"
+    echo "  cleanup     Delete stale compiled releases from the cache"
 }
 
 function gcp_usage() {
@@ -593,9 +594,9 @@ case $1 in
             *)              update_usage ;;
         esac
         ;;
-    export-releases)
-        export-releases ;;
-    upload-compiled-releases)
+    export)
+        export_releases ;;
+    import)
         upload_compiled_releases ;;
     cleanup)
         shift
