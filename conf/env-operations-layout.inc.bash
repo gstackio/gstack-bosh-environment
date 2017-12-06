@@ -4,6 +4,7 @@ local_operations=(
     enable-local-access
     custom-stemcell-version
     custom-bosh-version-precompiled
+    # custom-bosh-version
     disable-resurrector
 )
 # These operation files are relative to the UPSTREAM_DEPLOYMENT_DIR set in
