@@ -395,6 +395,7 @@ function setup_firewall() {
         allowed=$allowed,tcp:$tcp_port
     done
 
+    echo -e "\n${BLUE}Updating ${BOLD}firewall rules$RESET in GCP.\n"
     gcloud compute firewall-rules update "$fw_rule_name" --allow="$allowed"
 }
 
