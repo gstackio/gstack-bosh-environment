@@ -95,11 +95,19 @@ familiar with the directory structure and conventions of GBE.
    on macOS. For other platforms, go read
    [this GCP documentation](https://cloud.google.com/sdk/downloads).
 
-3. Target a Google Cloud account with `gcloud config set account ...` and
-   authenticate with `gcloud auth login`
+3. Create on Google Cloud an account and a project, then target those with
+   `gcloud config set account ...` and  `gcloud config set project ...` and
+   authenticate with `gcloud auth login`. Refer to `gcloud --help` if
+   necessary.
 
-4. Installing `direnv` is optional. In case you do, run `brew install direnv`
-   on macOS. For other platforms, refer to
+4. Some version of Ruby is required, but not necessarily the latest. Usually
+   `apt install ruby` is enough. (No need for
+   [fancy install of latest Ruby](https://gorails.com/setup/ubuntu/16.04#ruby)
+   involving `rbenv`.)
+
+5. Installing `direnv` is optional. In case you do, run `brew install direnv`
+   on macOS or `apt install direnv` on Ubuntu 16.04 or later. For other
+   platforms, refer to
    [this Direnv documentation](https://github.com/direnv/direnv#install).
 
 [bosh_cli_v2]: <https://github.com/cloudfoundry/bosh-cli>
