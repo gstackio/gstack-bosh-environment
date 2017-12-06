@@ -188,9 +188,32 @@ function setup_bosh_cli() {
     assert_utilities curl "to install the Bosh CLI"
 
     echo -e "${BLUE}Installing ${BOLD}Bosh CLI$RESET v$bosh_cli_version as: $bosh_cli_bin"
-    curl -sL https://s3.amazonaws.com/bosh-cli-artifacts/bosh-cli-${bosh_cli_version}-$(platform)-amd64 \
+    curl -sL "https://s3.amazonaws.com/bosh-cli-artifacts/bosh-cli-${bosh_cli_version}-$(platform)-amd64" \
         -o "$bosh_cli_bin"
     chmod +x "$bosh_cli_bin"
+}
+
+function setup_dnscontrol() {
+    local dnscontrol_version=$1
+
+    if which dnscontrol > /dev/null 2>&1; then
+        return 0
+    fi
+
+    local dnscontrol_bin=$BASE_DIR/bin/dnscontrol
+    if [ -f "$dnscontrol_bin" ]; then
+        return 0
+    fi
+
+    assert_utilities curl "to install the DNSControl CLI"
+
+    echo -e "${BLUE}Installing ${BOLD}DNSControl CLI$RESET v$dnscontrol_version as: $dnscontrol_bin"
+
+    local system=$(platform)
+    local suffix=$(tr '[:lower:]' '[:upper:]' <<< ${system:0:1})${system:1}
+    curl -sL "https://github.com/StackExchange/dnscontrol/releases/download/v$dnscontrol_version/dnscontrol-$suffix" \
+        -o "$dnscontrol_bin"
+    chmod +x "$dnscontrol_bin"
 }
 
 function setup_gcp() {
@@ -239,6 +262,7 @@ function usage() {
     echo "  bbl         Installs locally the supported version of Bosh-Bootloader CLI"
     echo "  terraform   Installs locally the supported version of Terraform CLI"
     echo "  bosh        Installs locally the supported version of Bosh CLI"
+    echo "  dnscontrol  Installs locally the supported version of DNSControl CLI"
     echo "  gcp         Configures the Google Cloud credentials"
     echo "  firewall    Configures the Google Cloud firewall rules"
     echo
@@ -565,6 +589,7 @@ case $1 in
     bbl)        setup_bbl v3.2.6 ;;
     terraform)  setup_terraform 0.9.11 ;;
     bosh)       setup_bosh_cli 2.0.45 ;;
+    dnscontrol) setup_dnscontrol 0.2.3 ;;
     gcp)
         shift
         if [[ $# -ne 2 ]]; then
