@@ -57,3 +57,9 @@
 - type: replace
   path: /instance_groups/name=smoke-tests-vm/jobs/name=smoke-tests/properties/cf_mysql/broker?/services
   value: *mysql_services
+
+- path: /variables/name=cf_mysql_p_mysql_dashboard_secret?
+  type: replace
+  value:
+    name: cf_mysql_shared_mysql_dashboard_secret
+    type: password
