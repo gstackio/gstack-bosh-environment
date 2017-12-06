@@ -4,19 +4,19 @@
 #  - MAIN_DEPLOYMENT_FILE
 # These are typicaly set by the '.envrc' config file
 
-source "$BASE_DIR/conf/env-operations-layout.inc.bash"
-DEPL_DIR=$BASE_DIR
+source "$BASE_DIR/base-env/conf/env-operations-layout.inc.bash"
+DEPL_DIR=$BASE_DIR/base-env
 source "$BASE_DIR/lib/common.inc.bash"
 
 function infra_var() {
     local path=$1
 
-    bosh int "$BASE_DIR/conf/env-infra-vars.yml" \
+    bosh int "$BASE_DIR/base-env/conf/env-infra-vars.yml" \
         --path "$path"
 }
 
 function bbl_invoke() {
-    bbl --state-dir "$BASE_DIR/state" "$@"
+    bbl --state-dir "$BASE_DIR/state/base-env" "$@"
 }
 
 function bosh_ro_invoke() {
@@ -26,9 +26,9 @@ function bosh_ro_invoke() {
 
     bosh "$verb" "$MAIN_DEPLOYMENT_FILE" \
         "${operations_arguments[@]}" \
-        --vars-file "$BASE_DIR/conf/env-infra-vars.yml" \
+        --vars-file "$BASE_DIR/base-env/conf/env-infra-vars.yml" \
         "$@" \
-        --vars-file "$BASE_DIR/conf/depl-vars.yml" # override bbl defaults
+        --vars-file "$BASE_DIR/base-env/conf/depl-vars.yml" # override bbl defaults
 }
 
 function bosh_rw_invoke() {
@@ -36,8 +36,8 @@ function bosh_rw_invoke() {
 
     bosh_ro_invoke "$verb" \
         --vars-file <(bbl_invoke bosh-deployment-vars) \
-        --vars-store "$BASE_DIR/state/env-creds.yml" \
-        --state "$BASE_DIR/state/env-infra-state.json" \
+        --vars-store "$BASE_DIR/state/base-env/env-creds.yml" \
+        --state "$BASE_DIR/state/base-env/env-infra-state.json" \
         "$@"
 }
 

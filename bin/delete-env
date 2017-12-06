@@ -11,31 +11,31 @@ assert_bbl_version
 fetch_ubdms
 
 
-bosh_ro_invoke interpolate > "$BASE_DIR/state/env-depl-manifest.yml"
+bosh_ro_invoke interpolate > "$BASE_DIR/state/base-env/env-depl-manifest.yml"
 
 
-if [ ! -e "$BASE_DIR/state/env-creds.yml" ]; then
+if [ ! -e "$BASE_DIR/state/base-env/env-creds.yml" ]; then
     echo -e "\n${BLUE}Skipping ${BOLD}bosh delete-env$RESET, as the 'state/env-creds.yml' file is absent\n"
 else
     echo -e "\n${BLUE}Running ${BOLD}bosh delete-env$RESET to destroy the BOSH environment\n"
     bosh_rw_invoke delete-env
-    rm -vf "$BASE_DIR/state/env-creds.yml"
+    rm -vf "$BASE_DIR/state/base-env/env-creds.yml"
 fi
 
 
-if [ ! -e "$BASE_DIR/state/jumpbox.key" ]; then
+if [ ! -e "$BASE_DIR/state/base-env/jumpbox.key" ]; then
     echo -e "\n${BLUE}Skipping ${BOLD}SSH key removal$RESET, as it has not been used\n"
 else
     echo -e "\n${BLUE}Removing ${BOLD}SSH key$RESET from SSH Agent\n"
-    ssh-keygen -y -f "$BASE_DIR/state/jumpbox.key" > "$BASE_DIR/state/jumpbox.key.pub"
-    if ssh-add -L | grep -qF "$(cat "$BASE_DIR/state/jumpbox.key.pub")"; then
-        ssh-add -d "$BASE_DIR/state/jumpbox.key.pub"
+    ssh-keygen -y -f "$BASE_DIR/state/base-env/jumpbox.key" > "$BASE_DIR/state/base-env/jumpbox.key.pub"
+    if ssh-add -L | grep -qF "$(cat "$BASE_DIR/state/base-env/jumpbox.key.pub")"; then
+        ssh-add -d "$BASE_DIR/state/base-env/jumpbox.key.pub"
     fi
-    rm -vf "$BASE_DIR/state/jumpbox.key" "$BASE_DIR/state/jumpbox.key.pub"
+    rm -vf "$BASE_DIR/state/base-env/jumpbox.key" "$BASE_DIR/state/base-env/jumpbox.key.pub"
 fi
 
 
-if [ ! -e "$BASE_DIR/state/bbl-state.json" ]; then
+if [ ! -e "$BASE_DIR/state/base-env/bbl-state.json" ]; then
     echo -e "\n${BLUE}Skipping ${BOLD}bbl destroy$RESET, as the 'state/bbl-state.json' file is absent\n"
 else
     echo -e "\n${BLUE}Running ${BOLD}bbl destroy$RESET to destroy infrastructure for the BOSH environment\n"

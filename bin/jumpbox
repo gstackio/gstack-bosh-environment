@@ -5,7 +5,7 @@ source "$BASE_DIR/lib/infra.inc.bash"
 
 # Assert prerequisites
 
-if [ ! -f "$BASE_DIR/state/env-creds.yml" ]; then
+if [ ! -f "$BASE_DIR/state/base-env/env-creds.yml" ]; then
     echo "$(basename $0): ERROR: the base BOSH environment is not created yet" \
         "Please create it first. Aborting." >&2
     exit 1
@@ -37,15 +37,15 @@ done
 
 # Extract the SSH private key
 
-restrict_permissions "$BASE_DIR/state/jumpbox.key"
-bosh int "$BASE_DIR/state/env-creds.yml" --path /jumpbox_ssh/private_key \
-    > "$BASE_DIR/state/jumpbox.key"
+restrict_permissions "$BASE_DIR/state/base-env/jumpbox.key"
+bosh int "$BASE_DIR/state/base-env/env-creds.yml" --path /jumpbox_ssh/private_key \
+    > "$BASE_DIR/state/base-env/jumpbox.key"
 
 
 # Invoke SSH
 
 TERM=xterm-color ssh \
-    -i "$BASE_DIR/state/jumpbox.key" \
+    -i "$BASE_DIR/state/base-env/jumpbox.key" \
     "jumpbox@$JUMPBOX_IP" \
     "$@"
 

@@ -13,11 +13,11 @@ fetch_ubdms
 restrict_permissions \
     "$BASE_DIR"/state/{bbl,env-creds}-state.json
 
-bosh_ro_invoke interpolate > "$BASE_DIR/state/env-depl-manifest.yml"
+bosh_ro_invoke interpolate > "$BASE_DIR/state/base-env/env-depl-manifest.yml"
 
 bosh_ro_invoke interpolate \
     --vars-file <(bbl_invoke bosh-deployment-vars) \
-    --vars-store "$BASE_DIR/state/env-creds.yml" \
+    --vars-store "$BASE_DIR/state/base-env/env-creds.yml" \
     --var-errs > /dev/null
 status=$?
 if [ $status -eq 0 ]; then
