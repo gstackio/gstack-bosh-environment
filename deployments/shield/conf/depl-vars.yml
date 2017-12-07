@@ -1,0 +1,35 @@
+---
+upstream_base_deployment_manifests:
+  name: shield-boshrelease
+  git_repo: https://github.com/starkandwayne/shield-boshrelease.git
+  version: v8.0.0
+  main_deployment_file: manifests/shield.yml
+
+
+deployment_name: easyfoundry-shield
+
+
+# User-facing settings
+
+shield_domain: backups.easyfoundry.prototyp.it
+
+shield_color: red
+
+
+# Versions
+
+shield_version: "8.0.0"
+shield_sha1: "75f663c61bc3903d02ce2820977ea54282ba53c0"
+
+routing_version: "0.168.0"
+routing_sha1: 885321f95b530c4a5b8515c72155229cba26c449
+
+stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+stemcell_version: "3468.11"
+stemcell_sha1: 74592d4c2b7f2aebacd767112dd0ef28b028532b
+
+
+# Plumbery
+
+cf_deployment_name: easyfoundry-cf
+network_name: shield-network
