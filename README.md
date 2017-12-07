@@ -141,9 +141,8 @@ source /dev/stdin <<<"$(./bin/gbe env)" # a Bash workaround for: `source <(./bin
 gbe gcp "my-service-account" "alpha-sandbox-717101"
 ```
 
-This is a once-for-all setup that will create the private
-`./base-env/conf/gcp-service-account.key.json` file
-[as recommended](https://github.com/cloudfoundry/bosh-bootloader/tree/v3.2.6#configure-gcp).
+This is a once-for-all setup that will create the private key file
+`base-env/conf/gcp-service-account.key.json` inside your project.
 The `base-env/conf/env-infra-vars.yml` file will also be updated with your
 specific GCP project ID. You can tweak your GCP zone, though and change the
 `zone: europe-west1-d` to whatever suits you best.
@@ -157,9 +156,10 @@ vi ./conf/env-infra-vars.yml # set GCP region & zone, and also check GCP project
 gbe up
 ```
 
-If necessary, this will install the supported versions of `bbl` and
-`terraform`, as local binaries for your project. The necessary firewall rules
-will also be set, calling `gbe firewall` for you.
+If necessary, this will install the supported versions of `bbl`, `terraform`,
+`bosh`, as local binaries for your project. And the necessary firewall rules
+will also be set, calling `gbe firewall` for you. You'll be glad to know that
+everything that is set up here is local to your project.
 
 
 #### 4. Converge your deployments
