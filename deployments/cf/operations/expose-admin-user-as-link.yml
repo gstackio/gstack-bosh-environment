@@ -1,0 +1,24 @@
+---
+
+- type: replace
+  path: /instance_groups/name=api/jobs/-
+  value:
+    name: cf-admin-user
+    release: collection-of-pullrequests
+    provides:
+      cf-admin-user:
+        as: cf-admin-user
+        shared: true
+    properties:
+      api_url: "https://api.((system_domain))"
+      ca_cert: "((router_ssl.certificate))"
+      admin_username: admin
+      admin_password: "((cf_admin_password))"
+
+- type: replace
+  path: /releases/-
+  value:
+    name: collection-of-pullrequests
+    version: 1.1.0
+    url: https://github.com/cloudfoundry-community/collection-of-pullrequests-boshrelease/releases/download/v1.1.0/collection-of-pullrequests-1.1.0.tgz
+    sha1: 8cd9950a3d7c2f51a363a1ce41b930e6851611aa

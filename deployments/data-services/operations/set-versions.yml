@@ -1,0 +1,45 @@
+---
+
+- path: /name
+  type: replace
+  value: ((deployment_name))
+
+
+# Stemcell and Releases versions
+
+- path: /releases/name=docker
+  type: replace
+  value:
+    name: docker
+    version: ((docker_version))
+    url: https://github.com/cloudfoundry-community/docker-boshrelease/releases/download/v((docker_version))/docker-((docker_version)).tgz
+    sha1: ((docker_sha1))
+
+- path: /releases/name=cf-containers-broker
+  type: replace
+  value:
+    name: cf-containers-broker
+    version: ((cf_containers_broker_version))
+    url: https://github.com/cloudfoundry-community/cf-containers-broker-boshrelease/releases/download/v((cf_containers_broker_version))/cf-containers-broker-((cf_containers_broker_version)).tgz
+    sha1: ((cf_containers_broker_sha1))
+
+- path: /releases/name=broker-registrar
+  type: replace
+  value:
+    name: broker-registrar
+    version: ((broker_registrar_version))
+    url: https://bosh.io/d/github.com/cloudfoundry-community/broker-registrar-boshrelease?v=((broker_registrar_version))
+    sha1: ((broker_registrar_sha1))
+
+- path: /releases/name=routing
+  type: replace
+  value:
+    name: routing
+    version: ((routing_version))
+    url: https://bosh.io/d/github.com/cloudfoundry-incubator/cf-routing-release?v=((routing_version))
+    sha1: ((routing_sha1))
+
+
+- path: /stemcells/alias=trusty/version
+  type: replace
+  value: ((stemcell_version))

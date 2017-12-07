@@ -1,0 +1,26 @@
+---
+
+# Deployment name
+
+- path: /instance_groups/name=subway/jobs/name=route_registrar/consumes/nats/deployment
+  type: replace
+  value: ((cf_deployment_name))
+
+- path: /instance_groups/name=broker-registrar/jobs/name=broker-registrar/consumes/cf-admin-user/deployment
+  type: replace
+  value: ((cf_deployment_name))
+
+- path: /instance_groups/name=broker-deregistrar/jobs/name=broker-deregistrar/consumes?/cf-admin-user/deployment
+  type: replace
+  value: ((cf_deployment_name))
+
+
+# Skip SSL validation when registering/deregistering the broker
+
+- path: /instance_groups/name=broker-registrar/jobs/name=broker-registrar/properties/cf?/skip_ssl_validation
+  type: replace
+  value: ((cf_skip_ssl_validation))
+
+- path: /instance_groups/name=broker-deregistrar/jobs/name=broker-deregistrar/properties/cf?/skip_ssl_validation
+  type: replace
+  value: ((cf_skip_ssl_validation))
