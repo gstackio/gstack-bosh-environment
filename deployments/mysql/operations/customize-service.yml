@@ -8,7 +8,7 @@
       dashboard_client:
         id: mysql-shared
         secret: ((cf_mysql_shared_mysql_dashboard_secret))
-      description: On-demand MySQL databases on a shared cluster
+      description: MariaDB 10.1 service with production-class durability, on a multi-nodes cluster, shared by all applications
       metadata:
         displayName: MySQL for Cloud Foundry
         documentationUrl: https://github.com/cloudfoundry/cf-mysql-release/blob/master/README.md
