@@ -94,13 +94,11 @@ familiar with the directory structure and conventions of GBE.
 2. [Install the Google Cloud CLI utility](https://cloud.google.com/sdk/downloads)
    (i.e. `gcloud`). On macOS, just run `brew cask install google-cloud-sdk`.
 
-3. Create on Google Cloud an account and a project, then target those with
-   `gcloud config set account ...` and  `gcloud config set project ...` and
-   authenticate with `gcloud auth login`. Refer to `gcloud --help` if
-   necessary.
+3. Create on Google Cloud an account, then run `gcloud init` as
+   [told in the quickstarts](https://cloud.google.com/sdk/docs/quickstarts).
 
-4. Some version of Ruby is required, but not necessarily the latest. Usually
-   `apt install ruby` is enough. (No need for
+4. Install Ruby. You don't need the latest version. Usually `apt install ruby`
+   is enough. (No need for
    [fancy install of latest Ruby](https://gorails.com/setup/ubuntu/16.04#ruby)
    involving `rbenv`.)
 
