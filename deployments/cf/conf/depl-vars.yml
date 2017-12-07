@@ -17,7 +17,10 @@ system_domain: cf.easyfoundry.prototyp.it
 # Versions
 
 cf_mysql_version: "36.9.0"
-cf_mysql_sha1: adf3ad18f608cd0f045c4feeb08422947c1481a7
+cf_mysql_sha1: "adf3ad18f608cd0f045c4feeb08422947c1481a7"
+
+routing_version: "0.168.0"
+routing_sha1: 885321f95b530c4a5b8515c72155229cba26c449
 
 stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
 stemcell_version: "3468.11"

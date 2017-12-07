@@ -15,6 +15,14 @@
     url: https://bosh.io/d/github.com/cloudfoundry/cf-mysql-release?v=((cf_mysql_version))
     sha1: ((cf_mysql_sha1))
 
+- path: /releases/name=routing?
+  type: replace
+  value:
+    name: routing
+    version: ((routing_version))
+    url: https://bosh.io/d/github.com/cloudfoundry-incubator/cf-routing-release?v=((routing_version))
+    sha1: ((routing_sha1))
+
 
 - path: /stemcells/alias=default/version
   type: replace
