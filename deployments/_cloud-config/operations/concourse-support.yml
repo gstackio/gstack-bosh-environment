@@ -13,8 +13,7 @@
     name: concourse-network
     subnets:
       - azs: [ z1, z2, z3 ]
-        cloud_properties: { name: random }
-        gateway: 10.244.16.1
         range: 10.244.16.0/24
-        reserved: [ 10.244.16.1 ]
+        gateway: 10.244.16.1
+        cloud_properties: { name: random }
         static: [ 10.244.16.2 - 10.244.16.127 ]

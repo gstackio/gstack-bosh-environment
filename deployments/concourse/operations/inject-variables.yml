@@ -10,7 +10,7 @@
 
 
 
-# VM types
+# VM types & Persistent disk types
 
 - path: /instance_groups/name=web/vm_type
   type: replace
@@ -27,6 +27,22 @@
 - path: /instance_groups/name=db/persistent_disk_type
   type: replace
   value: ((db_persistent_disk_type))
+
+
+
+# Networks
+
+- path: /instance_groups/name=web/networks/name=private/name
+  type: replace
+  value: ((network_name))
+
+- path: /instance_groups/name=db/networks/name=private/name
+  type: replace
+  value: ((network_name))
+
+- path: /instance_groups/name=worker/networks/name=private/name
+  type: replace
+  value: ((network_name))
 
 
 
