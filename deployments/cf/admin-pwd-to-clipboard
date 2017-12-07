@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+bosh int "$DEPL_DIR/state/depl-creds.yml" --path /cf_admin_password \
+    | tr -d '\n' \
+    | pbcopy
