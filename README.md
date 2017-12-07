@@ -5,7 +5,7 @@ This project establishes conventions and a simple workflow to help you create
 and work with a BOSH v2
 [environment](./docs/faq.md#what-do-you-mean-by-bosh-environment) along with
 any [deployments](./docs/faq.md#how-is-a-bosh-deployment-described), whose
-desired stated will be tracked in Git.
+desired state will be tracked in Git.
 
 The GBE repository provides examples for deploying
 [Concourse](https://concourse.ci), [Cloud Foundry](https://cloudfoundry.org),
@@ -91,9 +91,8 @@ familiar with the directory structure and conventions of GBE.
    Especially a minimum of 50 Mbits/s when uploading to the cloud, giving
    approximatively 5 MB/s uploads.
 
-2. Install the `gcloud` CLI utility, like `brew cask install google-cloud-sdk`
-   on macOS. For other platforms, go read
-   [this GCP documentation](https://cloud.google.com/sdk/downloads).
+2. [Install the Google Cloud CLI utility](https://cloud.google.com/sdk/downloads)
+   (i.e. `gcloud`). On macOS, just run `brew cask install google-cloud-sdk`.
 
 3. Create on Google Cloud an account and a project, then target those with
    `gcloud config set account ...` and  `gcloud config set project ...` and
