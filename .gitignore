@@ -1,6 +1,8 @@
 /.cache/
 /bin/bbl
 /bin/terraform
+/bin/bosh
+/bin/dnscontrol
 creds.yml
 *-creds.yml
 bbl-state.json
