@@ -108,9 +108,8 @@ Connect to your Cloud Foundry first, as detailed above. Then simply run:
 
 ```
 git clone https://github.com/SUSE/stratos-ui.git
-pushd stratos-ui
+cd stratos-ui
 cf push
-popd
 ```
 
 Now the web console is getting pushed to Cloud Foundry, which takes
