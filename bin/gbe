@@ -585,6 +585,18 @@ function cleanup_compiled_releases() {
     popd
 }
 
+function gbe_up() {
+    setup_bbl v3.2.6
+    setup_terraform 0.9.11
+    setup_bosh_cli 2.0.45
+    assert_utilities ruby "to render ERB templates locally"
+    pushd "$BASE_DIR"
+        source .envrc
+        create-env
+    popd
+    setup_firewall
+}
+
 case $1 in
     env)        env_exports ;;
     bbl)        setup_bbl v3.2.6 ;;
@@ -600,16 +612,7 @@ case $1 in
         setup_gcp "$@"
         ;;
     up)
-        setup_bbl v3.2.6
-        setup_terraform 0.9.11
-        setup_bosh_cli 2.0.45
-        assert_utilities ruby "to render ERB templates locally"
-        pushd "$BASE_DIR"
-            source .envrc
-            create-env
-        popd
-        setup_firewall
-        ;;
+        gbe_up ;;
     ip)
         assert_utilities jq "to fetch the main external IP address"
         jq -r .tfState "$BASE_DIR/state/base-env/bbl-state.json" \
@@ -641,8 +644,7 @@ case $1 in
             -h)
                 converge_usage ;;
             "")
-                assert_utilities ruby "to render ERB templates locally"
-                create-env ;;
+                gbe_up ;;
             all)
                 update_config cloud -n
                 update_config runtime -n
