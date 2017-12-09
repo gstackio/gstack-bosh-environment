@@ -12,7 +12,7 @@ deployment_name: easyfoundry-shield
 # User-facing settings
 
 shield_domain: backups.easyfoundry.prototyp.it
-
+shield_port: 10443
 shield_color: red
 
 
@@ -33,3 +33,4 @@ stemcell_sha1: 74592d4c2b7f2aebacd767112dd0ef28b028532b
 
 cf_deployment_name: easyfoundry-cf
 network_name: shield-network
+shield_vm_extension: shield-core-lb

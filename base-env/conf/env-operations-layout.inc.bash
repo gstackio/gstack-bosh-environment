@@ -16,4 +16,5 @@ upstream_operations=(
     bosh-lite-runc
     jumpbox-user
     external-ip-not-recommended
+    local-dns
 )

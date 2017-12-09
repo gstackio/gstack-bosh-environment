@@ -415,7 +415,8 @@ function setup_firewall() {
     local cf_ports="80 443 2222" # seems that 4443 is not used anymore, for good!
     local concourse_ports="8080"
     local mysql_ports="3306"
-    for tcp_port in $bosh_ports $cf_ports $concourse_ports $mysql_ports; do
+    local shield_ports="10443"
+    for tcp_port in $bosh_ports $cf_ports $concourse_ports $mysql_ports $shield_ports; do
         allowed=$allowed,tcp:$tcp_port
     done
 

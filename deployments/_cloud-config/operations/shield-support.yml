@@ -17,6 +17,14 @@
         cloud_properties: { name: random }
         static: [ 10.244.204.2 - 10.244.204.60 ]
 
+- path: /vm_extensions/name=shield-core-lb?
+  type: replace
+  value:
+    name: shield-core-lb
+    cloud_properties:
+      ports:
+        - host: 10443
+
 - path: /vm_types/name=default?
   type: replace
   value:

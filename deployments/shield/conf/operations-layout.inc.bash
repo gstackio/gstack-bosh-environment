@@ -1,7 +1,7 @@
 local_operations=(
 	inject-variables
     set-versions
-    routing
+    # routing
 )
 upstream_operations=(
 )

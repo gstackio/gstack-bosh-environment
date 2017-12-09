@@ -6,8 +6,9 @@
   type: replace
   value: ((shield_domain))
 
-# - path: /variables/name=shield-tls/options/alternative_names/1
-#   type: remove
+- path: /variables/name=shield-tls/options/alternative_names/-
+  type: replace
+  value: <%= shield.instance.address %>
 
 - path: /variables/name=shield-tls/options/alternative_names/-
   type: replace
@@ -20,6 +21,11 @@
 - path: /variables/name=vault-tls/options/alternative_names/-
   type: replace
   value: "*.vault.((network_name)).((deployment_name)).bosh"
+
+
+- path: /instance_groups/name=shield/jobs/name=core/properties/port?
+  type: replace
+  value: ((shield_port))
 
 
 - path: /instance_groups/name=shield/jobs/name=core/properties/core?/color
@@ -42,3 +48,16 @@
 - path: /name
   type: replace
   value: ((deployment_name))
+
+- path: /instance_groups/name=shield/vm_extensions?/-
+  type: replace
+  value: ((shield_vm_extension))
+
+- path: /instance_groups/name=shield/jobs/name=shield-agent/consumes/shield?
+  type: replace
+  value:
+    instances:
+      - address: 10.244.204.61
+    properties:
+      domain: 10.244.204.61
+      port: ((shield_port))

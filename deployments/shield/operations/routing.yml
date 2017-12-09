@@ -21,7 +21,7 @@
       route_registrar:
         routes:
         - name: ((deployment_name))
-          tls_port: 443
+          tls_port: ((shield_port))
           server_cert_domain_san: ((shield_domain))
           registration_interval: 20s
           uris: [ ((shield_domain)) ]

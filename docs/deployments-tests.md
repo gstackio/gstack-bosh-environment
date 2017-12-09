@@ -102,6 +102,17 @@ cf marketplace -s mysql-shared
 ```
 
 
+### SHIELD Backup System
+
+The SHIELD web interface can be reached as following.
+
+```
+cd deployments/shield
+
+open https://$(bosh int ./conf/depl-vars.yml --path /shield_domain):10443/
+```
+
+
 ### Deploy Stratos web console
 
 Connect to your Cloud Foundry first, as detailed above. Then simply run:
