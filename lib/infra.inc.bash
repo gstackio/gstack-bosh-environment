@@ -33,7 +33,7 @@ function infra_bosh_rw_invoke() {
 
     infra_bosh_ro_invoke "$verb" \
         --vars-file <(bbl_invoke bosh-deployment-vars) \
-        --vars-store "$BASE_DIR/state/base-env/env-creds.yml" \
+        --vars-store "$BASE_DIR/state/base-env/depl-creds.yml" \
         --state "$BASE_DIR/state/base-env/env-infra-state.json" \
         "$@"
 }

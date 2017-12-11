@@ -14,12 +14,12 @@ fetch_ubdms
 infra_bosh_ro_invoke interpolate > "$BASE_DIR/state/base-env/env-depl-manifest.yml"
 
 
-if [ ! -e "$BASE_DIR/state/base-env/env-creds.yml" ]; then
-    echo -e "\n${BLUE}Skipping ${BOLD}bosh delete-env$RESET, as the 'state/env-creds.yml' file is absent\n"
+if [ ! -e "$BASE_DIR/state/base-env/depl-creds.yml" ]; then
+    echo -e "\n${BLUE}Skipping ${BOLD}bosh delete-env$RESET, as the 'state/base-env/depl-creds.yml' file is absent\n"
 else
     echo -e "\n${BLUE}Running ${BOLD}bosh delete-env$RESET to destroy the BOSH environment\n"
     infra_bosh_rw_invoke delete-env
-    rm -vf "$BASE_DIR/state/base-env/env-creds.yml"
+    rm -vf "$BASE_DIR/state/base-env/depl-creds.yml"
 fi
 
 

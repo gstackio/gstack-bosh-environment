@@ -84,7 +84,7 @@ function env_exports() {
 
     echo "export PATH=$PATH"
 
-    local env_creds=$BASE_DIR/state/base-env/env-creds.yml
+    local env_creds=$BASE_DIR/state/base-env/depl-creds.yml
     if [[ ! -f $env_creds ]]; then
         return
     fi

@@ -137,7 +137,7 @@ State files are located in the `state/` directory. These are generated runtime
 files. Some need to be tracked in version control, some not, and for some it
 depends on the context.
 
-As `bbl-state.json` and `env-creds.yml` contain credentials, they are excluded
+As `bbl-state.json` and `depl-creds.yml` contain credentials, they are excluded
 from version control, as you'll see in `.gitignore`.
 
 On the opposite, `env-infra-state.json` doesn't contain credentials, but
