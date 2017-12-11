@@ -149,7 +149,7 @@ control when they refers to a perpetual environements, or environments that
 don't change often. When they refer to ephemeral environements, then you can
 exclude them from version control.
 
-The `env-depl-manifest.yml` doesn't contain any credentials either. It
+The `depl-manifest.yml` doesn't contain any credentials either. It
 reflects the current state the superstructure of your BOSH environment. It is
 to be tracked by version control.
 

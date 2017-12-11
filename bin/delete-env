@@ -11,7 +11,7 @@ assert_bbl_version
 fetch_ubdms
 
 
-infra_bosh_ro_invoke interpolate > "$BASE_DIR/state/base-env/env-depl-manifest.yml"
+infra_bosh_ro_invoke interpolate > "$BASE_DIR/state/base-env/depl-manifest.yml"
 
 
 if [ ! -e "$BASE_DIR/state/base-env/depl-creds.yml" ]; then
