@@ -32,6 +32,7 @@ else
         ssh-add -d "$BASE_DIR/state/base-env/jumpbox.key.pub"
     fi
     rm -vf "$BASE_DIR/state/base-env/jumpbox.key" "$BASE_DIR/state/base-env/jumpbox.key.pub"
+    ssh-keygen -f ~/.ssh/known_hosts -R "$(gbe ip)"
 fi
 
 if [ "x$1" == "x-k" ]; then
