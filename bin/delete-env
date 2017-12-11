@@ -34,8 +34,9 @@ else
     rm -vf "$BASE_DIR/state/base-env/jumpbox.key" "$BASE_DIR/state/base-env/jumpbox.key.pub"
 fi
 
-
-if [ ! -e "$BASE_DIR/state/base-env/bbl-state.json" ]; then
+if [ "x$1" == "x-k" ]; then
+	echo -e "\n${BLUE}Skipping ${BOLD}bbl destroy$RESET, as per user request\n"
+elif [ ! -e "$BASE_DIR/state/base-env/bbl-state.json" ]; then
     echo -e "\n${BLUE}Skipping ${BOLD}bbl destroy$RESET, as the 'state/bbl-state.json' file is absent\n"
 else
     echo -e "\n${BLUE}Running ${BOLD}bbl destroy$RESET to destroy infrastructure for the BOSH environment\n"

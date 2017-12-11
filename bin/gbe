@@ -619,9 +619,10 @@ case $1 in
         jq -r .tfState "$BASE_DIR/state/base-env/bbl-state.json" \
             | jq -r .modules[0].outputs.external_ip.value ;;
     down)
+        shift
         pushd "$BASE_DIR"
             source .envrc
-            delete-env
+            delete-env "$@"
         popd
         ;;
     firewall)   setup_firewall ;;
