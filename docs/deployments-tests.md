@@ -69,7 +69,7 @@ Property              | File
 `cf_admin_password`   | `deployments/cf/state/depl-creds.yml`
 
 
-### CF-MySQL
+### CF-MySQL DBaaS
 
 Set the `cf_admin_password` property in `deployments/mysql/conf/depl-vars.yml`
 to the one found for the same name in `deployments/cf/state/depl-creds.yml`.
