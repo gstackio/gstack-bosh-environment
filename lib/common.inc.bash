@@ -77,20 +77,20 @@ function fetch_ubdms() {
 
         local ubdms_dir="$BASE_DIR/.cache/ubdms"
         if [ -d "$ubdms_dir/$ubdm_name" ]; then
-            pushd "$ubdms_dir/$ubdm_name" || exit 115
+            pushd "$ubdms_dir/$ubdm_name" > /dev/null || exit 115
                 git fetch
-            popd
+            popd > /dev/null
         else
             mkdir -p "$ubdms_dir"
             git clone -q "$ubdm_remote" "$ubdms_dir/$ubdm_name" \
                 || (echo "Error while cloning repository '$ubdm_remote'" > /dev/stderr \
                     && exit 1)
         fi
-        pushd "$ubdms_dir/$ubdm_name" || exit 115
+        pushd "$ubdms_dir/$ubdm_name" > /dev/null || exit 115
             git checkout -q "$ubdm_version" \
                 || (echo "Error while checking out version '$ubdm_version' of '$ubdm_name'" > /dev/stderr \
                     && exit 1)
-        popd
+        popd > /dev/null
 
         UPSTREAM_DEPLOYMENT_DIR=$ubdms_dir/$ubdm_name
     fi
