@@ -36,7 +36,17 @@ infra_bosh_ro_invoke interpolate > "$BASE_DIR/state/base-env/depl-manifest.yml"
 
 echo -e "\n${BLUE}Running ${BOLD}bosh create-env$RESET to create the BOSH environment\n"
 
+# Proxy must not interfere when (re)creating the Bosh environment
+old_BOSH_ALL_PROXY=$BOSH_ALL_PROXY
+unset BOSH_ALL_PROXY
+
 infra_bosh_rw_invoke create-env
+
+# Restore any previous proxy setup, now that Bosh env is (re)created
+if [ -n "$old_BOSH_ALL_PROXY" ]; then
+	export BOSH_ALL_PROXY=$old_BOSH_ALL_PROXY
+	unset old_BOSH_ALL_PROXY
+fi
 
 gbe tunnel
 alias-env
