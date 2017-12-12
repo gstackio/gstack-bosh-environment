@@ -49,10 +49,7 @@
   type: replace
   value: ((deployment_name))
 
-- path: /instance_groups/name=shield/vm_extensions?/-
-  type: replace
-  value: ((shield_vm_extension))
-
+# Workaround for SHIELD core not exposing the correct IP in its 'shield' link
 - path: /instance_groups/name=shield/jobs/name=shield-agent/consumes/shield?
   type: replace
   value:
