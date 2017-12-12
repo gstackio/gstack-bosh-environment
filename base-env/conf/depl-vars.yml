@@ -8,6 +8,8 @@ upstream_base_deployment_manifests:
 
 director_name: "Gstack One BOSH Lite Director"
 
+disk_size: 100_000 # i.e. 100MB
+
 
 ## When the release is available on the `bosh-compiled-release-tarballs` S3
 ## bucket, use the 'custom-bosh-version-precompiled' operation file with these

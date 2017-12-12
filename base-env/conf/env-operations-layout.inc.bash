@@ -6,6 +6,7 @@ local_operations=(
     custom-bosh-version-precompiled
     # custom-bosh-version
     disable-resurrector
+    set-disk-size
 )
 # These operation files are relative to the UPSTREAM_DEPLOYMENT_DIR set in
 # the '.envrc' config file. The '.yml' extension is implied.
