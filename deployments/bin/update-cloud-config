@@ -1,23 +1,23 @@
 #!/usr/bin/env bash
 
 source "$BASE_DIR/lib/common.inc.bash"
-assert cloud-config "$CLOUD_CONFG_DIR"
+assert cloud-config "$CLOUD_CONFIG_DIR"
 
-DEPL_DIR=$CLOUD_CONFG_DIR # Shim: 'fetch_ubdms' is expecting this
+DEPL_DIR=$CLOUD_CONFIG_DIR # Shim: 'fetch_ubdms' is expecting this
 fetch_ubdms
 
-source "$CLOUD_CONFG_DIR/conf/operations-layout.inc.bash"
+source "$CLOUD_CONFIG_DIR/conf/operations-layout.inc.bash"
 
-DEPL_DIR=$CLOUD_CONFG_DIR # Shim: 'build_operations_arguments' is expecting this
+DEPL_DIR=$CLOUD_CONFIG_DIR # Shim: 'build_operations_arguments' is expecting this
 build_operations_arguments
 
-BASE_CLOUD_CONFG_FILE=$MAIN_DEPLOYMENT_FILE # Shim
-bosh interpolate "$BASE_CLOUD_CONFG_FILE" \
+BASE_CLOUD_CONFIG_FILE=$MAIN_DEPLOYMENT_FILE # Shim
+bosh interpolate "$BASE_CLOUD_CONFIG_FILE" \
     "${operations_arguments[@]}" \
-    > "$CLOUD_CONFG_DIR/state/cloud-config.yml"
+    > "$CLOUD_CONFIG_DIR/state/cloud-config.yml"
 
-if [ ! -s "$CLOUD_CONFG_DIR/state/cloud-config.yml" ]; then
+if [ ! -s "$CLOUD_CONFIG_DIR/state/cloud-config.yml" ]; then
     echo "Cloud config file is empty. ${BLUE}Skipping$RESET update."
     exit 0
 fi
-bosh update-cloud-config "$CLOUD_CONFG_DIR/state/cloud-config.yml" "$@"
+bosh update-cloud-config "$CLOUD_CONFIG_DIR/state/cloud-config.yml" "$@"
