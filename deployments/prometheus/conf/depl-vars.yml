@@ -1,0 +1,27 @@
+---
+upstream_base_deployment_manifests:
+  name: prometheus-boshrelease
+  git_repo: https://github.com/bosh-prometheus/prometheus-boshrelease.git
+  version: v20.0.0
+  main_deployment_file: manifests/prometheus.yml
+
+
+deployment_name: easyfoundry-prometheus
+
+
+# User-facing settings
+
+system_domain: monitoring.easyfoundry.prototyp.it
+
+
+# Versions
+
+prometheus_version: "20.0.0"
+prometheus_sha1: "11a18875879a7712c67e6d30c4a069101ae77560"
+
+postgres_version: "23"
+postgres_sha1: "4b5265bfd5f92cf14335a75658658a0db0bca927"
+
+stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+stemcell_version: "3468.11"
+stemcell_sha1: 74592d4c2b7f2aebacd767112dd0ef28b028532b

@@ -102,7 +102,7 @@ cf marketplace -s mysql-shared
 ```
 
 
-### SHIELD Backup System
+### SHIELD backup system
 
 The SHIELD web interface can be reached as following.
 
@@ -111,6 +111,36 @@ cd deployments/shield
 
 open https://$(bosh int ./conf/depl-vars.yml --path /shield_domain):10443/
 ```
+
+
+### Prometheus monitoring system
+
+The Prometheus web interface:
+
+```
+open http://$(gbe ip):9090/
+```
+
+Use the `admin` usename and the `prometheus_password` from
+`deployments/prometheus/state/depl-creds.yml`.
+
+Graphana web interface:
+
+```
+open http://$(gbe ip):3000/
+```
+
+Use the `admin` usename and the `grafana_password` from
+`deployments/prometheus/state/depl-creds.yml`.
+
+Alert manager web interface:
+
+```
+open http://$(gbe ip):9093/
+```
+
+Use the `admin` usename and the `alertmanager_password` from
+`deployments/prometheus/state/depl-creds.yml`.
 
 
 ### Deploy Stratos web console

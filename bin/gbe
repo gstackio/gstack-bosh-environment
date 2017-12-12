@@ -419,7 +419,9 @@ function setup_firewall() {
     local concourse_ports="8080"
     local mysql_ports="3306"
     local shield_ports="10443"
-    for tcp_port in $bosh_ports $cf_ports $concourse_ports $mysql_ports $shield_ports; do
+    local prometheus_ports="3000 9090 9093"
+    for tcp_port in $bosh_ports $cf_ports $concourse_ports $mysql_ports \
+                    $shield_ports $prometheus_ports; do
         allowed=$allowed,tcp:$tcp_port
     done
 

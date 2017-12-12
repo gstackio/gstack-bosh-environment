@@ -1,0 +1,11 @@
+---
+
+- path: /vm_extensions/name=prometheus-alertmanager-lb?
+  type: replace
+  value:
+    name: prometheus-lb
+    cloud_properties:
+      ports:
+        - host: 3000 # grafana
+        - host: 9090 # prometheus
+        - host: 9093 # alertmanager
