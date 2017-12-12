@@ -556,7 +556,9 @@ function echo_stale_release_files() {
     local stemcell=$1; shift
     local base_filename=$1; shift
 
-    find . -type f -name "$(echo "$release" | tr / -)*.tgz" \
+    local release_name=$(echo "$release" | cut -d/ -f1)
+
+    find . -type f -name "${release_name}*.tgz" \
         | sed -e 's`^\./``' \
         | grep -v "^$base_filename"
 }
