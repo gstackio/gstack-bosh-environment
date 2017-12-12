@@ -104,8 +104,7 @@ a Git repository.
 3. Run `source /dev/stdin <<<"$(gbe env)"` (or go inside `deployments/`, when
    using Direnv) and play with your BOSH 2
 
-   - If necessary, you can log into your BOSH Virtual Machine running `gbe ssh`
-     or `jumpbox`.
+   - If necessary, you can log into your BOSH Virtual Machine running `gbe ssh`.
 
 4. Destroy your environment with `gbe down` (or `delete-env` when using
    Direnv).

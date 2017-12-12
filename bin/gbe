@@ -650,6 +650,37 @@ function gbe_up() {
     setup_tunnel
 }
 
+function ssh_jumpbox() {
+    if [ ! -f "$BASE_DIR/state/base-env/depl-creds.yml" ]; then
+        echo "$SCRIPT_NAME: ERROR: the base BOSH environment is not created yet" \
+             "Please create it first. Aborting." >&2
+        exit 1
+    fi
+
+    local timeout_arg
+    case $(platform) in
+        darwin) timeout_arg=-t ;;
+        linux)  timeout_arg=-W ;;
+    esac
+    local jumpbox_ip=$(jumpbox_ip)
+
+    # Wait for target to respond to ping
+    while ! ping -q -c 1 $timeout_arg 3 "$jumpbox_ip" > /dev/null; do
+        echo "$(date +'%F %T') waiting $jumpbox_ip to respond to ping"
+        sleep 2
+        status=$?
+        if [ "$status" -gt 128 ]; then
+            # When interrupted by a signal, abort with same status
+            exit $status
+        fi
+    done
+
+    TERM=xterm-color ssh \
+        -i "$BASE_DIR/state/base-env/jumpbox.key" \
+        "jumpbox@$(jumpbox_ip)" \
+        "$@"
+}
+
 case $1 in
     env)        env_exports ;;
     bbl)        setup_bbl v3.2.6 ;;
@@ -695,10 +726,9 @@ case $1 in
         fi
         ;;
     ssh)
-        pushd "$BASE_DIR"
-            source .envrc
-            jumpbox
-        popd
+        shift
+        setup_tunnel 5000
+        ssh_jumpbox "$@"
         ;;
     update)
         shift
