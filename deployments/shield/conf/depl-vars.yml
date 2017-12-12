@@ -2,7 +2,7 @@
 upstream_base_deployment_manifests:
   name: shield-boshrelease
   git_repo: https://github.com/starkandwayne/shield-boshrelease.git
-  version: v8.0.0
+  version: v8.0.1
   main_deployment_file: manifests/shield.yml
 
 
@@ -18,8 +18,8 @@ shield_color: red
 
 # Versions
 
-shield_version: "8.0.0"
-shield_sha1: "75f663c61bc3903d02ce2820977ea54282ba53c0"
+shield_version: "8.0.1"
+shield_sha1: "f0ac324f723b777e35617adac8920de6f0ddb052"
 
 routing_version: "0.168.0"
 routing_sha1: 885321f95b530c4a5b8515c72155229cba26c449
