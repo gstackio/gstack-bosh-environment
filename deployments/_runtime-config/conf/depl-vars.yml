@@ -8,3 +8,6 @@ upstream_base_deployment_manifests:
 
 cf_deployment_name: easyfoundry-cf
 cf_network_name: default
+
+shield_deployment_name: easyfoundry-shield
+shield_network: shield-network

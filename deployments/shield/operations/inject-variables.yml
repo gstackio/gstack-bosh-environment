@@ -57,7 +57,7 @@
   type: replace
   value:
     instances:
-      - address: 10.244.204.61
+      - address: shield.easyfoundry.internal # 10.244.204.61
     properties:
-      domain: 10.244.204.61
+      domain: shield.easyfoundry.internal # 10.244.204.61
       port: ((shield_port))
