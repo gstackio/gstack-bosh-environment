@@ -648,6 +648,9 @@ function gbe_up() {
         source .envrc
         create-env
     popd
+    ssh-keygen -f ~/.ssh/known_hosts -R "$(jumpbox_ip)"
+    ssh-keyscan -t ecdsa "$(jumpbox_ip)" 2> /dev/null \
+        > ~/.ssh/known_hosts
     setup_firewall
     setup_tunnel
 }
