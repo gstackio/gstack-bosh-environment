@@ -16,5 +16,7 @@ upstream_operations=(
     bosh-lite-runc
     jumpbox-user
     external-ip-not-recommended
+    uaa
+    credhub
     local-dns
 )
