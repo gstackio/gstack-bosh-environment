@@ -115,19 +115,24 @@ open https://$(bosh int ./conf/depl-vars.yml --path /shield_domain):10443/
 
 ### Prometheus monitoring system
 
+Access to the Prometheus user interfaces goes through the routing system of
+Cloud Foundry and thus requires it to be deployed.
+
 The Prometheus web interface:
 
 ```
-open http://$(gbe ip):9090/
+cd deployments/prometheus
+open http://$(bosh int ./conf/depl-vars.yml --path /prometheus_domain)
 ```
 
 Use the `admin` usename and the `prometheus_password` from
 `deployments/prometheus/state/depl-creds.yml`.
 
-Graphana web interface:
+Grafana web interface:
 
 ```
-open http://$(gbe ip):3000/
+cd deployments/prometheus
+open http://$(bosh int ./conf/depl-vars.yml --path /grafana_domain)
 ```
 
 Use the `admin` usename and the `grafana_password` from
@@ -136,7 +141,8 @@ Use the `admin` usename and the `grafana_password` from
 Alert manager web interface:
 
 ```
-open http://$(gbe ip):9093/
+cd deployments/prometheus
+open http://$(bosh int ./conf/depl-vars.yml --path /alertmanager_domain)
 ```
 
 Use the `admin` usename and the `alertmanager_password` from
