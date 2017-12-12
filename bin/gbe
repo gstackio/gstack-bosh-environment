@@ -94,6 +94,7 @@ function env_exports() {
         bosh int "$env_creds" --path "$path"
     }
 
+    echo "export BOSH_ALL_PROXY=socks5://127.0.0.1:5000"
     echo "export BOSH_CA_CERT=\"$(get_var /default_ca/ca)\""
     echo "export BOSH_CLIENT=admin"
     echo "export BOSH_CLIENT_SECRET=$(get_var /admin_password)"
@@ -266,6 +267,7 @@ function usage() {
     echo "  dnscontrol  Installs locally the supported version of DNSControl CLI"
     echo "  gcp         Configures the Google Cloud credentials"
     echo "  firewall    Configures the Google Cloud firewall rules"
+    echo "  tunnel      Creates a SSH tunnel to the Bosh server, acting as a SOCKS5 proxy"
     echo
     echo "  $BOLD${MAGENTA}BOSH ENVIRONMENT:$RESET"
     echo "  up          Creates the Bosh environment VM with 'bosh create-env'"
@@ -412,7 +414,7 @@ function setup_firewall() {
     # Note: the 'gcloud' CLI v180.0.0 doesn't support the shorter syntax with
     #       semicolons, like "icmp; tcp:22,6868,25555". So we revert to the
     #       more verbose syntax here, e.g. "icmp,tcp:22,tcp:6868,tcp:25555".
-    local bosh_ports="22 6868 25555"
+    local bosh_ports="22 6868"
     local cf_ports="80 443 2222" # seems that 4443 is not used anymore, for good!
     local concourse_ports="8080"
     local mysql_ports="3306"
@@ -587,6 +589,52 @@ function cleanup_compiled_releases() {
     popd
 }
 
+function jumpbox_ip() {
+    bosh int <(bbl_invoke bosh-deployment-vars) --path /external_ip
+}
+
+function has_tunnel() {
+    local pid_file=$1
+    [ -s "$pid_file" ] && ps -p "$(cat "$pid_file")" > /dev/null
+}
+
+function restrict_permissions() {
+    local filename=$1
+
+    >> "$filename"
+    chmod 600 "$filename"
+}
+
+function jumpbox_key() {
+    restrict_permissions "$BASE_DIR/state/base-env/jumpbox.key"
+    bosh int "$BASE_DIR/state/base-env/depl-creds.yml" --path /jumpbox_ssh/private_key \
+         > "$BASE_DIR/state/base-env/jumpbox.key"
+}
+
+function setup_tunnel() {
+    local local_port=$1
+
+    local pid_file=$BASE_DIR/state/base-env/ssh-tunnel.pid
+    if has_tunnel "$pid_file"; then
+        echo -e "\n${BLUE}SSH tunnel is ${BOLD}already running$RESET on PID '$(cat "$pid_file")'" \
+             "(more info with ${UNDERLINE}lsof -i :$local_port$RESET)\n"
+        return 1
+    fi
+
+	echo -e "\n${BLUE}Creating the ${BOLD}SSH tunnel$RESET that enables access to the Bosh server\n"
+
+    jumpbox_key
+
+    ssh -4 -D "$local_port" -fNC "jumpbox@$(jumpbox_ip)" -i "$BASE_DIR/state/base-env/jumpbox.key"
+    lsof -i ":$local_port" \
+        | grep -E '^ssh\b' | awk '{print $2}' \
+        > "$pid_file"
+}
+
+function internal_ip() {
+    bosh int <(bbl_invoke bosh-deployment-vars) --path /internal_ip
+}
+
 function gbe_up() {
     setup_bbl v3.2.6
     setup_terraform 0.9.11
@@ -597,6 +645,7 @@ function gbe_up() {
         create-env
     popd
     setup_firewall
+    setup_tunnel
 }
 
 case $1 in
@@ -616,9 +665,7 @@ case $1 in
     up)
         gbe_up ;;
     ip)
-        assert_utilities jq "to fetch the main external IP address"
-        jq -r .tfState "$BASE_DIR/state/base-env/bbl-state.json" \
-            | jq -r .modules[0].outputs.external_ip.value ;;
+        jumpbox_ip ;;
     down)
         shift
         pushd "$BASE_DIR"
@@ -627,6 +674,23 @@ case $1 in
         popd
         ;;
     firewall)   setup_firewall ;;
+    tunnel)
+        shift
+        if [ "$1" = stop ]; then
+            pid_file=$BASE_DIR/state/base-env/ssh-tunnel.pid
+            if has_tunnel; then
+                kill "$(cat "$pid_file")"
+            fi
+            rm -f "$pid_file"
+        else
+            setup_tunnel 5000
+            if [ "$BOSH_ALL_PROXY" != "socks5://127.0.0.1:5000" ]; then
+                echo
+                echo "${BLUE}You must ${BOLD}refresh your environment variables${RESET} like this:"
+                env_usage
+            fi
+        fi
+        ;;
     ssh)
         pushd "$BASE_DIR"
             source .envrc

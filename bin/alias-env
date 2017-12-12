@@ -6,6 +6,6 @@ source "$BASE_DIR/lib/colors.inc.bash"
 
 echo -e "\n${BLUE}Aliasing the created BOSH environment to ${BOLD}'$BOSH_ENVIRONMENT'$RESET\n"
 
-bosh -e "$(bosh int <(bbl_invoke bosh-deployment-vars) --path /external_ip)" \
+bosh -e "$(bosh int <(bbl_invoke bosh-deployment-vars) --path /internal_ip)" \
     --ca-cert <(bosh int "$BASE_DIR/state/base-env/depl-creds.yml" --path /director_ssl/ca) \
     alias-env "$BOSH_ENVIRONMENT"

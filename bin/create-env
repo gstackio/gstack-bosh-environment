@@ -38,5 +38,5 @@ echo -e "\n${BLUE}Running ${BOLD}bosh create-env$RESET to create the BOSH enviro
 
 infra_bosh_rw_invoke create-env
 
-
+gbe tunnel
 alias-env
