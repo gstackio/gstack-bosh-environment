@@ -621,11 +621,13 @@ function setup_tunnel() {
         return 1
     fi
 
-	echo -e "\n${BLUE}Creating the ${BOLD}SSH tunnel$RESET that enables access to the Bosh server\n"
+	echo -e "\n${BLUE}Opening the ${BOLD}SSH tunnel$RESET that enables access to the Bosh server\n"
 
     jumpbox_key
 
-    ssh -4 -D "$local_port" -fNC "jumpbox@$(jumpbox_ip)" -i "$BASE_DIR/state/base-env/jumpbox.key"
+    ssh -4 -D "localhost:$local_port" -fNC \
+        -i "$BASE_DIR/state/base-env/jumpbox.key" "jumpbox@$(jumpbox_ip)" \
+        > "$BASE_DIR/state/base-env/ssh-tunnel.log"
     lsof -i ":$local_port" \
         | grep -E '^ssh\b' | awk '{print $2}' \
         > "$pid_file"
@@ -678,7 +680,8 @@ case $1 in
         shift
         if [ "$1" = stop ]; then
             pid_file=$BASE_DIR/state/base-env/ssh-tunnel.pid
-            if has_tunnel; then
+            if has_tunnel "$pid_file"; then
+                echo -e "\n${BLUE}Closing the ${BOLD}SSH tunnel$RESET that enables access to the Bosh server\n"
                 kill "$(cat "$pid_file")"
             fi
             rm -f "$pid_file"
