@@ -78,7 +78,7 @@ function fetch_ubdms() {
         local ubdms_dir="$BASE_DIR/.cache/ubdms"
         if [ -d "$ubdms_dir/$ubdm_name" ]; then
             pushd "$ubdms_dir/$ubdm_name" > /dev/null || exit 115
-                git fetch
+                git fetch -q
             popd > /dev/null
         else
             mkdir -p "$ubdms_dir"
