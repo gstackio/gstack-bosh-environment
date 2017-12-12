@@ -1,4 +1,10 @@
 ---
 upstream_base_deployment_manifests:
-  local_dir: conf
-  main_deployment_file: base-runtime-config.yml
+  name: bosh-deployment
+  git_repo: https://github.com/cloudfoundry/bosh-deployment.git
+  version: dc7fa0a # v264.1 (as of Nov 17th, 2017)
+  main_deployment_file: runtime-configs/dns.yml
+
+
+cf_deployment_name: easyfoundry-cf
+cf_network_name: default
