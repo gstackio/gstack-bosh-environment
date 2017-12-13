@@ -54,7 +54,8 @@ Property              | File
 
 ### Cloud Foundry
 
-To target Cloud Foundry, using `direnv`:
+To target Cloud Foundry, [install the `cf` CLI](http://docs.cloudfoundry.org/cf-cli/install-go-cli.html)
+then target your Cloud Foundry platform:
 
 ```bash
 cd deployments/cf
@@ -62,14 +63,21 @@ cd deployments/cf
 cf api --skip-ssl-validation https://api.$(bosh int ./conf/depl-vars.yml --path /system_domain)
 ```
 
-Then you can login with username `admin`, push apps, browse marketplace, etc.
+Then you can login with username `admin`. You'll find the necessary password
+as detaled in the table below.
 
 Property              | File
 ----------------------|---------------------------------------
 `cf_admin_password`   | `deployments/cf/state/depl-creds.yml`
 
+Once logged in, you can push apps (See `cf push -h`), browse marketplace with
+`cf marketplace`, provision data services, bind them to your applications,
+etc.
 
-### CF-MySQL DBaaS
+As an example, you can push the Stratos web console, as explained below.
+
+
+### CF-MySQL database-as-a-service cluster
 
 Set the `cf_admin_password` property in `deployments/mysql/conf/depl-vars.yml`
 to the one found for the same name in `deployments/cf/state/depl-creds.yml`.
@@ -113,7 +121,7 @@ open https://$(bosh int ./conf/depl-vars.yml --path /shield_domain):10443/
 ```
 
 
-### Prometheus monitoring system
+### Prometheus monitoring
 
 Access to the Prometheus user interfaces goes through the routing system of
 Cloud Foundry and thus requires it to be deployed.
@@ -149,7 +157,7 @@ Use the `admin` usename and the `alertmanager_password` from
 `deployments/prometheus/state/depl-creds.yml`.
 
 
-### Deploy Stratos web console
+### Stratos web console
 
 Connect to your Cloud Foundry first, as detailed above. Then simply run:
 
