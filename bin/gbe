@@ -94,7 +94,7 @@ function env_exports() {
         bosh int "$env_creds" --path "$path"
     }
 
-    echo "export BOSH_ALL_PROXY=socks5://127.0.0.1:5000"
+    echo "export BOSH_ALL_PROXY=socks5://127.0.0.1:$TUNNEL_PORT"
     echo "export BOSH_CA_CERT=\"$(get_var /default_ca/ca)\""
     echo "export BOSH_CLIENT=admin"
     echo "export BOSH_CLIENT_SECRET=$(get_var /admin_password)"
@@ -647,6 +647,8 @@ function jumpbox_key() {
          > "$BASE_DIR/state/base-env/jumpbox.key"
 }
 
+TUNNEL_PORT=5000
+
 function setup_tunnel() {
     local local_port=$1
 
@@ -744,25 +746,42 @@ case $1 in
     firewall)   setup_firewall ;;
     tunnel)
         shift
-        if [ "$1" = stop ]; then
-            pid_file=$BASE_DIR/state/base-env/ssh-tunnel.pid
-            if has_tunnel "$pid_file"; then
-                echo -e "\n${BLUE}Closing the ${BOLD}SSH tunnel$RESET that enables access to the Bosh server\n"
-                kill "$(cat "$pid_file")"
-            fi
-            rm -f "$pid_file"
-        else
-            setup_tunnel 5000
-            if [ "$BOSH_ALL_PROXY" != "socks5://127.0.0.1:5000" ]; then
-                echo
-                echo "${BLUE}You must ${BOLD}refresh your environment variables${RESET} like this:"
-                env_usage
-            fi
-        fi
+        pid_file=$BASE_DIR/state/base-env/ssh-tunnel.pid
+        case $1 in
+            stop)
+                if has_tunnel "$pid_file"; then
+                    echo -e "\n${BLUE}Closing the ${BOLD}SSH tunnel$RESET that enables access to the Bosh server\n"
+                    kill "$(cat "$pid_file")"
+                fi
+                rm -f "$pid_file"
+                ;;
+            status)
+                if ! has_tunnel "$pid_file"; then
+                    echo -e "\nSSH tunnel is $RED${BOLD}not running$RESET\n"
+                else
+                    echo -e "\nSSH tunnel is $GREEN${BOLD}is running$RESET on PID '$(cat "$pid_file")'\n"
+                    echo -e "${BOLD}Details:$RESET"
+                    lsof -i ":$TUNNEL_PORT"
+                    echo
+                fi
+                ;;
+            logs)
+                echo -e "${BOLD}Last logs:$RESET"
+                tail "$BASE_DIR/state/base-env/ssh-tunnel.log"
+                ;;
+            *)
+                setup_tunnel "$TUNNEL_PORT"
+                if [ "$BOSH_ALL_PROXY" != "socks5://127.0.0.1:$TUNNEL_PORT" ]; then
+                    echo
+                    echo "${BLUE}You must ${BOLD}refresh your environment variables${RESET} like this:"
+                    env_usage
+                fi
+                ;;
+        esac
         ;;
     ssh)
         shift
-        setup_tunnel 5000
+        setup_tunnel "$TUNNEL_PORT"
         ssh_jumpbox "$@"
         ;;
     update)
