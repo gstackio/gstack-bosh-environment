@@ -36,6 +36,8 @@ infra_bosh_ro_invoke interpolate > "$BASE_DIR/state/base-env/depl-manifest.yml"
 
 echo -e "\n${BLUE}Running ${BOLD}bosh create-env$RESET to create the BOSH environment\n"
 
+gbe tunnel stop > /dev/null
+
 # Proxy must not interfere when (re)creating the Bosh environment
 old_BOSH_ALL_PROXY=$BOSH_ALL_PROXY
 unset BOSH_ALL_PROXY
@@ -48,5 +50,8 @@ if [ -n "$old_BOSH_ALL_PROXY" ]; then
 	unset old_BOSH_ALL_PROXY
 fi
 
+ssh-keygen -f ~/.ssh/known_hosts -R "$(gbe ip)"
+ssh-keyscan -t ecdsa "$(gbe ip)" 2> /dev/null \
+    > ~/.ssh/known_hosts
 gbe tunnel
 alias-env
