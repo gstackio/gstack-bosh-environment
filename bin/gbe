@@ -15,7 +15,7 @@ fi
 source "$BASE_DIR/lib/gbe/colors.inc.bash"
 
 function pushd() {
-    command pushd "$@" > /dev/null
+    command pushd "$@" > /dev/null || exit 115
 }
 
 function popd() {
