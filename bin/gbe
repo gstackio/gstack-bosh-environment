@@ -661,8 +661,8 @@ function setup_tunnel() {
 
     jumpbox_key
 
-    ssh -4 -D "localhost:$local_port" -fNC \
-        -i "$BASE_DIR/state/base-env/jumpbox.key" "jumpbox@$(jumpbox_ip)" \
+    nohup ssh -4 -D "localhost:$local_port" -fNC \
+            -i "$BASE_DIR/state/base-env/jumpbox.key" "jumpbox@$(jumpbox_ip)" \
         > "$BASE_DIR/state/base-env/ssh-tunnel.log"
     lsof -i ":$local_port" \
         | grep -E '^ssh\b' | awk '{print $2}' \
