@@ -1,0 +1,45 @@
+---
+
+# Customize URLs
+
+- type: replace
+  path: /instance_groups/name=alertmanager/jobs/name=alertmanager/properties/alertmanager/web?/external_url
+  value: https://((alertmanager_domain))
+
+- type: replace
+  path: /instance_groups/name=prometheus/jobs/name=prometheus/properties/prometheus/web?/external_url
+  value: https://((prometheus_domain))
+
+- type: replace
+  path: /instance_groups/name=grafana/jobs/name=grafana/properties/grafana/server?/root_url
+  value: https://((grafana_domain))
+
+
+# Customize routing setup
+
+- type: replace
+  path: /instance_groups/name=nginx/jobs/name=route_registrar/consumes/nats/deployment
+  value: ((routing_deployment_name))
+
+- type: replace
+  path: /instance_groups/name=nginx/jobs/name=route_registrar/properties/route_registrar/routes/name=grafana/uris
+  value: [ ((grafana_domain)) ]
+
+- type: replace
+  path: /instance_groups/name=nginx/jobs/name=route_registrar/properties/route_registrar/routes/name=prometheus/uris
+  value: [ ((prometheus_domain)) ]
+
+- type: replace
+  path: /instance_groups/name=nginx/jobs/name=route_registrar/properties/route_registrar/routes/name=alertmanager/uris
+  value: [ ((alertmanager_domain)) ]
+
+
+# Control release version
+
+- path: /releases/name=routing?
+  type: replace
+  value:
+    name: routing
+    version: ((routing_version))
+    url: https://bosh.io/d/github.com/cloudfoundry-incubator/cf-routing-release?v=((routing_version))
+    sha1: ((routing_sha1))

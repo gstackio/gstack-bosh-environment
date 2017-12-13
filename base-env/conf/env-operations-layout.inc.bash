@@ -1,6 +1,7 @@
 # These operations files are relative to the 'operations' subdirectory here in
 # this project. The '.yml' extension is implied.
 local_operations=(
+    add-bosh-exporter-uaa-clients # sym-linked from Prometheus release
     enable-local-access
     custom-stemcell-version
     custom-bosh-version-precompiled

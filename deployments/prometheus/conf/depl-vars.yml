@@ -15,6 +15,8 @@ grafana_domain: grafana.easyfoundry.prototyp.it
 prometheus_domain: prometheus.easyfoundry.prototyp.it
 alertmanager_domain: alertmanager.easyfoundry.prototyp.it
 
+metrics_environment: easyfoundry-demo
+
 
 # Versions
 
@@ -34,4 +36,35 @@ stemcell_sha1: 74592d4c2b7f2aebacd767112dd0ef28b028532b
 
 # Plumbery
 
-cf_deployment_name: easyfoundry-cf
+routing_deployment_name: easyfoundry-cf
+
+# CF integration plumbing
+uaa_clients_grafana_secret: ~ # todo
+uaa_ssl: # copied from `deployments/cf/state/dep-creds.yml`
+  ca: |
+    -----BEGIN CERTIFICATE-----
+    ...
+    -----END CERTIFICATE-----
+  certificate: |
+    -----BEGIN CERTIFICATE-----
+    ...
+    -----END CERTIFICATE-----
+  private_key: |
+    -----BEGIN RSA PRIVATE KEY-----
+    ...
+    -----END RSA PRIVATE KEY-----
+
+# CF Monitoring plumbing
+metron_deployment_name: easyfoundry-cf
+system_domain: cf.easyfoundry.prototyp.it # should use link
+skip_ssl_verify: true
+uaa_clients_cf_exporter_secret: ~ # todo
+uaa_clients_firehose_exporter_secret: ~ # todo
+traffic_controller_external_port: 8081 # should use the 'trafficcontroller' link
+
+# Bosh monitoring plumbing
+bosh_url: https://10.0.0.6:25555
+bosh_ca_cert: |
+  -----BEGIN CERTIFICATE-----
+  ...
+  -----END CERTIFICATE-----
