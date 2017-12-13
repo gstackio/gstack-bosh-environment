@@ -805,6 +805,11 @@ case $1 in
                 upload_compiled_releases
                 each_deployment converge -n
                 ;;
+            deployments)
+                update_config cloud -n
+                update_config runtime -n
+                each_deployment converge -n
+                ;;
             *)
                 converge "$@" ;;
         esac
