@@ -6,7 +6,7 @@ upstream_base_deployment_manifests:
   main_deployment_file: bosh.yml
 
 
-director_name: "Gstack One BOSH Lite Director"
+director_name: "Easy Foundry Director"
 
 disk_size: 100_000 # i.e. 100MB
 
