@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-source "$BASE_DIR/lib/common.inc.bash"
-source "$BASE_DIR/lib/colors.inc.bash"
+source "$BASE_DIR/lib/gbe/common.inc.bash"
+source "$BASE_DIR/lib/gbe/colors.inc.bash"
 assert cloud-config "$CLOUD_CONFG_DIR"
 
 DEPL_DIR=$CLOUD_CONFG_DIR # Shim: 'fetch_ubdms' is expecting this

@@ -6,7 +6,7 @@
 
 DEPL_DIR=$BASE_DIR/base-env
 source "$DEPL_DIR/conf/env-operations-layout.inc.bash"
-source "$BASE_DIR/lib/common.inc.bash"
+source "$BASE_DIR/lib/gbe/common.inc.bash"
 
 function infra_var() {
     local path=$1

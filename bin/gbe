@@ -12,7 +12,7 @@ if ! echo "$PATH" | tr : '\n' | grep -q "^$BASE_DIR/bin$"; then
     PATH=$BASE_DIR/bin:$PATH
 fi
 
-source "$BASE_DIR/lib/colors.inc.bash"
+source "$BASE_DIR/lib/gbe/colors.inc.bash"
 
 function pushd() {
     command pushd "$@" > /dev/null

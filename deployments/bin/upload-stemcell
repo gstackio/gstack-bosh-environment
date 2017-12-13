@@ -2,7 +2,7 @@
 
 set -e
 
-source "$BASE_DIR/lib/common.inc.bash"
+source "$BASE_DIR/lib/gbe/common.inc.bash"
 assert deployment "$DEPL_DIR"
 
 stemcell_name=$(depl_var /stemcell_name)

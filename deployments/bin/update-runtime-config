@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$BASE_DIR/lib/common.inc.bash"
+source "$BASE_DIR/lib/gbe/common.inc.bash"
 assert runtime-config "$RUNTIME_CONFIG_DIR"
 
 DEPL_DIR=$RUNTIME_CONFIG_DIR # Shim: 'fetch_ubdms' is expecting this

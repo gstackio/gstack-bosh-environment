@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-source "$BASE_DIR/lib/infra.inc.bash"
-source "$BASE_DIR/lib/colors.inc.bash"
+source "$BASE_DIR/lib/gbe/infra.inc.bash"
+source "$BASE_DIR/lib/gbe/colors.inc.bash"
 
 assert_terraform_version
 assert_bbl_version
