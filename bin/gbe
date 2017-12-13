@@ -270,8 +270,8 @@ function usage() {
     echo "  tunnel      Creates a SSH tunnel to the Bosh server, acting as a SOCKS5 proxy"
     echo
     echo "  $BOLD${MAGENTA}BOSH ENVIRONMENT:$RESET"
-    echo "  up          Creates the Bosh environment VM with 'bosh create-env'"
-    echo "  down        Deletes the Bosh environment VM with 'bosh delete-env'"
+    echo "  up          Converges the infrastructure and the Bosh environment towards their desired states"
+    echo "  down        Deletes the Bosh environment and the related infrastructure"
     echo "  ip          Outputs the main exernal IP address of the environment"
     echo "  ssh         Logs into the Bosh environment VM with SSH"
     echo
@@ -291,7 +291,7 @@ function gcp_usage() {
     local ul=$UNDERLINE
     local noul=$NOUNDERLINE
     echo "Usage:"
-    echo "  ${ul}$SCRIPT_NAME$noul  ${ul}gcp$noul  <service-account-name>  <project-id>"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}gcp$noul  <service-account-name>  <project-id>"
     echo
     echo "    <service-account-name>   A name for the service account to be created"
     echo "    <project-id>             The identifier of your GCP project, like 'alpha-sandbox-717101'"
@@ -303,12 +303,44 @@ function gcp_usage() {
     echo
 }
 
+function up_usage() {
+    local ul=$UNDERLINE
+    local noul=$NOUNDERLINE
+    echo "Usage:"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}up$noul"
+    echo
+    echo "Creates or converges the Bosh environment VM with 'bosh create-env'."
+    echo
+    echo "Before the environment is converged, the required utilities are"
+    echo "downloaded, if absent."
+    echo
+    echo "After the environment is converged, a SSH tunnel is started, enabling"
+    echo "access the Bosh server. Then the Bosh environnment is referenced in the"
+    echo "Bosh CLI config. A use of $ul$SCRIPT_NAME env$noul might be necessary though."
+    echo
+    echo "Any previously trusted SSH key (from the '~/.ssh/known_hosts') is replaced"
+    echo "before the tunnel is started, in case it has changed, to avoid connection"
+    echo "issues or hassle."
+}
+
+function down_usage() {
+    local ul=$UNDERLINE
+    local noul=$NOUNDERLINE
+    echo "Usage:"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}down$noul  [-k]"
+    echo
+    echo "Destroys the Bosh environment VM and related infrastructure."
+    echo
+    echo "    -k"
+    echo "        Keep infrastructure, which is useful to preserve the allocated IP address."
+}
+
 function update_usage() {
     local ul=$UNDERLINE
     local noul=$NOUNDERLINE
     echo "Usage:"
-    echo "  ${ul}$SCRIPT_NAME$noul  ${ul}update$noul  cloud-config    [-n]"
-    echo "  ${ul}$SCRIPT_NAME$noul  ${ul}update$noul  runtime-config  [-n]"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}update$noul  cloud-config    [-n]"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}update$noul  runtime-config  [-n]"
     echo
     echo "Updates the cloud config or the runtime config in BOSH server."
     echo
@@ -327,8 +359,8 @@ function converge_usage() {
     local b=$BOLD
     local rst=$RESET
     echo "Usage:"
-    echo "  ${ul}$SCRIPT_NAME$noul  ${ul}converge$noul  [<deployment-name>]  [-n]"
-    echo "  ${ul}$SCRIPT_NAME$noul  ${ul}converge$noul  all"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}converge$noul  [<deployment-name>]  [-n]"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}converge$noul  all"
     echo
     echo "    <deployment-name>   The name of a deployment to converge."
     echo
@@ -350,8 +382,8 @@ function recreate_usage() {
     local b=$BOLD
     local rst=$RESET
     echo "Usage:"
-    echo "  ${ul}$SCRIPT_NAME$noul  ${ul}recreate$noul  <deployment-name>  [-n]"
-    echo "  ${ul}$SCRIPT_NAME$noul  ${ul}recreate$noul  all"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}recreate$noul  <deployment-name>  [-n]"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}recreate$noul  all"
     echo
     echo "    <deployment-name>   The name of a deployment to recreate."
     echo
@@ -372,8 +404,8 @@ function delete_usage() {
     local b=$BOLD
     local rst=$RESET
     echo "Usage:"
-    echo "  ${ul}$SCRIPT_NAME$noul  ${ul}delete$noul  [<deployment-name>]  [-n]"
-    echo "  ${ul}$SCRIPT_NAME$noul  ${ul}delete$noul  all"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}delete$noul  [<deployment-name>]  [-n]"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}delete$noul  all"
     echo
     echo "    <deployment-name>   The name of a deployment to delete."
     echo
