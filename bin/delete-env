@@ -24,7 +24,7 @@ fi
 
 
 if [ ! -e "$BASE_DIR/state/base-env/jumpbox.key" ]; then
-    echo -e "\n${BLUE}Skipping ${BOLD}SSH key removal$RESET, as it has not been used\n"
+    echo -e "\n${BLUE}Skipping ${BOLD}SSH key removal$RESET, as it is absent\n"
 else
     echo -e "\n${BLUE}Removing ${BOLD}SSH key$RESET from SSH Agent\n"
     ssh-keygen -y -f "$BASE_DIR/state/base-env/jumpbox.key" > "$BASE_DIR/state/base-env/jumpbox.key.pub"
@@ -36,7 +36,7 @@ else
 fi
 
 if [ "x$1" == "x-k" ]; then
-	echo -e "\n${BLUE}Skipping ${BOLD}bbl destroy$RESET, as per user request\n"
+    echo -e "\n${BLUE}Skipping ${BOLD}bbl destroy$RESET, as per user request\n"
 elif [ ! -e "$BASE_DIR/state/base-env/bbl-state.json" ]; then
     echo -e "\n${BLUE}Skipping ${BOLD}bbl destroy$RESET, as the 'state/bbl-state.json' file is absent\n"
 else
