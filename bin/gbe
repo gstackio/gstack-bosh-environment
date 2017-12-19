@@ -281,6 +281,7 @@ function usage() {
     echo "  up          Converges the infrastructure and the Bosh environment towards their desired states"
     echo "  down        Deletes the Bosh environment and the related infrastructure"
     echo "  ip          Outputs the main exernal IP address of the environment"
+    echo "  dns         Converge DNS towards the expected DNSControl configuration"
     echo "  ssh         Logs into the Bosh environment VM with SSH"
     echo
     echo "  $BOLD${MAGENTA}MANAGED DEPLOYMENTS:$RESET"
@@ -293,6 +294,7 @@ function usage() {
     echo "  export      Popoulate the local cache with all compiled releases"
     echo "  import      Import all compiled releases from the cache to the Bosh server"
     echo "  cleanup     Delete stale compiled releases from the cache"
+    echo
 }
 
 function gcp_usage() {
@@ -329,6 +331,7 @@ function up_usage() {
     echo "Any previously trusted SSH key (from the '~/.ssh/known_hosts') is replaced"
     echo "before the tunnel is started, in case it has changed, to avoid connection"
     echo "issues or hassle."
+    echo
 }
 
 function down_usage() {
@@ -341,6 +344,21 @@ function down_usage() {
     echo
     echo "    -k"
     echo "        Keep infrastructure, which is useful to preserve the allocated IP address."
+    echo
+}
+
+function dns_usage() {
+    local ul=$UNDERLINE
+    local noul=$NOUNDERLINE
+    local b=$BOLD
+    local rst=$RESET
+    echo "Usage:"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}dns$noul  preview"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}dns$noul  push"
+    echo
+    echo "Dry-run the DNS congergence with '${b}dnscontrol preview$rst' or"
+    echo "actually converge the DNS with '${b}dnscontrol push$rst'."
+    echo
 }
 
 function update_usage() {
@@ -785,6 +803,14 @@ case $1 in
                     env_usage
                 fi
                 ;;
+        esac
+        ;;
+    dns)
+        shift
+        verb=$1
+        case $verb in
+            preview|push) "$BASE_DIR/dns/bin/$verb" ;;
+            *)            dns_usage ;;
         esac
         ;;
     ssh)

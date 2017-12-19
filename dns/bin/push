@@ -1,14 +1,24 @@
 #!/usr/bin/env bash
 
+DNS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+BASE_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
+
+source "$BASE_DIR/lib/gbe/common.inc.bash"
+
 
 # Render the zone config
-mkdir -p "$BASE_DIR/state/dns"
-external_ip=$(jq -r .tfState "$BASE_DIR/state/base-env/bbl-state.json" \
-                | jq -r .modules[0].outputs.external_ip.value)
+mkdir -p "$(state_dir dns)"
+external_ip=$(gbe ip)
 dns_zone=$(bosh int "$BASE_DIR/base-env/conf/global-config.yml" --path /dns_zone)
 dns_subdomain=$(bosh int "$BASE_DIR/base-env/conf/global-config.yml" --path /dns_subdomain)
 sed -e "s/EXTERNAL_IP/$external_ip/g; s/DNS_ZONE/$dns_zone/g; s/DNS_SUBDOMAIN/$dns_subdomain/g;" \
-    "$DNS_DIR/conf/zone-config-template.js" > "$BASE_DIR/state/dns/zone-config.js"
+    "$DNS_DIR/conf/zone-config-template.js" > "$(state_dir dns)/zone-config.js"
 
 
-dnscontrol -creds "$DNS_DIR/conf/creds.json" -js "$BASE_DIR/state/dns/zone-config.js" push
+dnscontrol push \
+    --creds "$DNS_DIR/conf/creds.json" \
+    --config "$(state_dir dns)/zone-config.js"
+
+# Local Variables:
+# indent-tabs-mode: nil
+# End:
