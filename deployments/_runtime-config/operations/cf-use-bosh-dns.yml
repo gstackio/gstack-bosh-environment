@@ -86,7 +86,7 @@
         properties:
           aliases: *cf_aliases
 
-- path: /releases/-
+- path: /releases/name=bosh-dns?
   type: replace
   value:
     name: bosh-dns
