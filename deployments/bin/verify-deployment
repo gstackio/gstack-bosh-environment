@@ -8,7 +8,7 @@ fetch_ubdms
 source "$DEPL_DIR/conf/operations-layout.inc.bash"
 build_operations_arguments
 
-bosh_ro_invoke interpolate > "$DEPL_DIR/state/depl-manifest.yml"
+bosh_ro_invoke interpolate > "$(state_dir)/depl-manifest.yml"
 
 bosh_rw_invoke interpolate --var-errs > /dev/null
 status=$?

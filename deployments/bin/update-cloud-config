@@ -15,10 +15,10 @@ BASE_CLOUD_CONFIG_FILE=$MAIN_DEPLOYMENT_FILE # Shim
 bosh interpolate "$BASE_CLOUD_CONFIG_FILE" \
     "${operations_arguments[@]}" \
     --vars-file "$CLOUD_CONFIG_DIR/conf/depl-vars.yml" \
-    > "$CLOUD_CONFIG_DIR/state/cloud-config.yml"
+    > "$(state_dir)/cloud-config.yml"
 
-if [ ! -s "$CLOUD_CONFIG_DIR/state/cloud-config.yml" ]; then
+if [ ! -s "$(state_dir)/cloud-config.yml" ]; then
     echo "Cloud config file is empty. ${BLUE}Skipping$RESET update."
     exit 0
 fi
-bosh update-cloud-config "$CLOUD_CONFIG_DIR/state/cloud-config.yml" "$@"
+bosh update-cloud-config "$(state_dir)/cloud-config.yml" "$@"

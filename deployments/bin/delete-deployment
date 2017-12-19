@@ -10,7 +10,7 @@ fetch_ubdms
 source "$DEPL_DIR/conf/operations-layout.inc.bash"
 build_operations_arguments
 
-restrict_permissions "$DEPL_DIR/state/depl-creds.yml"
-bosh_ro_invoke interpolate > "$DEPL_DIR/state/depl-manifest.yml"
+restrict_permissions "$(state_dir)/depl-creds.yml"
+bosh_ro_invoke interpolate > "$(state_dir)/depl-manifest.yml"
 
 bosh delete-deployment "$@"

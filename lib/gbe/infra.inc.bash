@@ -16,7 +16,7 @@ function infra_var() {
 }
 
 function bbl_invoke() {
-    bbl --state-dir "$BASE_DIR/state/base-env" "$@"
+    bbl --state-dir "$(state_dir base-env)" "$@"
 }
 
 function infra_bosh_ro_invoke() {
@@ -33,8 +33,8 @@ function infra_bosh_rw_invoke() {
 
     infra_bosh_ro_invoke "$verb" \
         --vars-file <(bbl_invoke bosh-deployment-vars) \
-        --vars-store "$BASE_DIR/state/base-env/depl-creds.yml" \
-        --state "$BASE_DIR/state/base-env/env-infra-state.json" \
+        --vars-store "$(state_dir base-env)/depl-creds.yml" \
+        --state "$(state_dir base-env)/env-infra-state.json" \
         "$@"
 }
 

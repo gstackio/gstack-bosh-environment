@@ -15,10 +15,10 @@ RUNTIME_CONFIG_FILE=$MAIN_DEPLOYMENT_FILE # Shim
 bosh interpolate "$RUNTIME_CONFIG_FILE" \
     "${operations_arguments[@]}" \
     --vars-file "$RUNTIME_CONFIG_DIR/conf/depl-vars.yml" \
-    > "$RUNTIME_CONFIG_DIR/state/runtime-config.yml"
+    > "$(state_dir)/runtime-config.yml"
 
-if [ ! -s "$RUNTIME_CONFIG_DIR/state/runtime-config.yml" ]; then
+if [ ! -s "$(state_dir)/runtime-config.yml" ]; then
     echo "Cloud config file is empty. ${BLUE}Skipping$RESET update."
     exit 0
 fi
-bosh update-runtime-config "$RUNTIME_CONFIG_DIR/state/runtime-config.yml" "$@"
+bosh update-runtime-config "$(state_dir)/runtime-config.yml" "$@"

@@ -16,6 +16,15 @@ function restrict_permissions() {
     chmod 600 "$filename"
 }
 
+function state_dir() {
+    local gbe_subsys=${1:-$GBE_SUBSYS}
+    if [ -z "$gbe_subsys" ]; then
+        echo "ERROR: missing 'GBE_SUBSYS' variable" >&2
+        return 1
+    fi
+    echo "$BASE_DIR/state/$gbe_subsys"
+}
+
 function build_operations_arguments() {
     operations_arguments=()
 
@@ -43,7 +52,7 @@ function bosh_rw_invoke() {
     local verb=$1; shift
 
     bosh_ro_invoke "$verb" \
-        --vars-store "$DEPL_DIR/state/depl-creds.yml" \
+        --vars-store "$(state_dir)/depl-creds.yml" \
         "$@"
 }
 
@@ -97,3 +106,7 @@ function fetch_ubdms() {
 
     MAIN_DEPLOYMENT_FILE=$UPSTREAM_DEPLOYMENT_DIR/$(depl_var /upstream_base_deployment_manifests/main_deployment_file)
 }
+
+# Local Variables:
+# indent-tabs-mode: nil
+# End:

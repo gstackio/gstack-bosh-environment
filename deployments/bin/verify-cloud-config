@@ -16,7 +16,7 @@ BASE_CLOUD_CONFG_FILE=$MAIN_DEPLOYMENT_FILE # Shim
 bosh interpolate "$BASE_CLOUD_CONFG_FILE" \
     "${operations_arguments[@]}" \
     --var-errs \
-    > "$CLOUD_CONFG_DIR/state/cloud-config.yml"
+    > "$(state_dir)/cloud-config.yml"
 
 bosh interpolate "$BASE_CLOUD_CONFG_FILE" \
     "${operations_arguments[@]}" \
