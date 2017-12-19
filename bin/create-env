@@ -50,7 +50,9 @@ if [ -n "$old_BOSH_ALL_PROXY" ]; then
 	unset old_BOSH_ALL_PROXY
 fi
 
-ssh-keygen -f ~/.ssh/known_hosts -R "$(gbe ip)"
+if [ -f ~/.ssh/known_hosts ]; then
+    ssh-keygen -f ~/.ssh/known_hosts -R "$(gbe ip)"
+fi
 ssh-keyscan -t ecdsa "$(gbe ip)" 2> /dev/null \
     > ~/.ssh/known_hosts
 gbe tunnel
