@@ -3,6 +3,7 @@
 /bin/terraform
 /bin/bosh
 /bin/dnscontrol
+/bin/credhub
 creds.yml
 *-creds.yml
 bbl-state.json
