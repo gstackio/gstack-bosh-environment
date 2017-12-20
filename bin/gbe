@@ -493,7 +493,7 @@ function delete_usage() {
     local b=$BOLD
     local rst=$RESET
     echo "Usage:"
-    echo "  $ul$SCRIPT_NAME$noul  ${ul}delete$noul  [<deployment-name>]  [-n]"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}delete$noul  <deployment-name>  [-n]"
     echo "  $ul$SCRIPT_NAME$noul  ${ul}delete$noul  all"
     echo
     echo "    <deployment-name>   The name of a deployment to delete."
@@ -930,7 +930,7 @@ case $1 in
     delete)
         shift
         case $1 in
-            -h)
+            ""|-h)
                 delete_usage ;;
             all)
                 each_deployment delete -n ;;
