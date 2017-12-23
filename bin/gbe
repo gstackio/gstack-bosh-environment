@@ -13,6 +13,7 @@ if ! echo "$PATH" | tr : '\n' | grep -q "^$BASE_DIR/bin$"; then
 fi
 
 source "$BASE_DIR/lib/gbe/colors.inc.bash"
+source "$BASE_DIR/lib/gbe/spec.inc.bash"
 
 function pushd() {
     command pushd "$@" > /dev/null || exit 115
@@ -827,11 +828,78 @@ function gbe_up() {
     setup_terraform 0.9.11
     setup_bosh_cli 2.0.45
     assert_utilities ruby "to render ERB templates locally"
-    pushd "$BASE_DIR"
-        source .envrc
-        create-env
-    popd
+
+    stop_tunnel > /dev/null
+    # Proxy must not interfere when (re)creating the Bosh environment
+    old_BOSH_ALL_PROXY=$BOSH_ALL_PROXY
+    unset BOSH_ALL_PROXY
+
+    export SUBSYS_DIR=$BASE_DIR/base-env
+    create_env
+
+    # Restore any previous proxy setup, now that Bosh env is (re)created
+    if [ -n "$old_BOSH_ALL_PROXY" ]; then
+        export BOSH_ALL_PROXY=$old_BOSH_ALL_PROXY
+        unset old_BOSH_ALL_PROXY
+    fi
+
+    if [ -f ~/.ssh/known_hosts ]; then
+        ssh-keygen -f ~/.ssh/known_hosts -R "$(gbe ip)"
+    fi
+    ssh-keyscan -t ecdsa "$(gbe ip)" 2> /dev/null \
+        > ~/.ssh/known_hosts
+    start_tunnel
+
+    echo -e "\n${BLUE}Aliasing the created BOSH environment to ${BOLD}'$BOSH_ENVIRONMENT'$RESET\n"
+
+    bosh -e "$(bosh int <(bbl_invoke bosh-deployment-vars) --path /internal_ip)" \
+        --ca-cert <(bosh int "$BASE_DIR/state/base-env/depl-creds.yml" --path /director_ssl/ca) \
+        alias-env "$BOSH_ENVIRONMENT"
+
     setup_firewall
+}
+
+function create_env() {
+
+    # Assert subsystem is a bosh-environment
+    local subsys_type=$(spec_var /subsystem/type)
+    if [ "$subsys_type" != bosh-environment ]; then
+        echo "ERROR: expected subsystem '$(basename "$SUBSYS_DIR")' to be of type 'bosh-environment'" \
+	     "but was '$subsys_type'. Aborting." >&2
+        exit 1
+    fi
+
+
+    echo -e "\n${BLUE}Fetching ${BOLD}upstream base deployment manifests$RESET\n"
+
+    fetch_input_resources
+    read_${subsys_type}_spec
+
+
+    echo -e "\n${BLUE}Running ${BOLD}bbl up$RESET to create infrastructure for the BOSH environment\n"
+
+    bbl_invoke up \
+        --iaas "$(spec_var /infra_vars/iaas)" \
+        --gcp-region "$(spec_var /infra_vars/region)" \
+        --gcp-zone "$(spec_var /infra_vars/zone)" \
+        --gcp-service-account-key "$BASE_DIR/base-env/conf/gcp-service-account.key.json" \
+        --gcp-project-id "$(spec_var /infra_vars/project_id)" \
+        --no-director
+
+    # Ensure restricted permissions for state files containing sensitive
+    # informations. Please not that 'bbl-state.json' must not be created before
+    # invoking `bbl up`.
+    restrict_permissions \
+        "$BASE_DIR/state/base-env/bbl-state.json" \
+        "$BASE_DIR/state/base-env/depl-creds.yml"
+
+    infra_bosh_ro_invoke interpolate > "$BASE_DIR/state/base-env/depl-manifest.yml"
+
+
+    echo -e "\n${BLUE}Running ${BOLD}bosh create-env$RESET to create the BOSH environment\n"
+
+    infra_bosh_rw_invoke create-env
+
 }
 
 function ssh_jumpbox() {
