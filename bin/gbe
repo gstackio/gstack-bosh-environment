@@ -424,6 +424,25 @@ function dns_usage() {
     echo
 }
 
+function tunnel_usage() {
+    local ul=$UNDERLINE
+    local noul=$NOUNDERLINE
+    echo "Usage:"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}tunnel$noul  start"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}tunnel$noul  stop"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}tunnel$noul  status"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}tunnel$noul  logs"
+    echo
+    echo "Start or stop a SOCKS5 compatible SSH tunnel, or get its status, or"
+    echo "obtain any logs produced. This tunnel is necessary in order to access"
+    echo "the BOSH server, and keep it away from being exposed to the entire"
+    echo "Internet, protected behind firewall rules."
+    echo
+    echo "Environment variables might then need to be be refreshed. Run ${ul}gbe env$noul"
+    echo "for more details."
+    echo
+}
+
 function update_usage() {
     local ul=$UNDERLINE
     local noul=$NOUNDERLINE
@@ -714,15 +733,6 @@ function cleanup_compiled_releases() {
     popd
 }
 
-function jumpbox_ip() {
-    bosh int <(bbl_invoke bosh-deployment-vars) --path /external_ip
-}
-
-function has_tunnel() {
-    local pid_file=$1
-    [ -s "$pid_file" ] && ps -p "$(cat "$pid_file")" > /dev/null
-}
-
 function restrict_permissions() {
     local filename=$1
 
@@ -736,6 +746,15 @@ function jumpbox_key() {
          > "$(state_dir base-env)/jumpbox.key"
 }
 
+function jumpbox_ip() {
+    bosh int <(bbl_invoke bosh-deployment-vars) --path /external_ip
+}
+
+function has_tunnel() {
+    local pid_file=$(state_dir base-env)/ssh-tunnel.pid
+    [ -s "$pid_file" ] && ps -p "$(cat "$pid_file")" > /dev/null
+}
+
 TUNNEL_PORT=5000
 
 function setup_tunnel() {
@@ -743,12 +762,10 @@ function setup_tunnel() {
 
     local pid_file=$(state_dir base-env)/ssh-tunnel.pid
     if has_tunnel "$pid_file"; then
-        echo -e "\n${BLUE}SSH tunnel is ${BOLD}already running$RESET on PID '$(cat "$pid_file")'" \
-             "(more info with ${UNDERLINE}lsof -i :$local_port$RESET)\n"
-        return 1
+        return 0
     fi
 
-	echo -e "\n${BLUE}Opening the ${BOLD}SSH tunnel$RESET that enables access to the Bosh server\n"
+    echo -e "\n${BLUE}Opening the ${BOLD}SSH tunnel$RESET that enables access to the Bosh server\n"
 
     jumpbox_key
 
@@ -758,6 +775,47 @@ function setup_tunnel() {
     lsof -i ":$local_port" \
         | grep -E '^ssh\b' | awk '{print $2}' \
         > "$pid_file"
+}
+
+function start_tunnel() {
+    local pid_file=$(state_dir base-env)/ssh-tunnel.pid
+    if has_tunnel "$pid_file"; then
+        echo -e "\n${BLUE}SSH tunnel is ${BOLD}already running$RESET on PID '$(cat "$pid_file")'" \
+             "(more info with ${UNDERLINE}lsof -i :$local_port$RESET)\n"
+        return 1
+    fi
+    setup_tunnel "$TUNNEL_PORT"
+    if [ "$BOSH_ALL_PROXY" != "socks5://127.0.0.1:$TUNNEL_PORT" ]; then
+        echo
+        echo "${BLUE}You must ${BOLD}refresh your environment variables${RESET} like this:"
+        env_usage
+    fi
+}
+
+function tunnel_status() {
+    local pid_file=$(state_dir base-env)/ssh-tunnel.pid
+    if ! has_tunnel; then
+        echo -e "\nSSH tunnel is $RED${BOLD}not running$RESET\n"
+    else
+        echo -e "\nSSH tunnel is $GREEN${BOLD}is running$RESET on PID '$(cat "$pid_file")'\n"
+        echo -e "${BOLD}Details:$RESET"
+        lsof -i ":$TUNNEL_PORT"
+        echo
+    fi
+}
+
+function tunnel_logs() {
+    echo -e "${BOLD}Last logs:$RESET"
+    tail "$(state_dir base-env)/ssh-tunnel.log"
+}
+
+function stop_tunnel() {
+    local pid_file=$(state_dir base-env)/ssh-tunnel.pid
+    if has_tunnel "$pid_file"; then
+        echo -e "\n${BLUE}Closing the ${BOLD}SSH tunnel$RESET that enables access to the Bosh server\n"
+        kill "$(cat "$pid_file")"
+    fi
+    rm -f "$pid_file"
 }
 
 function internal_ip() {
@@ -840,37 +898,12 @@ case $1 in
     firewall)   setup_firewall ;;
     tunnel)
         shift
-        pid_file=$(state_dir base-env)/ssh-tunnel.pid
         case $1 in
-            stop)
-                if has_tunnel "$pid_file"; then
-                    echo -e "\n${BLUE}Closing the ${BOLD}SSH tunnel$RESET that enables access to the Bosh server\n"
-                    kill "$(cat "$pid_file")"
-                fi
-                rm -f "$pid_file"
-                ;;
-            status)
-                if ! has_tunnel "$pid_file"; then
-                    echo -e "\nSSH tunnel is $RED${BOLD}not running$RESET\n"
-                else
-                    echo -e "\nSSH tunnel is $GREEN${BOLD}is running$RESET on PID '$(cat "$pid_file")'\n"
-                    echo -e "${BOLD}Details:$RESET"
-                    lsof -i ":$TUNNEL_PORT"
-                    echo
-                fi
-                ;;
-            logs)
-                echo -e "${BOLD}Last logs:$RESET"
-                tail "$(state_dir base-env)/ssh-tunnel.log"
-                ;;
-            *)
-                setup_tunnel "$TUNNEL_PORT"
-                if [ "$BOSH_ALL_PROXY" != "socks5://127.0.0.1:$TUNNEL_PORT" ]; then
-                    echo
-                    echo "${BLUE}You must ${BOLD}refresh your environment variables${RESET} like this:"
-                    env_usage
-                fi
-                ;;
+            start)  start_tunnel  ;;
+            stop)   stop_tunnel   ;;
+            status) tunnel_status ;;
+            logs)   tunnel_logs   ;;
+            *)      tunnel_usage  ;;
         esac
         ;;
     dns)
