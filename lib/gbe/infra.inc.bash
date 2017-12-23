@@ -31,6 +31,8 @@ function infra_bosh_ro_invoke() {
 function infra_bosh_rw_invoke() {
     local verb=$1; shift
 
+    # Note: BBL's bosh-deployment-vars contain credentials. That's why
+    # they are added here as --vars-file instead of in 'infra_bosh_ro_invoke()'
     infra_bosh_ro_invoke "$verb" \
         --vars-file <(bbl_invoke bosh-deployment-vars) \
         --vars-store "$(state_dir base-env)/depl-creds.yml" \

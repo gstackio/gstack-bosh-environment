@@ -46,8 +46,8 @@ infra_bosh_rw_invoke create-env
 
 # Restore any previous proxy setup, now that Bosh env is (re)created
 if [ -n "$old_BOSH_ALL_PROXY" ]; then
-	export BOSH_ALL_PROXY=$old_BOSH_ALL_PROXY
-	unset old_BOSH_ALL_PROXY
+    export BOSH_ALL_PROXY=$old_BOSH_ALL_PROXY
+    unset old_BOSH_ALL_PROXY
 fi
 
 if [ -f ~/.ssh/known_hosts ]; then
