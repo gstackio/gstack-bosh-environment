@@ -1,0 +1,39 @@
+---
+upstream_base_deployment_manifests:
+
+  # name: cassandra-boshrelease
+  # git_repo: https://github.com/orange-cloudfoundry/cassandra-cf-service-boshrelease.git
+  # version: a51f7b0 # as of Dec 1st, 2017
+  # main_deployment_file: ~ # no actual deployment file is available there yet
+
+  local_dir: conf
+  main_deployment_file: cassandra-deployment.yml
+
+
+deployment_name: easyfoundry-cassandra
+
+
+# User-facing settings
+
+cassandra_domain: cassandra.easyfoundry.prototyp.it
+
+
+# Versions
+
+routing_version: "0.168.0"
+routing_sha1: 885321f95b530c4a5b8515c72155229cba26c449
+
+stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+stemcell_version: "3468.11"
+stemcell_sha1: 74592d4c2b7f2aebacd767112dd0ef28b028532b
+
+
+# Plumbery
+
+cassandra_network: cassandra-network
+cf_deployment_name: easyfoundry-cf
+cf_api_url: https://api.cf.easyfoundry.prototyp.it
+cf_skip_ssl_validation: true
+cf_admin_username: admin
+cf_admin_password: ~ # set here the 'cf_admin_password' found in deployments/cf/state/depl-creds.yml
+cf_app_domain: cf.easyfoundry.prototyp.it

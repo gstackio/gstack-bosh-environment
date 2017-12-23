@@ -5,4 +5,5 @@ local_operations=(
     concourse-support
     shield-support
     prometheus-support
+    cassandra-support
 )
