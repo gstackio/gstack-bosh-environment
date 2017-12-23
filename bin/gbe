@@ -248,7 +248,7 @@ function setup_credhub_cli() {
 }
 
 function credhub_login() {
-    local creds=$BASE_DIR/state/base-env/depl-creds.yml
+    local creds=$(state_dir base-env)/depl-creds.yml
 
     export CREDHUB_SERVER=https://$(internal_ip):8844
     export CREDHUB_CA_CERT=$(state_dir base-env)/credhub_CAs.pem
@@ -853,7 +853,7 @@ function gbe_up() {
     echo -e "\n${BLUE}Aliasing the created BOSH environment to ${BOLD}'$BOSH_ENVIRONMENT'$RESET\n"
 
     bosh -e "$(bosh int <(bbl_invoke bosh-deployment-vars) --path /internal_ip)" \
-        --ca-cert <(bosh int "$BASE_DIR/state/base-env/depl-creds.yml" --path /director_ssl/ca) \
+        --ca-cert <(bosh int "$(state_dir base-env)/depl-creds.yml" --path /director_ssl/ca) \
         alias-env "$BOSH_ENVIRONMENT"
 
     setup_firewall
@@ -890,10 +890,10 @@ function create_env() {
     # informations. Please not that 'bbl-state.json' must not be created before
     # invoking `bbl up`.
     restrict_permissions \
-        "$BASE_DIR/state/base-env/bbl-state.json" \
-        "$BASE_DIR/state/base-env/depl-creds.yml"
+        "$(state_dir base-env)/bbl-state.json" \
+        "$(state_dir base-env)/depl-creds.yml"
 
-    infra_bosh_ro_invoke interpolate > "$BASE_DIR/state/base-env/depl-manifest.yml"
+    infra_bosh_ro_invoke interpolate > "$(state_dir base-env)/depl-manifest.yml"
 
 
     echo -e "\n${BLUE}Running ${BOLD}bosh create-env$RESET to create the BOSH environment\n"
