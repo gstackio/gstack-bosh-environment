@@ -758,7 +758,7 @@ function has_tunnel() {
 
 TUNNEL_PORT=5000
 
-function setup_tunnel() {
+function open_tunnel() {
     local local_port=$1
 
     local pid_file=$(state_dir base-env)/ssh-tunnel.pid
@@ -776,6 +776,10 @@ function setup_tunnel() {
     lsof -i ":$local_port" \
         | grep -E '^ssh\b' | awk '{print $2}' \
         > "$pid_file"
+
+    # For any subsequent calls to 'bosh' CLI that rely on the tunnel, we now
+    # set the BOSH_ALL_PROXY environment variable.
+    export BOSH_ALL_PROXY=socks5://127.0.0.1:$TUNNEL_PORT
 }
 
 function start_tunnel() {
@@ -785,7 +789,7 @@ function start_tunnel() {
              "(more info with ${UNDERLINE}lsof -i :$local_port$RESET)\n"
         return 1
     fi
-    setup_tunnel "$TUNNEL_PORT"
+    open_tunnel "$TUNNEL_PORT"
     if [ "$BOSH_ALL_PROXY" != "socks5://127.0.0.1:$TUNNEL_PORT" ]; then
         echo
         echo "${BLUE}You must ${BOLD}refresh your environment variables${RESET} like this:"
@@ -852,9 +856,17 @@ function gbe_up() {
 
     echo -e "\n${BLUE}Aliasing the created BOSH environment to ${BOLD}'$BOSH_ENVIRONMENT'$RESET\n"
 
-    bosh -e "$(bosh int <(bbl_invoke bosh-deployment-vars) --path /internal_ip)" \
-        --ca-cert <(bosh int "$(state_dir base-env)/depl-creds.yml" --path /director_ssl/ca) \
-        alias-env "$BOSH_ENVIRONMENT"
+    local env_creds=$(state_dir base-env)/depl-creds.yml
+    function get_var() {
+        local path=$1
+        bosh int "$env_creds" --path "$path"
+    }
+
+    export BOSH_CA_CERT="$(get_var /default_ca/ca)"
+    export BOSH_CLIENT=admin
+    export BOSH_CLIENT_SECRET=$(get_var /admin_password)
+    export BOSH_ENVIRONMENT=gcp
+    bosh -e "$(internal_ip)" alias-env "$BOSH_ENVIRONMENT"
 
     setup_firewall
 }
@@ -865,15 +877,17 @@ function create_env() {
     local subsys_type=$(spec_var /subsystem/type)
     if [ "$subsys_type" != bosh-environment ]; then
         echo "ERROR: expected subsystem '$(basename "$SUBSYS_DIR")' to be of type 'bosh-environment'" \
-	     "but was '$subsys_type'. Aborting." >&2
+         "but was '$subsys_type'. Aborting." >&2
         exit 1
     fi
 
+    set -e
 
-    echo -e "\n${BLUE}Fetching ${BOLD}upstream base deployment manifests$RESET\n"
+    echo -e "\n${BLUE}Fetching ${BOLD}input resources$RESET\n"
 
     fetch_input_resources
     read_${subsys_type}_spec
+    mkdir -p "$(state_dir base-env)"
 
 
     echo -e "\n${BLUE}Running ${BOLD}bbl up$RESET to create infrastructure for the BOSH environment\n"
@@ -984,7 +998,6 @@ case $1 in
         ;;
     ssh)
         shift
-        setup_tunnel "$TUNNEL_PORT"
         ssh_jumpbox "$@"
         ;;
     update)
