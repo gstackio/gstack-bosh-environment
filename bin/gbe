@@ -916,6 +916,59 @@ function create_env() {
 
 }
 
+function delete_env() {
+
+    # Assert subsystem is a bosh-environment
+    local subsys_type=$(spec_var /subsystem/type)
+    if [ "$subsys_type" != bosh-environment ]; then
+        echo "ERROR: expected subsystem '$(basename "$SUBSYS_DIR")' to be of type 'bosh-environment'" \
+         "but was '$subsys_type'. Aborting." >&2
+        exit 1
+    fi
+
+    set -e
+
+    echo -e "\n${BLUE}Fetching ${BOLD}input resources$RESET\n"
+
+    fetch_input_resources
+    read_${subsys_type}_spec
+    mkdir -p "$(state_dir base-env)"
+
+
+    infra_bosh_ro_invoke interpolate > "$(state_dir base-env)/depl-manifest.yml"
+
+
+    if [ ! -e "$(state_dir base-env)/depl-creds.yml" ]; then
+        echo -e "\n${BLUE}Skipping ${BOLD}bosh delete-env$RESET, as the 'state/base-env/depl-creds.yml' file is absent\n"
+    else
+        echo -e "\n${BLUE}Running ${BOLD}bosh delete-env$RESET to destroy the BOSH environment\n"
+        infra_bosh_rw_invoke delete-env
+        rm -vf "$(state_dir base-env)/depl-creds.yml"
+    fi
+
+
+    if [ ! -e "$(state_dir base-env)/jumpbox.key" ]; then
+        echo -e "\n${BLUE}Skipping ${BOLD}SSH key removal$RESET, as it is absent\n"
+    else
+        echo -e "\n${BLUE}Removing ${BOLD}SSH key$RESET from SSH Agent\n"
+        ssh-keygen -y -f "$(state_dir base-env)/jumpbox.key" > "$(state_dir base-env)/jumpbox.key.pub"
+        if ssh-add -L | grep -qF "$(cat "$(state_dir base-env)/jumpbox.key.pub")"; then
+            ssh-add -d "$(state_dir base-env)/jumpbox.key.pub"
+        fi
+        rm -vf "$(state_dir base-env)/jumpbox.key" "$(state_dir base-env)/jumpbox.key.pub"
+        ssh-keygen -f ~/.ssh/known_hosts -R "$(gbe ip)"
+    fi
+
+    if [ "x$1" == "x-k" ]; then
+        echo -e "\n${BLUE}Skipping ${BOLD}bbl destroy$RESET, as per user request\n"
+    elif [ ! -e "$(state_dir base-env)/bbl-state.json" ]; then
+        echo -e "\n${BLUE}Skipping ${BOLD}bbl destroy$RESET, as the 'state/bbl-state.json' file is absent\n"
+    else
+        echo -e "\n${BLUE}Running ${BOLD}bbl destroy$RESET to destroy infrastructure for the BOSH environment\n"
+        bbl_invoke destroy --no-confirm --skip-if-missing
+    fi
+}
+
 function ssh_jumpbox() {
     if [ ! -f "$(state_dir base-env)/depl-creds.yml" ]; then
         echo "$SCRIPT_NAME: ERROR: the base BOSH environment is not created yet" \
@@ -972,10 +1025,7 @@ case $1 in
         jumpbox_ip ;;
     down)
         shift
-        pushd "$BASE_DIR"
-            source .envrc
-            delete-env "$@"
-        popd
+        delete_env "$@"
         ;;
     firewall)   setup_firewall ;;
     tunnel)
