@@ -18,7 +18,8 @@ function fetch_input_resources() {
         local rsc_type=$(spec_var "$rsc_path/type")
         case $rsc_type in
             git|local_dir)
-                fetch_${rsc_type}_resource $rsc_idx ;;
+                fetch_${rsc_type}_resource $rsc_path
+                ;;
             *)
                 echo "ERROR: unsupported resource type: '$rsc_type'" >&2
                 return 1 ;;
@@ -28,9 +29,7 @@ function fetch_input_resources() {
 }
 
 function fetch_git_resource() {
-    local rsc_idx=$1
-
-    local rsc_path=/input_resources/$rsc_idx
+    local rsc_path=$1
 
     local rsc_name git_remote git_version cache_dir rsc_dir
     rsc_name=$(spec_var $rsc_path/name)
@@ -54,10 +53,12 @@ function fetch_git_resource() {
             || (echo "Error while checking out version '$git_version' of '$rsc_name'" > /dev/stderr \
                 && exit 1)
     popd > /dev/null
+
+    echo "$(spec_var "$rsc_path/name")@$(spec_var "$rsc_path/version")"
 }
 
 function fetch_local_dir_resource() {
-    : # nothing to do
+    echo "$(spec_var "$rsc_path/name")"
 }
 
 function read_bosh-environment_spec() {
