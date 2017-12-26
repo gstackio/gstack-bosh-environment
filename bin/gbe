@@ -833,9 +833,9 @@ function gbe_up() {
     setup_bosh_cli 2.0.45
     assert_utilities ruby "to render ERB templates locally"
 
-    stop_tunnel > /dev/null
     # Proxy must not interfere when (re)creating the Bosh environment
     old_BOSH_ALL_PROXY=$BOSH_ALL_PROXY
+    stop_tunnel > /dev/null
     unset BOSH_ALL_PROXY
 
     export SUBSYS_DIR=$BASE_DIR/base-env
@@ -936,6 +936,10 @@ function delete_env() {
 
 
     infra_bosh_ro_invoke interpolate > "$(state_dir base-env)/depl-manifest.yml"
+
+
+    stop_tunnel
+    unset BOSH_ALL_PROXY
 
 
     if [ ! -e "$(state_dir base-env)/depl-creds.yml" ]; then
