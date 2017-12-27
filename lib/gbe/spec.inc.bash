@@ -2,6 +2,11 @@
 function spec_var() {
     local path=$1
 
+    if [ -z "$SUBSYS_DIR" ]; then
+        echo "ERROR: missing 'SUBSYS_DIR' variable. Aborting." >&2
+        return 1
+    fi
+
     bosh int "$SUBSYS_DIR/conf/spec.yml" \
         --path "$path" \
         2> /dev/null
@@ -78,9 +83,9 @@ function read_bosh-environment_spec() {
     rsc=$(spec_var /main_deployment_file | cut -d/ -f1)
     file=$(spec_var /main_deployment_file | cut -d/ -f2-)
     if [ "$rsc" == . ]; then
-	dir=$SUBSYS_DIR
+        dir=$SUBSYS_DIR
     else
-	dir=$BASE_DIR/.cache/resources/$rsc
+        dir=$BASE_DIR/.cache/resources/$rsc
     fi
     MAIN_DEPLOYMENT_FILE=$dir/$file
 
@@ -96,6 +101,10 @@ function read_bosh-environment_spec() {
             OPERATIONS_ARGUMENTS+=(-o "$op_dir/${op}.yml")
         done
     done
+}
+
+function read_bosh-deployment_spec() {
+    read_bosh-environment_spec "$@"
 }
 
 function bosh_ro_invoke() {

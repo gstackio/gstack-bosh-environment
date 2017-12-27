@@ -1,0 +1,57 @@
+---
+subsys:
+  name: cf
+  type: bosh-deployment
+
+input_resources:
+  - name: cf-deployment
+    type: git
+    uri: https://github.com/cloudfoundry/cf-deployment.git
+    version: v1.0.0
+  - name: prometheus-boshrelease
+    type: git
+    uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
+    version: v20.0.0
+
+
+main_deployment_file: cf-deployment/cf-deployment.yml
+
+operations_files:
+  cf-deployment:
+    - operations/bosh-lite
+  prometheus-boshrelease:
+    - manifests/operators/cf/add-prometheus-uaa-clients
+    - manifests/operators/cf/add-grafana-uaa-clients
+  local:
+    - set-versions
+    - expose-admin-user-as-link
+
+
+deployment_vars:
+  deployment_name: easyfoundry-cf
+
+
+  # User-facing settings
+
+  system_domain: cf.easyfoundry.prototyp.it
+
+
+  # Versions
+
+  cf_mysql_version: "36.9.0"
+  cf_mysql_sha1: "adf3ad18f608cd0f045c4feeb08422947c1481a7"
+
+  routing_version: "0.168.0"
+  routing_sha1: 885321f95b530c4a5b8515c72155229cba26c449
+
+  stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+  stemcell_version: "3468.11"
+  stemcell_sha1: 74592d4c2b7f2aebacd767112dd0ef28b028532b
+
+
+  # Plumbery
+
+  grafana_redirect_uri: https://uaa.cf.easyfoundry.prototyp.it/login
+
+
+imported_vars: {}

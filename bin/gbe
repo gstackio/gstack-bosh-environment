@@ -58,9 +58,9 @@ function assert_utilities() {
     done
 }
 function state_dir() {
-    local gbe_subsys=${1:-$GBE_SUBSYS}
+    local gbe_subsys=${1:-$(spec_var /subsys/name)}
     if [ -z "$gbe_subsys" ]; then
-        echo "ERROR: missing 'GBE_SUBSYS' variable" >&2
+        echo "ERROR: missing subsys name. Aborting." >&2
         return 1
     fi
     echo "$BASE_DIR/state/$gbe_subsys"
@@ -108,9 +108,12 @@ function env_exports() {
     echo "export BOSH_ALL_PROXY=socks5://127.0.0.1:$TUNNEL_PORT"
     echo "export BOSH_CA_CERT=\"$(get_var /default_ca/ca)\""
     echo "export BOSH_CLIENT=admin"
-    echo "export BOSH_CLIENT_SECRET=$(get_var /admin_password)"
+    echo "export BOSH_CLIENT_SECRET=\"$(get_var /admin_password)\""
     echo "export BOSH_GW_PRIVATE_KEY=\"$(state_dir base-env)/jumpbox.key\""
     echo "export BOSH_ENVIRONMENT=gcp"
+    if [ -n "$SUBSYS_DIR" ]; then
+        echo "export BOSH_DEPLOYMENT=\"$(spec_var /deployment_vars/deployment_name)\""
+    fi
 }
 
 function setup_bbl() {
@@ -582,6 +585,20 @@ function update_config() {
     popd
 }
 
+function upload_stemcell() {
+    local stemcell_name stemcell_version stemcell_sha1
+
+    stemcell_name=$(spec_var /deployment_vars/stemcell_name)
+    stemcell_version=$(spec_var /deployment_vars/stemcell_version)
+    stemcell_sha1=$(spec_var /deployment_vars/stemcell_sha1)
+
+    bosh upload-stemcell \
+        --name "$stemcell_name" \
+        --version "$stemcell_version" \
+        --sha1 "$stemcell_sha1" \
+        "https://bosh.io/d/stemcells/$stemcell_name?v=$stemcell_version"
+}
+
 function each_deployment() {
     local cmd=$1; shift
 
@@ -596,25 +613,39 @@ function each_deployment() {
     done
 }
 
-function converge() {
+function converge_deployment() {
     local depl_name=$1; shift
 
     echo -e "\n${BLUE}Converging the $BOLD'$depl_name'$RESET deployment.\n"
-    pushd "$BASE_DIR/deployments/$depl_name"
-        source .envrc
-        upload-stemcell
-        deploy "$@"
-    popd
+
+    export SUBSYS_DIR=$BASE_DIR/deployments/$depl_name
+    eval "$(env_exports)"
+    upload_stemcell
+
+    assert_subsys bosh-deployment
+
+    set -e
+
+    fetch_input_resources
+    read_$(spec_var /subsys/type)_spec
+
+    local subsys_state_dir=$(state_dir)
+    mkdir -p "$subsys_state_dir"
+
+    restrict_permissions "$subsys_state_dir/depl-creds.yml"
+    bosh_ro_invoke interpolate > "$subsys_state_dir/depl-manifest.yml"
+
+    bosh_rw_invoke deploy "$@"
 }
 
-function delete() {
+function delete_deployment() {
     local depl_name=$1; shift
 
     echo -e "\n${BLUE}Deleting the $BOLD'$depl_name'$RESET deployment.\n"
-    pushd "$BASE_DIR/deployments/$depl_name"
-        source .envrc
-        delete-deployment "$@"
-    popd
+
+    export SUBSYS_DIR=$BASE_DIR/deployments/$depl_name
+    eval "$(env_exports)"
+    bosh delete-deployment "$@"
 }
 
 function restrict_permissions() {
@@ -663,10 +694,7 @@ function gbe_up() {
         bosh int "$env_creds" --path "$path"
     }
 
-    export BOSH_CA_CERT="$(get_var /default_ca/ca)"
-    export BOSH_CLIENT=admin
-    export BOSH_CLIENT_SECRET=$(get_var /admin_password)
-    export BOSH_ENVIRONMENT=gcp
+    eval "$(env_exports)"
     bosh -e "$(internal_ip)" alias-env "$BOSH_ENVIRONMENT"
 
     setup_firewall
@@ -682,7 +710,7 @@ function create_env() {
     echo -e "\n${BLUE}Fetching ${BOLD}input resources$RESET\n"
 
     fetch_input_resources
-    read_${subsys_type}_spec
+    read_$(spec_var /subsys/type)_spec
     mkdir -p "$(state_dir base-env)"
 
 
@@ -728,7 +756,7 @@ function delete_env() {
     echo -e "\n${BLUE}Fetching ${BOLD}input resources$RESET\n"
 
     fetch_input_resources
-    read_${subsys_type}_spec
+    read_$(spec_var /subsys/type)_spec
     mkdir -p "$(state_dir base-env)"
 
 
@@ -839,15 +867,15 @@ case $1 in
                 update_config cloud -n
                 update_config runtime -n
                 upload_compiled_releases
-                each_deployment converge -n
+                each_deployment converge_deployment -n
                 ;;
             deployments)
                 update_config cloud -n
                 update_config runtime -n
-                each_deployment converge -n
+                each_deployment converge_deployment -n
                 ;;
             *)
-                converge "$@" ;;
+                converge_deployment "$@" ;;
         esac
         ;;
     recreate)
@@ -856,9 +884,9 @@ case $1 in
             -h)
                 recreate_usage ;;
             all)
-                each_deployment converge -n --recreate --fix --canaries=0 ;;
+                each_deployment converge_deployment -n --recreate --fix --canaries=0 ;;
             *)
-                converge "$@" --recreate --fix --canaries=0 ;;
+                converge_deployment "$@" --recreate --fix --canaries=0 ;;
         esac
         ;;
     delete)
@@ -867,9 +895,9 @@ case $1 in
             ""|-h)
                 delete_usage ;;
             all)
-                each_deployment delete -n ;;
+                each_deployment delete_deployment -n ;;
             *)
-                delete "$@" ;;
+                delete_deployment "$@" ;;
         esac
         ;;
     export)
