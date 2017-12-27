@@ -7,6 +7,18 @@ function spec_var() {
         2> /dev/null
 }
 
+function assert_subsys() {
+    local expected_type=$1
+
+    local subsys_type=$(spec_var /subsystem/type)
+    if [[ $subsys_type != $expected_type ]]; then
+        local subsys_name=$(spec_var /subsystem/name)
+        echo "ERROR: expected subsystem '$subsys_name' to be of type '$expected_type'" \
+         "but was '$subsys_type'. Aborting." >&2
+        exit 1
+    fi
+}
+
 function fetch_input_resources() {
     local subsys_spec=
 

@@ -874,12 +874,7 @@ function gbe_up() {
 function create_env() {
 
     # Assert subsystem is a bosh-environment
-    local subsys_type=$(spec_var /subsystem/type)
-    if [ "$subsys_type" != bosh-environment ]; then
-        echo "ERROR: expected subsystem '$(basename "$SUBSYS_DIR")' to be of type 'bosh-environment'" \
-         "but was '$subsys_type'. Aborting." >&2
-        exit 1
-    fi
+    assert_subsys bosh-environment
 
     set -e
 
@@ -925,12 +920,7 @@ function create_env() {
 function delete_env() {
 
     # Assert subsystem is a bosh-environment
-    local subsys_type=$(spec_var /subsystem/type)
-    if [ "$subsys_type" != bosh-environment ]; then
-        echo "ERROR: expected subsystem '$(basename "$SUBSYS_DIR")' to be of type 'bosh-environment'" \
-         "but was '$subsys_type'. Aborting." >&2
-        exit 1
-    fi
+    assert_subsys bosh-environment
 
     set -e
 
