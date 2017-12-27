@@ -14,6 +14,8 @@ fi
 
 source "$BASE_DIR/lib/gbe/colors.inc.bash"
 source "$BASE_DIR/lib/gbe/spec.inc.bash"
+source "$BASE_DIR/lib/gbe/tunnel.inc.bash"
+source "$BASE_DIR/lib/gbe/compiled-releases.inc.bash"
 
 function pushd() {
     command pushd "$@" > /dev/null || exit 115
@@ -615,212 +617,11 @@ function delete() {
     popd
 }
 
-function each_used_release() {
-    local cmd=$1; shift
-
-    local stemcell
-    stemcell=$(bosh stemcells \
-                | awk '{sub("\\*$", "", $2); print $3 "/" $2}' \
-                | head -n1)
-    local deployments_json
-    deployments_json=$(bosh deployments --json)
-    local deployments
-    deployments=$(echo "$deployments_json" | jq -r '.Tables[0].Rows[] | .name')
-
-    mkdir -p "$BASE_DIR/.cache/compiled-releases"
-    pushd "$BASE_DIR/.cache/compiled-releases" > /dev/null
-
-    for depl_name in $deployments; do
-
-        depl_info_json=$(echo "$deployments_json" \
-            | jq '.Tables[0].Rows[] | select(.name == "'"$depl_name"'")')
-
-        for release in $(echo "$depl_info_json" | jq -r '.release_s'); do
-
-            base_filename=$(echo "$release" | tr / -)-$(echo "$stemcell" | tr / -)
-
-            "$cmd" "$depl_name" "$release" "$stemcell" "$base_filename" "$@"
-        done
-    done
-
-    popd > /dev/null
-}
-
-function export_release_to_cache() {
-    local depl_name=$1; shift
-    local release=$1; shift
-    local stemcell=$1; shift
-    local base_filename=$1; shift
-
-    if [ -n "$(ls "${base_filename}"-*.tgz 2> /dev/null)" ]; then
-        echo -e "\n${RED}Existing release$RESET $BOLD$BLUE$release$RESET" \
-            "for stemcell $BOLD$GREEN$stemcell$RESET. Skipping.\n"
-        return
-    fi
-
-    echo -e "\n${BLUE}Exporting release $BOLD$release$RESET" \
-        "compiled on stemcell $GREEN$BOLD$stemcell$RESET\n"
-
-    pushd "$BASE_DIR/.cache/compiled-releases"
-        bosh -d "$depl_name" export-release "$release" "$stemcell"
-    popd
-}
-
-function export_releases() {
-    assert_utilities jq "to export compiled releases"
-    mkdir -p "$BASE_DIR/.cache/compiled-releases"
-    each_used_release export_release_to_cache
-}
-
-function upload_compiled_releases() {
-    if [ ! -d "$BASE_DIR/.cache/compiled-releases" ]; then
-        return
-    fi
-    echo -e "\n${BLUE}Uploading all ${BOLD}compiled releases$RESET found in cache to the BOSH server.\n"
-    pushd "$BASE_DIR/.cache/compiled-releases"
-        for compiled_release in $(find . -name '*.tgz' | sed -e 's`^./``'); do
-            if [[ $compiled_release =~ ^bosh- ]]; then
-                continue
-            fi
-            local release=$(echo "$compiled_release" | sed -e 's/^\([a-z-]*\)-\([0-9.]\{1,\}\)-.*$/\1\/\2/')
-            local release_name=$(echo "$release" | cut -d/ -f1)
-            local release_version=$(echo "$release" | cut -d/ -f2)
-            echo -e "\n${BLUE}Uploading compiled release $BOLD$compiled_release$RESET\n"
-            bosh -n upload-release --name="$release_name" --version="$release_version" "$compiled_release"
-        done
-    popd
-}
-
-function echo_stale_release_files() {
-    local depl_name=$1; shift
-    local release=$1; shift
-    local stemcell=$1; shift
-    local base_filename=$1; shift
-
-    local release_name=$(echo "$release" | cut -d/ -f1)
-
-    find . -type f -name "${release_name}*.tgz" \
-        | sed -e 's`^\./``' \
-        | grep -v "^$base_filename"
-}
-
-function cleanup_compiled_releases() {
-    local dry_run_arg=$1 # '-n' or something
-
-    assert_utilities jq "to cleanup compiled releases"
-    pushd "$BASE_DIR/.cache/compiled-releases"
-        declare -a stale_files
-        stale_files=($(each_used_release echo_stale_release_files))
-
-        local bosh_version
-        bosh_version=$(bosh env | tail -n +3 | head -n 1 | cut -d' ' -f1)
-        stale_files+=($(find . -type f -name "bosh-*.tgz" \
-                            | sed -e 's`^\./``' \
-                            | grep -v "^bosh-${bosh_version}-"))
-
-        if [[ ${#stale_files[@]} -le 0 ]]; then
-            echo 0
-        else
-            du -sk "${stale_files[@]}"
-        fi \
-            | awk '{T+=$1} END{print "==> This operation is to free approximately " T/1024 " MiB of disk space."}'
-        for f in "${stale_files[@]}"; do
-            if [ -n "$dry_run_arg" ]; then
-                echo "would remove: '$f'"
-            else
-                rm -v "$f"
-            fi
-        done
-    popd
-}
-
 function restrict_permissions() {
     local filename=$1
 
     >> "$filename"
     chmod 600 "$filename"
-}
-
-function jumpbox_key() {
-    restrict_permissions "$(state_dir base-env)/jumpbox.key"
-    bosh int "$(state_dir base-env)/depl-creds.yml" --path /jumpbox_ssh/private_key \
-         > "$(state_dir base-env)/jumpbox.key"
-}
-
-function jumpbox_ip() {
-    bosh int <(bbl_invoke bosh-deployment-vars) --path /external_ip
-}
-
-function has_tunnel() {
-    local pid_file=$(state_dir base-env)/ssh-tunnel.pid
-    [ -s "$pid_file" ] && ps -p "$(cat "$pid_file")" > /dev/null
-}
-
-TUNNEL_PORT=5000
-
-function open_tunnel() {
-    local local_port=$1
-
-    local pid_file=$(state_dir base-env)/ssh-tunnel.pid
-    if has_tunnel "$pid_file"; then
-        return 0
-    fi
-
-    echo -e "\n${BLUE}Opening the ${BOLD}SSH tunnel$RESET that enables access to the Bosh server\n"
-
-    jumpbox_key
-
-    nohup ssh -4 -D "localhost:$local_port" -fNC \
-            -i "$(state_dir base-env)/jumpbox.key" "jumpbox@$(jumpbox_ip)" \
-        > "$(state_dir base-env)/ssh-tunnel.log"
-    lsof -i ":$local_port" \
-        | grep -E '^ssh\b' | awk '{print $2}' \
-        > "$pid_file"
-
-    # For any subsequent calls to 'bosh' CLI that rely on the tunnel, we now
-    # set the BOSH_ALL_PROXY environment variable.
-    export BOSH_ALL_PROXY=socks5://127.0.0.1:$TUNNEL_PORT
-}
-
-function start_tunnel() {
-    local pid_file=$(state_dir base-env)/ssh-tunnel.pid
-    if has_tunnel "$pid_file"; then
-        echo -e "\n${BLUE}SSH tunnel is ${BOLD}already running$RESET on PID '$(cat "$pid_file")'" \
-             "(more info with ${UNDERLINE}lsof -i :$local_port$RESET)\n"
-        return 1
-    fi
-    open_tunnel "$TUNNEL_PORT"
-    if [ "$BOSH_ALL_PROXY" != "socks5://127.0.0.1:$TUNNEL_PORT" ]; then
-        echo
-        echo "${BLUE}You must ${BOLD}refresh your environment variables${RESET} like this:"
-        env_usage
-    fi
-}
-
-function tunnel_status() {
-    local pid_file=$(state_dir base-env)/ssh-tunnel.pid
-    if ! has_tunnel; then
-        echo -e "\nSSH tunnel is $RED${BOLD}not running$RESET\n"
-    else
-        echo -e "\nSSH tunnel is $GREEN${BOLD}is running$RESET on PID '$(cat "$pid_file")'\n"
-        echo -e "${BOLD}Details:$RESET"
-        lsof -i ":$TUNNEL_PORT"
-        echo
-    fi
-}
-
-function tunnel_logs() {
-    echo -e "${BOLD}Last logs:$RESET"
-    tail "$(state_dir base-env)/ssh-tunnel.log"
-}
-
-function stop_tunnel() {
-    local pid_file=$(state_dir base-env)/ssh-tunnel.pid
-    if has_tunnel "$pid_file"; then
-        echo -e "\n${BLUE}Closing the ${BOLD}SSH tunnel$RESET that enables access to the Bosh server\n"
-        kill "$(cat "$pid_file")"
-    fi
-    rm -f "$pid_file"
 }
 
 function internal_ip() {
@@ -967,37 +768,6 @@ function delete_env() {
         echo -e "\n${BLUE}Running ${BOLD}bbl destroy$RESET to destroy infrastructure for the BOSH environment\n"
         bbl_invoke destroy --no-confirm --skip-if-missing
     fi
-}
-
-function ssh_jumpbox() {
-    if [ ! -f "$(state_dir base-env)/depl-creds.yml" ]; then
-        echo "$SCRIPT_NAME: ERROR: the base BOSH environment is not created yet" \
-             "Please create it first. Aborting." >&2
-        exit 1
-    fi
-
-    local timeout_arg
-    case $(platform) in
-        darwin) timeout_arg=-t ;;
-        linux)  timeout_arg=-W ;;
-    esac
-    local jumpbox_ip=$(jumpbox_ip)
-
-    # Wait for target to respond to ping
-    while ! ping -q -c 1 $timeout_arg 3 "$jumpbox_ip" > /dev/null; do
-        echo "$(date +'%F %T') waiting $jumpbox_ip to respond to ping"
-        sleep 2
-        status=$?
-        if [ "$status" -gt 128 ]; then
-            # When interrupted by a signal, abort with same status
-            exit $status
-        fi
-    done
-
-    TERM=xterm-color ssh \
-        -i "$(state_dir base-env)/jumpbox.key" \
-        "jumpbox@$(jumpbox_ip)" \
-        "$@"
 }
 
 case $1 in
