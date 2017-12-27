@@ -76,7 +76,7 @@ function read_bosh-environment_spec() {
     local op op_dir
     for rsc in $(spec_var /operations_files | awk -F: '/^[^-]/{print $1}'); do
         if [ "$rsc" == local ]; then
-            op_dir=$SUBSYS_DIR/operations
+            op_dir=$SUBSYS_DIR/features
         else
             op_dir=$BASE_DIR/.cache/resources/$rsc
         fi
