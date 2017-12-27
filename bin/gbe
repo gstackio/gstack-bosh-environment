@@ -892,6 +892,12 @@ function create_env() {
 
     echo -e "\n${BLUE}Running ${BOLD}bbl up$RESET to create infrastructure for the BOSH environment\n"
 
+    local bbl_state_file=$(state_dir base-env)/bbl-state.json
+    if [[ -f "$bbl_state_file" && ! -s "$bbl_state_file" ]]; then
+        # State file might exist and be empty, in which case we must delete it
+        # here as a safeguard
+        rm -f "$bbl_state_file"
+    fi
     bbl_invoke up \
         --iaas "$(spec_var /infra_vars/iaas)" \
         --gcp-region "$(spec_var /infra_vars/region)" \
@@ -904,7 +910,7 @@ function create_env() {
     # informations. Please not that 'bbl-state.json' must not be created before
     # invoking `bbl up`.
     restrict_permissions \
-        "$(state_dir base-env)/bbl-state.json" \
+        "$bbl_state_file" \
         "$(state_dir base-env)/depl-creds.yml"
 
     infra_bosh_ro_invoke interpolate > "$(state_dir base-env)/depl-manifest.yml"
