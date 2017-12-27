@@ -45,7 +45,7 @@ operations_files:
     - set-disk-size
 
 
-values:
+deployment_vars:
   director_name: "Easy Foundry Director"
 
   disk_size: 100_000 # i.e. 100MB

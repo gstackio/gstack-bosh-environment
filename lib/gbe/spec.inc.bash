@@ -91,7 +91,7 @@ function bosh_ro_invoke() {
 
     bosh "$verb" "$MAIN_DEPLOYMENT_FILE" \
         "${OPERATIONS_ARGUMENTS[@]}" \
-        --vars-file <(spec_var /values) \
+        --vars-file <(spec_var /deployment_vars) \
         "$@"
 }
 
@@ -109,7 +109,7 @@ function infra_bosh_ro_invoke() {
     bosh_ro_invoke "$verb" \
         --vars-file <(spec_var /infra_vars) \
         "$@" \
-        --vars-file <(spec_var /values) # re-add it at the end, in order to override bbl defaults
+        --vars-file <(spec_var /deployment_vars) # re-add it at the end, in order to override bbl defaults
 }
 
 function infra_bosh_rw_invoke() {
