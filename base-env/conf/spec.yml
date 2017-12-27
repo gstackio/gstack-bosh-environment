@@ -75,4 +75,4 @@ deployment_vars:
   stemcell_sha1: 525c655e7213833aa3333bf78d91135a12a41de8 # this is a Google KVM Light stemcell, actually
 
 
-plumbery: {}
+imported_vars: {}
