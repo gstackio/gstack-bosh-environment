@@ -10,9 +10,9 @@ function spec_var() {
 function assert_subsys() {
     local expected_type=$1
 
-    local subsys_type=$(spec_var /subsystem/type)
+    local subsys_type=$(spec_var /subsys/type)
     if [[ $subsys_type != $expected_type ]]; then
-        local subsys_name=$(spec_var /subsystem/name)
+        local subsys_name=$(spec_var /subsys/name)
         echo "ERROR: expected subsystem '$subsys_name' to be of type '$expected_type'" \
          "but was '$subsys_type'. Aborting." >&2
         exit 1

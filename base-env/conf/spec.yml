@@ -1,5 +1,5 @@
 ---
-subsystem:
+subsys:
   name: base-env
   type: bosh-environment
 
