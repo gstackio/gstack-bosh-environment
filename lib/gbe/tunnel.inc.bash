@@ -114,3 +114,7 @@ function stop_tunnel() {
     fi
     rm -f "$pid_file"
 }
+
+# Local Variables:
+# indent-tabs-mode: nil
+# End:

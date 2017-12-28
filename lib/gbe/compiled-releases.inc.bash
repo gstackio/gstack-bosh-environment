@@ -117,3 +117,7 @@ function cleanup_compiled_releases() {
         done
     popd
 }
+
+# Local Variables:
+# indent-tabs-mode: nil
+# End:

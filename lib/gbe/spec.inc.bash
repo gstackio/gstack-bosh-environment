@@ -34,7 +34,7 @@ function fetch_input_resources() {
         local rsc_path=/input_resources/$rsc_idx
         local rsc_type=$(spec_var "$rsc_path/type")
         case $rsc_type in
-            git|local_dir)
+            git|local-dir)
                 fetch_${rsc_type}_resource $rsc_path
                 ;;
             *)
@@ -74,11 +74,16 @@ function fetch_git_resource() {
     echo "$(spec_var "$rsc_path/name")@$(spec_var "$rsc_path/version")"
 }
 
-function fetch_local_dir_resource() {
+# This is just given as an example for implementing another resource type
+function fetch_local-dir_resource() {
     echo "$(spec_var "$rsc_path/name")"
 }
 
 function read_bosh-environment_spec() {
+    read_bosh-deployment_spec "$@"
+}
+
+function read_bosh-deployment_spec() {
     local rsc file dir
     rsc=$(spec_var /main_deployment_file | cut -d/ -f1)
     file=$(spec_var /main_deployment_file | cut -d/ -f2-)
@@ -101,10 +106,6 @@ function read_bosh-environment_spec() {
             OPERATIONS_ARGUMENTS+=(-o "$op_dir/${op}.yml")
         done
     done
-}
-
-function read_bosh-deployment_spec() {
-    read_bosh-environment_spec "$@"
 }
 
 function bosh_ro_invoke() {
