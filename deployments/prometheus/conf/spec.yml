@@ -1,0 +1,126 @@
+---
+subsys:
+  name: prometheus
+  type: bosh-deployment
+
+input_resources:
+  - name: prometheus-boshrelease
+    type: git
+    uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
+    version: v20.0.0
+
+
+main_deployment_file: prometheus-boshrelease/manifests/prometheus.yml
+
+
+operations_files:
+  prometheus-boshrelease:
+    # Bosh monitoring
+    - manifests/operators/monitor-bosh
+    - manifests/operators/enable-bosh-uaa
+
+    # CF monitoring
+    - manifests/operators/monitor-cf
+
+    # CF integration
+    - manifests/operators/enable-cf-route-registrar
+    - manifests/operators/enable-grafana-uaa
+  local:
+    - set-versions
+    # - expose-ports
+    - customize-routing
+
+
+deployment_vars:
+  deployment_name: easyfoundry-prometheus
+
+
+  # User-facing settings
+
+  grafana_domain: grafana.easyfoundry.prototyp.it
+  prometheus_domain: prometheus.easyfoundry.prototyp.it
+  alertmanager_domain: alertmanager.easyfoundry.prototyp.it
+
+  metrics_environment: easyfoundry-demo
+
+
+  # Versions
+
+  prometheus_version: "20.0.0"
+  prometheus_sha1: "11a18875879a7712c67e6d30c4a069101ae77560"
+
+  postgres_version: "23"
+  postgres_sha1: "4b5265bfd5f92cf14335a75658658a0db0bca927"
+
+  routing_version: "0.168.0"
+  routing_sha1: 885321f95b530c4a5b8515c72155229cba26c449
+
+  stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+  stemcell_version: "3468.11"
+  stemcell_sha1: 74592d4c2b7f2aebacd767112dd0ef28b028532b
+
+
+imported_vars:
+  - subsys: cf
+    imports:
+
+      # CF routing plumbing
+
+      - name: routing_deployment_name
+        from: depl-vars
+        path: /deployment_name
+
+
+      # CF integration plumbing
+
+      - name: uaa_clients_grafana_secret
+        from: depl-creds
+        path: /uaa_clients_grafana_secret
+
+      - name: uaa_ssl
+        from: depl-creds
+        path: /uaa_ssl
+
+
+      # CF Monitoring plumbing
+
+      - name: metron_deployment_name
+        from: depl-creds
+        path: /deployment_name
+
+      - name: system_domain
+        from: depl-vars
+        path: /system_domain
+
+
+      - name: skip_ssl_verify
+        from: depl-manifest
+        path: /instance_groups/name=smoke-tests/jobs/name=smoke_tests/properties/smoke_tests/skip_ssl_validation
+
+      - name: uaa_clients_cf_exporter_secret
+        from: depl-creds
+        path: /uaa_clients_cf_exporter_secret
+
+      - name: uaa_clients_firehose_exporter_secret
+        from: depl-creds
+        path: /uaa_clients_firehose_exporter_secret
+
+      - name: traffic_controller_external_port
+        from: /instance_groups/name=log-api/jobs/name=route_registrar/properties/route_registrar/routes/name=doppler/port
+
+
+  # Bosh monitoring plumbing
+
+  - subsys: base-env
+    imports:
+      - name: bosh_url
+        from: bbl-vars
+        value: https://((internal_ip)):25555
+
+      - name: bosh_ca_cert
+        from: depl-creds
+        path: /default_ca/certificate
+
+      - name: uaa_bosh_exporter_client_secret
+        from: depl-creds
+        path: /uaa_bosh_exporter_client_secret

@@ -109,24 +109,20 @@ function read_bosh-deployment_spec() {
     done
 }
 
-function import_depl-vars_value() {
-    local subsys_name=$1; shift
-    local base_path=$1; shift
+function import_file_value() {
+    local base_path=$1
+    local vars_file=$2
 
     local var_name=$(spec_var "$base_path/name")
     local var_value=$(spec_var "$base_path/value")
     local import_path=$(spec_var "$base_path/path")
 
-    local subsys_dir=$BASE_DIR/deployments/$subsys_name
     if [ -n "$var_value" ]; then
         # FIXME: poor YAML escaping here below
         bosh int <(echo "$var_name: $var_value") \
-            --vars-file <(spec_var /deployment_vars "$subsys_dir")
+            --vars-file "$vars_file"
     else
-        # Note: `spec_var "$import_path" "$subsys_dir"` would clobber stderr
-        # but we need it here
-        var_value=$(bosh int "$subsys_dir/conf/spec.yml" \
-                --path "/deployment_vars$import_path")
+        var_value=$(bosh int "$vars_file" --path "$import_path")
         # FIXME: poor YAML escaping here below
         echo "$var_name: $var_value"
     fi
@@ -150,6 +146,13 @@ function imports_from() {
     local subsys_name=$1
     local base_path=$2
 
+    local subsys_dir
+    if [ "$subsys_name" == base-env ]; then
+        subsys_dir=$BASE_DIR/$subsys_name
+    else
+        subsys_dir=$BASE_DIR/deployments/$subsys_name
+    fi
+
     local vars_count=$(spec_var "$base_path" \
                          | awk '/^-/{print $1}' | wc -l)
     local var_idx=0
@@ -157,8 +160,12 @@ function imports_from() {
         local var_path=$base_path/$var_idx
         local import_from=$(spec_var "$var_path/from")
         case $import_from in
+            bbl-vars)
+                import_file_value "$var_path" \
+                    <(bbl_invoke bosh-deployment-vars) ;;
             depl-vars)
-                import_${import_from}_value "$subsys_name" "$var_path" ;;
+                import_file_value "$var_path" \
+                    <(spec_var /deployment_vars "$subsys_dir") ;;
             depl-manifest)
                 import_state_value "$subsys_name" "$import_from" "$var_path" ;;
             depl-creds)
