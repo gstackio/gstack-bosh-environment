@@ -676,9 +676,9 @@ function gbe_up() {
     fi
 
     if [ -f ~/.ssh/known_hosts ]; then
-        ssh-keygen -f ~/.ssh/known_hosts -R "$(gbe ip)"
+        ssh-keygen -f ~/.ssh/known_hosts -R "$(jumpbox_ip)"
     fi
-    ssh-keyscan -t ecdsa "$(gbe ip)" 2> /dev/null \
+    ssh-keyscan -t ecdsa "$(jumpbox_ip)" 2> /dev/null \
         > ~/.ssh/known_hosts
     start_tunnel
 
@@ -781,7 +781,7 @@ function delete_env() {
             ssh-add -d "$(state_dir base-env)/jumpbox.key.pub"
         fi
         rm -vf "$(state_dir base-env)/jumpbox.key" "$(state_dir base-env)/jumpbox.key.pub"
-        ssh-keygen -f ~/.ssh/known_hosts -R "$(gbe ip)"
+        ssh-keygen -f ~/.ssh/known_hosts -R "$(jumpbox_ip)"
     fi
 
     if [ "x$1" == "x-k" ]; then
@@ -816,7 +816,7 @@ case $1 in
     up)
         gbe_up ;;
     ip)
-        jumpbox_ip ;;
+        jumpbox_ip | cat ;;
     down)
         shift
         delete_env "$@"
