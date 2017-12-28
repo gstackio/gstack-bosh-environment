@@ -159,8 +159,13 @@ function imports_from() {
         case $import_from in
             depl-vars)
                 import_${import_from}_value "$subsys_name" "$var_path" ;;
-            depl-manifest|depl-creds)
+            depl-manifest)
                 import_state_value "$subsys_name" "$import_from" "$var_path" ;;
+            depl-creds)
+                # FIXME: missing YAML de-duplication here below
+                import_state_value "$subsys_name" "$import_from" "$var_path" \
+                    >> "$(state_dir)/depl-creds.yml"
+                ;;
             *)
                 echo "ERROR: unsupported var import type: '$import_from'." \
                     "Expected 'depl-vars', 'depl-manifest', or 'depl-creds'. Aborting." >&2
