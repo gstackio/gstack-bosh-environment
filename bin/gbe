@@ -276,7 +276,11 @@ function setup_dnscontrol() {
     local dnscontrol_version=$1
 
     if which dnscontrol > /dev/null 2>&1; then
-        return 0
+        local existing_dnscontrol_version
+        existing_dnscontrol_version=$(dnscontrol version | head -n 1 | cut -d' ' -f2 | cut -d- -f1)
+        if [[ $existing_dnscontrol_version =~ ^0\.2\. ]]; then
+            return 0
+        fi
     fi
 
     local dnscontrol_bin=$BASE_DIR/bin/dnscontrol
