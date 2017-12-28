@@ -57,14 +57,6 @@ function assert_utilities() {
         fi
     done
 }
-function state_dir() {
-    local gbe_subsys=${1:-$(spec_var /subsys/name)}
-    if [ -z "$gbe_subsys" ]; then
-        echo "ERROR: missing subsys name. Aborting." >&2
-        return 1
-    fi
-    echo "$BASE_DIR/state/$gbe_subsys"
-}
 
 function env_usage() {
     local b=$BOLD

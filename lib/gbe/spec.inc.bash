@@ -1,13 +1,14 @@
 
 function spec_var() {
     local path=$1
+    local subsys_dir=${2:-$SUBSYS_DIR}
 
-    if [ -z "$SUBSYS_DIR" ]; then
+    if [ -z "$subsys_dir" ]; then
         echo "ERROR: missing 'SUBSYS_DIR' variable. Aborting." >&2
         return 1
     fi
 
-    bosh int "$SUBSYS_DIR/conf/spec.yml" \
+    bosh int "$subsys_dir/conf/spec.yml" \
         --path "$path" \
         2> /dev/null
 }
@@ -38,7 +39,7 @@ function fetch_input_resources() {
                 fetch_${rsc_type}_resource $rsc_path
                 ;;
             *)
-                echo "ERROR: unsupported resource type: '$rsc_type'" >&2
+                echo "ERROR: unsupported resource type: '$rsc_type'. Aborting." >&2
                 return 1 ;;
         esac
         rsc_idx=$(($rsc_idx + 1))
@@ -108,12 +109,96 @@ function read_bosh-deployment_spec() {
     done
 }
 
+function import_depl-vars_value() {
+    local subsys_name=$1; shift
+    local base_path=$1; shift
+
+    local var_name=$(spec_var "$base_path/name")
+    local var_value=$(spec_var "$base_path/value")
+    local import_path=$(spec_var "$base_path/path")
+
+    local subsys_dir=$BASE_DIR/deployments/$subsys_name
+    if [ -n "$var_value" ]; then
+        # FIXME: poor YAML escaping here below
+        bosh int <(echo "$var_name: $var_value") \
+            --vars-file <(spec_var /deployment_vars "$subsys_dir")
+    else
+        # Note: `spec_var "$import_path" "$subsys_dir"` would clobber stderr
+        # but we need it here
+        var_value=$(bosh int "$subsys_dir/conf/spec.yml" \
+                --path "/deployment_vars$import_path")
+        # FIXME: poor YAML escaping here below
+        echo "$var_name: $var_value"
+    fi
+}
+
+function import_state_value() {
+    local subsys_name=$1
+    local import_from=$2
+    local base_path=$3
+
+    local var_name=$(spec_var "$base_path/name")
+    local import_path=$(spec_var "$base_path/path")
+
+    var_value=$(bosh int "$(state_dir "$subsys_name")/${import_from}.yml" \
+        --path "$import_path")
+    # FIXME: poor YAML escaping here below
+    echo "$var_name: $var_value"
+}
+
+function imports_from() {
+    local subsys_name=$1
+    local base_path=$2
+
+    local vars_count=$(spec_var "$base_path" \
+                         | awk '/^-/{print $1}' | wc -l)
+    local var_idx=0
+    while [[ $var_idx -lt $vars_count ]]; do
+        local var_path=$base_path/$var_idx
+        local import_from=$(spec_var "$var_path/from")
+        case $import_from in
+            depl-vars)
+                import_${import_from}_value "$subsys_name" "$var_path" ;;
+            depl-manifest|depl-creds)
+                import_state_value "$subsys_name" "$import_from" "$var_path" ;;
+            *)
+                echo "ERROR: unsupported var import type: '$import_from'." \
+                    "Expected 'depl-vars', 'depl-manifest', or 'depl-creds'. Aborting." >&2
+                return 1 ;;
+        esac
+
+        var_idx=$(($var_idx + 1))
+    done
+}
+
+function imported_vars() {
+    local subsys_count=$(spec_var /imported_vars \
+                         | awk '/^-/{print $1}' | wc -l)
+    local idx=0
+    while [[ $idx -lt $subsys_count ]]; do
+        local subsys_path=/imported_vars/$idx
+        local subsys_name=$(spec_var "$subsys_path/subsys")
+        imports_from "$subsys_name" "$subsys_path/imports"
+        idx=$(($idx + 1))
+    done
+}
+
+function state_dir() {
+    local gbe_subsys=${1:-$(spec_var /subsys/name)}
+    if [ -z "$gbe_subsys" ]; then
+        echo "ERROR: missing subsys name. Aborting." >&2
+        return 1
+    fi
+    echo "$BASE_DIR/state/$gbe_subsys"
+}
+
 function bosh_ro_invoke() {
     local verb=$1; shift
 
     bosh "$verb" "$MAIN_DEPLOYMENT_FILE" \
         "${OPERATIONS_ARGUMENTS[@]}" \
         --vars-file <(spec_var /deployment_vars) \
+        --vars-file <(imported_vars) \
         "$@"
 }
 

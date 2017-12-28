@@ -49,9 +49,9 @@ deployment_vars:
   stemcell_sha1: 74592d4c2b7f2aebacd767112dd0ef28b028532b
 
 
-  # Plumbery
-
-  grafana_redirect_uri: https://uaa.cf.easyfoundry.prototyp.it/login
-
-
-imported_vars: {}
+imported_vars:
+  - subsys: cf
+    imports:
+      - name: grafana_redirect_uri
+        from: depl-vars
+        value: https://uaa.((system_domain))/login
