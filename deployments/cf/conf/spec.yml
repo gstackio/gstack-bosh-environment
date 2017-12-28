@@ -17,12 +17,12 @@ input_resources:
 main_deployment_file: cf-deployment/cf-deployment.yml
 
 operations_files:
-  cf-deployment:
+  10.cf-deployment:
     - operations/bosh-lite
-  prometheus-boshrelease:
+  20.prometheus-boshrelease:
     - manifests/operators/cf/add-prometheus-uaa-clients
     - manifests/operators/cf/add-grafana-uaa-clients
-  local:
+  30.local:
     - set-versions
     - expose-admin-user-as-link
 

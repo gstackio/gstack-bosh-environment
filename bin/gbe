@@ -542,10 +542,6 @@ function source_env() { # shim
     popd
 }
 
-function bbl_invoke() {
-    bbl --state-dir "$(state_dir base-env)" "$@"
-}
-
 function setup_firewall() {
     assert_utilities gcloud "to update firewall rules"
 

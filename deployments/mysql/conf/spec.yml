@@ -13,12 +13,12 @@ input_resources:
 main_deployment_file: cf-mysql-deployment/cf-mysql-deployment.yml
 
 operations_files:
-  cf-mysql-deployment:
+  10.cf-mysql-deployment:
     - operations/bosh-lite
     - operations/add-broker
     - operations/no-arbitrator
     - operations/register-proxy-route
-  local:
+  20.local:
     - inject-variables
     - set-versions
     - customize-service

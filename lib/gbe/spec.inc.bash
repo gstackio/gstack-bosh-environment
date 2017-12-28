@@ -1,4 +1,8 @@
 
+function bbl_invoke() {
+    bbl --state-dir "$(state_dir base-env)" "$@"
+}
+
 function spec_var() {
     local path=$1
     local subsys_dir=${2:-$SUBSYS_DIR}
@@ -84,27 +88,32 @@ function read_bosh-environment_spec() {
     read_bosh-deployment_spec "$@"
 }
 
-function read_bosh-deployment_spec() {
+function expand_resource_dir() {
+    local rsc_file=$1
+    local subdir=$2
+
     local rsc file dir
-    rsc=$(spec_var /main_deployment_file | cut -d/ -f1)
-    file=$(spec_var /main_deployment_file | cut -d/ -f2-)
-    if [ "$rsc" == . ]; then
-        dir=$SUBSYS_DIR
+    rsc=$(echo "$rsc_file" | awk -F/ '{print $1}')
+    file=$(echo "$rsc_file" | awk -F/ '{$1=""; OFS="/"; print substr($0,2)}')
+    if [[ $rsc == . || $rsc == local ]]; then
+        dir=$SUBSYS_DIR${subdir:+/$subdir}
     else
         dir=$BASE_DIR/.cache/resources/$rsc
     fi
-    MAIN_DEPLOYMENT_FILE=$dir/$file
+    echo "$dir/$file"
+}
+
+function read_bosh-deployment_spec() {
+    local depl_rsc_file=$(spec_var /main_deployment_file)
+    MAIN_DEPLOYMENT_FILE=$(expand_resource_dir "$depl_rsc_file")
 
     OPERATIONS_ARGUMENTS=()
-    local op op_dir
-    for rsc in $(spec_var /operations_files | awk -F: '/^[^-]/{print $1}'); do
-        if [ "$rsc" == local ]; then
-            op_dir=$SUBSYS_DIR/features
-        else
-            op_dir=$BASE_DIR/.cache/resources/$rsc
-        fi
-        for op in $(spec_var /operations_files/$rsc | cut -c3-); do
-            OPERATIONS_ARGUMENTS+=(-o "$op_dir/${op}.yml")
+    local key rsc op_dir op_file
+    for key in $(spec_var /operations_files | awk -F: '/^[^-]/{print $1}'); do
+        rsc=$(echo "$key" | sed -e 's/^[[:digit:]]\{1,\}\.//')
+        op_dir=$(expand_resource_dir "$rsc" features)
+        for op_file in $(spec_var /operations_files/$key | sed -e 's/^- //'); do
+            OPERATIONS_ARGUMENTS+=(-o "$op_dir/${op_file}.yml")
         done
     done
 }
@@ -123,8 +132,11 @@ function import_file_value() {
             --vars-file "$vars_file"
     else
         var_value=$(bosh int "$vars_file" --path "$import_path")
-        # FIXME: poor YAML escaping here below
-        echo "$var_name: $var_value"
+        if echo "$var_value" | grep -q ^-----BEGIN; then
+            bosh int <(echo "$var_name: ((value))") --var-file value=<(echo "$var_value")
+        else
+            bosh int <(echo "$var_name: ((value))") --var value="$var_value"
+        fi
     fi
 }
 
@@ -138,8 +150,11 @@ function import_state_value() {
 
     var_value=$(bosh int "$(state_dir "$subsys_name")/${import_from}.yml" \
         --path "$import_path")
-    # FIXME: poor YAML escaping here below
-    echo "$var_name: $var_value"
+    if echo "$var_value" | grep -q ^-----BEGIN; then
+        bosh int <(echo "$var_name: ((value))") --var-file value=<(echo "$var_value")
+    else
+        bosh int <(echo "$var_name: ((value))") --var value="$var_value"
+    fi
 }
 
 function imports_from() {

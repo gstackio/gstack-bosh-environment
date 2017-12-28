@@ -24,7 +24,7 @@ infra_vars:
 main_deployment_file: bosh-deployment/bosh.yml
 
 operations_files:
-  bosh-deployment:
+  10.bosh-deployment:
     - gcp/cpi
     - gcp/bosh-lite-vm-type
     - bosh-lite
@@ -34,9 +34,9 @@ operations_files:
     - uaa
     - credhub
     - local-dns
-  prometheus-boshrelease:
+  20.prometheus-boshrelease:
     - manifests/operators/bosh/add-bosh-exporter-uaa-clients
-  local:
+  30.local:
     - enable-local-access
     - custom-stemcell-version
     - custom-bosh-version-precompiled

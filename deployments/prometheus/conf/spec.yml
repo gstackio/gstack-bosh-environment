@@ -14,7 +14,7 @@ main_deployment_file: prometheus-boshrelease/manifests/prometheus.yml
 
 
 operations_files:
-  prometheus-boshrelease:
+  10.prometheus-boshrelease:
     # Bosh monitoring
     - manifests/operators/monitor-bosh
     - manifests/operators/enable-bosh-uaa
@@ -25,7 +25,7 @@ operations_files:
     # CF integration
     - manifests/operators/enable-cf-route-registrar
     - manifests/operators/enable-grafana-uaa
-  local:
+  20.local:
     - set-versions
     # - expose-ports
     - customize-routing
@@ -85,7 +85,7 @@ imported_vars:
       # CF Monitoring plumbing
 
       - name: metron_deployment_name
-        from: depl-creds
+        from: depl-vars
         path: /deployment_name
 
       - name: system_domain
@@ -106,7 +106,8 @@ imported_vars:
         path: /uaa_clients_firehose_exporter_secret
 
       - name: traffic_controller_external_port
-        from: /instance_groups/name=log-api/jobs/name=route_registrar/properties/route_registrar/routes/name=doppler/port
+        from: depl-manifest
+        path: /instance_groups/name=log-api/jobs/name=route_registrar/properties/route_registrar/routes/name=doppler/port
 
 
   # Bosh monitoring plumbing
