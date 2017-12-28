@@ -1,0 +1,60 @@
+---
+subsys:
+  name: concourse
+  type: bosh-deployment
+
+input_resources: []
+
+
+main_deployment_file: ./conf/concourse-deployment.yml
+
+operations_files:
+  local:
+    - set-versions
+    - inject-variables
+    - use-http-not-recommended
+
+
+deployment_vars:
+  deployment_name: easyfoundry-concourse
+
+
+  # User-facing settings
+
+  external_url_hostname: ci.easyfoundry.prototyp.it
+  basic_auth_username: benjamin
+
+
+  # Versions
+
+  concourse_version: "3.6.0"
+  concourse_sha1: 1257bdcd3181ab0a669bc9e34cd87aff584f007b
+
+  garden_runc_version: "1.9.6"
+  garden_runc_sha1: d5ddb4eaf7c04705cd1c07445b1668556783774f
+
+  stemcell_version: "3468.11"
+  stemcell_sha1: 74592d4c2b7f2aebacd767112dd0ef28b028532b
+  stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+
+
+  # Scaling properties
+
+  web_vm_type: default    # t2.nano      # 1 CPU, 0.5GB RAM
+  db_vm_type: default     # t2.micro     # 1 CPU, 1GB RAM
+  db_persistent_disk_type: 1GB
+  worker_vm_type: default # m3.medium    # 1 CPU, 3.75GB RAM
+  # A VM extension from your BOSH Director's cloud config that will attach
+  # sufficient ephemeral storage to worker VMs.
+  worker_vm_extension: 50GB_ephemeral_disk # consider 100GB for production systems
+
+
+  # Plumbery properties
+
+  network_name: concourse-network
+  # A VM extension from your BOSH Director's cloud config that will attach 'web'
+  # instances to your ELB.
+  web_vm_extension: concourse-atc-lb
+
+
+imported_vars: {}
