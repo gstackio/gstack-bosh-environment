@@ -17,7 +17,7 @@ instance_groups:
           internode_encryption_mode: none
           client_encryption_options:
             enabled: false
-          max_heap_size: &cassandra_heap_size 4G
+          max_heap_size: &cassandra_heap_size ((max_heap_size))
           heap_newsize: 800M
           cass_pwd: ((cassandra_admin_password))
           cassDbCertificate:
@@ -129,13 +129,13 @@ instance_groups:
         properties:
           cf:
             api:
-              url: ((cf_api_url)) # use link
+              url: ((cf_api_url))
             admin:
               username: ((cf_admin_username))
-              password: ((cf_admin_password)) # this should use a link!
+              password: ((cf_admin_password))
             skip:
               ssl:
-                validation: ((cf_skip_ssl_validation)) # use link
+                validation: ((cf_skip_ssl_validation))
             org: service-sandbox
             space: cassandra-smoke-tests
             cassandra:
