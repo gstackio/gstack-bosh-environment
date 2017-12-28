@@ -1,0 +1,70 @@
+---
+subsys:
+  name: mysql
+  type: bosh-deployment
+
+input_resources:
+  - name: cf-mysql-deployment
+    type: git
+    uri: https://github.com/cloudfoundry/cf-mysql-deployment.git
+    version: v36.9.0
+
+
+main_deployment_file: cf-mysql-deployment/cf-mysql-deployment.yml
+
+operations_files:
+  cf-mysql-deployment:
+    - operations/bosh-lite
+    - operations/add-broker
+    - operations/no-arbitrator
+    - operations/register-proxy-route
+  local:
+    - inject-variables
+    - set-versions
+    - customize-service
+
+
+deployment_vars:
+  deployment_name: easyfoundry-durable-mysql
+
+
+  # User-facing settings
+
+  cf_mysql_external_host: mysql.easyfoundry.prototyp.it
+
+
+  # Versions
+
+  cf_mysql_version: "36.9.0"
+  cf_mysql_sha1: adf3ad18f608cd0f045c4feeb08422947c1481a7
+
+  routing_version: "0.168.0"
+  routing_sha1: 885321f95b530c4a5b8515c72155229cba26c449
+
+  stemcell_version: "3468.11"
+  stemcell_sha1: 74592d4c2b7f2aebacd767112dd0ef28b028532b
+  stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+
+
+imported_vars:
+  - subsys: cf
+    imports:
+      - name: cf_deployment_name
+        from: depl-vars
+        path: /deployment_name
+
+      - name: cf_api_url
+        from: depl-manifest
+        path: /instance_groups/name=api/jobs/name=cf-admin-user/properties/api_url
+
+      - name: cf_skip_ssl_validation
+        from: depl-manifest
+        path: /instance_groups/name=smoke-tests/jobs/name=smoke_tests/properties/smoke_tests/skip_ssl_validation
+
+      - name: cf_admin_username
+        from: depl-manifest
+        path: /instance_groups/name=api/jobs/name=cf-admin-user/properties/admin_username
+
+      - name: cf_admin_password
+        from: depl-creds
+        path: /cf_admin_password
