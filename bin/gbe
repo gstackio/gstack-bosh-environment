@@ -730,11 +730,15 @@ function create_env() {
         "$bbl_state_file" \
         "$(state_dir base-env)/depl-creds.yml"
 
-    infra_bosh_ro_invoke interpolate > "$(state_dir base-env)/depl-manifest.yml"
+
+    echo -e "\n${BLUE}Running ${BOLD}dnscontrol push$RESET to converge the external DNS zone\n"
+
+    push_dns_config
 
 
     echo -e "\n${BLUE}Running ${BOLD}bosh create-env$RESET to create the BOSH environment\n"
 
+    infra_bosh_ro_invoke interpolate > "$(state_dir base-env)/depl-manifest.yml"
     infra_bosh_rw_invoke create-env
 
 }
