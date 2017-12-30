@@ -5,6 +5,7 @@
 /bin/dnscontrol
 /bin/credhub
 creds.yml
+creds.json
 *-creds.yml
 bbl-state.json
 *.key

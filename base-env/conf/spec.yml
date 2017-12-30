@@ -20,6 +20,10 @@ infra_vars:
   zone: europe-west1-c
   project_id: metal-complex-188320
 
+dns:
+  zone: prototyp.it
+  subdomain: easyfoundry
+
 
 main_deployment_file: bosh-deployment/bosh.yml
 

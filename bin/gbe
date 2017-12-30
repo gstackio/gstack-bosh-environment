@@ -16,6 +16,7 @@ source "$BASE_DIR/lib/gbe/colors.inc.bash"
 source "$BASE_DIR/lib/gbe/spec.inc.bash"
 source "$BASE_DIR/lib/gbe/tunnel.inc.bash"
 source "$BASE_DIR/lib/gbe/compiled-releases.inc.bash"
+source "$BASE_DIR/lib/gbe/dns.inc.bash"
 
 function pushd() {
     command pushd "$@" > /dev/null || exit 115
@@ -832,8 +833,9 @@ case $1 in
         shift
         verb=$1
         case $verb in
-            preview|push) "$BASE_DIR/dns/bin/$verb" ;;
-            *)            dns_usage ;;
+            preview)    preview_dns_config ;;
+            push)       push_dns_config ;;
+            *)          dns_usage ;;
         esac
         ;;
     ssh)
