@@ -58,7 +58,7 @@ function open_tunnel() {
         return 0
     fi
 
-    echo -e "\n${BLUE}Opening the ${BOLD}SSH tunnel$RESET that enables access to the Bosh server\n"
+    echo -e "\n${BLUE}Opening the ${BOLD}SSH tunnel$RESET that enables access to the BOSH server\n"
 
     jumpbox_key
 
