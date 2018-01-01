@@ -63,9 +63,6 @@ function upload_compiled_releases() {
     echo -e "\n${BLUE}Uploading all ${BOLD}compiled releases$RESET found in cache to the BOSH server.\n"
     pushd "$BASE_DIR/.cache/compiled-releases"
         for compiled_release in $(find . -name '*.tgz' | sed -e 's`^./``'); do
-            if [[ $compiled_release =~ ^bosh- ]]; then
-                continue
-            fi
             local release=$(echo "$compiled_release" | sed -e 's/^\([a-z-]*\)-\([0-9.]\{1,\}\)-.*$/\1\/\2/')
             local release_name=$(echo "$release" | cut -d/ -f1)
             local release_version=$(echo "$release" | cut -d/ -f2)
