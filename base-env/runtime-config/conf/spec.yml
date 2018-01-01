@@ -1,0 +1,26 @@
+---
+subsys:
+  name: runtime-config
+  type: bosh-config
+
+input_resources:
+  - name: bosh-deployment
+    type: git
+    uri: https://github.com/cloudfoundry/bosh-deployment.git
+    version: dc7fa0a # v264.1 (as of Nov 17th, 2017)
+
+
+main_config_file: bosh-deployment/runtime-configs/dns.yml
+
+operations_files:
+  local:
+    - cf-use-bosh-dns
+    - shield-support
+
+
+config_vars:
+  cf_deployment_name: easyfoundry-cf
+  cf_network_name: default
+
+  shield_deployment_name: easyfoundry-shield
+  shield_network: shield-network

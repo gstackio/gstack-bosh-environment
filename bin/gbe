@@ -392,11 +392,37 @@ function setup_firewall() {
 function update_config() {
     local cfg_type=$1; shift # 'cloud' or 'runtime'
 
-    echo -e "\n${BLUE}Updating $BOLD$cfg_type config$RESET in Bosh server.\n"
-    pushd "$BASE_DIR/deployments/_${cfg_type}-config"
-        source .envrc
-        update-${cfg_type}-config "$@"
-    popd
+    export SUBSYS_DIR=$BASE_DIR/base-env/${cfg_type}-config
+    eval "$(env_exports)"
+
+    # Assert subsystem is a BOSH config
+    # (meaning: cloud config or runtime config)
+    assert_subsys bosh-config
+
+    set -e
+
+    echo -e "\n${BLUE}Fetching ${BOLD}input resources$RESET\n"
+
+    fetch_input_resources
+    read_$(spec_var /subsys/type)_spec
+    local subsys_state_dir=$(state_dir)
+    mkdir -p "$subsys_state_dir"
+
+
+    echo -e "\n${BLUE}Updating $BOLD$cfg_type config$RESET in BOSH server.\n"
+
+    bosh interpolate "$MAIN_CONFIG_FILE" \
+        "${OPERATIONS_ARGUMENTS[@]}" \
+        --vars-file <(spec_var /config_vars) \
+        > "$subsys_state_dir/${cfg_type}-config.yml"
+
+    if [ ! -s "$subsys_state_dir/${cfg_type}-config.yml" ]; then
+        echo "${cfg_type} config file is empty." \
+                "${BLUE}Skipping$RESET update." \
+            | awk '{print toupper(substr($0,1,1)) substr($0,2)}'
+        exit 0
+    fi
+    bosh update-${cfg_type}-config "$subsys_state_dir/${cfg_type}-config.yml" "$@"
 }
 
 function upload_stemcell() {

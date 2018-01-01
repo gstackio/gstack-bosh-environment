@@ -100,14 +100,12 @@ function expand_resource_dir() {
     else
         dir=$BASE_DIR/.cache/resources/$rsc
     fi
-    echo "$dir/$file"
+    echo "$dir${file:+/$file}"
 }
 
-function read_bosh-deployment_spec() {
-    local depl_rsc_file=$(spec_var /main_deployment_file)
-    MAIN_DEPLOYMENT_FILE=$(expand_resource_dir "$depl_rsc_file")
-
+function populate_operations_arguments() {
     OPERATIONS_ARGUMENTS=()
+
     local key rsc op_dir op_file
     for key in $(spec_var /operations_files | awk -F: '/^[^-]/{print $1}'); do
         rsc=$(echo "$key" | sed -e 's/^[[:digit:]]\{1,\}\.//')
@@ -116,6 +114,20 @@ function read_bosh-deployment_spec() {
             OPERATIONS_ARGUMENTS+=(-o "$op_dir/${op_file}.yml")
         done
     done
+}
+
+function read_bosh-deployment_spec() {
+    local depl_rsc_file=$(spec_var /main_deployment_file)
+    MAIN_DEPLOYMENT_FILE=$(expand_resource_dir "$depl_rsc_file")
+
+    populate_operations_arguments
+}
+
+function read_bosh-config_spec() {
+    local config_rsc_file=$(spec_var /main_config_file)
+    MAIN_CONFIG_FILE=$(expand_resource_dir "$config_rsc_file")
+
+    populate_operations_arguments
 }
 
 function import_file_value() {

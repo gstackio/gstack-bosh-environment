@@ -1,0 +1,25 @@
+---
+subsys:
+  name: cloud-config
+  type: bosh-config
+
+input_resources:
+  - name: cf-deployment
+    type: git
+    uri: https://github.com/cloudfoundry/cf-deployment.git
+    version: v1.0.0
+
+
+main_config_file: cf-deployment/iaas-support/bosh-lite/cloud-config.yml
+
+operations_files:
+  local:
+    - cf-mysql-support
+    - concourse-support
+    # - dingo-postgres-support
+    - shield-support
+    - prometheus-support
+    - cassandra-support
+
+
+config_vars: {}

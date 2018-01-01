@@ -1,6 +1,0 @@
----
-upstream_base_deployment_manifests:
-  name: cf-deployment
-  git_repo: https://github.com/cloudfoundry/cf-deployment.git
-  version: v1.0.0
-  main_deployment_file: iaas-support/bosh-lite/cloud-config.yml
