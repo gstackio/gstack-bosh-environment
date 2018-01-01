@@ -91,6 +91,7 @@ function env_exports() {
     if [ -n "$SUBSYS_DIR" ]; then
         echo "export BOSH_DEPLOYMENT=\"$(spec_var /deployment_vars/deployment_name)\""
     fi
+    echo "export https_proxy=socks5://127.0.0.1:$TUNNEL_PORT" # for credhub CLI
 }
 
 function credhub_login() {
@@ -652,7 +653,7 @@ case $1 in
 
     # FIXME: version 1.5.1 still doesn't support SOCKS5 proxy but
     # there is no publicly available fixed version 1.5.2 yet.
-    credhub)    setup_credhub_cli 1.5.1 ; credhub_login ;;
+    credhub)    setup_credhub_cli 1.5.3 ; credhub_login ;;
 
     gcp)
         shift

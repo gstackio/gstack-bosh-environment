@@ -115,14 +115,7 @@ function setup_credhub_cli() {
     if which credhub > /dev/null 2>&1; then
         local existing_credhub_cli_version
         existing_credhub_cli_version=$(credhub --version | head -n 1 | cut -d: -f2 | tr -d ' ')
-
-        # As version '1.5.2-dev', we currently use the build of branch
-        # 'fix-segfault-for-credhub-version' (from remote
-        # 'https://github.com/gstackio/credhub-cli.git'), built by
-        # Golang v1.9.2, for the SOCKS5 proxy support that version
-        # 1.5.1 still doesn't have.
-
-        if [[ $existing_credhub_cli_version =~ ^1\.5\.2 ]]; then
+        if [[ $existing_credhub_cli_version =~ ^1\.5\.3 ]]; then
             return 0
         fi
     fi
