@@ -2,6 +2,7 @@
 subsys:
   name: cassandra
   type: bosh-deployment
+  deploy_after: cf
 
 input_resources: []
   # - name: cassandra-boshrelease

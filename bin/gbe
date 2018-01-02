@@ -446,12 +446,28 @@ function upload_stemcell() {
 function each_deployment() {
     local cmd=$1; shift
 
+    local old_IFS subsys_dirs
+    old_IFS=$IFS
+    IFS=$'\n'
+    subsys_dirs=($(find "$BASE_DIR/deployments" -mindepth 1 -maxdepth 1 \
+            -type d \! -name 'zzz-*' \
+            -print))
+    IFS=$old_IFS
+
+    local subsys_dir deploy_after depl_by_deps
+    depl_by_deps=()
+    for subsys_dir in "${subsys_dirs[@]}"; do
+        deploy_after=$(spec_var /subsys/deploy_after "$subsys_dir") || true
+        depl_by_deps+=("${deploy_after:--} $(basename "$subsys_dir")")
+    done
+
     local deployments
-    deployments=($(find "$BASE_DIR/deployments" -mindepth 1 -maxdepth 1 \
-            -type d \! -name bin \! -name '_*' \! -name 'zzz-*' \
-            -print \
-        | xargs -n 1 basename \
-        | sort))
+    old_IFS=$IFS
+    IFS=$'\n'
+    deployments=($(sort -s -k 1,2 <<<"${depl_by_deps[*]}" | cut -d' ' -f2-))
+    IFS=$old_IFS
+
+    local depl_name
     for depl_name in "${deployments[@]}"; do
         "$cmd" "$depl_name" "$@"
     done
