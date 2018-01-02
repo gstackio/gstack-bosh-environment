@@ -408,7 +408,7 @@ function update_config() {
     echo -e "\n${BLUE}Fetching ${BOLD}input resources$RESET\n"
 
     fetch_input_resources
-    read_$(spec_var /subsys/type)_spec
+    "read_$(spec_var /subsys/type)_spec"
     local subsys_state_dir=$(state_dir)
     mkdir -p "$subsys_state_dir"
 
@@ -471,7 +471,7 @@ function converge_deployment() {
     set -e
 
     fetch_input_resources
-    read_$(spec_var /subsys/type)_spec
+    "read_$(spec_var /subsys/type)_spec"
 
     local subsys_state_dir=$(state_dir)
     mkdir -p "$subsys_state_dir"
@@ -554,7 +554,7 @@ function create_env() {
     echo -e "\n${BLUE}Fetching ${BOLD}input resources$RESET\n"
 
     fetch_input_resources
-    read_$(spec_var /subsys/type)_spec
+    "read_$(spec_var /subsys/type)_spec"
     mkdir -p "$(state_dir base-env)"
 
 
