@@ -709,9 +709,9 @@ case $1 in
             "")
                 gbe_up ;;
             all)
+                upload_compiled_releases
                 update_config cloud -n
                 update_config runtime -n
-                upload_compiled_releases
                 each_deployment converge_deployment -n
                 ;;
             deployments)
