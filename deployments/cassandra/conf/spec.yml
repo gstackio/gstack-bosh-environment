@@ -4,12 +4,11 @@ subsys:
   type: bosh-deployment
   deploy_after: cf
 
-input_resources: []
-  # - name: cassandra-boshrelease
-  #   type: git
-  #   uri: https://github.com/orange-cloudfoundry/cassandra-cf-service-boshrelease.git
-  #   version: a51f7b0 # as of Dec 1st, 2017
-  #   # main_deployment_file: ~ # no actual deployment file is available there yet
+input_resources:
+  - name: cassandra-boshrelease
+    type: git
+    uri: https://github.com/orange-cloudfoundry/cassandra-cf-service-boshrelease.git
+    version: bosh-lite # v4 with fixes, as of Dec 19th, 2017
 
 
 main_deployment_file: ./conf/cassandra-deployment.yml
@@ -35,6 +34,8 @@ deployment_vars:
 
 
   # Versions
+
+  cassandra_version: "4+dev.1"
 
   routing_version: "0.168.0"
   routing_sha1: 885321f95b530c4a5b8515c72155229cba26c449

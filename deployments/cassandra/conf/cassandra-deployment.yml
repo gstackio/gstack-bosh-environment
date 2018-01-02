@@ -204,7 +204,7 @@ update:
 
 releases:
   - name: &cassandra_release cassandra39-services
-    version: latest
+    version: ((cassandra_version))
 
 stemcells:
   - alias: &trusty_stemcell trusty
