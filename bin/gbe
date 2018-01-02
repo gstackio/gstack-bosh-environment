@@ -603,15 +603,6 @@ function delete_env() {
 
     set -e
 
-    echo -e "\n${BLUE}Fetching ${BOLD}input resources$RESET\n"
-
-    fetch_input_resources
-    read_$(spec_var /subsys/type)_spec
-    mkdir -p "$(state_dir base-env)"
-
-
-    infra_bosh_ro_invoke interpolate > "$(state_dir base-env)/depl-manifest.yml"
-
     echo -e "\n${BLUE}Logging out from credhub and closing SSH tunnel$RESET\n"
 
     if which credhub > /dev/null; then
