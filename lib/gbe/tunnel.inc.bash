@@ -50,11 +50,15 @@ function has_tunnel() {
     [ -s "$pid_file" ] && ps -p "$(cat "$pid_file")" > /dev/null
 }
 
+function ensure_tunnel() {
+    open_tunnel "$TUNNEL_PORT"
+}
+
 function open_tunnel() {
     local local_port=$1
 
     local pid_file=$(state_dir base-env)/ssh-tunnel.pid
-    if has_tunnel "$pid_file"; then
+    if has_tunnel; then
         return 0
     fi
 
@@ -76,12 +80,12 @@ function open_tunnel() {
 
 function start_tunnel() {
     local pid_file=$(state_dir base-env)/ssh-tunnel.pid
-    if has_tunnel "$pid_file"; then
+    if has_tunnel; then
         echo -e "\n${BLUE}SSH tunnel is ${BOLD}already running$RESET on PID '$(cat "$pid_file")'" \
              "(more info with ${UNDERLINE}lsof -i :$local_port$RESET)\n"
         return 1
     fi
-    open_tunnel "$TUNNEL_PORT"
+    ensure_tunnel
     if [ "$BOSH_ALL_PROXY" != "socks5://127.0.0.1:$TUNNEL_PORT" ]; then
         echo
         echo "${BLUE}You must ${BOLD}refresh your environment variables${RESET} like this:"
@@ -108,7 +112,7 @@ function tunnel_logs() {
 
 function stop_tunnel() {
     local pid_file=$(state_dir base-env)/ssh-tunnel.pid
-    if has_tunnel "$pid_file"; then
+    if has_tunnel; then
         echo -e "\n${BLUE}Closing the ${BOLD}SSH tunnel$RESET that enables access to the Bosh server\n"
         kill "$(cat "$pid_file")"
     fi

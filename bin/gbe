@@ -704,11 +704,11 @@ case $1 in
     terraform)  setup_terraform 0.9.11 ;;
     bosh)       setup_bosh_cli 2.0.45 ;;
     dnscontrol) setup_dnscontrol 0.2.3 ;;
-
-    # FIXME: version 1.5.1 still doesn't support SOCKS5 proxy but
-    # there is no publicly available fixed version 1.5.2 yet.
-    credhub)    setup_credhub_cli 1.5.3 ; credhub_login ;;
-
+    credhub)
+        setup_credhub_cli 1.5.3
+        ensure_tunnel
+        credhub_login
+        ;;
     gcp)
         shift
         if [[ $# -ne 2 ]]; then
@@ -752,9 +752,18 @@ case $1 in
     update)
         shift
         case $1 in
-            cloud-config)   shift; update_config cloud "$@";;
-            runtime-config) shift; update_config runtime "$@";;
-            *)              update_usage ;;
+            cloud-config)
+                shift
+                ensure_tunnel
+                update_config cloud "$@"
+                ;;
+            runtime-config)
+                shift
+                ensure_tunnel
+                update_config runtime "$@"
+                ;;
+            *)
+                update_usage ;;
         esac
         ;;
     converge)
@@ -765,17 +774,20 @@ case $1 in
             "")
                 gbe_up ;;
             all)
+                ensure_tunnel
                 upload_compiled_releases
                 update_config cloud -n
                 update_config runtime -n
                 each_deployment converge_deployment -n
                 ;;
             deployments)
+                ensure_tunnel
                 update_config cloud -n
                 update_config runtime -n
                 each_deployment converge_deployment -n
                 ;;
             *)
+                ensure_tunnel
                 converge_deployment "$@" ;;
         esac
         ;;
@@ -785,6 +797,7 @@ case $1 in
             -h)
                 recreate_usage ;;
             all)
+                ensure_tunnel
                 each_deployment converge_deployment -n --recreate --fix --canaries=0 ;;
             *)
                 converge_deployment "$@" --recreate --fix --canaries=0 ;;
@@ -796,14 +809,18 @@ case $1 in
             ""|-h)
                 delete_usage ;;
             all)
+                ensure_tunnel
                 each_deployment delete_deployment -n ;;
             *)
+                ensure_tunnel
                 delete_deployment "$@" ;;
         esac
         ;;
     export)
+        ensure_tunnel
         export_releases ;;
     import)
+        ensure_tunnel
         upload_compiled_releases ;;
     cleanup)
         shift
