@@ -91,7 +91,6 @@ function env_exports() {
     if [ -n "$SUBSYS_DIR" ]; then
         echo "export BOSH_DEPLOYMENT=\"$(spec_var /deployment_vars/deployment_name)\""
     fi
-    echo "export https_proxy=socks5://127.0.0.1:$TUNNEL_PORT" # for credhub CLI
 }
 
 function credhub_login() {
