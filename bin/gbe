@@ -97,6 +97,10 @@ function env_exports() {
 function credhub_login() {
     local creds=$(state_dir base-env)/depl-creds.yml
 
+    if [[ ! -f "$creds" || ! -f "$(state_dir base-env)/bbl-state.json" ]]; then
+        return
+    fi
+
     export CREDHUB_SERVER=https://$(internal_ip):8844
     export CREDHUB_CA_CERT=$(state_dir base-env)/credhub_CAs.pem
     (
@@ -608,7 +612,11 @@ function delete_env() {
 
     infra_bosh_ro_invoke interpolate > "$(state_dir base-env)/depl-manifest.yml"
 
+    echo -e "\n${BLUE}Logging out from credhub and closing SSH tunnel$RESET\n"
 
+    if which credhub > /dev/null; then
+        credhub logout
+    fi
     stop_tunnel
     unset BOSH_ALL_PROXY
 
