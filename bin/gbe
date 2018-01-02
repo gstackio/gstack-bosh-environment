@@ -149,8 +149,8 @@ function setup_gcp() {
     fi
 
     local temp_file=$(mktemp)
-    sed -e "s/^project_id:.*$/project_id: $project_id/" "$BASE_DIR/base-env/conf/env-infra-vars.yml" > "$temp_file"
-    cp "$temp_file" "$BASE_DIR/base-env/conf/env-infra-vars.yml"
+    sed -e "s/^  project_id:.*$/project_id: $project_id/" "$BASE_DIR/base-env/conf/spec.yml" > "$temp_file"
+    cp "$temp_file" "$BASE_DIR/base-env/conf/spec.yml"
     rm "$temp_file"
 
     echo -e "$GREEN${BOLD}OK$RESET"
