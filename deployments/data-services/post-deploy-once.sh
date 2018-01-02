@@ -2,6 +2,7 @@
 
 set -ex
 
-bosh run-errand sanity-test
-
+# Sanity test needs the data services to be registered with Cloud Foundry first
 bosh run-errand broker-registrar
+
+bosh run-errand sanity-test
