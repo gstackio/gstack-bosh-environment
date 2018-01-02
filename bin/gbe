@@ -712,6 +712,7 @@ case $1 in
         ensure_tunnel
         credhub_login
         ;;
+    cf)         setup_cf_cli 6.33.1 ;;
     gcp)
         shift
         if [[ $# -ne 2 ]]; then

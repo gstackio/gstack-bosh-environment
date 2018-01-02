@@ -1,5 +1,5 @@
 ---
-name: ((deployment_name))
+name: cassandra
 
 instance_groups:
   - name: cassandra-seeds
@@ -204,9 +204,13 @@ update:
 
 releases:
   - name: &cassandra_release cassandra39-services
-    version: ((cassandra_version))
+    version: latest
+  - name: broker-registrar
+    version: latest
+  - name: routing
+    version: latest
 
 stemcells:
   - alias: &trusty_stemcell trusty
     os: ubuntu-trusty
-    version: ((stemcell_version))
+    version: latest

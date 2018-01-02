@@ -171,3 +171,42 @@ function setup_dnscontrol() {
         -o "$dnscontrol_bin"
     chmod +x "$dnscontrol_bin"
 }
+
+function setup_cf_cli() {
+    local cf_cli_version=$1
+
+    if which cf > /dev/null 2>&1; then
+        local existing_cf_cli_version
+        existing_cf_cli_version=$(cf --version | head -n 1 | cut -d' ' -f3 | cut -d+ -f1)
+        if [[ $existing_cf_cli_version =~ ^6\.33\. ]]; then
+            return 0
+        fi
+    fi
+
+    local cf_cli_bin=$BASE_DIR/bin/cf
+    if [ -f "$cf_cli_bin" ]; then
+        return 0
+    fi
+
+    assert_utilities curl tar "to install the Cloud Foundry CLI"
+
+    local base_url=https://packages.cloudfoundry.org/stable
+
+    echo -e "${BLUE}Installing ${BOLD}Cloud Foundry CLI$RESET v$cf_cli_version as: $cf_cli_bin"
+    case $(platform) in
+        darwin) cf_cli_release=macosx64-binary ;;
+        linux)  cf_cli_release=linux64-binary  ;;
+    esac
+    local url="$base_url?release=$cf_cli_release&version=$existing_cf_cli_version"
+
+    local temp_dir
+    temp_dir=$(mktemp -d)
+    pushd "$temp_dir"
+        curl -sL -o cf.tgz "$url"
+        tar -zxf cf.tgz
+        rm cf.tgz
+        mv cf "$cf_cli_bin"
+        chmod +x "$cf_cli_bin"
+    popd
+    rm -rf "$temp_dir"
+}

@@ -16,6 +16,7 @@ operations_files:
   local:
     - cf-use-bosh-dns
     - shield-support
+    - cassandra-support
 
 
 config_vars:
@@ -24,3 +25,6 @@ config_vars:
 
   shield_deployment_name: easyfoundry-shield
   shield_network: shield-network
+
+  cassandra_deployment_name: easyfoundry-cassandra
+  cassandra_network: cassandra-network

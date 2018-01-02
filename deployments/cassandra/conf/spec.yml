@@ -16,6 +16,8 @@ main_deployment_file: ./conf/cassandra-deployment.yml
 
 operations_files:
   local:
+    - set-versions
+    - cf-integration
     - routing
 
 
@@ -36,6 +38,9 @@ deployment_vars:
   # Versions
 
   cassandra_version: "4+dev.1"
+
+  broker_registrar_version: "3.4.0"
+  broker_registrar_sha1: "d44d9af8fd06ecf6d50004c9bfd5516a6e482201"
 
   routing_version: "0.168.0"
   routing_sha1: 885321f95b530c4a5b8515c72155229cba26c449

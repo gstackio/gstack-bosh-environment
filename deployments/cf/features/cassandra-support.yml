@@ -1,0 +1,20 @@
+---
+
+- path: /instance_groups/name=api/jobs/name=cloud_controller_ng/properties/cc/security_group_definitions/name=cassandra?
+  type: replace
+  value:
+    name: &security_group_name cassandra
+    rules:
+      - destination: 10.0.0.0-10.255.255.255
+        ports: &cassandra_port "9042"
+        protocol: &cassandra_proto tcp
+      - destination: 172.16.0.0-172.31.255.255
+        ports: *cassandra_port
+        protocol: *cassandra_proto
+      - destination: 192.168.0.0-192.168.255.255
+        ports: *cassandra_port
+        protocol: *cassandra_proto
+
+- path: /instance_groups/name=api/jobs/name=cloud_controller_ng/properties/cc/default_running_security_groups/-
+  type: replace
+  value: *security_group_name

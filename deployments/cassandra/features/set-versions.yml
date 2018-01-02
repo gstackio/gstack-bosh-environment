@@ -1,0 +1,19 @@
+---
+
+- path: /name
+  type: replace
+  value: ((deployment_name))
+
+
+# Stemcell and Releases versions
+
+- path: /releases/name=cassandra39-services?
+  type: replace
+  value:
+    name: cassandra39-services
+    version: ((cassandra_version))
+
+
+- path: /stemcells/alias=trusty/version
+  type: replace
+  value: ((stemcell_version))

@@ -25,6 +25,7 @@ operations_files:
   30.local:
     - set-versions
     - expose-admin-user-as-link
+    - cassandra-support
 
 
 deployment_vars:
