@@ -29,18 +29,4 @@ function cf_login() {
 
 set -ex
 
-pushd "$BASE_DIR/.cache/resources/cassandra-boshrelease" || exit 115
-    git submodule update --init --recursive
-    bosh reset-release
-    bosh create-release
-    bosh upload-release
-popd
-
-cf_login
-
-if ! cf security-groups 2> /dev/null | grep -qE '\bcassandra\b'; then
-    cf create-security-group cassandra "$BASE_DIR/deployments/cassandra/security-groups.json"
-fi
-if ! cf running-security-groups 2> /dev/null | grep -q '^cassandra$'; then
-    cf bind-running-security-group cassandra
-fi
+bosh run-errand broker-deregistrar

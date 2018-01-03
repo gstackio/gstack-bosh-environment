@@ -4,4 +4,4 @@ set -ex
 
 bosh run-errand broker-registrar
 
-# bosh run-errand smoke-tests # this doesn't pass yet
+# bosh run-errand smoke-tests # these don't pass yet..

@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 
-DEPL_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+BASE_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
 
-bosh int "$DEPL_DIR/state/depl-creds.yml" --path /cf_admin_password \
+if ! which pbcopy > /dev/null; then
+	echo "ERROR: no executable 'pbcopy' on your PATH. Aborting." >&2
+	exit 1
+fi
+
+bosh int "$BASE_DIR/state/cf/depl-creds.yml" --path /cf_admin_password \
     | tr -d '\n' \
     | pbcopy
