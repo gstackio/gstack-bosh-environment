@@ -40,7 +40,7 @@
     stemcell: trusty
     vm_type: minimal
     networks:
-      - name: ((cassandra_network))
+      - name: ((network_name))
 
 - path: /instance_groups/name=broker-deregistrar-vm?
   type: replace
@@ -57,4 +57,4 @@
     stemcell: trusty
     vm_type: minimal
     networks:
-      - name: ((cassandra_network))
+      - name: ((network_name))

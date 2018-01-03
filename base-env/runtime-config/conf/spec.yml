@@ -27,13 +27,28 @@ config_vars:
   bosh_dns_sha1: "e38d3e5edd16ce2dca778440b636ab1ea61f892f"
 
 
-  # Plumbery
-
-  cf_deployment_name: easyfoundry-cf
-  cf_network_name: default
-
-  shield_deployment_name: easyfoundry-shield
-  shield_network: shield-network
-
-  cassandra_deployment_name: easyfoundry-cassandra
-  cassandra_network: cassandra-network
+imported_vars:
+  - subsys: cf
+    imports:
+      - name: cf_deployment_name
+        from: depl-vars
+        path: /deployment_name
+      - name: cf_network_name
+        from: depl-vars
+        path: /network_name
+  - subsys: shield
+    imports:
+      - name: shield_deployment_name
+        from: depl-vars
+        path: /deployment_name
+      - name: shield_network
+        from: depl-vars
+        path: /network_name
+  - subsys: cassandra
+    imports:
+      - name: cassandra_deployment_name
+        from: depl-vars
+        path: /deployment_name
+      - name: cassandra_network
+        from: depl-vars
+        path: /network_name

@@ -43,7 +43,7 @@ instance_groups:
       bosh: { swap_size: 0 }
     azs: [ z1 ]
     networks:
-      - name: &cassandra_network ((cassandra_network))
+      - name: &cassandra_network ((network_name))
 
   # - name: cassandra-injectors
   #   instances: 0
@@ -170,7 +170,7 @@ variables:
       ca: internalCA # /internalCA
       common_name: <%= cassandra-seeds.instance.address %>
       alternative_names:
-        - "*.cassandra-seeds.((cassandra_network)).((deployment_name)).bosh"
+        - "*.cassandra-seeds.((network_name)).((deployment_name)).bosh"
       extended_key_usage: [ client_auth, server_auth ]
 
   # - name: cassandra_certificate_injector
@@ -179,7 +179,7 @@ variables:
   #     ca: internalCA # /internalCA
   #     common_name: <%= cassandra-injectors.instance.address %>
   #     alternative_names:
-  #       - "*.cassandra-injectors.((cassandra_network)).((deployment_name)).bosh"
+  #       - "*.cassandra-injectors.((network_name)).((deployment_name)).bosh"
   #     extended_key_usage: [ client_auth, server_auth ]
 
   - name: cassandra_certificate_cluster
@@ -188,7 +188,7 @@ variables:
       ca: internalCA # /internalCA
       common_name: <%= cassandra-servers.instance.address %>
       alternative_names:
-        - "*.cassandra-servers.((cassandra_network)).((deployment_name)).bosh"
+        - "*.cassandra-servers.((network_name)).((deployment_name)).bosh"
       extended_key_usage: [ client_auth, server_auth ]
 
 

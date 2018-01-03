@@ -50,9 +50,9 @@ deployment_vars:
   stemcell_sha1: 74592d4c2b7f2aebacd767112dd0ef28b028532b
 
 
-  # Plumbery
+  # Reference declarations
 
-  cassandra_network: cassandra-network
+  network_name: cassandra-network # injected in cloud-config
 
 
 imported_vars:

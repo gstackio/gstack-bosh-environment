@@ -418,6 +418,7 @@ function update_config() {
     bosh interpolate "$MAIN_CONFIG_FILE" \
         "${OPERATIONS_ARGUMENTS[@]}" \
         --vars-file <(spec_var /config_vars) \
+        --vars-file <(imported_vars) \
         > "$subsys_state_dir/${cfg_type}-config.yml"
 
     if [ ! -s "$subsys_state_dir/${cfg_type}-config.yml" ]; then
