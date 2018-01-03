@@ -47,6 +47,12 @@ deployment_vars:
   stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
 
 
+  # Reference declarations
+
+  network_name: mysql-network # injected in cloud-config
+  mysql_vm_extension: mysql-proxy-lb
+
+
 imported_vars:
   - subsys: cf
     imports:

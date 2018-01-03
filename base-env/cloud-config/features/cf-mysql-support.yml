@@ -1,16 +1,19 @@
 ---
+
 - path: /vm_extensions/-
+# - path: /vm_extensions/name=((mysql_vm_extension))? # could this work?
   type: replace
   value:
-    name: mysql-proxy-lb
+    name: ((mysql_vm_extension))
     cloud_properties:
       ports:
         - host: 3306
 
 - path: /networks/-
+# - path: /networks/name=((mysql_network))? # could this work?
   type: replace
   value:
-    name: mysql-network
+    name: ((mysql_network))
     subnets:
     - az: z1
       range: 10.244.17.0/24

@@ -24,3 +24,40 @@ operations_files:
 
 
 config_vars: {}
+
+
+imported_vars:
+  - subsys: mysql
+    imports:
+      - name: mysql_network
+        from: depl-vars
+        path: /network_name
+      - name: mysql_vm_extension
+        from: depl-vars
+        path: /mysql_vm_extension
+  - subsys: concourse
+    imports:
+      - name: concourse_network
+        from: depl-vars
+        path: /network_name
+      - name: concourse_vm_extension
+        from: depl-vars
+        path: /web_vm_extension
+  - subsys: shield
+    imports:
+      - name: shield_network
+        from: depl-vars
+        path: /network_name
+      - name: shield_vm_extension
+        from: depl-vars
+        path: /shield_vm_extension
+  - subsys: prometheus
+    imports:
+      - name: prometheus_vm_extension
+        from: depl-vars
+        path: /prometheus_vm_extension
+  - subsys: cassandra
+    imports:
+      - name: cassandra_network
+        from: depl-vars
+        path: /network_name

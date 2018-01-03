@@ -3,7 +3,7 @@
 - path: /networks/-
   type: replace
   value:
-    name: cassandra-network
+    name: ((cassandra_network))
     subnets:
       - az: z1
         range: 10.244.67.0/24 # '67' because of `echo -n C | hexdump -d`

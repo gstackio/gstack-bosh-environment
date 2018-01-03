@@ -49,9 +49,9 @@ deployment_vars:
   worker_vm_extension: 50GB_ephemeral_disk # consider 100GB for production systems
 
 
-  # Plumbery properties
+  # Reference declarations
 
-  network_name: concourse-network
+  network_name: concourse-network # injected in cloud-config
   # A VM extension from your BOSH Director's cloud config that will attach 'web'
   # instances to your ELB.
   web_vm_extension: concourse-atc-lb

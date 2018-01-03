@@ -45,6 +45,11 @@ deployment_vars:
   stemcell_sha1: 74592d4c2b7f2aebacd767112dd0ef28b028532b
 
 
+  # Reference declarations
+
+  network_name: default
+
+
 imported_vars:
   - subsys: cf
     imports:
