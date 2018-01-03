@@ -1,0 +1,9 @@
+---
+
+- type: replace
+  path: /resource_pools/name=vms/cloud_properties/machine_type
+  value: ((gcp_machine_type))
+
+- path: /disk_pools/name=disks/disk_size
+  type: replace
+  value: ((disk_size))

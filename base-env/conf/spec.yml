@@ -46,12 +46,13 @@ operations_files:
     - custom-bosh-version-precompiled
     # - custom-bosh-version
     - disable-resurrector
-    - set-disk-size
+    - scale-vm-and-disk
 
 
 deployment_vars:
   director_name: "Easy Foundry Director"
 
+  gcp_machine_type: n1-standard-16 # n1-standard-8
   disk_size: 100_000 # i.e. 100MB
 
 
