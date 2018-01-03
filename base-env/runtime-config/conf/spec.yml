@@ -20,6 +20,15 @@ operations_files:
 
 
 config_vars:
+
+  # Versions
+
+  bosh_dns_version: "0.0.11"
+  bosh_dns_sha1: "e38d3e5edd16ce2dca778440b636ab1ea61f892f"
+
+
+  # Plumbery
+
   cf_deployment_name: easyfoundry-cf
   cf_network_name: default
 
