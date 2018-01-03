@@ -17,6 +17,10 @@ input_resources:
     type: git
     uri: https://github.com/cloudfoundry-community/docker-broker-deployment.git
     version: 2eb6456 # as of Dec. 1st, 2017
+  - name: broker-registrar-boshrelease
+    type: git
+    uri: https://github.com/cloudfoundry-community/broker-registrar-boshrelease.git
+    version: v3.4.0
 
 
 # main_deployment_file: docker-boshrelease/manifests/containers/example.yml
@@ -29,9 +33,10 @@ operations_files:
     - operators/services/mysql56
     - operators/services/postgresql96
     - operators/services/redis32
+  15.broker-registrar-boshrelease:
+    - manifests/operators/cf-admin-user
   20.local:
     - set-versions
-    - use-cf-admin-user-link
     - inject-variables # must be after 'use-cf-admin-user-link'
     - fix-broker-registrar-vm-names # must be last
 
