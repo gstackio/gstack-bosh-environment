@@ -1,0 +1,31 @@
+---
+
+# deployment/logsearch-deployment.yml
+
+- path: /instance_groups/name=smoke-tests/jobs/name=smoke-tests/consumes/cloud_controller/deployment
+  type: replace
+  value: ((cf_deployment_name))
+
+- path: /instance_groups/name=create-uaa-client/jobs/name=create-uaa-client/consumes/cloud_controller/deployment
+  type: replace
+  value: ((cf_deployment_name))
+
+- path: /instance_groups/name=kibana/jobs/name=kibana-auth-plugin/consumes/cloud_controller/deployment
+  type: replace
+  value: ((cf_deployment_name))
+
+- path: /instance_groups/name=ingestor/jobs/name=ingestor_cloudfoundry-firehose/consumes/cloud_controller/deployment
+  type: replace
+  value: ((cf_deployment_name))
+
+- path: /instance_groups/name=ls-router/jobs/name=route_registrar/consumes/nats/deployment
+  type: replace
+  value: ((cf_deployment_name))
+
+
+
+# deployment/operations/cerbero.yml
+
+- path: /instance_groups/name=elasticsearch_master/jobs/name=route_registrar/consumes/nats/deployment
+  type: replace
+  value: ((cf_deployment_name))

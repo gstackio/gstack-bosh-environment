@@ -20,6 +20,7 @@ operations_files:
     - shield-support
     - prometheus-support
     - cassandra-support
+    - logsearch-support
 
 
 config_vars: {}

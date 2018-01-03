@@ -1,0 +1,61 @@
+---
+subsys:
+  name: logsearch
+  type: bosh-deployment
+  deploy_after: cf
+
+input_resources:
+  - name: logsearch-boshrelease
+    type: git
+    uri: https://github.com/cloudfoundry-community/logsearch-boshrelease.git
+    version: v208.0.0
+
+
+# main_deployment_file: ./conf/logsearch-deployment.yml
+main_deployment_file: logsearch-boshrelease/deployment/logsearch-deployment.yml
+
+operations_files:
+  10.logsearch-boshrelease:
+    - deployment/operations/scale-to-one-az
+    - deployment/operations/cerebro
+  20.local:
+    - set-versions
+    - cf-integration
+
+
+deployment_vars:
+  deployment_name: easyfoundry-logsearch
+
+
+  # User-facing settings
+
+  system_domain: logsearch.easyfoundry.prototyp.it
+
+
+  # Versions
+
+  logsearch_version: "208.0.0"
+  logsearch_sha1: "578283fd9d8dbbd02e7f4f35e6d60671953a924f"
+
+  logsearch_for_cloudfoundry_version: "206.0.0"
+  logsearch_for_cloudfoundry_sha1: "574720bed4d453ed4153f48d5244e2b4fde16354"
+
+  stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+  stemcell_version: "3468.11"
+  stemcell_sha1: 74592d4c2b7f2aebacd767112dd0ef28b028532b
+
+
+imported_vars:
+  - subsys: cf
+    imports:
+      - name: cf_deployment_name
+        from: depl-vars
+        path: /deployment_name
+
+      - name: cf_admin_password
+        from: depl-creds
+        path: /cf_admin_password
+
+      - name: uaa_admin_client_secret
+        from: depl-creds
+        path: /uaa_admin_client_secret
