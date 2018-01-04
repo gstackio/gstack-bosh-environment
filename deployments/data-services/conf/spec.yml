@@ -38,7 +38,7 @@ operations_files:
   20.local:
     - set-versions
     - inject-variables # must be after 'use-cf-admin-user-link'
-    - fix-broker-registrar-vm-names # must be last
+    - fix-errands-vms-names # must be last
 
 
 deployment_vars:
