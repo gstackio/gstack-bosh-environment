@@ -4,6 +4,7 @@
 /bin/bosh
 /bin/dnscontrol
 /bin/credhub
+/bin/cf
 creds.yml
 creds.json
 *-creds.yml
