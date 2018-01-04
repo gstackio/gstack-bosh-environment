@@ -1,0 +1,34 @@
+---
+
+# Elasticsearch heap size
+
+- path: /instance_groups/name=elasticsearch_master/jobs/name=elasticsearch/properties?/elasticsearch/heap_size
+  type: replace
+  value: ((elasticsearch_heap_size))
+
+- path: /instance_groups/name=cluster_monitor/jobs/name=elasticsearch/properties?/elasticsearch/heap_size
+  type: replace
+  value: ((elasticsearch_heap_size))
+
+- path: /instance_groups/name=elasticsearch_data/jobs/name=elasticsearch/properties?/elasticsearch/heap_size
+  type: replace
+  value: ((elasticsearch_heap_size))
+
+- path: /instance_groups/name=kibana/jobs/name=elasticsearch/properties?/elasticsearch/heap_size
+  type: replace
+  value: ((elasticsearch_heap_size))
+
+- path: /instance_groups/name=ingestor/jobs/name=elasticsearch/properties?/elasticsearch/heap_size
+  type: replace
+  value: ((elasticsearch_heap_size))
+
+
+# Logstash heap size
+
+- path: /instance_groups/name=cluster_monitor/jobs/name=ingestor_syslog/properties?/logstash/heap_size
+  type: replace
+  value: ((logstash_heap_size))
+
+- path: /instance_groups/name=ingestor/jobs/name=ingestor_syslog/properties?/logstash/heap_size
+  type: replace
+  value: ((logstash_heap_size))

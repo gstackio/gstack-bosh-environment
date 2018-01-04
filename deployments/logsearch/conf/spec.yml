@@ -21,6 +21,8 @@ operations_files:
   20.local:
     - set-versions
     - cf-integration
+    - bosh-lite-support
+    - fix-errands-vms-names # must be last
 
 
 deployment_vars:
@@ -30,6 +32,9 @@ deployment_vars:
   # User-facing settings
 
   system_domain: logsearch.easyfoundry.prototyp.it
+
+  elasticsearch_heap_size: 500M
+  logstash_heap_size: 500M
 
 
   # Versions
