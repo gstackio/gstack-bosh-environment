@@ -444,8 +444,23 @@ function upload_stemcell() {
         "https://bosh.io/d/stemcells/$stemcell_name?v=$stemcell_version"
 }
 
+function list_deployments() {
+    echo -e "\n$BLUE${BOLD}Affected deployments$RESET in order:\n"
+    each_deployment "$@" print_deployment_name
+    echo
+}
+
+function print_deployment_name() {
+    local depl_name=$1
+    echo "  - $depl_name"
+}
+
 function each_deployment() {
-    local cmd=$1; shift
+    local reverse_arg cmd
+    if [ "x$1" == x-r -o "x$1" == x--reverse ]; then
+        reverse_arg=$1; shift
+    fi
+    cmd=$1; shift
 
     local old_IFS subsys_dirs
     old_IFS=$IFS
@@ -465,7 +480,7 @@ function each_deployment() {
     local deployments
     old_IFS=$IFS
     IFS=$'\n'
-    deployments=($(sort -s -k 1,2 <<<"${depl_by_deps[*]}" | cut -d' ' -f2-))
+    deployments=($(sort $reverse_arg -s -k 1,2 <<<"${depl_by_deps[*]}" | cut -d' ' -f2-))
     IFS=$old_IFS
 
     local depl_name
@@ -790,17 +805,21 @@ case $1 in
                 converge_usage ;;
             "")
                 gbe_up ;;
+            list)
+                list_deployments ;;
             all)
                 ensure_tunnel
                 upload_compiled_releases
                 update_config cloud -n
                 update_config runtime -n
+                list_deployments
                 each_deployment converge_deployment -n
                 ;;
             deployments)
                 ensure_tunnel
                 update_config cloud -n
                 update_config runtime -n
+                list_deployments
                 each_deployment converge_deployment -n
                 ;;
             *)
@@ -815,6 +834,7 @@ case $1 in
                 recreate_usage ;;
             all)
                 ensure_tunnel
+                list_deployments
                 each_deployment converge_deployment -n --recreate --fix --canaries=0 ;;
             *)
                 converge_deployment "$@" --recreate --fix --canaries=0 ;;
@@ -825,9 +845,12 @@ case $1 in
         case $1 in
             ""|-h)
                 delete_usage ;;
+            list)
+                list_deployments --reverse ;;
             all)
                 ensure_tunnel
-                each_deployment delete_deployment -n ;;
+                list_deployments --reverse
+                each_deployment --reverse delete_deployment -n ;;
             *)
                 ensure_tunnel
                 delete_deployment "$@" ;;
