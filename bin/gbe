@@ -585,6 +585,7 @@ function gbe_up() {
     setup_bbl v3.2.6
     setup_terraform 0.9.11
     setup_bosh_cli 2.0.45
+    setup_dnscontrol 0.2.3
     assert_utilities ruby "to render ERB templates locally"
 
     # Proxy must not interfere when (re)creating the Bosh environment
