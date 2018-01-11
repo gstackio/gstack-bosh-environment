@@ -1,0 +1,15 @@
+---
+
+- path: /releases/name=bosh?
+  type: replace
+  value:
+    name: bosh
+    version: ((bosh_version))
+    url: https://bosh.io/d/github.com/cloudfoundry/bosh?v=((bosh_version))
+    sha1: ((bosh_sha1))
+
+# Note: the above breaks the speed obtained with compiled releases that are
+# the default in bosh-deployment.
+#
+# See the pre-compiled artifacts in this bucket:
+# <https://s3.amazonaws.com/bosh-compiled-release-tarballs>

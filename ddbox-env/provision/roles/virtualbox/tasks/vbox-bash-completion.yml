@@ -1,0 +1,16 @@
+---
+
+- name: Virtualbox | bash-completion apt packages are installed
+  become: yes
+  apt:
+    update_cache: yes
+    name: "{{ item }}"
+    state: present
+  with_items: [ bash-completion ]
+
+- name: Virtualbox | bash completion script is installed
+  become: yes
+  get_url:
+    url: https://raw.githubusercontent.com/bgandon/bash-completion-virtualbox/master/vboxmanage_completion.bash
+    dest: /etc/bash_completion.d/vboxmanage_completion.bash
+    mode: 0644

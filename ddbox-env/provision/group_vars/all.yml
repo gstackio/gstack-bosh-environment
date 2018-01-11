@@ -1,0 +1,6 @@
+---
+
+# Plumbery
+
+prefix_dir: /usr/local
+resources_dir: "{{ ansible_env.HOME }}"

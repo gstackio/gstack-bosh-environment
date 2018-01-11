@@ -1,0 +1,16 @@
+---
+
+- hosts: dedibox
+  roles:
+    - virtualbox
+
+  tasks:
+    - name: Utilities | packages are installed
+      become: true
+      apt:
+        name: "{{ package }}"
+        update_cache: yes
+        state: present
+      with_items: []
+      loop_control: { loop_var: package }
+      tags: [ utilities ]

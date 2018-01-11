@@ -1,0 +1,54 @@
+---
+subsys:
+  name: runtime-config
+  type: bosh-config
+
+input_resources:
+  - name: bosh-deployment
+    type: git
+    uri: https://github.com/cloudfoundry/bosh-deployment.git
+    version: dc7fa0a # v264.1 (as of Nov 17th, 2017)
+
+
+main_config_file: bosh-deployment/runtime-configs/dns.yml
+
+operations_files:
+  local:
+    - cf-use-bosh-dns
+    - shield-support
+    - cassandra-support
+
+
+config_vars:
+
+  # Versions
+
+  bosh_dns_version: "0.0.11"
+  bosh_dns_sha1: "e38d3e5edd16ce2dca778440b636ab1ea61f892f"
+
+
+imported_vars:
+  - subsys: cf
+    imports:
+      - name: cf_deployment_name
+        from: depl-vars
+        path: /deployment_name
+      - name: cf_network_name
+        from: depl-vars
+        path: /network_name
+  - subsys: shield
+    imports:
+      - name: shield_deployment_name
+        from: depl-vars
+        path: /deployment_name
+      - name: shield_network
+        from: depl-vars
+        path: /network_name
+  - subsys: cassandra
+    imports:
+      - name: cassandra_deployment_name
+        from: depl-vars
+        path: /deployment_name
+      - name: cassandra_network
+        from: depl-vars
+        path: /network_name

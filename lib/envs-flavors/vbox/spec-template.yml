@@ -1,0 +1,73 @@
+---
+subsys:
+  name: ~
+  type: bosh-environment
+
+input_resources:
+  - name: bosh-deployment
+    type: git
+    uri: https://github.com/cloudfoundry/bosh-deployment.git
+    version: dc7fa0a # v264.1 (as of Nov 17th, 2017)
+  - name: prometheus-boshrelease
+    type: git
+    uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
+    version: v20.0.0
+
+
+infra_vars:
+  iaas: virtualbox
+
+dns:
+  zone: prototyp.it
+  subdomain: easyfoundry
+
+
+main_deployment_file: bosh-deployment/bosh.yml
+
+operations_files:
+  10.bosh-deployment:
+    - virtualbox/cpi
+    - virtualbox/outbound-network
+    - bosh-lite
+    - bosh-lite-runc
+    - jumpbox-user
+    - external-ip-not-recommended
+    - uaa
+    - credhub
+    - local-dns
+  20.prometheus-boshrelease:
+    - manifests/operators/bosh/add-bosh-exporter-uaa-clients
+  30.local:
+    - custom-stemcell-version
+    - custom-bosh-version-precompiled
+    # - custom-bosh-version
+    - disable-resurrector
+    - set-disk-size
+
+
+deployment_vars:
+  director_name: ~
+
+  disk_size: 200_000 # i.e. 200MB
+
+  external_ip: ~
+  vbox_host: ~
+  vbox_username: ~
+  vbox_ssh:
+    private_key: ~
+
+  internal_ip: "192.168.50.6"
+  internal_gw: "192.168.50.1"
+  internal_cidr: 192.168.50.0/24
+  outbound_network_name: NatNetwork
+
+  bosh_precompiled_version: "264.4.0"
+  bosh_precompiled_url: https://s3.amazonaws.com/bosh-compiled-release-tarballs/bosh-264.4.0-ubuntu-trusty-3468.11-20171204-211303-173868826-20171204211307.tgz
+  bosh_precompiled_sha1: "12f50c6d196a80d1a31eedb34ba1a1acd6904b56"
+
+  stemcell_name: bosh-vsphere-esxi-ubuntu-trusty-go_agent
+  stemcell_version: "3468.11"
+  stemcell_sha1: a2526970375a1780cbb4f613bbe5ad8ef39f84ab
+
+
+imported_vars: {}

@@ -1,0 +1,32 @@
+---
+
+- name: Virtualbox | the Oracle apt key is downloaded
+  get_url:
+    url: https://www.virtualbox.org/download/oracle_vbox_2016.asc
+    dest: "{{ resources_dir }}/oracle_vbox_2016.asc"
+    checksum: sha256:49e6801d45f6536232c11be6cdb43fa8e0198538d29d1075a7e10165e1fbafe2
+    mode: 0644
+
+- name: Virtualbox | the Oracle apt key is added
+  become: yes
+  apt_key:
+    file: "{{ resources_dir }}/oracle_vbox_2016.asc"
+    state: present
+
+- name: Virtualbox | the deb repo is added to apt sources
+  become: true
+  apt_repository:
+    repo: deb http://download.virtualbox.org/virtualbox/debian xenial contrib
+    filename: virtualbox
+    state: present
+
+- name: Virtualbox | the latest Synaptic Packages are installed
+  become: true
+  apt:
+    name: "{{ package }}"
+    update_cache: yes
+    state: present
+  with_items:
+    - dkms
+    - virtualbox-{{ virtualbox_branch }}
+  loop_control: { loop_var: package }

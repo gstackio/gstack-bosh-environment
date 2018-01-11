@@ -1,0 +1,7 @@
+---
+
+- import_tasks: vbox-apt-package.yml
+  tags: [ virtualbox ]
+
+- import_tasks: vbox-bash-completion.yml
+  tags: [ virtualbox ]

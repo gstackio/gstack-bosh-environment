@@ -1,0 +1,84 @@
+---
+subsys:
+  name: ~
+  type: bosh-environment
+
+input_resources:
+  - name: bosh-deployment
+    type: git
+    uri: https://github.com/cloudfoundry/bosh-deployment.git
+    version: dc7fa0a # v264.1 (as of Nov 17th, 2017)
+  - name: prometheus-boshrelease
+    type: git
+    uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
+    version: v20.0.0
+
+
+infra_vars:
+  iaas: gcp
+  region: ~
+  zone: ~
+  project_id: ~
+
+dns:
+  zone: prototyp.it
+  subdomain: easyfoundry
+
+
+main_deployment_file: bosh-deployment/bosh.yml
+
+operations_files:
+  10.bosh-deployment:
+    - gcp/cpi
+    - gcp/bosh-lite-vm-type
+    - bosh-lite
+    - bosh-lite-runc
+    - jumpbox-user
+    - external-ip-not-recommended
+    - uaa
+    - credhub
+    - local-dns
+  20.prometheus-boshrelease:
+    - manifests/operators/bosh/add-bosh-exporter-uaa-clients
+  30.local:
+    - enable-local-access
+    - custom-stemcell-version
+    - custom-bosh-version-precompiled
+    # - custom-bosh-version
+    - disable-resurrector
+    - scale-vm-and-disk
+
+
+deployment_vars:
+  director_name: "Easy Foundry Director"
+
+  gcp_machine_type: n1-standard-8 # 8 CPUs, 30 GB RAM
+  # gcp_machine_type: n1-standard-16 # 16 CPUs, 60 GB RAM
+  disk_size: 100_000 # i.e. 100MB
+
+
+  ## When the release is available on the `bosh-compiled-release-tarballs` S3
+  ## bucket, use the 'custom-bosh-version-precompiled' operation file with these
+  ## settings:
+  bosh_precompiled_version: "264.4.0"
+  bosh_precompiled_url: https://s3.amazonaws.com/bosh-compiled-release-tarballs/bosh-264.4.0-ubuntu-trusty-3468.11-20171204-211303-173868826-20171204211307.tgz
+  bosh_precompiled_sha1: "12f50c6d196a80d1a31eedb34ba1a1acd6904b56"
+
+  ## When the release is not available yet on the `bosh-compiled-release-tarballs`
+  ## S3 bucket, use the 'custom-bosh-version' operation file instead, with these
+  ## settings:
+  # bosh_version: "264.3.0"
+  # bosh_sha1: "dc0accf852839e16f17c4a88a8dc1213c79564b9"
+
+  ## When the release is not available yet on the `bosh-compiled-release-tarballs`
+  ## S3 bucket, and you have a compiled release in your cache:
+  # bosh_precompiled_version: "264.4.0"
+  # bosh_precompiled_url: file://../../compiled-releases/bosh-264.4.0-ubuntu-trusty-3468.11-20171204-211303-173868826-20171204211307.tgz
+  # bosh_precompiled_sha1: "12f50c6d196a80d1a31eedb34ba1a1acd6904b56"
+
+  stemcell_name: bosh-google-kvm-ubuntu-trusty-go_agent
+  stemcell_version: "3468.11"
+  stemcell_sha1: 525c655e7213833aa3333bf78d91135a12a41de8 # this is a Google KVM Light stemcell, actually
+
+
+imported_vars: {}

@@ -1,0 +1,22 @@
+---
+
+- path: /networks/-
+  type: replace
+  value:
+    name: ((cassandra_network))
+    subnets:
+      - az: z1
+        range: 10.244.67.0/24 # '67' because of `echo -n C | hexdump -d`
+        gateway: 10.244.67.1
+        cloud_properties: { name: random }
+        static: [ 10.244.67.2 - 10.244.67.60 ]
+      - az: z2
+        range: 10.244.68.0/24
+        gateway: 10.244.68.1
+        cloud_properties: { name: random }
+        static: [ 10.244.68.2 - 10.244.68.60 ]
+      - az: z3
+        range: 10.244.69.0/24
+        gateway: 10.244.69.1
+        cloud_properties: { name: random }
+        static: [ 10.244.69.2 - 10.244.69.60 ]

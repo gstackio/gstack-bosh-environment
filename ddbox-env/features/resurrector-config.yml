@@ -1,0 +1,8 @@
+---
+
+- path: /instance_groups/name=bosh/properties/hm/resurrector?
+  type: replace
+  value:
+    minimum_down_jobs: 5    # > above this threshold, meltdown is declared
+    percent_threshold: 0.2  # above 20%, meltdown is declared
+    time_threshold: 600     # time period for calulating meltdown thresholds
