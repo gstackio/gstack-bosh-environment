@@ -548,6 +548,7 @@ function converge_deployment() {
     bosh_ro_invoke interpolate > "$subsys_state_dir/depl-manifest.yml"
 
     run_hook_once pre-deploy "$SUBSYS_DIR/pre-deploy-once.sh"
+    run_hook "$SUBSYS_DIR/pre-deploy.sh" || true
 
     bosh_rw_invoke deploy "$@"
 
