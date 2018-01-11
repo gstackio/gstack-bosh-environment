@@ -47,7 +47,7 @@ function env_usage() {
     local b=$BOLD
     local u=$UNDERLINE
     local rst=$RESET
-    local bash_usage="source /dev/stdin <<<\"\$(./bin/$SCRIPT_NAME env)\""
+    local bash_usage="source /dev/stdin <<<\"\$($0 env)\""
     local zsh_usage="source <\"\$(./bin/$SCRIPT_NAME env)\""
     echo
     local shell_name=$(basename "$SHELL" | tr '[:upper:]' '[:lower:]')
