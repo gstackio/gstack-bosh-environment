@@ -197,13 +197,13 @@ function setup_cf_cli() {
         darwin) cf_cli_release=macosx64-binary ;;
         linux)  cf_cli_release=linux64-binary  ;;
     esac
-    local url="$base_url?release=$cf_cli_release&version=$existing_cf_cli_version"
+    local url="$base_url?release=$cf_cli_release&version=$cf_cli_version"
 
     local temp_dir
     temp_dir=$(mktemp -d)
     pushd "$temp_dir"
         curl -sL -o cf.tgz "$url"
-        tar -zxf cf.tgz
+        tar -zxf cf.tgz cf
         rm cf.tgz
         mv cf "$cf_cli_bin"
         chmod +x "$cf_cli_bin"
