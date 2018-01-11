@@ -1,32 +1,14 @@
 #!/usr/bin/env bash
 
-function cf_state_var() {
-    local state_file=$1
-    local path=$2
-    bosh int "$BASE_DIR/state/cf/$state_file.yml" --path "$path"
-}
+SUBSYS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
-function cf_depl_var() {
-    cf_state_var depl-manifest "$1"
-}
-
-function cf_creds_var() {
-    cf_state_var depl-creds "$1"
-}
-
-function cf_login() {
-    cf_api_url=$(cf_depl_var /instance_groups/name=api/jobs/name=cf-admin-user/properties/api_url)
-    cf_skip_ssl_validation=$(cf_depl_var /instance_groups/name=smoke-tests/jobs/name=smoke_tests/properties/smoke_tests/skip_ssl_validation)
-    cf api "$cf_api_url" ${cf_skip_ssl_validation:+--skip-ssl-validation}
-
-    cf_admin_username=$(cf_depl_var /instance_groups/name=api/jobs/name=cf-admin-user/properties/admin_username)
-    set +x
-    cf_admin_password=$(cf_creds_var /cf_admin_password)
-    echo "cf auth '$cf_admin_username' '<redacted>'"
-    cf auth "$cf_admin_username" "$cf_admin_password"
-    set -x
+function spec_var() {
+    local path=$1
+    bosh int "$SUBSYS_DIR/conf/spec.yml" --path "$path"
 }
 
 set -ex
 
-bosh run-errand broker-deregistrar
+if bosh deployments | grep -qE "\\b$(spec_var /deployment_vars/deployment_name)\\b"; then
+    bosh run-errand broker-deregistrar
+fi
