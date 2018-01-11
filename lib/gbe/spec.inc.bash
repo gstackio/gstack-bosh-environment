@@ -60,9 +60,11 @@ function fetch_git_resource() {
 
     cache_dir="$BASE_DIR/.cache/resources"
     rsc_dir=$cache_dir/$rsc_name
-    if [ -d "$rsc_dir" ]; then
+    if [ -d "$rsc_dir" -o -L "$rsc_dir" ]; then
         pushd "$rsc_dir" > /dev/null || exit 115
-            git fetch -q
+            if [ -n "$(git remote)" ]; then
+                git fetch -q
+            fi
         popd > /dev/null
     else
         mkdir -p "$cache_dir"
