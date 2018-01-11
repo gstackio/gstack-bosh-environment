@@ -96,7 +96,7 @@ function expand_resource_dir() {
 
     local rsc file dir
     rsc=$(echo "$rsc_file" | awk -F/ '{print $1}')
-    file=$(echo "$rsc_file" | awk -F/ '{$1=""; OFS="/"; print substr($0,2)}')
+    file=$(echo "$rsc_file" | awk -F/ '{OFS="/"; $1=""; print substr($0,2)}')
     if [[ $rsc == . || $rsc == local ]]; then
         dir=$SUBSYS_DIR${subdir:+/$subdir}
     else
@@ -193,7 +193,7 @@ function imports_from() {
         case $import_from in
             bbl-vars)
                 import_file_value "$var_path" \
-                    <(bbl_invoke bosh-deployment-vars) ;;
+                    <(extern_infra_vars_hook) ;;
             depl-vars)
                 import_file_value "$var_path" \
                     <(spec_var /deployment_vars "$subsys_dir") ;;
@@ -259,16 +259,17 @@ function infra_bosh_ro_invoke() {
     bosh_ro_invoke "$verb" \
         --vars-file <(spec_var /infra_vars) \
         "$@" \
-        --vars-file <(spec_var /deployment_vars) # re-add it at the end, in order to override bbl defaults
+        --vars-file <(spec_var /deployment_vars) # re-add it at the end, in order to override any defaults from extern_infra_vars_hook()
 }
 
 function infra_bosh_rw_invoke() {
     local verb=$1; shift
 
-    # Note: BBL's bosh-deployment-vars contain credentials. That's why
-    # they are added here as --vars-file instead of in 'infra_bosh_ro_invoke()'
+    # Note: variables from infra_bosh_ro_invoke() may contain
+    # credentials. That's why they are added here as --vars-file
+    # instead of in 'infra_bosh_ro_invoke()'
     infra_bosh_ro_invoke "$verb" \
-        --vars-file <(bbl_invoke bosh-deployment-vars) \
+        --vars-file <(extern_infra_vars_hook) \
         --vars-store "$(state_dir base-env)/depl-creds.yml" \
         --state "$(state_dir base-env)/env-infra-state.json" \
         "$@"

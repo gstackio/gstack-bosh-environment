@@ -19,6 +19,9 @@ source "$BASE_DIR/lib/gbe/compiled-releases.inc.bash"
 source "$BASE_DIR/lib/gbe/dns.inc.bash"
 source "$BASE_DIR/lib/gbe/external-utilities.inc.bash"
 
+# source "$BASE_DIR/lib/envs-flavors/gcp/infra-hooks.inc.bash"
+source "$BASE_DIR/lib/envs-flavors/vbox/infra-hooks.inc.bash"
+
 function pushd() {
     command pushd "$@" > /dev/null || exit 115
 }
@@ -82,7 +85,7 @@ function env_exports() {
         bosh int "$env_creds" --path "$path"
     }
 
-    echo "export BOSH_ALL_PROXY=socks5://127.0.0.1:$TUNNEL_PORT"
+    env_exports_hook
     echo "export BOSH_CA_CERT=\"$(get_var /default_ca/ca)\""
     echo "export BOSH_CLIENT=admin"
     echo "export BOSH_CLIENT_SECRET=\"$(get_var /admin_password)\""
@@ -369,28 +372,21 @@ function source_env() { # shim
 }
 
 function setup_firewall() {
-    assert_utilities gcloud "to update firewall rules"
+    setup_firewall_hook
+}
 
-    local fw_rule_name
-    fw_rule_name=$(bbl_invoke env-id)-bosh-open
+function ensure_reachability() {
+    ensure_reachability_hook
+}
 
-    local allowed=icmp
-    # Note: the 'gcloud' CLI v180.0.0 doesn't support the shorter syntax with
-    #       semicolons, like "icmp; tcp:22,6868,25555". So we revert to the
-    #       more verbose syntax here, e.g. "icmp,tcp:22,tcp:6868,tcp:25555".
-    local bosh_ports="22 6868"
-    local cf_ports="80 443 2222" # seems that 4443 is not used anymore, for good!
-    local concourse_ports="8080"
-    local mysql_ports="3306"
-    local shield_ports="10443"
-    local prometheus_ports="3000 9090 9093"
-    for tcp_port in $bosh_ports $cf_ports $concourse_ports $mysql_ports \
-                    $shield_ports $prometheus_ports; do
-        allowed=$allowed,tcp:$tcp_port
-    done
-
-    echo -e "\n${BLUE}Updating ${BOLD}firewall rules$RESET in GCP.\n"
-    gcloud compute firewall-rules update "$fw_rule_name" --allow="$allowed"
+function add_routes() {
+    if netstat -nr | awk '{print $1}' | grep -qE '^10\.244\.0\.0$'; then
+        return
+    fi
+    case $(platform) in
+        darwin) sudo route add -net 10.244.0.0/16    $(internal_ip) ;;
+        linux)  sudo route add -net 10.244.0.0/16 gw $(internal_ip) ;;
+    esac
 }
 
 function update_config() {
@@ -578,7 +574,11 @@ function restrict_permissions() {
 }
 
 function internal_ip() {
-    bosh int <(bbl_invoke bosh-deployment-vars) --path /internal_ip
+    internal_ip_hook
+}
+
+function external_ip() {
+    external_ip_hook
 }
 
 function gbe_up() {
@@ -586,41 +586,26 @@ function gbe_up() {
     setup_terraform 0.9.11
     setup_bosh_cli 2.0.45
     setup_dnscontrol 0.2.3
-    assert_utilities ruby "to render ERB templates locally"
+    setup_cf_cli 6.33.1
 
-    # Proxy must not interfere when (re)creating the Bosh environment
-    old_BOSH_ALL_PROXY=$BOSH_ALL_PROXY
-    stop_tunnel > /dev/null
-    unset BOSH_ALL_PROXY
+    assert_utilities ruby "to render ERB templates locally"
 
     export SUBSYS_DIR=$BASE_DIR/base-env
     create_env
-
-    # Restore any previous proxy setup, now that Bosh env is (re)created
-    if [ -n "$old_BOSH_ALL_PROXY" ]; then
-        export BOSH_ALL_PROXY=$old_BOSH_ALL_PROXY
-        unset old_BOSH_ALL_PROXY
-    fi
 
     if [ -f ~/.ssh/known_hosts ]; then
         ssh-keygen -f ~/.ssh/known_hosts -R "$(jumpbox_ip)"
     fi
     ssh-keyscan -t ecdsa "$(jumpbox_ip)" 2> /dev/null \
         > ~/.ssh/known_hosts
-    start_tunnel
+
+    ensure_reachability
+    setup_firewall
 
     echo -e "\n${BLUE}Aliasing the created BOSH environment to ${BOLD}'$BOSH_ENVIRONMENT'$RESET\n"
 
-    local env_creds=$(state_dir base-env)/depl-creds.yml
-    function get_var() {
-        local path=$1
-        bosh int "$env_creds" --path "$path"
-    }
-
     eval "$(env_exports)"
     bosh -e "$(internal_ip)" alias-env "$BOSH_ENVIRONMENT"
-
-    setup_firewall
 }
 
 function create_env() {
@@ -637,28 +622,7 @@ function create_env() {
     mkdir -p "$(state_dir base-env)"
 
 
-    echo -e "\n${BLUE}Running ${BOLD}bbl up$RESET to create infrastructure for the BOSH environment\n"
-
-    local bbl_state_file=$(state_dir base-env)/bbl-state.json
-    if [[ -f "$bbl_state_file" && ! -s "$bbl_state_file" ]]; then
-        # State file might exist and be empty, in which case we must delete it
-        # here as a safeguard
-        rm -f "$bbl_state_file"
-    fi
-    bbl_invoke up \
-        --iaas "$(spec_var /infra_vars/iaas)" \
-        --gcp-region "$(spec_var /infra_vars/region)" \
-        --gcp-zone "$(spec_var /infra_vars/zone)" \
-        --gcp-service-account-key "$BASE_DIR/base-env/conf/gcp-service-account.key.json" \
-        --gcp-project-id "$(spec_var /infra_vars/project_id)" \
-        --no-director
-
-    # Ensure restricted permissions for state files containing sensitive
-    # informations. Please not that 'bbl-state.json' must not be created before
-    # invoking `bbl up`.
-    restrict_permissions \
-        "$bbl_state_file" \
-        "$(state_dir base-env)/depl-creds.yml"
+    pre_create_env_hook
 
 
     echo -e "\n${BLUE}Running ${BOLD}dnscontrol push$RESET to converge the external DNS zone\n"
@@ -669,8 +633,13 @@ function create_env() {
     echo -e "\n${BLUE}Running ${BOLD}bosh create-env$RESET to create the BOSH environment\n"
 
     infra_bosh_ro_invoke interpolate > "$(state_dir base-env)/depl-manifest.yml"
+
+    export BOSH_LOG_LEVEL=DEBUG
+    export BOSH_LOG_PATH=$(state_dir base-env)/bosh-create-env.log
     infra_bosh_rw_invoke create-env
 
+
+    post_create_env_hook
 }
 
 function delete_env() {
@@ -721,14 +690,8 @@ function delete_env() {
         ssh-keygen -f ~/.ssh/known_hosts -R "$(jumpbox_ip)"
     fi
 
-    if [ "x$1" == "x-k" ]; then
-        echo -e "\n${BLUE}Skipping ${BOLD}bbl destroy$RESET, as per user request\n"
-    elif [ ! -e "$(state_dir base-env)/bbl-state.json" ]; then
-        echo -e "\n${BLUE}Skipping ${BOLD}bbl destroy$RESET, as the 'state/bbl-state.json' file is absent\n"
-    else
-        echo -e "\n${BLUE}Running ${BOLD}bbl destroy$RESET to destroy infrastructure for the BOSH environment\n"
-        bbl_invoke destroy --no-confirm --skip-if-missing
-    fi
+
+    post_delete_env_hook "$@"
 }
 
 case $1 in
@@ -739,7 +702,7 @@ case $1 in
     dnscontrol) setup_dnscontrol 0.2.3 ;;
     credhub)
         setup_credhub_cli 1.5.3
-        ensure_tunnel
+        ensure_reachability
         credhub_login
         ;;
     cf)         setup_cf_cli 6.33.1 ;;
@@ -770,6 +733,8 @@ case $1 in
             *)      tunnel_usage  ;;
         esac
         ;;
+    routes)
+        add_routes ;;
     dns)
         shift
         verb=$1
@@ -788,12 +753,12 @@ case $1 in
         case $1 in
             cloud-config)
                 shift
-                ensure_tunnel
+                ensure_reachability
                 update_config cloud "$@"
                 ;;
             runtime-config)
                 shift
-                ensure_tunnel
+                ensure_reachability
                 update_config runtime "$@"
                 ;;
             *)
@@ -810,7 +775,7 @@ case $1 in
             list)
                 list_deployments ;;
             all)
-                ensure_tunnel
+                ensure_reachability
                 upload_compiled_releases
                 update_config cloud -n
                 update_config runtime -n
@@ -818,14 +783,14 @@ case $1 in
                 each_deployment converge_deployment -n
                 ;;
             deployments)
-                ensure_tunnel
+                ensure_reachability
                 update_config cloud -n
                 update_config runtime -n
                 list_deployments
                 each_deployment converge_deployment -n
                 ;;
             *)
-                ensure_tunnel
+                ensure_reachability
                 converge_deployment "$@" ;;
         esac
         ;;
@@ -835,7 +800,7 @@ case $1 in
             -h)
                 recreate_usage ;;
             all)
-                ensure_tunnel
+                ensure_reachability
                 list_deployments
                 each_deployment converge_deployment -n --recreate --fix --canaries=0 ;;
             *)
@@ -850,19 +815,19 @@ case $1 in
             list)
                 list_deployments --reverse ;;
             all)
-                ensure_tunnel
+                ensure_reachability
                 list_deployments --reverse
                 each_deployment --reverse delete_deployment -n ;;
             *)
-                ensure_tunnel
+                ensure_reachability
                 delete_deployment "$@" ;;
         esac
         ;;
     export)
-        ensure_tunnel
+        ensure_reachability
         export_releases ;;
     import)
-        ensure_tunnel
+        ensure_reachability
         upload_compiled_releases ;;
     cleanup)
         shift

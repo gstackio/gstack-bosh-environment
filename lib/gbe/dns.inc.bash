@@ -5,7 +5,7 @@ function render_dns_zone_config() {
     state_dir=$(state_dir dns)
     mkdir -p "$state_dir"
 
-    external_ip=$(gbe ip)
+    external_ip=$(external_ip)
     dns_zone=$(spec_var /dns/zone "$BASE_DIR/base-env")
     dns_subdomain=$(spec_var /dns/subdomain "$BASE_DIR/base-env")
 

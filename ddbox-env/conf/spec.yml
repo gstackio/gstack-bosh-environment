@@ -27,8 +27,7 @@ main_deployment_file: bosh-deployment/bosh.yml
 operations_files:
   10.bosh-deployment:
     - virtualbox/cpi
-    - virtualbox/outbound-network
-    - virtualbox/remote
+    # - virtualbox/remote
     - bosh-lite
     - bosh-lite-runc
     - jumpbox-user
@@ -38,11 +37,13 @@ operations_files:
   20.prometheus-boshrelease:
     - manifests/operators/bosh/add-bosh-exporter-uaa-clients
   30.local:
+    - enable-vbox-port-forwarding
     - custom-stemcell-version
     - custom-bosh-version-precompiled
     # - custom-bosh-version
     - disable-resurrector
     - set-disk-size
+    - scale-vm-size
 
 
 deployment_vars:

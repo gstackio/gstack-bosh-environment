@@ -6,7 +6,7 @@ function jumpbox_key() {
 }
 
 function jumpbox_ip() {
-    bosh int <(bbl_invoke bosh-deployment-vars) --path /external_ip
+    reachable_ip_hook
 }
 
 function ssh_jumpbox() {
