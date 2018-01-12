@@ -40,12 +40,25 @@ function env_exports_hook() {
 function setup_firewall_hook() {
     assert_utilities jq vboxmanage "to update forwarded ports"
 
-    local vm_cid=$(jq -r .current_vm_cid "$(state_dir base-env)/env-infra-state.json")
+    local vm_cid nic_num
+    vm_cid=$(jq -r .current_vm_cid "$(state_dir base-env)/env-infra-state.json")
+    nic_num=$(vboxmanage showvminfo "$vm_cid" | sed -ne 's/^NIC \([0-9]\{1,\}\):.* Attachment: NAT,.*/\1/p')
+
+    if [ -z "$nic_num" ]; then
+        # Nothing to do when no NIC is attached to any NAT connection
+        return
+    fi
 
     echo -e "\n${BLUE}Updating ${BOLD}forwarded ports$RESET in Virtualbox.\n"
+
+    vboxmanage showvminfo "$vm_cid" \
+        | grep -E "^NIC ${nic_num} Rule\\([[:digit:]]+\\):.* name = tcp-pf-rule-[[:digit:]]+," \
+        | awk '{print $6}' | tr -d , \
+        | xargs -n 1 vboxmanage controlvm "$vm_cid" "natpf$nic_num" delete
+
     local add_end_nl=false
 
-    local bosh_ports="6868"
+    local bosh_ports=""
     local cf_ports="80 443 2222"
     local concourse_ports="8080"
     local mysql_ports="3306"
@@ -54,10 +67,10 @@ function setup_firewall_hook() {
     for tcp_port in $bosh_ports $cf_ports $concourse_ports $mysql_ports \
                     $shield_ports $prometheus_ports; do
         if ! vboxmanage showvminfo "$vm_cid" \
-                | grep -qE '^NIC [[:digit:]]+ Rule\([[:digit:]]+\):.*, guest port = '$tcp_port; then
+                | grep -qE "^NIC ${nic_num} Rule\\([[:digit:]]+\\):.*, guest port = $tcp_port\$"; then
             echo "  - $tcp_port"
             add_end_nl=true
-            vboxmanage controlvm "$vm_cid" natpf2 tcp-pf-rule-$tcp_port,tcp,,$tcp_port,,$tcp_port
+            vboxmanage controlvm "$vm_cid" "natpf$nic_num" tcp-pf-rule-$tcp_port,tcp,,$tcp_port,10.0.2.15,$tcp_port
         fi
     done
     if [ "$add_end_nl" == true ]; then

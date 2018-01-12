@@ -3,6 +3,7 @@
 - hosts: dedibox
   roles:
     - virtualbox
+    - vm-networking
 
   tasks:
     - name: Utilities | packages are installed

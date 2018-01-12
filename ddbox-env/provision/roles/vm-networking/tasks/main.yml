@@ -1,0 +1,168 @@
+---
+
+- name: VM networking | ingress (non HTTP-proxied) traffic is DNAT-ed to destination
+  become: yes
+  iptables:
+    table: nat
+    chain: PREROUTING
+    protocol: tcp
+    destination: "{{ hostvars[inventory_hostname]['ansible_' + external_interface].ipv4.address }}"
+    destination_port: "{{ rule.ingress_port }}"
+    jump: DNAT
+    to_destination: "{{ rule.dest_ip }}"
+    comment: "DNAT ingress {{ rule.name }} traffic to {{ rule.dest_name }}"
+  with_items:
+    - name: Traefik HTTP
+      ingress_port: 80
+      dest_name: GBE VM
+      dest_ip: 192.168.50.6
+    - name: Traefik HTTPS
+      ingress_port: 443
+      dest_name: GBE VM
+      dest_ip: 192.168.50.6
+    - name: CF SSH
+      ingress_port: 2222
+      dest_name: GBE VM
+      dest_ip: 192.168.50.6
+    - name: Concourse HTTP
+      ingress_port: 8080
+      dest_name: GBE VM
+      dest_ip: 192.168.50.6
+    - name: CF-MySQL
+      ingress_port: 3306
+      dest_name: GBE VM
+      dest_ip: 192.168.50.6
+    - name: SHIELD HTTPS
+      ingress_port: 10443
+      dest_name: GBE VM
+      dest_ip: 192.168.50.6
+    - name: Grafana HTTP
+      ingress_port: 3000
+      dest_name: GBE VM
+      dest_ip: 192.168.50.6
+    - name: Prometheus HTTP
+      ingress_port: 9090
+      dest_name: GBE VM
+      dest_ip: 192.168.50.6
+    - name: Alertmanager HTTP
+      ingress_port: 9093
+      dest_name: GBE VM
+      dest_ip: 192.168.50.6
+  loop_control: { loop_var: rule }
+  tags: [ vm-networking ]
+
+- name: VM networking | DNAT-ed ingress traffic is SNAT-ed from host
+  when: no
+  become: yes
+  iptables:
+    table: nat
+    chain: POSTROUTING
+    protocol: tcp
+    destination: 192.168.50.6
+    destination_port: "{{ rule.ingress_port }}"
+    jump: SNAT
+    to_source: 192.168.50.1
+    comment: "SNAT ingress {{ rule.name }} traffic to {{ rule.dest_name }}"
+  with_items:
+    - name: HTTP
+      ingress_port: 80
+      dest_name: GBE VM
+    - name: HTTPS
+      ingress_port: 443
+      dest_name: GBE VM
+    - name: CF SSH
+      ingress_port: 2222
+      dest_name: GBE VM
+    - name: Concourse HTTP
+      ingress_port: 8080
+      dest_name: GBE VM
+    - name: CF-MySQL
+      ingress_port: 3306
+      dest_name: GBE VM
+    - name: SHIELD HTTPS
+      ingress_port: 10443
+      dest_name: GBE VM
+    - name: Grafana HTTP
+      ingress_port: 3000
+      dest_name: GBE VM
+    - name: Prometheus HTTP
+      ingress_port: 9090
+      dest_name: GBE VM
+    - name: Alertmanager HTTP
+      ingress_port: 9093
+      dest_name: GBE VM
+  loop_control: { loop_var: rule }
+  tags: [ vm-networking ]
+
+- name: VM networking | egress traffic from any private IP network is masqueraded
+  become: yes
+  iptables:
+    table: nat
+    chain: POSTROUTING
+    out_interface: "{{ external_interface }}"
+    source: "{{ source }}"
+    jump: MASQUERADE
+    comment: "Masquerade egress traffic from private IP net {{ source }}"
+  with_items:
+    - 10.0.0.0/8
+    - 172.16.0.0/12
+    - 192.168.0.0/16
+  loop_control: { loop_var: source }
+  tags: [ vm-networking ]
+
+
+
+
+
+
+
+
+- name: VM networking | the 'interface.d' directory is enabled
+  become: yes
+  lineinfile:
+    dest: /etc/network/interfaces
+    insertafter: EOF
+    line: source-directory interfaces.d
+    state: present
+  tags: [ vm-networking ]
+
+- name: VM networking | persistent routes are added
+  become: yes
+  lineinfile:
+    dest: /etc/network/interfaces.d/{{ route.filename }}
+    insertafter: EOF
+    line: up route add -net {{ route.network }} gw {{ route.gateway }} dev {{ route.interface }}
+    create: yes
+    state: present
+  with_items:
+    - desc: Gstack Bosh Environment VM
+      filename: gbe-vm
+      network: 10.244.0.0/16
+      gateway: "192.168.50.6"
+      interface: vboxnet0
+  loop_control: { loop_var: route }
+  tags: [ vm-networking ]
+
+- name: VM networking | IP forwarding is enabled
+  become: yes
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    sysctl_set: yes
+  tags: [ vm-networking ]
+
+
+
+
+
+- name: VM networking | the 'iptables-persistent' package is installed
+  become: yes
+  apt:
+    name: iptables-persistent
+    state: present
+  tags: [ vm-networking ]
+
+- name: VM networking | iptables are persisted
+  become: yes
+  shell: iptables-save > /etc/iptables/rules.v4
+  tags: [ vm-networking ]
