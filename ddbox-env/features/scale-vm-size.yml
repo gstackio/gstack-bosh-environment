@@ -5,5 +5,3 @@
     cpus: 7
     memory: 28000
     ephemeral_disk: 16_384
-    # paravirtprovider: minimal # mandatory for Mac OS X guests
-    paravirtprovider: kvm # recommended for Linux guests
