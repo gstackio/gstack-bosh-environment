@@ -16,7 +16,6 @@ operations_files:
   local:
     - cf-mysql-support
     - concourse-support
-    # - dingo-postgres-support
     - shield-support
     - prometheus-support
     - cassandra-support
