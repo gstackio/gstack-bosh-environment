@@ -2,6 +2,8 @@
 - type: replace
   path: /resource_pools/name=vms/cloud_properties?
   value:
-    cpus: 6
-    memory: 24576
+    cpus: 7
+    memory: 28000
     ephemeral_disk: 16_384
+    # paravirtprovider: minimal # mandatory for Mac OS X guests
+    paravirtprovider: kvm # recommended for Linux guests
