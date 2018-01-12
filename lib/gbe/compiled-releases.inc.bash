@@ -57,12 +57,13 @@ function export_releases() {
 }
 
 function upload_compiled_releases() {
+    local subsys=$1
     if [ ! -d "$BASE_DIR/.cache/compiled-releases" ]; then
         return
     fi
     echo -e "\n${BLUE}Uploading all ${BOLD}compiled releases$RESET found in cache to the BOSH server.\n"
     pushd "$BASE_DIR/.cache/compiled-releases"
-        for compiled_release in $(find . -name '*.tgz' | sed -e 's`^./``'); do
+        for compiled_release in $(find ${subsys:-.} -name '*.tgz' | sed -e 's`^./``'); do
             local release=$(echo "$compiled_release" | sed -e 's/^\([a-z-]*\)-\([0-9.]\{1,\}\)-.*$/\1\/\2/')
             local release_name=$(echo "$release" | cut -d/ -f1)
             local release_version=$(echo "$release" | cut -d/ -f2)

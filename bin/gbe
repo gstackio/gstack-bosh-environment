@@ -827,8 +827,9 @@ case $1 in
         ensure_reachability
         export_releases ;;
     import)
+        shift
         ensure_reachability
-        upload_compiled_releases ;;
+        upload_compiled_releases "$@" ;;
     cleanup)
         shift
         cleanup_compiled_releases "$@";;
