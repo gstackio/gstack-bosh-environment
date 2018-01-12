@@ -8,11 +8,17 @@ input_resources:
     type: git
     uri: https://github.com/cloudfoundry/cf-deployment.git
     version: v1.0.0
+  - name: traefik-boshrelease
+    type: git
+    uri: https://github.com/gstackio/traefik-boshrelease.git
+    version: master
 
 
 main_config_file: cf-deployment/iaas-support/bosh-lite/cloud-config.yml
 
 operations_files:
+  10.traefik-boshrelease:
+    - deployment/cloud-config/cf-integration
   local:
     - cf-mysql-support
     - concourse-support

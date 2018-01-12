@@ -1,0 +1,44 @@
+---
+subsys:
+  name: traefik
+  type: bosh-deployment
+
+input_resources:
+  - name: traefik-boshrelease
+    type: git
+    uri: https://github.com/gstackio/traefik-boshrelease.git
+    version: master
+
+
+main_deployment_file: traefik-boshrelease/deployment/traefik-deployment.yml
+
+operations_files:
+  10.traefik-boshrelease:
+    - deployment/operations/cf-integration
+    # - deployment/operations/disable-default-tls-certificate
+    # - deployment/operations/enable-lets-encrypt # broken now that TLS-SNI has been shut down
+    - deployment/operations/enable-web-backend
+  local:
+    - set-versions
+    - activate-debug
+    - inject-variables
+
+
+deployment_vars:
+  deployment_name: easyfoundry-traefik
+
+  traefik_domain: easyfoundry.prototyp.it
+
+  acme_certs_email: acme-certs@gstack.io
+  acme_staging: true
+
+  web_backend_hostname: traefik.easyfoundry.prototyp.it
+  web_backend_username: gstack
+  web_backend_md5_htpasswd: $apr1$exP13HG4$eJjE8uEIVmmS8o1mKCfL5.
+
+  stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+  stemcell_version: "3468.11"
+  stemcell_sha1: 74592d4c2b7f2aebacd767112dd0ef28b028532b
+
+
+imported_vars: []

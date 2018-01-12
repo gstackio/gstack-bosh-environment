@@ -1,0 +1,10 @@
+---
+
+- path: /instance_groups/name=traefik/jobs/name=traefik/properties/traefik?/debug
+  type: replace
+  value: true
+
+- path: /instance_groups/name=traefik/jobs/name=traefik/properties/traefik?/log_level
+  type: replace
+  value: DEBUG
+
