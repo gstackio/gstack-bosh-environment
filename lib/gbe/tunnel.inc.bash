@@ -1,8 +1,8 @@
 
 function jumpbox_key() {
-    restrict_permissions "$(state_dir base-env)/jumpbox.key"
-    bosh int "$(state_dir base-env)/depl-creds.yml" --path /jumpbox_ssh/private_key \
-         > "$(state_dir base-env)/jumpbox.key"
+    restrict_permissions "$(state_dir "$GBE_ENVIRONMENT")/jumpbox.key"
+    bosh int "$(state_dir "$GBE_ENVIRONMENT")/depl-creds.yml" --path /jumpbox_ssh/private_key \
+         > "$(state_dir "$GBE_ENVIRONMENT")/jumpbox.key"
 }
 
 function jumpbox_ip() {
@@ -10,7 +10,7 @@ function jumpbox_ip() {
 }
 
 function ssh_jumpbox() {
-    if [ ! -f "$(state_dir base-env)/depl-creds.yml" ]; then
+    if [ ! -f "$(state_dir "$GBE_ENVIRONMENT")/depl-creds.yml" ]; then
         echo "$SCRIPT_NAME: ERROR: the base BOSH environment is not created yet" \
              "Please create it first. Aborting." >&2
         exit 1
@@ -37,7 +37,7 @@ function ssh_jumpbox() {
 	jumpbox_key
 
     TERM=xterm-color ssh \
-        -i "$(state_dir base-env)/jumpbox.key" \
+        -i "$(state_dir "$GBE_ENVIRONMENT")/jumpbox.key" \
         "jumpbox@$(jumpbox_ip)" \
         "$@"
 }
@@ -46,7 +46,7 @@ function ssh_jumpbox() {
 TUNNEL_PORT=5000
 
 function has_tunnel() {
-    local pid_file=$(state_dir base-env)/ssh-tunnel.pid
+    local pid_file=$(state_dir "$GBE_ENVIRONMENT")/ssh-tunnel.pid
     [ -s "$pid_file" ] && ps -p "$(cat "$pid_file")" > /dev/null
 }
 
@@ -57,7 +57,7 @@ function ensure_tunnel() {
 function open_tunnel() {
     local local_port=$1
 
-    local pid_file=$(state_dir base-env)/ssh-tunnel.pid
+    local pid_file=$(state_dir "$GBE_ENVIRONMENT")/ssh-tunnel.pid
     if has_tunnel; then
         return 0
     fi
@@ -67,8 +67,8 @@ function open_tunnel() {
     jumpbox_key
 
     nohup ssh -4 -D "localhost:$local_port" -fNC \
-            -i "$(state_dir base-env)/jumpbox.key" "jumpbox@$(jumpbox_ip)" \
-        > "$(state_dir base-env)/ssh-tunnel.log"
+            -i "$(state_dir "$GBE_ENVIRONMENT")/jumpbox.key" "jumpbox@$(jumpbox_ip)" \
+        > "$(state_dir "$GBE_ENVIRONMENT")/ssh-tunnel.log"
     lsof -i ":$local_port" \
         | grep -E '^ssh\b' | awk '{print $2}' \
         > "$pid_file"
@@ -79,7 +79,7 @@ function open_tunnel() {
 }
 
 function start_tunnel() {
-    local pid_file=$(state_dir base-env)/ssh-tunnel.pid
+    local pid_file=$(state_dir "$GBE_ENVIRONMENT")/ssh-tunnel.pid
     if has_tunnel; then
         echo -e "\n${BLUE}SSH tunnel is ${BOLD}already running$RESET on PID '$(cat "$pid_file")'" \
              "(more info with ${UNDERLINE}lsof -i :$local_port$RESET)\n"
@@ -94,7 +94,7 @@ function start_tunnel() {
 }
 
 function tunnel_status() {
-    local pid_file=$(state_dir base-env)/ssh-tunnel.pid
+    local pid_file=$(state_dir "$GBE_ENVIRONMENT")/ssh-tunnel.pid
     if ! has_tunnel; then
         echo -e "\nSSH tunnel is $RED${BOLD}not running$RESET\n"
     else
@@ -107,11 +107,11 @@ function tunnel_status() {
 
 function tunnel_logs() {
     echo -e "${BOLD}Last logs:$RESET"
-    tail "$(state_dir base-env)/ssh-tunnel.log"
+    tail "$(state_dir "$GBE_ENVIRONMENT")/ssh-tunnel.log"
 }
 
 function stop_tunnel() {
-    local pid_file=$(state_dir base-env)/ssh-tunnel.pid
+    local pid_file=$(state_dir "$GBE_ENVIRONMENT")/ssh-tunnel.pid
     if has_tunnel; then
         echo -e "\n${BLUE}Closing the ${BOLD}SSH tunnel$RESET that enables access to the Bosh server\n"
         kill "$(cat "$pid_file")"

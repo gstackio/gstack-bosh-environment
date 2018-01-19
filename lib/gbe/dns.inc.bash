@@ -6,8 +6,8 @@ function render_dns_zone_config() {
     mkdir -p "$state_dir"
 
     external_ip=$(external_ip)
-    dns_zone=$(spec_var /dns/zone "$BASE_DIR/base-env")
-    dns_subdomain=$(spec_var /dns/subdomain "$BASE_DIR/base-env")
+    dns_zone=$(spec_var /dns/zone "$BASE_DIR/$GBE_ENVIRONMENT")
+    dns_subdomain=$(spec_var /dns/subdomain "$BASE_DIR/$GBE_ENVIRONMENT")
 
     sed -e "s/EXTERNAL_IP/$external_ip/g; s/DNS_ZONE/$dns_zone/g; s/DNS_SUBDOMAIN/$dns_subdomain/g;" \
         "$BASE_DIR/dns/conf/zone-config-template.js" > "$state_dir/zone-config.js"

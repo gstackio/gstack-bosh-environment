@@ -2,7 +2,7 @@
 
 function rt_cfg_var() {
     local path=$1
-    bosh int "$BASE_DIR/base-env/runtime-config/conf/spec.yml" \
+    bosh int "$BASE_DIR/$GBE_ENVIRONMENT/runtime-config/conf/spec.yml" \
         --path "/config_vars$path"
 }
 

@@ -19,8 +19,14 @@ source "$BASE_DIR/lib/gbe/compiled-releases.inc.bash"
 source "$BASE_DIR/lib/gbe/dns.inc.bash"
 source "$BASE_DIR/lib/gbe/external-utilities.inc.bash"
 
-# source "$BASE_DIR/lib/envs-flavors/gcp/infra-hooks.inc.bash"
-source "$BASE_DIR/lib/envs-flavors/vbox/infra-hooks.inc.bash"
+# GBE_ENVIRONMENT=${GBE_ENVIRONMENT:-gcp-env}
+GBE_ENVIRONMENT=${GBE_ENVIRONMENT:-ddbox-env}
+
+function load_env_flavor_hooks() {
+    local gbe_env_flavor=$(spec_var /infra_vars/iaas "$BASE_DIR/$GBE_ENVIRONMENT")
+    source "$BASE_DIR/lib/envs-flavors/$gbe_env_flavor/infra-hooks.inc.bash"
+}
+load_env_flavor_hooks
 
 function pushd() {
     command pushd "$@" > /dev/null || exit 115
@@ -75,7 +81,7 @@ function env_exports() {
 
     echo "export PATH=$PATH"
 
-    local env_creds=$(state_dir base-env)/depl-creds.yml
+    local env_creds=$(state_dir "$GBE_ENVIRONMENT")/depl-creds.yml
     if [[ ! -f "$env_creds" ]]; then
         return
     fi
@@ -89,22 +95,22 @@ function env_exports() {
     echo "export BOSH_CA_CERT=\"$(get_var /default_ca/ca)\""
     echo "export BOSH_CLIENT=admin"
     echo "export BOSH_CLIENT_SECRET=\"$(get_var /admin_password)\""
-    echo "export BOSH_GW_PRIVATE_KEY=\"$(state_dir base-env)/jumpbox.key\""
-    echo "export BOSH_ENVIRONMENT=gcp"
+    echo "export BOSH_GW_PRIVATE_KEY=\"$(state_dir "$GBE_ENVIRONMENT")/jumpbox.key\""
+    echo "export BOSH_ENVIRONMENT=\"$(spec_var /infra_vars/alias "$BASE_DIR/$GBE_ENVIRONMENT")\""
     if [ -n "$SUBSYS_DIR" ]; then
         echo "export BOSH_DEPLOYMENT=\"$(spec_var /deployment_vars/deployment_name)\""
     fi
 }
 
 function credhub_login() {
-    local creds=$(state_dir base-env)/depl-creds.yml
+    local creds=$(state_dir "$GBE_ENVIRONMENT")/depl-creds.yml
 
-    if [[ ! -f "$creds" || ! -f "$(state_dir base-env)/bbl-state.json" ]]; then
+    if [[ ! -f "$creds" || ! -f "$(state_dir "$GBE_ENVIRONMENT")/bbl-state.json" ]]; then
         return
     fi
 
     export CREDHUB_SERVER=https://$(internal_ip):8844
-    export CREDHUB_CA_CERT=$(state_dir base-env)/credhub_CAs.pem
+    export CREDHUB_CA_CERT=$(state_dir "$GBE_ENVIRONMENT")/credhub_CAs.pem
     (
         bosh int "$creds" --path /credhub_ca/certificate
         bosh int "$creds" --path /default_ca/certificate
@@ -124,10 +130,10 @@ function setup_gcp() {
     local service_account_name=$1
     local project_id=$2
 
-    local service_account_key=$BASE_DIR/base-env/conf/gcp-service-account.key.json
+    local service_account_key=$BASE_DIR/$GBE_ENVIRONMENT/conf/gcp-service-account.key.json
     if [ -f "$service_account_key" ]; then
         echo -e "INFO: the 'gcp-service-account.key.json' credentials file" \
-            "already exists in directory '$BASE_DIR/base-env/conf/'. ${BLUE}Skipping${RESET}."
+            "already exists in directory '$BASE_DIR/$GBE_ENVIRONMENT/conf/'. ${BLUE}Skipping${RESET}."
         return 0
     fi
 
@@ -152,8 +158,8 @@ function setup_gcp() {
     fi
 
     local temp_file=$(mktemp)
-    sed -e "s/^  project_id:.*$/project_id: $project_id/" "$BASE_DIR/base-env/conf/spec.yml" > "$temp_file"
-    cp "$temp_file" "$BASE_DIR/base-env/conf/spec.yml"
+    sed -e "s/^  project_id:.*$/project_id: $project_id/" "$BASE_DIR/$GBE_ENVIRONMENT/conf/spec.yml" > "$temp_file"
+    cp "$temp_file" "$BASE_DIR/$GBE_ENVIRONMENT/conf/spec.yml"
     rm "$temp_file"
 
     echo -e "$GREEN${BOLD}OK$RESET"
@@ -392,7 +398,7 @@ function add_routes() {
 function update_config() {
     local cfg_type=$1; shift # 'cloud' or 'runtime'
 
-    export SUBSYS_DIR=$BASE_DIR/base-env/${cfg_type}-config
+    export SUBSYS_DIR=$BASE_DIR/$GBE_ENVIRONMENT/${cfg_type}-config
     eval "$(env_exports)"
 
     # Assert subsystem is a BOSH config
@@ -515,6 +521,7 @@ function run_hook() {
         echo -e "\n${BLUE}Running hook $BOLD'$(basename "$script")'$RESET.\n"
 
         export BASE_DIR
+        export GBE_ENVIRONMENT
         "$script" "$@"
         status=$?
     fi
@@ -590,7 +597,7 @@ function gbe_up() {
 
     assert_utilities ruby "to render ERB templates locally"
 
-    export SUBSYS_DIR=$BASE_DIR/base-env
+    export SUBSYS_DIR=$BASE_DIR/$GBE_ENVIRONMENT
     create_env
 
     if [ -f ~/.ssh/known_hosts ]; then
@@ -619,7 +626,7 @@ function create_env() {
 
     fetch_input_resources
     "read_$(spec_var /subsys/type)_spec"
-    mkdir -p "$(state_dir base-env)"
+    mkdir -p "$(state_dir "$GBE_ENVIRONMENT")"
 
 
     pre_create_env_hook
@@ -632,10 +639,10 @@ function create_env() {
 
     echo -e "\n${BLUE}Running ${BOLD}bosh create-env$RESET to create the BOSH environment\n"
 
-    infra_bosh_ro_invoke interpolate > "$(state_dir base-env)/depl-manifest.yml"
+    infra_bosh_ro_invoke interpolate > "$(state_dir "$GBE_ENVIRONMENT")/depl-manifest.yml"
 
     export BOSH_LOG_LEVEL=DEBUG
-    export BOSH_LOG_PATH=$(state_dir base-env)/bosh-create-env.log
+    export BOSH_LOG_PATH=$(state_dir "$GBE_ENVIRONMENT")/bosh-create-env.log
     infra_bosh_rw_invoke create-env
 
 
@@ -643,7 +650,7 @@ function create_env() {
 }
 
 function delete_env() {
-    export SUBSYS_DIR=$BASE_DIR/base-env
+    export SUBSYS_DIR=$BASE_DIR/$GBE_ENVIRONMENT
 
     # Assert subsystem is a bosh-environment
     assert_subsys bosh-environment
@@ -654,10 +661,10 @@ function delete_env() {
 
     fetch_input_resources
     read_$(spec_var /subsys/type)_spec
-    mkdir -p "$(state_dir base-env)"
+    mkdir -p "$(state_dir "$GBE_ENVIRONMENT")"
 
 
-    infra_bosh_ro_invoke interpolate > "$(state_dir base-env)/depl-manifest.yml"
+    infra_bosh_ro_invoke interpolate > "$(state_dir "$GBE_ENVIRONMENT")/depl-manifest.yml"
 
     echo -e "\n${BLUE}Logging out from credhub and closing SSH tunnel$RESET\n"
 
@@ -668,25 +675,25 @@ function delete_env() {
     unset BOSH_ALL_PROXY
 
 
-    if [ ! -e "$(state_dir base-env)/depl-creds.yml" ]; then
-        echo -e "\n${BLUE}Skipping ${BOLD}bosh delete-env$RESET, as the 'state/base-env/depl-creds.yml' file is absent\n"
+    if [ ! -e "$(state_dir "$GBE_ENVIRONMENT")/depl-creds.yml" ]; then
+        echo -e "\n${BLUE}Skipping ${BOLD}bosh delete-env$RESET, as the 'state/$GBE_ENVIRONMENT/depl-creds.yml' file is absent\n"
     else
         echo -e "\n${BLUE}Running ${BOLD}bosh delete-env$RESET to destroy the BOSH environment\n"
         infra_bosh_rw_invoke delete-env
-        rm -vf "$(state_dir base-env)/depl-creds.yml"
+        rm -vf "$(state_dir "$GBE_ENVIRONMENT")/depl-creds.yml"
     fi
 
     rm -f "$BASE_DIR"/state/*/{pre,post}-deploy-hook.yml
 
-    if [ ! -e "$(state_dir base-env)/jumpbox.key" ]; then
+    if [ ! -e "$(state_dir "$GBE_ENVIRONMENT")/jumpbox.key" ]; then
         echo -e "\n${BLUE}Skipping ${BOLD}SSH key removal$RESET, as it is absent\n"
     else
         echo -e "\n${BLUE}Removing ${BOLD}SSH key$RESET from SSH Agent\n"
-        ssh-keygen -y -f "$(state_dir base-env)/jumpbox.key" > "$(state_dir base-env)/jumpbox.key.pub"
-        if ssh-add -L | grep -qF "$(cat "$(state_dir base-env)/jumpbox.key.pub")"; then
-            ssh-add -d "$(state_dir base-env)/jumpbox.key.pub"
+        ssh-keygen -y -f "$(state_dir "$GBE_ENVIRONMENT")/jumpbox.key" > "$(state_dir "$GBE_ENVIRONMENT")/jumpbox.key.pub"
+        if ssh-add -L | grep -qF "$(cat "$(state_dir "$GBE_ENVIRONMENT")/jumpbox.key.pub")"; then
+            ssh-add -d "$(state_dir "$GBE_ENVIRONMENT")/jumpbox.key.pub"
         fi
-        rm -vf "$(state_dir base-env)/jumpbox.key" "$(state_dir base-env)/jumpbox.key.pub"
+        rm -vf "$(state_dir "$GBE_ENVIRONMENT")/jumpbox.key" "$(state_dir "$GBE_ENVIRONMENT")/jumpbox.key.pub"
         ssh-keygen -f ~/.ssh/known_hosts -R "$(jumpbox_ip)"
     fi
 

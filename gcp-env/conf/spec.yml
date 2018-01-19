@@ -15,7 +15,8 @@ input_resources:
 
 
 infra_vars:
-  iaas: gcp
+  alias: gcp # the Bosh CLI alias
+  iaas: gcp # a BBL IaaS / the GBE environment flavor
   region: europe-west1 # Belgium
   zone: europe-west1-c
   project_id: ~

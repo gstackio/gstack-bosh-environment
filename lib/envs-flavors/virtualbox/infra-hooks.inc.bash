@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 function internal_ip_hook() {
-    spec_var /deployment_vars/internal_ip "$BASE_DIR/base-env"
+    spec_var /deployment_vars/internal_ip "$BASE_DIR/$GBE_ENVIRONMENT"
 }
 
 function external_ip_hook() {
-    spec_var /deployment_vars/external_ip "$BASE_DIR/base-env"
+    spec_var /deployment_vars/external_ip "$BASE_DIR/$GBE_ENVIRONMENT"
 }
 
 function reachable_ip_hook() {
@@ -41,7 +41,7 @@ function setup_firewall_hook() {
     assert_utilities jq vboxmanage "to update forwarded ports"
 
     local vm_cid nic_num
-    vm_cid=$(jq -r .current_vm_cid "$(state_dir base-env)/env-infra-state.json")
+    vm_cid=$(jq -r .current_vm_cid "$(state_dir "$GBE_ENVIRONMENT")/env-infra-state.json")
     nic_num=$(vboxmanage showvminfo "$vm_cid" | sed -ne 's/^NIC \([0-9]\{1,\}\):.* Attachment: NAT,.*/\1/p')
 
     if [ -z "$nic_num" ]; then
