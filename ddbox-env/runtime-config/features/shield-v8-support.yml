@@ -1,0 +1,6 @@
+---
+
+- path: /addons/name=bosh-dns/jobs/name=bosh-dns/properties/aliases/shield-v8.easyfoundry.internal?
+  type: replace
+  value:
+    - '*.shield.((shield_v8_network)).((shield_v8_deployment_name)).bosh'

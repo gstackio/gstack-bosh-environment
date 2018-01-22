@@ -1,16 +1,16 @@
 ---
 subsys:
-  name: shield
+  name: shield-v8
   type: bosh-deployment
 
 input_resources:
-  - name: shield-boshrelease
+  - name: shield-boshrelease-v8
     type: git
     uri: https://github.com/starkandwayne/shield-boshrelease.git
     version: v8.0.1
 
 
-main_deployment_file: shield-boshrelease/manifests/shield.yml
+main_deployment_file: shield-boshrelease-v8/manifests/shield.yml
 
 operations_files:
   local:
@@ -21,12 +21,12 @@ operations_files:
 
 
 deployment_vars:
-  deployment_name: easyfoundry-shield
+  deployment_name: easyfoundry-shield-v8
 
 
   # User-facing settings
 
-  shield_domain: backups.easyfoundry.prototyp.it
+  shield_domain: shield-v8.easyfoundry.prototyp.it
   shield_port: 10443
   shield_color: red
 
@@ -46,8 +46,8 @@ deployment_vars:
 
   # Reference declarations
 
-  network_name: shield-network # injected in cloud-config
-  shield_vm_extension: shield-core-lb
+  network_name: shield-v8-network # injected in cloud-config
+  shield_vm_extension: shield-v8-loadbalancer
 
 
 imported_vars:

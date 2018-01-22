@@ -15,7 +15,7 @@ main_config_file: bosh-deployment/runtime-configs/dns.yml
 operations_files:
   local:
     - cf-use-bosh-dns
-    - shield-support
+    - shield-v8-support
     - cassandra-support
 
 
@@ -36,12 +36,12 @@ imported_vars:
       - name: cf_network_name
         from: depl-vars
         path: /network_name
-  - subsys: shield
+  - subsys: shield-v8
     imports:
-      - name: shield_deployment_name
+      - name: shield_v8_deployment_name
         from: depl-vars
         path: /deployment_name
-      - name: shield_network
+      - name: shield_v8_network
         from: depl-vars
         path: /network_name
   - subsys: cassandra
