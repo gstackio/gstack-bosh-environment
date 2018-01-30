@@ -609,9 +609,13 @@ function gbe_up() {
     ensure_reachability
     setup_firewall
 
+    alias_env
+}
+
+function alias_env() {
+    eval "$(env_exports)"
     echo -e "\n${BLUE}Aliasing the created BOSH environment to ${BOLD}'$BOSH_ENVIRONMENT'$RESET\n"
 
-    eval "$(env_exports)"
     bosh -e "$(internal_ip)" alias-env "$BOSH_ENVIRONMENT"
 }
 
@@ -723,6 +727,8 @@ case $1 in
         ;;
     up)
         gbe_up ;;
+    alias)
+        alias_env ;;
     ip)
         jumpbox_ip | cat ;;
     down)
