@@ -2,6 +2,7 @@
 subsys:
   name: shield-v8
   type: bosh-deployment
+  deploy_after: cf
 
 input_resources:
   - name: shield-boshrelease-v8
@@ -16,7 +17,7 @@ operations_files:
   local:
     - inject-variables
     - set-versions
-    # - routing
+    # - routing # TLS routing doesn't support self-signed certificates yet
     - expose-ports
 
 
@@ -27,7 +28,7 @@ deployment_vars:
   # User-facing settings
 
   shield_domain: shield-v8.easyfoundry.prototyp.it
-  shield_port: 10443
+  shield_port: 10443 # injected in cloud-config
   shield_color: red
 
 
@@ -44,10 +45,15 @@ deployment_vars:
   stemcell_sha1: 74592d4c2b7f2aebacd767112dd0ef28b028532b
 
 
+  # Plumbery
+  shield_disk_type: 2GB
+
+
   # Reference declarations
 
   network_name: shield-v8-network # injected in cloud-config
-  shield_vm_extension: shield-v8-loadbalancer
+  shield_vm_extension: shield-v8-loadbalancer # injected in cloud-config
+  shield_internal_hostname: shield-v8.easyfoundry.internal # injected in runtime-config
 
 
 imported_vars:

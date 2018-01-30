@@ -44,6 +44,9 @@ imported_vars:
       - name: shield_v8_network
         from: depl-vars
         path: /network_name
+      - name: shield_v8_internal_hostanme
+        from: depl-vars
+        path: /shield_internal_hostname
   - subsys: cassandra
     imports:
       - name: cassandra_deployment_name

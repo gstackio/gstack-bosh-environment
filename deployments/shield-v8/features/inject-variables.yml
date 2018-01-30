@@ -36,10 +36,13 @@
 
 # Networks
 
-- path: /instance_groups/name=shield/networks/name=shield
+- path: /instance_groups/name=shield/networks/name=default
   type: replace
   value:
     name: ((network_name))
+
+- path: /variables/name=shield-tls/options/alternative_names/1
+  type: remove # remove reference to ((static_ip))
 
 
 
@@ -54,7 +57,7 @@
   type: replace
   value:
     instances:
-      - address: shield-v8.easyfoundry.internal # 10.244.204.61
+      - address: ((shield_internal_hostname)) # 10.244.204.61
     properties:
-      domain: shield-v8.easyfoundry.internal # 10.244.204.61
+      domain: ((shield_internal_hostname)) # 10.244.204.61
       port: ((shield_port))
