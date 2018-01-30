@@ -1,0 +1,27 @@
+---
+
+- path: /networks/-
+  type: replace
+  value:
+    name: ((shield_v7_network))
+    subnets:
+      - azs: [ z1, z2, z3 ]
+        range: 10.244.205.0/24
+        gateway: 10.244.205.1
+        cloud_properties: { name: random }
+        static: [ 10.244.205.2 - 10.244.205.60 ]
+
+- path: /vm_extensions/-
+# - path: /vm_extensions/name=shield-core-lb?
+  type: replace
+  value:
+    name: ((shield_v7_vm_extension))
+    cloud_properties:
+      ports:
+        - host: ((shield_v7_port))
+
+- path: /vm_types/name=default?
+  type: replace
+  value:
+    name: default
+

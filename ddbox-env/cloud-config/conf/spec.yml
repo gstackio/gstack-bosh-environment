@@ -23,6 +23,7 @@ operations_files:
     - cf-mysql-support
     - concourse-support
     - shield-v8-support
+    - shield-v7-support
     - prometheus-support
     - cassandra-support
     - logsearch-support
@@ -57,6 +58,17 @@ imported_vars:
         from: depl-vars
         path: /network_name
       - name: shield_v8_vm_extension
+        from: depl-vars
+        path: /shield_vm_extension
+  - subsys: shield-v7
+    imports:
+      - name: shield_v7_port
+        from: depl-vars
+        path: /shield_port
+      - name: shield_v7_network
+        from: depl-vars
+        path: /network_name
+      - name: shield_v7_vm_extension
         from: depl-vars
         path: /shield_vm_extension
   - subsys: prometheus

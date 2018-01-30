@@ -1,0 +1,5 @@
+---
+
+- path: /instance_groups/name=shield/vm_extensions?/-
+  type: replace
+  value: ((shield_vm_extension))

@@ -1,0 +1,67 @@
+---
+subsys:
+  name: shield-v7
+  type: bosh-deployment
+  deploy_after: cf
+
+input_resources:
+  - name: shield-boshrelease-v7
+    type: git
+    # uri: https://github.com/starkandwayne/shield-boshrelease.git
+    uri: https://github.com/orange-cloudfoundry/shield-boshrelease.git
+    version: v7.0.x
+
+
+main_deployment_file: shield-boshrelease-v7/manifests/shield.yml
+
+operations_files:
+  10.local:
+    - inject-variables
+    - set-versions
+    - expose-ports
+    - shield-config
+  # 20.shield-boshrelease-v7:
+  #   - manifests/operators/dev
+
+
+deployment_vars:
+  deployment_name: easyfoundry-shield-v7
+
+
+  # User-facing settings
+
+  shield_domain: shield-v7.easyfoundry.prototyp.it
+  shield_port: 20443 # injected in cloud-config
+
+
+  # Versions
+
+  # shield_version: "7.0.3"
+  # shield_sha1: a1f705e0ad0130ac78d851332d97905a3f8cbce2
+  shield_version: "7.0.3+dev.10"
+
+  routing_version: "0.168.0"
+  routing_sha1: 885321f95b530c4a5b8515c72155229cba26c449
+
+  stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+  stemcell_version: "3468.11"
+  stemcell_sha1: 74592d4c2b7f2aebacd767112dd0ef28b028532b
+
+
+  # Plumbery
+  shield_disk_type: 2GB
+
+
+  # Reference declarations
+
+  network_name: shield-v7-network # injected in cloud-config
+  shield_vm_extension: shield-v7-loadbalancer # injected in cloud-config
+  shield_internal_hostname: shield-v7.easyfoundry.internal # injected in runtime-config
+
+
+imported_vars:
+  - subsys: cf
+    imports:
+      - name: cf_deployment_name
+        from: depl-vars
+        path: /deployment_name

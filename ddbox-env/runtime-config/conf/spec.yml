@@ -16,6 +16,7 @@ operations_files:
   local:
     - cf-use-bosh-dns
     - shield-v8-support
+    - shield-v7-support
     - cassandra-support
 
 
@@ -45,6 +46,17 @@ imported_vars:
         from: depl-vars
         path: /network_name
       - name: shield_v8_internal_hostanme
+        from: depl-vars
+        path: /shield_internal_hostname
+  - subsys: shield-v7
+    imports:
+      - name: shield_v7_deployment_name
+        from: depl-vars
+        path: /deployment_name
+      - name: shield_v7_network
+        from: depl-vars
+        path: /network_name
+      - name: shield_v7_internal_hostanme
         from: depl-vars
         path: /shield_internal_hostname
   - subsys: cassandra

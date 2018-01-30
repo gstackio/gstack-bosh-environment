@@ -1,0 +1,25 @@
+---
+
+- path: /instance_groups/name=shield/jobs/name=shield-agent/properties/stores?/test-fs-store
+  type: replace
+  value:
+    name: test-fs-store
+    plugin: fs
+    config:
+      base_dir: /var/vcap/store/shield-backups
+
+- path: /instance_groups/name=shield/jobs/name=shield-agent/properties/schedules
+  type: replace
+  value:
+    hourly: hourly at 45
+    hourly-30: hourly at 30
+    daily: daily 4am
+    weekly: sundays 6am
+    monthly: 1st sunday at 8am
+
+- path: /instance_groups/name=shield/jobs/name=shield-agent/properties/retention-policies
+  type: replace
+  value:
+    week:   7d
+    month: 31d
+    year: 366d
