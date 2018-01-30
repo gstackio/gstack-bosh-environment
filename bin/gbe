@@ -828,9 +828,10 @@ case $1 in
             list)
                 list_deployments --reverse ;;
             all)
+                shift
                 ensure_reachability
                 list_deployments --reverse
-                each_deployment --reverse delete_deployment -n ;;
+                each_deployment --reverse delete_deployment -n "$@";;
             *)
                 ensure_reachability
                 delete_deployment "$@" ;;
