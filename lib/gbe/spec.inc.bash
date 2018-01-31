@@ -176,7 +176,7 @@ function imports_from() {
     local base_path=$2
 
     local subsys_dir
-    if [[ "$subsys_name" == "$GBE_ENVIRONMENT" || "$subsys_name" == dns ]]; then
+    if [[ "$subsys_name" == base-env || "$subsys_name" == dns ]]; then
         subsys_dir=$BASE_DIR/$subsys_name
     elif [[ "$subsys_name" == cloud-config || "$subsys_name" == runtime-config ]]; then
         subsys_dir=$BASE_DIR/$GBE_ENVIRONMENT/$subsys_name
