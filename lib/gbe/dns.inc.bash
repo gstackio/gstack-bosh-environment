@@ -1,4 +1,10 @@
 
+DNS_CREDS_FILE=dns/conf/creds.json
+
+function has_dns_enabled() {
+    [ -s "$BASE_DIR/$DNS_CREDS_FILE" ]
+}
+
 function render_dns_zone_config() {
     local state_dir external_ip dns_zone dns_subdomain
 
@@ -19,7 +25,7 @@ function preview_dns_config() {
     assert_utilities dnscontrol "to preview DNS zone changes"
 
     dnscontrol preview \
-        --creds "$BASE_DIR/dns/conf/creds.json" \
+        --creds "$BASE_DIR/$DNS_CREDS_FILE" \
         --config "$(state_dir dns)/zone-config.js"
     local status=$?
 
@@ -33,10 +39,10 @@ function preview_dns_config() {
 function push_dns_config() {
     render_dns_zone_config
 
-    assert_utilities dnscontrol "to push DNS zone changes"
+    assert_utilities dnscontrol "to push DNS zone updates"
 
     dnscontrol push \
-        --creds "$BASE_DIR/dns/conf/creds.json" \
+        --creds "$BASE_DIR/$DNS_CREDS_FILE" \
         --config "$(state_dir dns)/zone-config.js"
 }
 
