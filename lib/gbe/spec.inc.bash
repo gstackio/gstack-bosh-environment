@@ -8,7 +8,7 @@ function spec_var() {
     local subsys_dir=${2:-$SUBSYS_DIR}
 
     if [ -z "$subsys_dir" ]; then
-        echo "ERROR: missing 'SUBSYS_DIR' variable. Aborting." >&2
+        echo "ERROR: cannot fetch '$path' spec var: missing 'SUBSYS_DIR' variable. Aborting." >&2
         return 1
     fi
 
