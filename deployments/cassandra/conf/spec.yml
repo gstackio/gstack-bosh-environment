@@ -2,7 +2,7 @@
 subsys:
   name: cassandra
   type: bosh-deployment
-  deploy_after: cf
+  deploy_after: shield
 
 input_resources:
   - name: cassandra-boshrelease
@@ -19,6 +19,7 @@ operations_files:
     - set-versions
     - cf-integration
     - routing
+    - shield-integration
 
 
 deployment_vars:
@@ -52,7 +53,7 @@ deployment_vars:
 
   # Reference declarations
 
-  network_name: cassandra-network # injected in cloud-config
+  network_name: cassandra-network # injected in cloud-config and runtime-config
 
 
 imported_vars:
@@ -81,3 +82,9 @@ imported_vars:
       - name: cf_app_domain
         from: depl-vars
         path: /system_domain
+
+  - subsys: shield-v7
+    imports:
+      - name: shield_deployment_name
+        from: depl-vars
+        path: /deployment_name
