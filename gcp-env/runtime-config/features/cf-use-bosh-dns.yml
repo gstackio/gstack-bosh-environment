@@ -1,5 +1,20 @@
 ---
 
+# This file is a re-worked, fixed and improved version of
+# 'cf-deployment/operations/experimental/use-bosh-dns.yml'
+#
+# In the original file above:
+#
+# - Two 'bosh-dns-windows' addons are separately defined for Windows
+#   2012 and Win 2016. Their same names are therefore
+#   conflicting. Instead, there should be only one, targetting both
+#   stemcell types.
+#
+# - There is no support for custom network/deployment names.
+#
+# - There is no support for builing on top of the
+#   'bosh-deployment/runtime-configs/dns.yml' base runtime-config.
+
 - path: /addons/name=bosh-dns/jobs/name=bosh-dns/properties/aliases?
   type: replace
   value: &cf_aliases
@@ -67,18 +82,6 @@
     include:
       stemcell:
         - os: windows2012R2
-    jobs:
-      - name: bosh-dns-windows
-        release: bosh-dns
-        properties:
-          aliases: *cf_aliases
-
-- path: /addons/-
-  type: replace
-  value:
-    name: bosh-dns-windows
-    include:
-      stemcell:
         - os: windows2016
     jobs:
       - name: bosh-dns-windows

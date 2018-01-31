@@ -4,3 +4,8 @@
   type: replace
   value:
     - '*.cassandra.((cassandra_network)).((cassandra_deployment_name)).bosh'
+
+- path: /addons/name=bosh-dns-windows/jobs/name=bosh-dns-windows/properties/aliases/cassandra.easyfoundry.internal?
+  type: replace
+  value:
+    - '*.cassandra.((cassandra_network)).((cassandra_deployment_name)).bosh'
