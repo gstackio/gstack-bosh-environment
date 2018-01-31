@@ -1,0 +1,68 @@
+---
+name: ((scality_deployment_name))
+
+instance_groups:
+  - name: scality
+    instances: 1
+    azs: [ z1 ]
+    jobs:
+      - name: containers
+        release: docker
+        properties:
+          containers:
+            - name: s3server
+              image: scality/s3server:6018536a
+              bind_ports:
+                - "8000:8000"
+              env_vars:
+                - SCALITY_ACCESS_KEY_ID=CustomAccountAccessKey
+                - SCALITY_SECRET_ACCESS_KEY=((custom_account_secret_key))
+                - LOG_LEVEL=debug
+                - SSL=TRUE
+                - ENDPOINT=scality.easyfoundry.internal
+                - LISTEN_ADDR=0.0.0.0
+                # - DATA_HOST=s3server-data
+                # - METADATA_HOST=s3server-metadata
+                # - REDIS_HOST=redis-cache-server.example.com
+                # - REDIS_PORT=6379
+      - name: docker
+        release: docker
+    persistent_disk: 65536
+    vm_type: default
+    stemcell: trusty
+    networks:
+      - name: ((scality_network))
+
+variables:
+  - name: custom_account_secret_key
+    type: password
+  - name: docker-ca
+    type: certificate
+    options:
+      is_ca: true
+      common_name: dockerCA
+  - name: docker-tls
+    type: certificate
+    options:
+      ca: docker-ca
+      common_name: docker
+      extended_key_usage:
+        - client_auth
+
+update:
+  serial: true # instance groups to be deployed sequentially.
+
+  canaries: 1
+  canary_watch_time: 1000-60000
+
+  max_in_flight: 1
+  update_watch_time: 1000-60000
+
+releases:
+  - name: docker
+    version: latest
+
+stemcells:
+  - alias: trusty
+    os: ubuntu-trusty
+    version: latest

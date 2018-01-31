@@ -18,6 +18,7 @@ operations_files:
     - shield-v8-support
     - shield-v7-support
     - cassandra-support
+    - scality-support
 
 
 config_vars:
@@ -65,5 +66,13 @@ imported_vars:
         from: depl-vars
         path: /deployment_name
       - name: cassandra_network
+        from: depl-vars
+        path: /network_name
+  - subsys: scality
+    imports:
+      - name: scality_deployment_name
+        from: depl-vars
+        path: /deployment_name
+      - name: scality_network
         from: depl-vars
         path: /network_name

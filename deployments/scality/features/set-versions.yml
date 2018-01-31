@@ -1,0 +1,19 @@
+---
+
+- path: /name
+  type: replace
+  value: ((deployment_name))
+
+
+# Stemcell and Releases versions
+
+- path: /releases/name=docker?
+  type: replace
+  value:
+    name: docker
+    version: ((docker_version))
+
+
+- path: /stemcells/alias=trusty/version
+  type: replace
+  value: ((stemcell_version))

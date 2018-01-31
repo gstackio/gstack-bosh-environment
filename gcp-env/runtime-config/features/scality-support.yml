@@ -1,0 +1,11 @@
+---
+
+- path: /addons/name=bosh-dns/jobs/name=bosh-dns/properties/aliases/scality.easyfoundry.internal?
+  type: replace
+  value:
+    - '*.scality.((scality_network)).((scality_deployment_name)).bosh'
+
+- path: /addons/name=bosh-dns-windows/jobs/name=bosh-dns-windows/properties/aliases/scality.easyfoundry.internal?
+  type: replace
+  value:
+    - '*.scality.((scality_network)).((scality_deployment_name)).bosh'

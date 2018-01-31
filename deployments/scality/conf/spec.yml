@@ -1,0 +1,46 @@
+---
+subsys:
+  name: scality
+  type: bosh-deployment
+  deploy_after: shield
+
+input_resources:
+  - name: docker-boshrelease
+    type: git
+    uri: https://github.com/cloudfoundry-community/docker-boshrelease.git
+    version: v31.0.0
+
+
+main_deployment_file: docker-boshrelease/manifests/containers/example.yml
+
+
+operations_files:
+  10.docker-boshrelease: []
+  20.local:
+    - set-versions
+
+
+deployment_vars:
+  deployment_name: easyfoundry-scality
+
+
+  # Versions
+
+  docker_version: "31.0.0"
+  docker_sha1: "5d7e9052297b26ad4337b4d539ba702cccb20080"
+
+  routing_version: "0.168.0"
+  routing_sha1: "885321f95b530c4a5b8515c72155229cba26c449"
+
+  stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+  stemcell_version: "3468.11"
+  stemcell_sha1: 74592d4c2b7f2aebacd767112dd0ef28b028532b
+
+
+  # Reference declarations
+
+  network_name: default # injected in cloud-config and runtime-config
+
+
+imported_vars: []
+
