@@ -1,0 +1,31 @@
+---
+
+- path: /instance_groups/name=rmq/instances
+  type: replace
+  value: ((rabbitmq_instances))
+
+
+
+- path: /instance_groups/name=rmq/vm_type
+  type: replace
+  value: default
+
+- path: /instance_groups/name=haproxy/vm_type
+  type: replace
+  value: default
+
+
+
+- path: /instance_groups/name=rmq/persistent_disk_type
+  type: replace
+  value: ((persistent_disk_type))
+
+- path: /instance_groups/name=rmq/jobs/name=rabbitmq-server/properties?/rabbitmq-server/disk_alarm_threshold
+  type: replace
+  value: ((disk_alarm_threshold))
+
+
+
+- path: /update/serial
+  type: replace
+  value: true

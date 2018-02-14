@@ -1,0 +1,11 @@
+---
+
+- path: /addons/name=bosh-dns/jobs/name=bosh-dns/properties/aliases/rabbitmq.easyfoundry.internal?
+  type: replace
+  value:
+    - '*.rmq-broker.((rabbitmq_network)).((rabbitmq_deployment_name)).bosh'
+
+- path: /addons/name=bosh-dns-windows/jobs/name=bosh-dns-windows/properties/aliases/rabbitmq.easyfoundry.internal?
+  type: replace
+  value:
+    - '*.rmq-broker.((rabbitmq_network)).((rabbitmq_deployment_name)).bosh'

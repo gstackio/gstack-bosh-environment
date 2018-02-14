@@ -19,6 +19,7 @@ operations_files:
     - shield-v7-support
     - cassandra-support
     - scality-support
+    - rabbitmq-support
 
 
 config_vars:
@@ -74,5 +75,13 @@ imported_vars:
         from: depl-vars
         path: /deployment_name
       - name: scality_network
+        from: depl-vars
+        path: /network_name
+  - subsys: rabbitmq
+    imports:
+      - name: rabbitmq_deployment_name
+        from: depl-vars
+        path: /deployment_name
+      - name: rabbitmq_network
         from: depl-vars
         path: /network_name

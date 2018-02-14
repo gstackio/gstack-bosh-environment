@@ -1,0 +1,23 @@
+---
+
+- path: /variables?/name=rabbitmq-management-password
+  type: replace
+  value:
+    name: rabbitmq-management-password
+    type: password
+
+# Note: this broker password is required by the 'rabbitmq-server' job
+# templates, so that it cannot be omitted even deploying RabbitMQ
+# without any Service Broker (which is a bit of a shame, let's admit
+# it). So, we always need this password variable.
+- path: /variables?/name=rabbitmq-broker-password
+  type: replace
+  value:
+    name: rabbitmq-broker-password
+    type: password
+
+- path: /variables?/name=multitenant-rabbitmq-broker-password
+  type: replace
+  value:
+    name: multitenant-rabbitmq-broker-password
+    type: password

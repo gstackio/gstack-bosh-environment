@@ -1,0 +1,117 @@
+---
+subsys:
+  name: rabbitmq
+  type: bosh-deployment
+  deploy_after: cf
+
+input_resources:
+  - name: rabbitmq-boshrelease
+    type: git
+    uri: https://github.com/pivotal-cf/cf-rabbitmq-release.git
+    version: v238.0.0
+  - name: rabbitmq-broker-boshrelease
+    type: git
+    uri: https://github.com/pivotal-cf/cf-rabbitmq-multitenant-broker-release.git
+    version: v12.0.0
+
+
+main_deployment_file: rabbitmq-boshrelease/manifests/cf-rabbitmq-template.yml
+
+
+operations_files:
+  # 10.rabbitmq-broker-boshrelease: []
+  20.local:
+    - set-versions
+    - fix-missing-variables
+    - scale-for-bosh-lite
+    - customize-routing
+    - add-broker
+
+
+deployment_vars:
+  deployment_name: easyfoundry-rabbitmq
+
+
+  # User-facing settings
+
+  rabbitmq-management-hostname: rabbitmq
+  rabbitmq-broker-hostname: rabbitmq-broker
+  bosh-domain: easyfoundry.prototyp.it
+
+  product-name: rabbitmq
+
+
+  # Customizations
+
+  persistent_disk_type: 1GB
+  disk_alarm_threshold: 100_000_000 # 100MB # cannot use the default "{mem_relative,0.4}" in Bosh-Lite
+  cluster-partition-handling-strategy: autoheal # Recommended for BOSH-Lite instead of the default 'pause_minority'
+  rabbitmq_instances: 2
+  haproxy-instances: 1
+
+
+  # Versions
+
+  rabbitmq_version: "238.0.0"
+  rabbitmq_sha1: 7a88d3cda9f92b34f28f056cf2c64f70f8546b7c
+
+  rabbitmq_broker_version: "12.0.0"
+  rabbitmq_broker_sha1: 6fcacd22b919323a017dcae63390df3f4cae48ae
+
+  broker_registrar_version: "3.4.0"
+  broker_registrar_sha1: d44d9af8fd06ecf6d50004c9bfd5516a6e482201
+      
+  routing_version: "0.168.0"
+  routing_sha1: 885321f95b530c4a5b8515c72155229cba26c449
+
+  stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+  stemcell_version: "3468.11"
+  stemcell_sha1: 74592d4c2b7f2aebacd767112dd0ef28b028532b
+
+
+  # Reference declarations
+
+  network_name: default # injected in runtime-config
+
+
+  # Plumbery
+
+  rabbitmq-management-username: admin # used by human ops when connecting to rabbit
+  rabbitmq-broker-username: broker # used by broker to access rabbit
+  multitenant-rabbitmq-broker-username: capi # used by CC when connecting to the broker
+
+  rabbitmq-broker-uuid: f56d4ca2-ac6c-45d3-82aa-a3651956ceb7
+  rabbitmq-broker-plan-uuid: e1e425d1-b64c-4620-9087-b274f0168b20
+
+
+imported_vars:
+  - subsys: cf
+    imports:
+
+      # CF routing plumbing
+
+      - name: routing_deployment_name
+        from: depl-vars
+        path: /deployment_name
+
+      # Broker plumbery
+
+      - name: cf_deployment_name
+        from: depl-vars
+        path: /deployment_name
+
+      - name: cf_skip_ssl_validation
+        from: depl-manifest
+        path: /instance_groups/name=smoke-tests/jobs/name=smoke_tests/properties/smoke_tests/skip_ssl_validation
+
+      - name: cf-admin-username
+        from: depl-manifest
+        path: /instance_groups/name=api/jobs/name=cf-admin-user/properties/admin_username
+
+      - name: cf-admin-password
+        from: depl-creds
+        path: /cf_admin_password
+
+      - name: cf_system_domain
+        from: depl-vars
+        path: /system_domain

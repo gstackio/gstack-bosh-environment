@@ -1,0 +1,148 @@
+---
+
+- path: /releases/name=cf-rabbitmq-multitenant-broker?
+  type: replace
+  value:
+    name: cf-rabbitmq-multitenant-broker
+    version: ((rabbitmq_broker_version))
+    url: https://bosh.io/d/github.com/pivotal-cf/cf-rabbitmq-multitenant-broker-release?v=((rabbitmq_broker_version))
+    sha1: ((rabbitmq_broker_sha1))
+
+- path: /instance_groups/name=rmq-broker?
+  type: replace
+  value:
+    name: rmq-broker
+    instances: 1
+    jobs:
+      - name: rabbitmq-broker
+        release: cf-rabbitmq-multitenant-broker
+        properties:
+          cf:
+            domain: ((bosh-domain))
+          rabbitmq-broker:
+            route: ((rabbitmq-broker-hostname))
+            cc_endpoint: http://api.((cf_system_domain))
+            service:
+              username: ((multitenant-rabbitmq-broker-username))
+              password: ((multitenant-rabbitmq-broker-password))
+              name: ((product-name))
+              uuid: ((rabbitmq-broker-uuid))
+              plan_uuid: ((rabbitmq-broker-plan-uuid))
+              shareable: true
+            logging:
+              level: debug
+              print_stack_traces: false
+            rabbitmq:
+              # hosts: ((rabbitmq-hosts)) # ommit in order to use the "rabbitmq-haproxy" BOSH Link instead
+              operator_set_policy:
+                enabled: true
+                policy_name: "operator_set_policy"
+                policy_definition: "{\"ha-mode\":\"exactly\",\"ha-params\":2,\"ha-sync-mode\":\"automatic\"}"
+                policy_priority: 50
+              management_domain: ((rabbitmq-management-hostname)).((bosh-domain))
+              management:
+                username: ((rabbitmq-management-username))
+              administrator:
+                username: ((rabbitmq-broker-username))
+                password: ((rabbitmq-broker-password))
+      - name: route_registrar
+        release: routing
+        consumes:
+          nats: { from: nats, deployment: ((routing_deployment_name)) }
+        properties:
+          route_registrar:
+            routes:
+              - name: ((rabbitmq-broker-hostname))
+                port: 4567
+                registration_interval: 20s
+                uris:
+                  - ((rabbitmq-broker-hostname)).((bosh-domain))
+    vm_type: default
+    stemcell: trusty
+    azs:
+      - z1
+    networks:
+      - name: default
+ 
+- path: /instance_groups/name=smoke-tests-vm?
+  type: replace
+  value:
+    name: smoke-tests-vm
+    jobs:
+    - name: smoke-tests
+      release: cf-rabbitmq-multitenant-broker
+      properties:
+        cf:
+          api_url: https://api.((cf_system_domain))
+          domain: ((cf_system_domain))
+          admin_username: ((cf-admin-username))
+          admin_password: ((cf-admin-password))
+        broker:
+          name: ((product-name))
+    instances: 1
+    lifecycle: errand
+    vm_type: default
+    stemcell: trusty
+    azs:
+      - z1
+    networks:
+      - name: default
+
+- path: /releases/name=broker-registrar?
+  type: replace
+  value:
+    name: broker-registrar
+    version: ((broker_registrar_version))
+    url: https://bosh.io/d/github.com/cloudfoundry-community/broker-registrar-boshrelease?v=((broker_registrar_version))
+    sha1: ((broker_registrar_sha1))
+
+- path: /instance_groups/name=broker-registrar-vm?
+  type: replace
+  value:
+    name: broker-registrar-vm
+    instances: 1
+    azs: [ z1 ]
+    lifecycle: errand
+    jobs:
+      - name: broker-registrar
+        release: broker-registrar
+        consumes: &consumed_links
+          servicebroker:
+            # Note: the rabbitmq broker doesn't provide this link yet, so we revert
+            # back to manual linking
+            instances:
+              - rabbitmq.easyfoundry.internal # Provided by a Bosh DNS alias
+            properties:
+              external_host: ((rabbitmq-broker-hostname)).((bosh-domain))
+              port: 4567
+              ssl_enabled: false
+              name: rabbitmq-broker
+              username: ((multitenant-rabbitmq-broker-username))
+              password: ((multitenant-rabbitmq-broker-password))
+          cf-admin-user:
+            from: cf-admin-user
+            deployment: ((cf_deployment_name))
+        properties: &additional_properties
+          cf:
+            skip_ssl_validation: ((cf_skip_ssl_validation)) # not provided by the 'cf-admin-user' link
+    stemcell: trusty
+    vm_type: minimal
+    networks:
+      - name: ((network_name))
+
+- path: /instance_groups/name=broker-deregistrar-vm?
+  type: replace
+  value:
+    name: broker-deregistrar-vm
+    instances: 1
+    azs: [ z1 ]
+    lifecycle: errand
+    jobs:
+      - name: broker-deregistrar
+        release: broker-registrar
+        consumes: *consumed_links
+        properties: *additional_properties
+    stemcell: trusty
+    vm_type: minimal
+    networks:
+      - name: ((network_name))
