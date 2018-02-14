@@ -493,39 +493,46 @@ function each_deployment() {
 
 function run_hook_once() {
     local name=$1; shift
+    local script=$1; shift
 
     local state_file=$(state_dir)/$name-hook.yml
     if [ -f "$state_file" ] && grep -qF "status: success" "$state_file"; then
         return
     fi
-
-    set +e
-    run_hook "$@"
-    local status=$?
-    set -e
-
-    if [ "$status" -eq 0 ]; then
-        mkdir -p "$(dirname "$state_file")"
-        (
-            echo "status: success"
-            echo "date: $(date -u +%FT%TZ)"
-        ) > "$state_file"
+    if [ ! -x "$script" ]; then
+        return
     fi
+
+    local initial_errexit=$(echo "$-" | sed -e 's/[^e]//g')
+    if [ -n "$initial_errexit" ]; then set +e; fi
+    run_hook "$script" "$@"
+    local status=$?
+    if [ -n "$initial_errexit" ]; then set -e; fi
+
+    if [ "$status" -ne 0 ]; then
+        return $status
+    fi
+
+    mkdir -p "$(dirname "$state_file")"
+    (
+        echo "status: success"
+        echo "date: $(date -u +%FT%TZ)"
+    ) > "$state_file"
 }
 
 function run_hook() {
     local script=$1; shift
 
-    local status=1
-    if [ -x "$script" ]; then
-        echo -e "\n${BLUE}Running hook $BOLD'$(basename "$script")'$RESET.\n"
-
-        export BASE_DIR
-        export GBE_ENVIRONMENT
-        "$script" "$@"
-        status=$?
+    if [ ! -x "$script" ]; then
+        return
     fi
-    return $status
+
+    echo -e "\n${BLUE}Running hook $BOLD'$(basename "$script")'$RESET.\n"
+
+    export BASE_DIR
+    export GBE_ENVIRONMENT
+    "$script" "$@"
+    return $? # to make it obvious that we want the exit status to propagate
 }
 
 function converge_deployment() {
@@ -551,7 +558,7 @@ function converge_deployment() {
     bosh_ro_invoke interpolate > "$subsys_state_dir/depl-manifest.yml"
 
     run_hook_once pre-deploy "$SUBSYS_DIR/pre-deploy-once.sh"
-    run_hook "$SUBSYS_DIR/pre-deploy.sh" || true
+    run_hook "$SUBSYS_DIR/pre-deploy.sh"
 
     bosh_rw_invoke deploy "$@"
 
