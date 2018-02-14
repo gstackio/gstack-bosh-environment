@@ -158,16 +158,39 @@ function import_state_value() {
     local subsys_name=$1
     local import_from=$2
     local base_path=$3
+    local to_yaml_file=$4
 
     local var_name=$(spec_var "$base_path/name")
     local import_path=$(spec_var "$base_path/path")
 
-    var_value=$(bosh int "$(state_dir "$subsys_name")/${import_from}.yml" \
+    local var_value=$(bosh int "$(state_dir "$subsys_name")/${import_from}.yml" \
         --path "$import_path")
-    if echo "$var_value" | grep -q ^-----BEGIN; then
-        bosh int <(echo "$var_name: ((value))") --var-file value=<(echo "$var_value")
+
+    function bosh_int_with_value() {
+        if echo "$var_value" | grep -q ^-----BEGIN; then
+            # Note: we use the --var-file form here, because it
+            # supports structured data for certificates.
+            bosh int --var-file var_value=<(echo -n "$var_value") "$@"
+        else
+            # Note: we use the --var form here, because we feed it
+            # with a plain value, and not with structured YAML data.
+            bosh int --var var_value="$var_value" "$@"
+        fi
+    }
+
+    if [ -z "$to_yaml_file" ]; then
+        bosh_int_with_value <(echo "$var_name: ((var_value))")
     else
-        bosh int <(echo "$var_name: ((value))") --var value="$var_value"
+        local tmp_file=$(mktemp)
+
+        echo "--- [ { path: '/${var_name}?', value: ((var_value)), type: replace } ]" \
+            | bosh_int_with_value \
+                   --ops-file /dev/stdin \
+                   "$to_yaml_file" \
+               > "$tmp_file"
+
+        cp "$tmp_file" "$to_yaml_file"
+        rm -f "$tmp_file"
     fi
 }
 
@@ -202,7 +225,7 @@ function imports_from() {
             depl-creds)
                 # FIXME: missing YAML de-duplication here below
                 import_state_value "$subsys_name" "$import_from" "$var_path" \
-                    >> "$(state_dir)/depl-creds.yml"
+                    "$(state_dir)/depl-creds.yml"
                 ;;
             *)
                 echo "ERROR: unsupported var import type: '$import_from'." \
