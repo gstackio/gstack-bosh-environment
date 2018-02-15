@@ -8,7 +8,8 @@
     name: shield
     version: ((shield_version))
     # url: https://github.com/starkandwayne/shield-boshrelease/releases/download/v((shield_version))/shield-((shield_version)).tgz
-    # sha1: ((shield_sha1))
+    url: https://github.com/gstackio/gk-shield-boshrelease/releases/download/v((shield_version))/shield-((shield_version)).tgz
+    sha1: ((shield_sha1))
 
 
 - path: /stemcells/alias=default/version

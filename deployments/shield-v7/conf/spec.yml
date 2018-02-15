@@ -5,23 +5,22 @@ subsys:
   deploy_after: cf
 
 input_resources:
-  - name: shield-boshrelease-v7
+  - name: gk-shield-boshrelease-v7
     type: git
     # uri: https://github.com/starkandwayne/shield-boshrelease.git
-    uri: https://github.com/orange-cloudfoundry/shield-boshrelease.git
-    version: v7.0.x
+    # uri: https://github.com/orange-cloudfoundry/shield-boshrelease.git
+    uri: https://github.com/gstackio/gk-shield-boshrelease.git
+    version: v7.0.4
 
 
-main_deployment_file: shield-boshrelease-v7/manifests/shield.yml
+main_deployment_file: gk-shield-boshrelease-v7/manifests/shield.yml
 
 operations_files:
-  10.local:
+  local:
     - inject-variables
     - set-versions
     - expose-ports
     - shield-config
-  # 20.shield-boshrelease-v7:
-  #   - manifests/operators/dev
 
 
 deployment_vars:
@@ -36,9 +35,8 @@ deployment_vars:
 
   # Versions
 
-  # shield_version: "7.0.3"
-  # shield_sha1: a1f705e0ad0130ac78d851332d97905a3f8cbce2
-  shield_version: "7.0.3+dev.10"
+  shield_version: "7.0.4"
+  shield_sha1: 6dd6acb2da7d5c451b53bca15d0ec5a8e767fa3c
 
   routing_version: "0.168.0"
   routing_sha1: 885321f95b530c4a5b8515c72155229cba26c449
