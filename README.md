@@ -1,135 +1,97 @@
 GBE — Gstack BOSH Environment
 =============================
 
-This project establishes conventions and a simple workflow to help you create
-and work with a BOSH v2
-[environment](./docs/faq.md#what-do-you-mean-by-bosh-environment) along with
-any [deployments](./docs/faq.md#how-is-a-bosh-deployment-described), whose
-desired state will be tracked in Git.
+GBE is the best BOSH 2.0 framework out there, no kidding. BOSH 2.0 is
+fantastic, and it now has its framework for doing bigger things with it.
 
-The GBE repository provides examples for deploying
-[Concourse](https://concourse.ci), [Cloud Foundry](https://cloudfoundry.org),
-and a typical [CF-MySQL](https://github.com/cloudfoundry/cf-mysql-release)
-cluster that provides MySQL Database-as-a-Service to Cloud Foundry
-applications.
-
-
-[concourse-site]: <https://concourse.ci>
-[cf-site]: <https://cloudfoundry.org>
-[cf-mysql-repo]: <https://github.com/cloudfoundry/cf-mysql-release>
-[osbapi-site]: <https://www.openservicebrokerapi.org>
+The great thing with GBE is that it models BOSH 2.0
+[environments](./docs/faq.md#what-do-you-mean-by-bosh-environment) and
+[deployments](./docs/faq.md#how-is-a-bosh-deployment-described) in an
+efficient way that helps operators in bootstrapping and working day-to-day
+with BOSH 2.0 infrastructure-as-code. For this, GBE establishes conventions
+and simple workflows. With GBE, operators can optionally track the
+infrastructure state in Git.
 
 
-What problems does GBE solve?
------------------------------
+Easy Foundry
+------------
 
-We do believe that people need *structure* when dealing with BOSH manifests.
+As a showcase example, GBE ships with **Easy Foundry**, which is a 100% Open
+Source distribution of Cloud Foundry. Easy Foundry provides you with
+everything you need around Cloud Foundry so that you get something complete in
+a snap (thanks to GBE), and right from the start.
 
-Usually operators that start creating a [BOSH environment](./docs/faq.md#what-do-you-mean-by-bosh-environment) have
-a rough and unclear view of the whole picture, because BOSH in new to them.
-They have to write several pieces of YAML manifests and run `bosh` commands
-with many arguments. As they are learning BOSH, it's hard for them to get
-rapidly organized.
+The [deployments](./deployments/) directory lists all the components that are
+currently integrated together. Namely:
 
-So, they start their project scattering the various pieces in an unorganized
-manner. Once they start putting these into Git, it's hard for them to
-reorganize the whole thing in a meaningful manner. They are lacking
-recommendations and best practice at organizing BOSH manifests, Ops files, and
-command arguments.
+- [Cloud Foundry](https://github.com/cloudfoundry/cf-deployment), for pushing
+  code and get deployed and working stateless web applications.
 
-Then come day-2 concerns. Because [deployment](./docs/faq.md#how-is-a-bosh-deployment-described) manifests are in
-most cases based on 3rd party base manifests, shipped in Git repositories.
-They evolve along with the software that is deployed. And it's not
-straightforward to track those 3rd-party base manifests and keep the process
-easy when it comes to upgrading the software along with its base deployment
-manifests. Should the base manifests be copied/pasted into the environment
-repository? Should they be submoduled? Or kept aside, as separate Git clones?
+- [Concourse](https://github.com/concourse/concourse) for Continuous
+  Integration.
 
-Finally, the various BOSH v2 commands involved in day-to-day interactions with
-a BOSH environment quickly tend to involve lots of arguments, which are
-definitely part of the desired state of the environment. The usual way of
-versionning these, is to use simple shell scripts. But this naive approach
-creates duplication for commands that share similar and related sets of
-arguments. In this regard, getting it right at avoiding duplication is not
-easy.
+- A 3-nodes [MariaDB](https://github.com/cloudfoundry/cf-mysql-release)
+  cluster available as Database-as-a-Service in `cf marketplace`.
 
-[bosh_env_def]: <./docs/faq.md#what-do-you-mean-by-bosh-environment>
-[dosh_depl_def]: <./docs/faq.md#how-is-a-bosh-deployment-described>
+- A [Cassandra](https://github.com/orange-cloudfoundry/cassandra-cf-service-boshrelease)
+  cluster, provided as Database-as-a-Service in `cf marketplace` for Big Data
+  needs.
 
+- A [RabbitMQ](https://github.com/pivotal-cf/cf-rabbitmq-release) 2-nodes
+  cluster with queue mirroring, for `cf marketplace` Message-Bus-as-a-Service.
 
-### What solutions does GBE bring?
+- Simple data services, like MySQL 5.6, PostgreSQL 9.6 and Redis 3.2
+  ([many others](https://github.com/cloudfoundry-community/docker-broker-deployment/tree/2eb645649b2fdb8e85bebdc8cbac29bc36533b96/operators/services/aged)
+  are possible), running as single Docker instances, and provided as
+  `cf marketplace` services that can be bound to your application.
 
-The point with GBE is to follow an “infrastructure-as-code“ pattern where a
-Git repository describes accurately the overall things that are deployed. BOSH
-will take care for converging your actual infrastructure towards the
-*desired state* that is described.
+- [Logsearch](https://github.com/cloudfoundry-community/logsearch-boshrelease)
+  for ELK-based logs aggregation.
 
-When it comes to starting this Git repository, GBE helps you organize and
-version the different pieces in a meaningful and consistent manner. As the
-*desired state* is also made of command-line arguments, GBE captures them in a
-meneangful way that avoids duplication.
+- [Prometheus](https://github.com/bosh-prometheus/prometheus-boshrelease) for
+  monitoring concerns.
 
-Consequently, GBE also provides you with simple compound commands that ease
-the interactions involved when managing the filecycle of your BOSH environment
-and its managed deployments.
+- [SHIELD](https://github.com/starkandwayne/shield-boshrelease) for handling
+  backups of your statefull database clusters.
 
 
 
 Getting started
 ---------------
 
-The idea is for you to clone the GBE repository, and use it as the base for
-your project. There are some requisites to this, so please review them first.
-
-Then go read the [reference documentation](./docs/reference.md) to get
-familiar with the directory structure and conventions of GBE.
+After some setup steps, the idea is to just run `gbe up` and `gbe converge all`.
+Then you can deploy apps in an awesome feature-full Cloud Foundry platform.
 
 
-### Prerequisites
+## Prerequisites
 
-1. A high-bandwidth network access, for the machine that will run GBE.
-   Especially a minimum of 50 Mbits/s when uploading to the cloud, giving
-   approximatively 5 MB/s uploads.
+GBE is available to be used on GCP (Google Cloud Platform) or on-premise with
+Virtualbox. The Virtualbox is not really for your laptop (though GBE supports
+this use-case), but for being used on a bare-metal (physical) server of your
+own. We recommend providing ≈50GB of RAM for a complete Easy Foundry setup.
 
-2. [Install the Google Cloud CLI utility](https://cloud.google.com/sdk/downloads)
-   (i.e. `gcloud`). On macOS, just run `brew cask install google-cloud-sdk`.
-
-3. Create on Google Cloud an account, then run `gcloud init` as
-   [told in the quickstarts](https://cloud.google.com/sdk/docs/quickstarts).
-
-4. Install Ruby. You don't need the latest version. Usually `apt install ruby`
-   is enough. (No need for
-   [fancy install of latest Ruby](https://gorails.com/setup/ubuntu/16.04#ruby)
-   involving `rbenv`.)
-
-5. Installing `direnv` is optional. In case you do, run `brew install direnv`
-   on macOS or `apt install direnv` on Ubuntu 16.04 or later. For other
-   platforms, refer to
-   [this Direnv documentation](https://github.com/direnv/direnv#install).
-
-[bosh_cli_v2]: <https://github.com/cloudfoundry/bosh-cli>
-[instal_cloud_sdk]: <https://cloud.google.com/sdk/downloads>
-[install_direnv]: <https://github.com/direnv/direnv#install>
+Depending on the flavor you choose, read one of these:
+- [GCP prerequisites](./docs/gcp-prerequisites.md)
+- [Virtualbox prerequisites](./docs/virtualbox-prerequisites.md)
 
 
 ### Quick start
 
-Here are the typical commands used to bootstrap your BOSH environment, then
-deploy Concourse, Cloud Foundry and CF-MySQL with it.
+Let's get Easy Foundry up with GBE!
 
 
 #### 1. Start your project
 
 ```bash
-git clone https://github.com/gstackio/gstack-bosh-environment.git my-project
+git clone https://github.com/gstackio/gstack-bosh-environment.git
 
-cd my-project/
+cd gstack-bosh-environment/
 
-source /dev/stdin <<<"$(./bin/gbe env)" # a Bash workaround for: `source <(./bin/gbe env)`
+source /dev/stdin <<<"$(./bin/gbe env)" # sorry if that's clumsy, we couldn't get it easier unfortunately
 ```
 
 
-#### 2. Configure GCP access
+#### 2. Configure GCP access [GCP only]
 
 1. Pick your own service account name, instead of the example
    `my-service-account` below.
@@ -148,47 +110,82 @@ specific GCP project ID. You can tweak your GCP zone, though and change the
 `zone: europe-west1-d` to whatever suits you best.
 
 
-#### 3. Configure and create your BOSH environment
+#### 2. Provision Virtualbox [Virtualbox only]
+
+Run the provided Ansible playbook to install Virtualbox and setup the network.
 
 ```bash
-vi ./conf/env-infra-vars.yml # set GCP region & zone, and also check GCP project ID
+cd ddbox-env/provision
+vim ansible.cfg # review your username, and make sure it has your public key in its '~/.ssh/authorized_keys' file
+vim inventory.cfg # put the IP address of your remote box in the 'dedibox' section
+ansible-playbook -i inventory.cfg --ask-become provision.yml
+```
 
+
+#### 3. Configure your BOSH environment [GCP only]
+
+```bash
+vi gcp-env/conf/spec.yml # in the 'infra_vars'  section, set GCP region & zone, and also check GCP project ID
+export GBE_ENVIRONMENT=gcp-env
+```
+
+
+#### 3. Configure your BOSH environment [Virtualbox only]
+
+```bash
+vi ddbox-env/conf/spec.yml # in the 'deployment_vars' section, put your server external IP as 'external_ip'
+export GBE_ENVIRONMENT=ddbox-env
+```
+
+
+### 4. Configure an external DNS zone
+
+To fully enjoy Cloud Foundry, you can setup an external DNS zone that GBE will
+converge with records pointing to your Easy Foundry installation.
+
+The DNS zone and subdomain setup is made in the environment `conf/spec.yml`,
+under the `dns:` section.
+
+Then provide a [DNSControl](https://github.com/StackExchange/dnscontrol)
+`creds.json` file and adjust the `dns/conf/zone-config-template.js` file. The
+DNS zone is converged as part of the `gbe up` checklist only when a
+`creds.json` file is provided. You'll end up with this layout under the `dns/`
+subdirectory:
+
+```
+dns/
+└── conf
+    ├── creds.json
+    └── zone-config-template.js
+```
+
+
+#### 5. Create your BOSH environment
+
+```bash
 gbe up
 ```
 
 If necessary, this will install the supported versions of `bbl`, `terraform`,
-`bosh`, as local binaries for your project. And the necessary firewall rules
-will also be set, calling `gbe firewall` for you. You'll be glad to know that
-everything that is set up here is local to your project.
+`bosh` and `dnscontrol`, as local binaries for your project. And the necessary
+firewall rules will also be set, calling `gbe firewall` for you. You'll be
+glad to know that everything that is set up here is local to your project.
 
 
-#### 4. Converge your deployments
+#### 6. Converge your deployments
 
-There is a compound command for converging all the deployments that are
-defined in your project. By default, 3 of those are given as examples.
+There is a compound command for converging all Easy Foundry components at
+once.
 
 ```bash
 gbe converge all
 ```
 
-This is basically all you need to do.
 
-Or, you can run through converging these deployments one by one:
+#### Destroy the BOSH environment (optional)
 
-```bash
-# Prepare the deployments
-gbe update cloud-config
-gbe udpate runtime-config
-
-gbe converge concourse  # Deploy a Concourse CI server
-gbe converge cf         # Deploy a simple Cloud Foundry platform.
-gbe converge mysql      # Deploy the CF-MySQL DBaaS cluster
-```
-
-
-#### 5. Destroy the BOSH environment
-
-When finished, you can delete the BOSH environment altogether.
+After having fun with Cloud Foundry, if you ever needs to take the whole thing
+down, you can delete the BOSH environment with:
 
 ```bash
 gbe down
@@ -196,15 +193,12 @@ gbe down
 
 
 
-Other Documentation
--------------------
+Documentation
+-------------
 
-For more information, run `gbe help`.
+The `gbe` CLI provides inline help with `gbe help`.
 
 - [How to tests the created deployments](./docs/deployments-tests.md)
-- [GBE reference documentation](./docs/reference.md)
-- [GBE frequently asked questions](./docs/faq.md)
-- [GBE goals and limitations](./docs/goals-limitations.md)
 
 
 
@@ -218,7 +212,7 @@ Please feel free to submit issues and pull requests.
 Author and License
 ------------------
 
-Copyright © 2017, Benjamin Gandon
+Copyright © 2017-2018, Benjamin Gandon, Gstack SAS
 
 Like the rest of BOSH, the Gstack BOSH environment is released under the terms
 of the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0).
