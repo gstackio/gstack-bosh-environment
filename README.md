@@ -63,7 +63,7 @@ After some setup steps, the idea is to just run `gbe up` and `gbe converge all`.
 Then you can deploy apps in an awesome feature-full Cloud Foundry platform.
 
 
-## Prerequisites
+### Prerequisites
 
 GBE is available to be used on GCP (Google Cloud Platform) or on-premise with
 Virtualbox. The Virtualbox is not really for your laptop (though GBE supports
@@ -138,7 +138,7 @@ export GBE_ENVIRONMENT=ddbox-env
 ```
 
 
-### 4. Configure an external DNS zone
+#### 4. Configure an external DNS zone
 
 To fully enjoy Cloud Foundry, you can setup an external DNS zone that GBE will
 converge with records pointing to your Easy Foundry installation.
