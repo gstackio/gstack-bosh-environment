@@ -54,7 +54,7 @@ deployment_vars:
   network_name: concourse-network # injected in cloud-config
   # A VM extension from your BOSH Director's cloud config that will attach 'web'
   # instances to your ELB.
-  web_vm_extension: concourse-atc-lb
+  web_vm_extension: concourse-atc-loadbalancer
 
 
 imported_vars: {}

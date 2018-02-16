@@ -50,7 +50,7 @@ deployment_vars:
   # Reference declarations
 
   network_name: mysql-network # injected in cloud-config
-  mysql_vm_extension: mysql-proxy-lb
+  mysql_vm_extension: mysql-proxy-loadbalancer
 
 
 imported_vars:

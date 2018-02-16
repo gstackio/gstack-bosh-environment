@@ -12,7 +12,6 @@
         static: [ 10.244.204.2 - 10.244.204.60 ]
 
 - path: /vm_extensions/-
-# - path: /vm_extensions/name=shield-core-lb?
   type: replace
   value:
     name: ((shield_v8_vm_extension))

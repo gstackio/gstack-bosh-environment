@@ -64,7 +64,7 @@ deployment_vars:
   # Reference declarations
 
   network_name: default
-  prometheus_vm_extension: prometheus-lb
+  prometheus_vm_extension: prometheus-loadbalancer
 
 
 imported_vars:
