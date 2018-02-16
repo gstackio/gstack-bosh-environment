@@ -2,7 +2,7 @@
 subsys:
   name: cassandra
   type: bosh-deployment
-  deploy_after: shield
+  deploy_after: shield-v7 # which itself is to "deploy_after: cf"
 
 input_resources:
   - name: cassandra-boshrelease
