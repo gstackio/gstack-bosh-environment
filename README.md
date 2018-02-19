@@ -133,17 +133,29 @@ ansible-playbook -i inventory.cfg --ask-become provision.yml
 
 #### 3. Configure your BOSH environment [GCP only]
 
+Edit the “gcp” environment `spec.yml` file.
+
 ```bash
-vi gcp-env/conf/spec.yml # in the 'infra_vars'  section, set GCP region & zone, and also check GCP project ID
+vi gcp-env/conf/spec.yml # in the 'infra_vars' section, set the GCP region & zone, and also check GCP project ID
 export GBE_ENVIRONMENT=gcp-env
 ```
 
 
-#### 3. Configure your BOSH environment [Virtualbox only]
+#### 3. Configure your BOSH environment [distant Virtualbox only]
+
+Edit the `ddbox-env` environment `spec.yml` file.
 
 ```bash
 vi ddbox-env/conf/spec.yml # in the 'deployment_vars' section, put your server external IP as 'external_ip'
-export GBE_ENVIRONMENT=ddbox-env
+```
+
+
+#### 3. Configure your BOSH environment [local Virtualbox only]
+
+Adjust the VM size for the “ddbox” environment.
+
+```bash
+vi ddbox-env/features/scale-vm-size.yml # set the number of CPUs to 4, and VM memory size to 8000 MB
 ```
 
 
