@@ -24,6 +24,8 @@ GBE_ENVIRONMENT=${GBE_ENVIRONMENT:-ddbox-env}
 
 function load_env_flavor_hooks() {
     local gbe_env_flavor=$(spec_var /infra_vars/iaas "$BASE_DIR/$GBE_ENVIRONMENT")
+
+    setup_bosh_cli 2.0.45 >&2
     source "$BASE_DIR/lib/envs-flavors/$gbe_env_flavor/infra-hooks.inc.bash"
 }
 load_env_flavor_hooks
@@ -716,8 +718,7 @@ function delete_env() {
 }
 
 case $1 in
-    env)        setup_bosh_cli 2.0.45
-                env_exports ;;
+    env)        env_exports ;;
     bbl)        setup_bbl v3.2.6 ;;
     terraform)  setup_terraform 0.9.11 ;;
     bosh)       setup_bosh_cli 2.0.45 ;;
