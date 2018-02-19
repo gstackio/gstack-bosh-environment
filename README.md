@@ -110,7 +110,16 @@ specific GCP project ID. You can tweak your GCP zone, though and change the
 `zone: europe-west1-d` to whatever suits you best.
 
 
-#### 2. Provision Virtualbox [Virtualbox only]
+#### 2. Provision Virtualbox [local Virtualbox only]
+
+Create a route to access the BOSH environment.
+
+```bash
+gbe routes
+```
+
+
+#### 2. Provision Virtualbox [distant Virtualbox only]
 
 Run the provided Ansible playbook to install Virtualbox and setup the network.
 
