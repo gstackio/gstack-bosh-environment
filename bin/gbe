@@ -19,17 +19,6 @@ source "$BASE_DIR/lib/gbe/compiled-releases.inc.bash"
 source "$BASE_DIR/lib/gbe/dns.inc.bash"
 source "$BASE_DIR/lib/gbe/external-utilities.inc.bash"
 
-# GBE_ENVIRONMENT=${GBE_ENVIRONMENT:-gcp-env}
-GBE_ENVIRONMENT=${GBE_ENVIRONMENT:-ddbox-env}
-
-function load_env_flavor_hooks() {
-    local gbe_env_flavor=$(spec_var /infra_vars/iaas "$BASE_DIR/$GBE_ENVIRONMENT")
-
-    setup_bosh_cli 2.0.45 >&2
-    source "$BASE_DIR/lib/envs-flavors/$gbe_env_flavor/infra-hooks.inc.bash"
-}
-load_env_flavor_hooks
-
 function pushd() {
     command pushd "$@" > /dev/null || exit 115
 }
@@ -65,7 +54,7 @@ function env_usage() {
     case $shell_name in
         bash|sh)    usage="$b${u}$bash_usage$rst" ;;
         zsh)        usage="$b${u}$zsh_usage$rst" ;;
-        *)          usage="$b${u}$zsh_usage$rst or $b${u}$bash_usage$rst"
+        *)          usage="$b${u}$zsh_usage$rst or $b${u}$bash_usage$rst" ;;
     esac
     echo "# Usage: run $usage in your $shell_name shell."
     echo
@@ -716,6 +705,17 @@ function delete_env() {
 
     post_delete_env_hook "$@"
 }
+
+# GBE_ENVIRONMENT=${GBE_ENVIRONMENT:-gcp-env}
+GBE_ENVIRONMENT=${GBE_ENVIRONMENT:-ddbox-env}
+
+function load_env_flavor_hooks() {
+    local gbe_env_flavor=$(spec_var /infra_vars/iaas "$BASE_DIR/$GBE_ENVIRONMENT")
+
+    setup_bosh_cli 2.0.45 >&2
+    source "$BASE_DIR/lib/envs-flavors/$gbe_env_flavor/infra-hooks.inc.bash"
+}
+load_env_flavor_hooks
 
 case $1 in
     env)        env_exports ;;
