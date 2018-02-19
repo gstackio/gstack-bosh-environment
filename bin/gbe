@@ -716,7 +716,8 @@ function delete_env() {
 }
 
 case $1 in
-    env)        env_exports ;;
+    env)        setup_bosh_cli 2.0.45
+                env_exports ;;
     bbl)        setup_bbl v3.2.6 ;;
     terraform)  setup_terraform 0.9.11 ;;
     bosh)       setup_bosh_cli 2.0.45 ;;
