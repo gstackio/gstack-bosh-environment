@@ -8,16 +8,20 @@ input_resources:
   - name: cassandra-boshrelease
     type: git
     uri: https://github.com/orange-cloudfoundry/cassandra-cf-service-boshrelease.git
-    version: bosh-lite # v4 with fixes, as of Dec 19th, 2017
+    version: 2c770e7 # v6 with fixes, as of Feb 16th, 2018
 
 
-main_deployment_file: ./conf/cassandra-deployment.yml
+main_deployment_file: cassandra-boshrelease/deployment/cassandra.yml
 
 
 operations_files:
-  local:
+  10.cassandra-boshrelease:
+    - deployment/operations/bosh-lite
+    - deployment/operations/cf-service-broker
+    - deployment/operations/shield-v7-agent
+  20.local:
+    - inject-variables
     - set-versions
-    - cf-integration
     - routing
     - shield-integration
 
@@ -38,10 +42,13 @@ deployment_vars:
 
   # Versions
 
-  cassandra_version: "4+dev.1"
+  cassandra_version: latest # "6+dev.1"
 
   broker_registrar_version: "3.4.0"
   broker_registrar_sha1: "d44d9af8fd06ecf6d50004c9bfd5516a6e482201"
+
+  shield_version: "7.0.4"
+  shield_sha1: 6dd6acb2da7d5c451b53bca15d0ec5a8e767fa3c
 
   routing_version: "0.168.0"
   routing_sha1: 885321f95b530c4a5b8515c72155229cba26c449

@@ -1,17 +1,28 @@
 ---
 
-- path: /name
-  type: replace
-  value: ((deployment_name))
-
-
 # Stemcell and Releases versions
 
-- path: /releases/name=cassandra39-services?
+- path: /releases/name=cassandra?
   type: replace
   value:
-    name: cassandra39-services
+    name: cassandra
     version: ((cassandra_version))
+
+- path: /releases/name=shield?
+  type: replace
+  value:
+    name: shield
+    version: ((shield_version))
+    url: https://github.com/gstackio/gk-shield-boshrelease/releases/download/v((shield_version))/shield-((shield_version)).tgz
+    sha1: ((shield_sha1))
+
+- path: /releases/name=broker-registrar?
+  type: replace
+  value:
+    name: broker-registrar
+    version: ((broker_registrar_version))
+    url: https://bosh.io/d/github.com/cloudfoundry-community/broker-registrar-boshrelease?v=((broker_registrar_version))
+    sha1: ((broker_registrar_sha1))
 
 
 - path: /stemcells/alias=trusty/version

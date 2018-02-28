@@ -1,44 +1,48 @@
 ---
 
-- path: /releases/name=shield?
-  type: replace
-  value:
-    name: shield
-    version: 7.0.3+dev.10
+# Set correct deployment name for SHIELD
 
-- path: /instance_groups/name=cassandra-seeds/jobs/name=shield-agent?
+- path: /instance_groups/name=cassandra-seeds/jobs/name=shield-agent/consumes/shield-daemon/deployment
   type: replace
-  value: &shield_agent_job
-    name: shield-agent
-    release: shield
-    consumes:
-      shield-daemon: { deployment: ((shield_deployment_name)), from: shield-daemon }
-    properties:
-      autoprovision: true
-      targets:
-        system-keyspace:
-          name: (deployment)/(name)-(index)/system-keyspace
-          plugin: cassandra
-          config:
-            cassandra_host: (ip)
-            # cassandra_port: "9042"
-            # cassandra_user: cassandra
-            cassandra_password: ((cassandra_admin_password))
-            cassandra_keyspace: system
-            cassandra_bindir: /var/vcap/jobs/cassandra/bin
-            cassandra_datadir: /var/vcap/store/cassandra/bga_cluster/data
-      jobs:
-        sys-ks_hourly2fs:
-          name: (deployment)/(name)-(index)/system-keyspace
-          schedule: hourly-30
-          target: (deployment)/(name)-(index)/system-keyspace
-          store: test-fs-store
-          retention: week
+  value: &shield_deployment_name ((shield_deployment_name))
 
-# - path: /instance_groups/name=cassandra-injectors/jobs/name=shield-agent?
-#   type: replace
-#   value: *shield_agent_job
-
-- path: /instance_groups/name=cassandra-servers/jobs/name=shield-agent?
+- path: /instance_groups/name=cassandra-servers/jobs/name=shield-agent/consumes/shield-daemon/deployment
   type: replace
-  value: *shield_agent_job
+  value: *shield_deployment_name
+
+
+# Tweak example SHIELD job settings
+
+- path: /instance_groups/name=cassandra-seeds/jobs/name=shield-agent/properties/jobs/example-sys-ks_hourly2fs
+  type: remove
+
+- path: /instance_groups/name=cassandra-seeds/jobs/name=shield-agent/properties/jobs/sys-ks_hourly2fs?
+  type: replace
+  value: &shield_cassandra_job
+    name: (deployment)/(name)-(index)/system-keyspace
+    schedule: hourly-30
+    target: (deployment)/(name)-(index)/system-keyspace
+    store: test-fs-store
+    retention: week
+
+- path: /instance_groups/name=cassandra-seeds/jobs/name=shield-agent/properties/schedules/hourly
+  type: remove
+
+- path: /instance_groups/name=cassandra-seeds/jobs/name=shield-agent/properties/schedules/hourly-30?
+  type: replace
+  value: &hourly_30_schedule hourly at 30
+
+
+- path: /instance_groups/name=cassandra-servers/jobs/name=shield-agent/properties/jobs/example-sys-ks_hourly2fs
+  type: remove
+
+- path: /instance_groups/name=cassandra-servers/jobs/name=shield-agent/properties/jobs/sys-ks_hourly2fs?
+  type: replace
+  value: *shield_cassandra_job
+
+- path: /instance_groups/name=cassandra-servers/jobs/name=shield-agent/properties/schedules/hourly
+  type: remove
+
+- path: /instance_groups/name=cassandra-servers/jobs/name=shield-agent/properties/schedules/hourly-30?
+  type: replace
+  value: *hourly_30_schedule

@@ -1,0 +1,57 @@
+---
+
+# Set deployment name
+
+- path: /name
+  type: replace
+  value: ((deployment_name))
+
+
+# Set networks names
+
+- path: /instance_groups/name=cassandra-seeds/networks
+  type: replace
+  value: &cassandra_networks [ name: default ]
+
+- path: /instance_groups/name=cassandra-servers/networks
+  type: replace
+  value: *cassandra_networks
+
+- path: /instance_groups/name=cassandra-brokers/networks
+  type: replace
+  value: *cassandra_networks
+
+- path: /instance_groups/name=cassandra-smoke-tests/networks
+  type: replace
+  value: *cassandra_networks
+
+- path: /instance_groups/name=broker-registrar-vm/networks
+  type: replace
+  value: *cassandra_networks
+
+- path: /instance_groups/name=broker-deregistrar-vm/networks
+  type: replace
+  value: *cassandra_networks
+
+
+# Set correct instance
+
+- path: /instance_groups/name=broker-registrar-vm/jobs/name=broker-registrar/consumes/servicebroker/instances
+  type: replace
+  value: &broker_registrar_servicebroker_instances
+    - cassandra.easyfoundry.internal # Provided by a Bosh DNS alias
+
+- path: /instance_groups/name=broker-deregistrar-vm/jobs/name=broker-deregistrar/consumes/servicebroker/instances
+  type: replace
+  value: *broker_registrar_servicebroker_instances
+
+
+# Set CF deployment name
+
+- path: /instance_groups/name=broker-registrar-vm/jobs/name=broker-registrar/consumes/cf-admin-user/deployment
+  type: replace
+  value: &cf_dployment_name ((cf_deployment_name))
+
+- path: /instance_groups/name=broker-deregistrar-vm/jobs/name=broker-deregistrar/consumes/cf-admin-user/deployment
+  type: replace
+  value: *cf_dployment_name
