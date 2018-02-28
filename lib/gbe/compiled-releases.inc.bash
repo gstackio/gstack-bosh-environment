@@ -36,7 +36,7 @@ function export_release_to_cache() {
     local stemcell=$1; shift
     local base_filename=$1; shift
 
-    if [ -n "$(ls "${base_filename}"-*.tgz 2> /dev/null)" ]; then
+    if [ -n "$(find . -name "${base_filename}-*.tgz")" ]; then
         echo -e "\n${RED}Existing release$RESET $BOLD$BLUE$release$RESET" \
             "for stemcell $BOLD$GREEN$stemcell$RESET. Skipping.\n"
         return
