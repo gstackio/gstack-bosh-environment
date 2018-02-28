@@ -34,10 +34,16 @@ deployment_vars:
 
   cassandra_domain: cassandra.easyfoundry.prototyp.it
 
+
+  # Scaling
+
   # Normally, a minimum of 6G heap size is necessary. But here we miss some GB
   # when deploying all the rest of Easy Foundry on a 32GB Bosh-Lite VM. So we
   # reduce this to 4G.
   max_heap_size: 4G
+  seed_instances: &seed_instance_count 2
+  non_seed_instances: 0
+  system_auth_keyspace_replication_factor: *seed_instance_count
 
 
   # Versions
