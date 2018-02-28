@@ -1,18 +1,22 @@
 
 function each_used_release() {
+    local subsys=$1; shift
     local cmd=$1; shift
 
-    local stemcell
+    local stemcell deployments_json deployments
     stemcell=$(bosh stemcells \
                 | awk '{sub("\\*$", "", $2); print $3 "/" $2}' \
                 | head -n1)
-    local deployments_json
     deployments_json=$(bosh deployments --json)
-    local deployments
-    deployments=$(echo "$deployments_json" | jq -r '.Tables[0].Rows[] | .name')
+    if [ -z "$subsys" -o "$subsys" == '*' ]; then
+        subsys=
+        deployments=$(echo "$deployments_json" | jq -r '.Tables[0].Rows[] | .name')
+    else
+        deployments=$(spec_var /deployment_vars/deployment_name "$BASE_DIR/deployments/$subsys")
+    fi
 
-    mkdir -p "$BASE_DIR/.cache/compiled-releases"
-    pushd "$BASE_DIR/.cache/compiled-releases" > /dev/null
+    mkdir -p "$BASE_DIR/.cache/compiled-releases${subsys:+/$subsys}"
+    pushd "$BASE_DIR/.cache/compiled-releases${subsys:+/$subsys}"
 
     for depl_name in $deployments; do
 
@@ -51,9 +55,10 @@ function export_release_to_cache() {
 }
 
 function export_releases() {
+    local subsys=$1
     assert_utilities jq "to export compiled releases"
-    mkdir -p "$BASE_DIR/.cache/compiled-releases"
-    each_used_release export_release_to_cache
+    mkdir -p "$BASE_DIR/.cache/compiled-releases${subsys:+/$subsys}"
+    each_used_release "$subsys" export_release_to_cache
 }
 
 function upload_compiled_releases() {
@@ -92,7 +97,7 @@ function cleanup_compiled_releases() {
     assert_utilities jq "to cleanup compiled releases"
     pushd "$BASE_DIR/.cache/compiled-releases"
         declare -a stale_files
-        stale_files=($(each_used_release echo_stale_release_files))
+        stale_files=($(each_used_release '*' echo_stale_release_files))
 
         local bosh_version
         bosh_version=$(bosh env | tail -n +3 | head -n 1 | cut -d' ' -f1)

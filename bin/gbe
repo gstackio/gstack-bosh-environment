@@ -241,7 +241,6 @@ function down_usage() {
 function dns_usage() {
     local ul=$UNDERLINE
     local noul=$NOUNDERLINE
-    local b=$BOLD
     local rst=$RESET
     echo "Usage:"
     echo "  $ul$SCRIPT_NAME$noul  ${ul}dns$noul  preview"
@@ -292,7 +291,6 @@ function update_usage() {
 function converge_usage() {
     local ul=$UNDERLINE
     local noul=$NOUNDERLINE
-    local b=$BOLD
     local rst=$RESET
     echo "Usage:"
     echo "  $ul$SCRIPT_NAME$noul  ${ul}converge$noul  [<deployment-name>]  [-n]"
@@ -315,7 +313,6 @@ function converge_usage() {
 function recreate_usage() {
     local ul=$UNDERLINE
     local noul=$NOUNDERLINE
-    local b=$BOLD
     local rst=$RESET
     echo "Usage:"
     echo "  $ul$SCRIPT_NAME$noul  ${ul}recreate$noul  <deployment-name>  [-n]"
@@ -337,7 +334,6 @@ function recreate_usage() {
 function delete_usage() {
     local ul=$UNDERLINE
     local noul=$NOUNDERLINE
-    local b=$BOLD
     local rst=$RESET
     echo "Usage:"
     echo "  $ul$SCRIPT_NAME$noul  ${ul}delete$noul  <deployment-name>  [-n]"
@@ -355,6 +351,45 @@ function delete_usage() {
     echo
     echo "    -n"
     echo "        Run unattended. Don't ask for user input. NOT RECOMMENDED."
+    echo
+}
+
+function export_usage() {
+    local ul=$UNDERLINE
+    local noul=$NOUNDERLINE
+    local rst=$RESET
+    echo "Usage:"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}export$noul  [<subsys-name>]"
+    echo
+    echo "    <deployment-name>   The name of a subsys of type 'bosh-deployment'."
+    echo
+    echo "Exports all compiled releases going through each deployments"
+    echo "currently managed by the BOSH server."
+    echo
+    echo "When specifying a subsys name, the set of exported releases is"
+    echo "restricted to those that are necessary to the deployment that is"
+    echo "related to the subsys. This subsys must be of type 'bosh-deployment'"
+    echo "and the related deployment must exist in the BOSH server."
+    echo
+}
+
+function import_usage() {
+    local ul=$UNDERLINE
+    local noul=$NOUNDERLINE
+    local rst=$RESET
+    echo "Usage:"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}import$noul  [<subsys-name>]"
+    echo
+    echo "    <deployment-name>   The name of a subsys of type 'bosh-deployment'."
+    echo
+    echo "Imports all compiled releases going through each deployments"
+    echo "currently managed by the BOSH server."
+    echo
+    echo "When specifying a subsys name, the set of exported releases is"
+    echo "restricted to those that are necessary to the deployment that is"
+    echo "releated to the subsys. This subsys must be of type 'bosh-deployment'"
+    echo "and there must be a subfolder of that name in the"
+    echo "'.cache/compiled-releases/' directory."
     echo
 }
 
@@ -851,12 +886,25 @@ case $1 in
         esac
         ;;
     export)
-        ensure_reachability
-        export_releases ;;
+        shift
+        case $1 in
+            -h)
+                export_usage ;;
+            *)
+                ensure_reachability
+                export_releases "$@" ;;
+        esac
+        ;;
     import)
         shift
-        ensure_reachability
-        upload_compiled_releases "$@" ;;
+        case $1 in
+            -h)
+                import_usage ;;
+            *)
+                ensure_reachability
+                upload_compiled_releases "$@" ;;
+        esac
+        ;;
     cleanup)
         shift
         cleanup_compiled_releases "$@";;
