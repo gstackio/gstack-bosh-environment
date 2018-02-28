@@ -589,6 +589,7 @@ function converge_deployment() {
     bosh_rw_invoke deploy "$@"
 
     run_hook_once post-deploy "$SUBSYS_DIR/post-deploy-once.sh"
+    run_hook "$SUBSYS_DIR/post-deploy.sh"
 }
 
 function delete_deployment() {
