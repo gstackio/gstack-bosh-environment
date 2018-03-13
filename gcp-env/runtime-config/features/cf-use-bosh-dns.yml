@@ -75,7 +75,7 @@
     uaa.service.cf.internal:
       - '*.uaa.((cf_network_name)).((cf_deployment_name)).bosh'
 
-- path: /addons/-
+- path: /addons/name=bosh-dns-windows
   type: replace
   value:
     name: bosh-dns-windows
