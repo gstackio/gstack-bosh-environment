@@ -16,7 +16,7 @@ input_resources:
   - name: docker-broker-deployment
     type: git
     uri: https://github.com/cloudfoundry-community/docker-broker-deployment.git
-    version: 2eb6456 # as of Dec. 1st, 2017
+    version: 2eb6456 # in the 'cf-containers-broker-boshrelease' branch, as of Dec. 1st, 2017
   - name: broker-registrar-boshrelease
     type: git
     uri: https://github.com/cloudfoundry-community/broker-registrar-boshrelease.git
