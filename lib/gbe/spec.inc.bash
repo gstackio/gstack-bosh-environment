@@ -220,6 +220,9 @@ function imports_from() {
             depl-vars)
                 import_file_value "$var_path" \
                     <(spec_var /deployment_vars "$subsys_dir") ;;
+            conf-vars)
+                import_file_value "$var_path" \
+                    <(spec_var /config_vars "$subsys_dir") ;;
             depl-manifest)
                 import_state_value "$subsys_name" "$import_from" "$var_path" ;;
             depl-creds)

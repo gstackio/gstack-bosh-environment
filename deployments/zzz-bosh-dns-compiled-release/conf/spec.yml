@@ -1,0 +1,37 @@
+---
+subsys:
+  name: zzz-bosh-dns-compiled-release
+  type: bosh-deployment
+
+input_resources: []
+  # - name: bosh-dns-release
+  #   type: git
+  #   uri: https://github.com/cloudfoundry/bosh-dns-release.git
+  #   version: ea8e6dd # as of Dec 28th, 2017
+
+
+main_deployment_file: ./conf/deployment.yml
+
+operations_files: {}
+
+
+deployment_vars:
+  deployment_name: bosh-dns-dummy
+
+  bosh_dns_version: "1.3.0"
+  bosh_dns_sha1: f7242b8cf5da6db583802159d28edaed80fce9a8
+
+  stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+  stemcell_version: "3541.9"
+  stemcell_sha1: 44138ff5e30cc1d7724d88eaa70fab955b8011bd
+
+
+imported_vars:
+  - subsys: runtime-config
+    imports:
+      - name: bosh_dns_version
+        from: conf-vars
+        path: /bosh_dns_version
+      - name: bosh_dns_sha1
+        from: conf-vars
+        path: /bosh_dns_sha1

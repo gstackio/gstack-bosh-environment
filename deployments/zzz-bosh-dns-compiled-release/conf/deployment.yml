@@ -1,0 +1,60 @@
+---
+name: ((deployment_name))
+
+instance_groups:
+  - name: bosh-dns-dummy
+    instances: 1
+    jobs:
+      - name: bosh-dns
+        release: *bosh_dns_release
+        properties:
+          api:
+            server: { tls: ((/dns_api_server_tls)) }
+            client: { tls: ((/dns_api_client_tls)) }
+    stemcell: *trusty_stemcell
+    vm_type: default
+    azs: [ z1 ]
+    networks:
+      - name: default
+
+update:
+  serial: true # instance groups to be deployed sequentially.
+
+  canaries: 1
+  canary_watch_time: 1000-90000
+
+  max_in_flight: 1
+  update_watch_time: 1000-90000
+
+
+variables:
+  - name: &dns_api_tls_ca_path /dns_api_tls_ca
+    type: certificate
+    options:
+      is_ca: true
+      common_name: dns-api-tls-ca
+
+  - name: /dns_api_server_tls
+    type: certificate
+    options:
+      ca: *dns_api_tls_ca_path
+      common_name: api.bosh-dns
+      extended_key_usage: [ server_auth ]
+
+  - name: /dns_api_client_tls
+    type: certificate
+    options:
+      ca: *dns_api_tls_ca_path
+      common_name: api.bosh-dns
+      extended_key_usage: [ client_auth ]
+
+releases:
+  - name: &bosh_dns_release bosh-dns
+    sha1: ((bosh_dns_sha1))
+    url: https://bosh.io/d/github.com/cloudfoundry/bosh-dns-release?v=((bosh_dns_version))
+    version: ((bosh_dns_version))
+
+stemcells:
+  - alias: &trusty_stemcell trusty
+    os: ubuntu-trusty
+    version: ((stemcell_version))
