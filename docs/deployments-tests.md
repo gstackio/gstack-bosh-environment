@@ -20,8 +20,8 @@ To test Cloud Foundry, run:
 ```bash
 cd deployments/cf
 
-curl -s -H "Host: api.$(bosh int ./conf/depl-vars.yml --path /system_domain)" \
-    http://$(bosh envs | grep gcp | cut -f1)/v2/info \
+curl -s -H "Host: api.$(bosh int ./deployments/cf/conf/spec.yml --path /deployment_vars/system_domain)" \
+    http://$(bosh envs | grep "$BOSH_ENVIRONMENT" | cut -f1)/v2/info \
     | jq .
 ```
 

@@ -235,7 +235,12 @@ Documentation
 
 The `gbe` CLI provides inline help with `gbe help`.
 
+Other documentations are available in the [docs](./docs/) directory:
+
 - [How to tests the created deployments](./docs/deployments-tests.md)
+- [GBE Command Line Interface workflow](./docs/cli-workflow.md)
+- [GBE Command Line Interface reference](./docs/cli-reference.md)
+- [GBE file structure reference](./docs/gbe-structure-reference.md)
 
 
 
