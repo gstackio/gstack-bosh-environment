@@ -8,7 +8,7 @@ input_resources:
   - name: cassandra-boshrelease
     type: git
     uri: https://github.com/orange-cloudfoundry/cassandra-cf-service-boshrelease.git
-    version: bpm-support # v6 with fixes, as of Mar. 8th, 2018
+    version: 74aabce # v6 with BPM support merged, as of Mar. 9th, 2018
 
 
 main_deployment_file: cassandra-boshrelease/deployment/cassandra.yml
