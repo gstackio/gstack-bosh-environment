@@ -415,12 +415,17 @@ function ensure_reachability() {
 }
 
 function add_routes() {
-    if netstat -nr | awk '{print $1}' | grep -qE '^10\.244\.0\.0$'; then
+    local rendered_cloud_config=$(state_dir cloud-config)/cloud-config.yml
+    if [ ! -e "$rendered_cloud_config" ]; then
+        fatal "ERROR: please run 'gbe update cloud-config' before running 'gbe routes'. Aborting."
+    fi
+    local network_cidr=$(bosh int "$rendered_cloud_config" --path /networks/name=default/subnets/0/range)
+    if netstat -nr | awk '{print $1}' | grep -qE "^$(echo "$network_cidr" | sed -e 's`/.*$``; s/\./\\./g')$"; then
         return
     fi
     case $(platform) in
-        darwin) sudo route add -net 10.244.0.0/16    $(internal_ip) ;;
-        linux)  sudo route add -net 10.244.0.0/16 gw $(internal_ip) ;;
+        darwin) sudo route add -net "$network_cidr"    $(internal_ip) ;;
+        linux)  sudo route add -net "$network_cidr" gw $(internal_ip) ;;
     esac
 }
 
