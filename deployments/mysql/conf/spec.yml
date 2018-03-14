@@ -8,7 +8,7 @@ input_resources:
   - name: cf-mysql-deployment
     type: git
     uri: https://github.com/cloudfoundry/cf-mysql-deployment.git
-    version: v36.9.0
+    version: v36.11.0
 
 
 main_deployment_file: cf-mysql-deployment/cf-mysql-deployment.yml
@@ -36,15 +36,12 @@ deployment_vars:
 
   # Versions
 
-  cf_mysql_version: "36.9.0"
-  cf_mysql_sha1: adf3ad18f608cd0f045c4feeb08422947c1481a7
+  # cf_mysql_version: "36.11.0"
+  # cf_mysql_sha1: 42af21025230d4fd01480d3b1a2ced9d48c83472
 
-  routing_version: "0.168.0"
-  routing_sha1: 885321f95b530c4a5b8515c72155229cba26c449
-
-  stemcell_version: "3468.11"
-  stemcell_sha1: 74592d4c2b7f2aebacd767112dd0ef28b028532b
-  stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+  # stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+  # stemcell_version: "3541.9"
+  # stemcell_sha1: 44138ff5e30cc1d7724d88eaa70fab955b8011bd
 
 
   # Reference declarations
@@ -56,6 +53,30 @@ deployment_vars:
 imported_vars:
   - subsys: cf
     imports:
+      - name: cf_mysql_version
+        from: depl-vars
+        path: /cf_mysql_version
+      - name: cf_mysql_sha1
+        from: depl-vars
+        path: /cf_mysql_sha1
+
+      - name: routing_version
+        from: depl-vars
+        path: /routing_version
+      - name: routing_sha1
+        from: depl-vars
+        path: /routing_sha1
+
+      - name: stemcell_name
+        from: depl-vars
+        path: /stemcell_name
+      - name: stemcell_version
+        from: depl-vars
+        path: /stemcell_version
+      - name: stemcell_sha1
+        from: depl-vars
+        path: /stemcell_sha1
+
       - name: cf_deployment_name
         from: depl-vars
         path: /deployment_name
