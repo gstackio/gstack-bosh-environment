@@ -13,7 +13,9 @@ input_resources:
 main_config_file: bosh-deployment/runtime-configs/dns.yml
 
 operations_files:
-  local:
+  10.bosh-deployment:
+    - experimental/dns-addon-with-api-certificates
+  20.local:
     - cf-use-bosh-dns
     - shield-v8-support
     - shield-v7-support

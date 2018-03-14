@@ -1,0 +1,5 @@
+---
+
+- path: /stemcells/alias=default/version
+  type: replace
+  value: ((stemcell_version))

@@ -1,0 +1,9 @@
+---
+
+- path: /releases/name=cf-mysql
+  type: replace
+  value:
+    name: cf-mysql
+    version: ((cf_mysql_version))
+    url: https://bosh.io/d/github.com/cloudfoundry/cf-mysql-release?v=((cf_mysql_version))
+    sha1: ((cf_mysql_sha1))

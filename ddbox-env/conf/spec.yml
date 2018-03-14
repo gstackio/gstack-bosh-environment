@@ -11,7 +11,7 @@ input_resources:
   - name: prometheus-boshrelease
     type: git
     uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
-    version: v20.0.0
+    version: v21.1.1
 
 
 infra_vars:
@@ -32,6 +32,8 @@ operations_files:
     - bosh-lite
     - bosh-lite-runc
     - bosh-lite-grootfs
+    - experimental/blobstore-https
+    - experimental/blobstore-https-bosh-lite
     - jumpbox-user
     - uaa
     - credhub
