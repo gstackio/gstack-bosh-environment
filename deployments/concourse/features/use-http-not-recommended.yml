@@ -2,7 +2,7 @@
 
 - path: /instance_groups/name=web/jobs/name=atc/properties/external_url
   type: replace
-  value: http://((external_url_hostname))
+  value: http://((external_url))
 
 - path: /instance_groups/name=web/jobs/name=atc/properties/tls_cert
   type: remove

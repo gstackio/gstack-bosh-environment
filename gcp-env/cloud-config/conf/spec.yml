@@ -17,8 +17,8 @@ input_resources:
 main_config_file: cf-deployment/iaas-support/bosh-lite/cloud-config.yml
 
 operations_files:
-  10.traefik-boshrelease:
-    - deployment/cloud-config/cf-integration
+  # 10.traefik-boshrelease:
+  #   - deployment/cloud-config/cf-integration
   local:
     - cf-mysql-support
     - concourse-support
@@ -48,7 +48,7 @@ imported_vars:
         path: /network_name
       - name: concourse_vm_extension
         from: depl-vars
-        path: /web_vm_extension
+        path: /web_network_vm_extension
   - subsys: shield-v8
     imports:
       - name: shield_v8_port

@@ -49,7 +49,7 @@ imported_vars:
         path: /network_name
       - name: concourse_vm_extension
         from: depl-vars
-        path: /web_vm_extension
+        path: /web_network_vm_extension
   # - subsys: postgres
   #   imports:
   #     - name: postgres_patroni_network_name
