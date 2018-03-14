@@ -50,11 +50,11 @@ operations_files:
 
 
 deployment_vars:
-  director_name: "Easy Foundry Director"
+  director_name: easy-foundry-director
 
   disk_size: 200_000 # i.e. 200MB
 
-  external_ip: ~
+  external_ip: "62.210.146.202"
   vbox_host: ~
   vbox_username: ~
   vbox_ssh:

@@ -206,6 +206,9 @@ function imports_from() {
     else
         subsys_dir=$BASE_DIR/deployments/$subsys_name
     fi
+    if [[ "$subsys_name" == base-env ]]; then
+        subsys_name=$GBE_ENVIRONMENT
+    fi
 
     local vars_count=$(spec_var "$base_path" \
                          | awk '/^-/{print $1}' | wc -l)
@@ -226,7 +229,6 @@ function imports_from() {
             depl-manifest)
                 import_state_value "$subsys_name" "$import_from" "$var_path" ;;
             depl-creds)
-                # FIXME: missing YAML de-duplication here below
                 import_state_value "$subsys_name" "$import_from" "$var_path" \
                     "$(state_dir)/depl-creds.yml"
                 ;;
