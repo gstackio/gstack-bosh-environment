@@ -8,7 +8,7 @@ input_resources:
   - name: prometheus-boshrelease
     type: git
     uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
-    version: v20.0.0
+    version: v21.1.1
 
 
 main_deployment_file: prometheus-boshrelease/manifests/prometheus.yml
@@ -47,18 +47,18 @@ deployment_vars:
 
   # Versions
 
-  prometheus_version: "20.0.0"
-  prometheus_sha1: "11a18875879a7712c67e6d30c4a069101ae77560"
+  prometheus_version: "21.1.1"
+  prometheus_sha1: a191bc2ad321a9670fdf5ff5eb545cb3474cd1e6
 
-  postgres_version: "23"
-  postgres_sha1: "4b5265bfd5f92cf14335a75658658a0db0bca927"
+  postgres_version: "26"
+  postgres_sha1: a436047dae4d4156a1debe9f88bedf59bf40362b
 
-  routing_version: "0.168.0"
-  routing_sha1: 885321f95b530c4a5b8515c72155229cba26c449
+  # routing_version: "0.173.0"
+  # routing_sha1: 2c2ddd022f81f0f2d6e12fbd38bd1b1159edcf23
 
-  stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
-  stemcell_version: "3468.11"
-  stemcell_sha1: 74592d4c2b7f2aebacd767112dd0ef28b028532b
+  # stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+  # stemcell_version: "3541.9"
+  # stemcell_sha1: 44138ff5e30cc1d7724d88eaa70fab955b8011bd
 
 
   # Reference declarations
@@ -70,6 +70,25 @@ deployment_vars:
 imported_vars:
   - subsys: cf
     imports:
+
+      # Versions
+
+      - name: routing_version
+        from: depl-vars
+        path: /routing_version
+      - name: routing_sha1
+        from: depl-vars
+        path: /routing_sha1
+
+      - name: stemcell_name
+        from: depl-vars
+        path: /stemcell_name
+      - name: stemcell_version
+        from: depl-vars
+        path: /stemcell_version
+      - name: stemcell_sha1
+        from: depl-vars
+        path: /stemcell_sha1
 
       # CF routing plumbing
 
