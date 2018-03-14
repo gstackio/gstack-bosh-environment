@@ -12,7 +12,7 @@
   value:
     name: docker
     version: ((docker_version))
-    url: https://github.com/cloudfoundry-community/docker-boshrelease/releases/download/v((docker_version))/docker-((docker_version)).tgz
+    url: https://bosh.io/d/github.com/cf-platform-eng/docker-boshrelease?v=((docker_version))
     sha1: ((docker_sha1))
 
 - path: /releases/name=cf-containers-broker
