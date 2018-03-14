@@ -1,0 +1,8 @@
+[
+  {
+    "destination": "10.0.0.0/8",
+    "protocol": "tcp",
+    "ports": "3306",
+    "description": "Allow traffic to MySQL"
+  }
+]
