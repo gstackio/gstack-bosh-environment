@@ -473,6 +473,10 @@ function upload_stemcell() {
     stemcell_version=$(spec_var /deployment_vars/stemcell_version)
     stemcell_sha1=$(spec_var /deployment_vars/stemcell_sha1)
 
+    if [ -z "$stemcell_name" -o -z "$stemcell_version" -o -z "$stemcell_sha1" ]; then
+        return
+    fi
+
     bosh upload-stemcell \
         --name "$stemcell_name" \
         --version "$stemcell_version" \
