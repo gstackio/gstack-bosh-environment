@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+SUBSYS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+
 function cf_state_var() {
     local state_file=$1
     local path=$2
@@ -31,16 +33,21 @@ set -ex
 
 pushd "$BASE_DIR/.cache/resources/cassandra-boshrelease" || exit 115
     git submodule update --init --recursive
-    bosh reset-release
-    bosh create-release --force
+
+    latest_dev_release=$(ls -t dev_releases/cassandra/cassandra-*.yml 2> /dev/null | head -n 1)
+    if [ -z "$latest_dev_release" -o "$(bosh int "$latest_dev_release" --path /commit_hash)" != "$(git rev-parse --short HEAD)" ]; then
+        bosh reset-release
+        bosh create-release --force
+    fi
     bosh upload-release
 popd
 
 cf_login
 
-if ! cf security-groups 2> /dev/null | grep -qE '\bcassandra\b'; then
-    cf create-security-group cassandra "$BASE_DIR/deployments/cassandra/security-groups.json"
+security_group_name=cassandra
+if ! cf security-groups 2> /dev/null | grep -qE "\\b${security_group_name}\\b"; then
+    cf create-security-group "$security_group_name" "$SUBSYS_DIR/security-groups.json"
 fi
-if ! cf running-security-groups 2> /dev/null | grep -q '^cassandra$'; then
-    cf bind-running-security-group cassandra
+if ! cf running-security-groups 2> /dev/null | grep -q "^${security_group_name}\$"; then
+    cf bind-running-security-group "$security_group_name"
 fi
