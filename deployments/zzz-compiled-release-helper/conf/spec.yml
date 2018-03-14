@@ -1,6 +1,6 @@
 ---
 subsys:
-  name: zzz-bosh-dns-compiled-release
+  name: zzz-compiled-release-helper
   type: bosh-deployment
 
 input_resources: []
@@ -16,10 +16,13 @@ operations_files: {}
 
 
 deployment_vars:
-  deployment_name: bosh-dns-dummy
+  deployment_name: release-compiler-tmp
 
-  bosh_dns_version: "1.3.0"
-  bosh_dns_sha1: f7242b8cf5da6db583802159d28edaed80fce9a8
+  # bosh_dns_version: "1.3.0"
+  # bosh_dns_sha1: f7242b8cf5da6db583802159d28edaed80fce9a8
+
+  # node_exporter_version: "3.0.1"
+  # node_exporter_sha1: 9eef05f8290e093d3ddab66596cdff7b64f2021b
 
   stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
   stemcell_version: "3541.9"
@@ -29,9 +32,17 @@ deployment_vars:
 imported_vars:
   - subsys: runtime-config
     imports:
+
       - name: bosh_dns_version
         from: conf-vars
         path: /bosh_dns_version
       - name: bosh_dns_sha1
         from: conf-vars
         path: /bosh_dns_sha1
+
+      - name: node_exporter_version
+        from: conf-vars
+        path: /node_exporter_version
+      - name: node_exporter_sha1
+        from: conf-vars
+        path: /node_exporter_sha1
