@@ -8,6 +8,10 @@ input_resources:
     type: git
     uri: https://github.com/cloudfoundry/bosh-deployment.git
     version: 64b8ba9 # base for a v264.7 (as of March 12th, 2018)
+  # - name: node-exporter-boshrelease
+  #   type: git
+  #   uri: https://github.com/bosh-prometheus/node-exporter-boshrelease.git
+  #   version: v3.0.1
 
 
 main_config_file: bosh-deployment/runtime-configs/dns.yml
@@ -17,6 +21,7 @@ operations_files:
     - experimental/dns-addon-with-api-certificates
   20.local:
     - cf-use-bosh-dns
+    - prometheus-support
     - shield-v8-support
     - shield-v7-support
     - cassandra-support
@@ -30,6 +35,9 @@ config_vars:
 
   bosh_dns_version: "1.3.0"
   bosh_dns_sha1: f7242b8cf5da6db583802159d28edaed80fce9a8
+
+  node_exporter_version: "3.0.1"
+  node_exporter_sha1: 9eef05f8290e093d3ddab66596cdff7b64f2021b
 
 
 imported_vars:

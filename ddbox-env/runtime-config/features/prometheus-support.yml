@@ -1,0 +1,21 @@
+---
+
+- path: /releases?/name=node-exporter
+  type: replace
+  value:
+    name: node-exporter
+    version: ((node_exporter_version))
+    url: https://bosh.io/d/github.com/cloudfoundry-community/node-exporter-boshrelease?v=((node_exporter_version))
+    sha1: ((node_exporter_sha1))
+
+- path: /addons?/name=node_exporter
+  type: replace
+  value:
+    name: node_exporter
+    jobs:
+      - name: node_exporter
+        release: node-exporter
+        include:
+          stemcell:
+            - os: ubuntu-trusty
+        properties: {}
