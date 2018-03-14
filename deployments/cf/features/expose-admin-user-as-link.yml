@@ -19,6 +19,6 @@
   path: /releases/-
   value:
     name: collection-of-pullrequests
-    version: 1.1.0
-    url: https://github.com/cloudfoundry-community/collection-of-pullrequests-boshrelease/releases/download/v1.1.0/collection-of-pullrequests-1.1.0.tgz
-    sha1: 8cd9950a3d7c2f51a363a1ce41b930e6851611aa
+    version: 1.1.1
+    url: https://github.com/cloudfoundry-community/collection-of-pullrequests-boshrelease/releases/download/v1.1.1/collection-of-pullrequests-1.1.1.tgz
+    sha1: b550b3e320affdb19be2221d311b5bb6e5aebc45

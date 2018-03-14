@@ -52,7 +52,7 @@ operations_files:
   30.local:
     - set-stemcell-version
     # - set-mysql-version
-    # - set-routing-version
+    - set-routing-version
     - expose-admin-user-as-link
     - cassandra-support
     - enable-service-discovery-bosh-lite
