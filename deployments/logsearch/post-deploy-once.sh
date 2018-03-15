@@ -5,5 +5,3 @@ set -ex
 bosh run-errand create-uaa-client
 
 bosh run-errand upload-kibana-objects
-
-bosh run-errand smoke-tests
