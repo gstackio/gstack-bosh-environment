@@ -1,0 +1,21 @@
+---
+
+- path: /instance_groups/name=elasticsearch_master/persistent_disk_type
+  type: replace
+  value: 5GB
+
+- path: /instance_groups/name=cluster_monitor/persistent_disk_type
+  type: replace
+  value: 20GB
+
+- path: /instance_groups/name=elasticsearch_data/persistent_disk_type
+  type: replace
+  value: 20GB
+
+- path: /instance_groups/name=kibana/persistent_disk_type
+  type: replace
+  value: 2GB
+
+- path: /instance_groups/name=ingestor/persistent_disk_type
+  type: replace
+  value: 2GB

@@ -19,6 +19,7 @@ operations_files:
     - set-versions
     # - routing # TLS routing doesn't support self-signed certificates yet
     - expose-ports
+    - scale-disks
 
 
 deployment_vars:

@@ -1,0 +1,8 @@
+---
+
+- path: /instance_groups/name=docker/persistent_disk
+  type: remove
+
+- path: /instance_groups/name=docker/persistent_disk_type?
+  type: replace
+  value: 20GB

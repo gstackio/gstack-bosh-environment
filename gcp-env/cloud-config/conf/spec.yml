@@ -20,6 +20,7 @@ operations_files:
   # 10.traefik-boshrelease:
   #   - deployment/cloud-config/cf-integration
   local:
+    - additional-disk-sizes
     - cf-mysql-support
     - concourse-support
     - shield-v8-support

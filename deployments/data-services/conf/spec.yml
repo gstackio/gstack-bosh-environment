@@ -37,6 +37,7 @@ operations_files:
     - manifests/operators/cf-admin-user
   20.local:
     - set-versions
+    - scale-disks
     - inject-variables # must be after 'use-cf-admin-user-link'
     - fix-errands-vms-names # must be last
 

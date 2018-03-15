@@ -21,6 +21,7 @@ operations_files:
     - set-versions
     - expose-ports
     - shield-config
+    - scale-disks
 
 
 deployment_vars:
@@ -44,7 +45,7 @@ deployment_vars:
 
 
   # Plumbery
-  shield_disk_type: 2GB
+  shield_disk_type: 1GB
 
 
   # Reference declarations

@@ -20,9 +20,9 @@ operations_files:
   # 10.traefik-boshrelease:
   #   - deployment/cloud-config/cf-integration
   local:
+    - additional-disk-sizes
     - cf-mysql-support
     - concourse-support
-    # - dingo-postgres-support
     - shield-v8-support
     - shield-v7-support
     - prometheus-support
@@ -50,14 +50,6 @@ imported_vars:
       - name: concourse_vm_extension
         from: depl-vars
         path: /web_network_vm_extension
-  # - subsys: postgres
-  #   imports:
-  #     - name: postgres_patroni_network_name
-  #       from: depl-vars
-  #       path: /patroni_network_name
-  #     - name: postgres_router_network_name
-  #       from: depl-vars
-  #       path: /router_network_name
   - subsys: shield-v8
     imports:
       - name: shield_v8_port

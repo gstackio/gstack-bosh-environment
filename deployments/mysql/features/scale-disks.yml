@@ -1,0 +1,12 @@
+---
+
+- path: /instance_groups/name=mysql/persistent_disk
+  type: remove
+
+- path: /instance_groups/name=mysql/persistent_disk_type?
+  type: replace
+  value: 10GB
+
+- path: /instance_groups/name=broker/jobs/name=cf-mysql-broker/properties/cf_mysql/mysql/persistent_disk
+  type: replace
+  value: 10240

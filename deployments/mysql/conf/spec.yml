@@ -23,6 +23,7 @@ operations_files:
     - inject-variables
     - set-versions
     - customize-service
+    - scale-disks
 
 
 deployment_vars:

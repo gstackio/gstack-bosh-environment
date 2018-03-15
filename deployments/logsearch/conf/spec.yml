@@ -22,6 +22,7 @@ operations_files:
     - set-versions
     - cf-integration
     - bosh-lite-support
+    - scale-disks
     - fix-errands-vms-names # must be last
 
 

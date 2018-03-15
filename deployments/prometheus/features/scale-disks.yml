@@ -1,0 +1,32 @@
+---
+
+- path: /instance_groups/name=alertmanager/persistent_disk
+  type: remove
+
+- path: /instance_groups/name=alertmanager/persistent_disk_type?
+  type: replace
+  value: 1GB
+
+
+- path: /instance_groups/name=prometheus/persistent_disk
+  type: remove
+
+- path: /instance_groups/name=prometheus/persistent_disk_type?
+  type: replace
+  value: 10GB
+
+
+- path: /instance_groups/name=database/persistent_disk
+  type: remove
+
+- path: /instance_groups/name=database/persistent_disk_type?
+  type: replace
+  value: 10GB
+
+
+- path: /instance_groups/name=grafana/persistent_disk
+  type: remove
+
+- path: /instance_groups/name=grafana/persistent_disk_type?
+  type: replace
+  value: 1GB
