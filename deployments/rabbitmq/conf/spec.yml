@@ -9,18 +9,17 @@ input_resources:
     type: git
     uri: https://github.com/pivotal-cf/cf-rabbitmq-release.git
     version: v238.0.0
-  - name: rabbitmq-broker-boshrelease
-    type: git
-    uri: https://github.com/pivotal-cf/cf-rabbitmq-multitenant-broker-release.git
-    version: v13.0.0
+  # - name: rabbitmq-broker-boshrelease
+  #   type: git
+  #   uri: https://github.com/pivotal-cf/cf-rabbitmq-multitenant-broker-release.git
+  #   version: v13.0.0
 
 
 main_deployment_file: rabbitmq-boshrelease/manifests/cf-rabbitmq-template.yml
 
 
 operations_files:
-  # 10.rabbitmq-broker-boshrelease: []
-  20.local:
+  local:
     - set-versions
     - fix-missing-variables
     - scale-for-bosh-lite
@@ -60,13 +59,13 @@ deployment_vars:
 
   broker_registrar_version: "3.4.0"
   broker_registrar_sha1: d44d9af8fd06ecf6d50004c9bfd5516a6e482201
-      
-  routing_version: "0.168.0"
-  routing_sha1: 885321f95b530c4a5b8515c72155229cba26c449
 
-  stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
-  stemcell_version: "3468.11"
-  stemcell_sha1: 74592d4c2b7f2aebacd767112dd0ef28b028532b
+  # routing_version: "0.173.0"
+  # routing_sha1: 2c2ddd022f81f0f2d6e12fbd38bd1b1159edcf23
+
+  # stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+  # stemcell_version: "3541.9"
+  # stemcell_sha1: 44138ff5e30cc1d7724d88eaa70fab955b8011bd
 
 
   # Reference declarations
@@ -87,6 +86,23 @@ deployment_vars:
 imported_vars:
   - subsys: cf
     imports:
+
+      - name: routing_version
+        from: depl-vars
+        path: /routing_version
+      - name: routing_sha1
+        from: depl-vars
+        path: /routing_sha1
+
+      - name: stemcell_name
+        from: depl-vars
+        path: /stemcell_name
+      - name: stemcell_version
+        from: depl-vars
+        path: /stemcell_version
+      - name: stemcell_sha1
+        from: depl-vars
+        path: /stemcell_sha1
 
       # CF routing plumbing
 
