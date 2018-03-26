@@ -1,0 +1,5 @@
+---
+
+- path: /instance_groups/name=elasticsearch_data/instances
+  type: replace
+  value: 2

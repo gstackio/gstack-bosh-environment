@@ -19,6 +19,7 @@ operations_files:
     - deployment/operations/scale-to-one-az
     - deployment/operations/cerebro
   20.local:
+    - scale-vms
     - set-versions
     - cf-integration
     - bosh-lite-support
