@@ -59,6 +59,23 @@
 
 # Scaling
 
+- path: /instance_groups/name=cassandra-seeds/jobs/name=cassandra/properties/max_heap_size
+  type: replace
+  value: ((max_heap_size))
+
+- path: /instance_groups/name=cassandra-seeds/jobs/name=cassandra/properties/heap_newsize
+  type: replace
+  value: ((heap_newsize))
+
+- path: /instance_groups/name=cassandra-servers/jobs/name=cassandra/properties/max_heap_size
+  type: replace
+  value: ((max_heap_size))
+
+- path: /instance_groups/name=cassandra-servers/jobs/name=cassandra/properties/heap_newsize
+  type: replace
+  value: ((heap_newsize))
+
+
 - path: /instance_groups/name=cassandra-seeds/instances
   type: replace
   value: ((seed_instances))
@@ -67,6 +84,9 @@
   type: replace
   value: ((non_seed_instances))
 
-- path: /instance_groups/name=cassandra-seeds/jobs/name=cassandra/properties/system_auth_keyspace_replication_factor?
+
+# Cassandra topology
+
+- path: /instance_groups/name=cassandra-seeds/jobs/name=cassandra/properties/bosh_to_cassandra_topology_mapping?
   type: replace
-  value: ((system_auth_keyspace_replication_factor))
+  value: ((bosh_to_cassandra_topology_mapping))

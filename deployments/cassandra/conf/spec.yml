@@ -8,7 +8,7 @@ input_resources:
   - name: cassandra-boshrelease
     type: git
     uri: https://github.com/orange-cloudfoundry/cassandra-cf-service-boshrelease.git
-    version: 74aabce # v6 with BPM support merged, as of Mar. 9th, 2018
+    version: 0ce5af0 # on 'implement-topology-mapping' branch, v6 with fixes and features, as of Apr. 4th, 2018
 
 
 main_deployment_file: cassandra-boshrelease/deployment/cassandra.yml
@@ -38,13 +38,17 @@ deployment_vars:
 
   # Scaling
 
-  # Normally, a minimum of 6G heap size is necessary. But here we miss some GB
-  # when deploying all the rest of Easy Foundry on a 32GB Bosh-Lite VM. So we
-  # reduce this to 4G.
-  max_heap_size: 4G
-  seed_instances: &seed_instance_count 2
+  # Because of tight memory constraints, we scale Cassandra in to 1 node and
+  # we scale its heap_size/newsize down to 2G/512M.
+  max_heap_size: 2G
+  heap_newsize: 512M # must still be set in pair with 'max_heap_size'
+  seed_instances: 1
   non_seed_instances: 0
-  system_auth_keyspace_replication_factor: *seed_instance_count
+  bosh_to_cassandra_topology_mapping:
+    z1:      { dc: DC1, rack: RAC1 }
+    z2:      { dc: DC1, rack: RAC2 }
+    z3:      { dc: DC1, rack: RAC3 }
+    default: { dc: DC1, rack: RAC3 }
 
 
   # Versions
