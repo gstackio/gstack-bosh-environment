@@ -41,9 +41,9 @@ deployment_vars:
   routing_version: "0.168.0"
   routing_sha1: 885321f95b530c4a5b8515c72155229cba26c449
 
-  stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
-  stemcell_version: "3468.11"
-  stemcell_sha1: 74592d4c2b7f2aebacd767112dd0ef28b028532b
+  # stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+  # stemcell_version: "3541.9"
+  # stemcell_sha1: 44138ff5e30cc1d7724d88eaa70fab955b8011bd
 
 
   # Plumbery
@@ -60,6 +60,17 @@ deployment_vars:
 imported_vars:
   - subsys: cf
     imports:
+
+      - name: stemcell_name
+        from: depl-vars
+        path: /stemcell_name
+      - name: stemcell_version
+        from: depl-vars
+        path: /stemcell_version
+      - name: stemcell_sha1
+        from: depl-vars
+        path: /stemcell_sha1
+
       - name: cf_deployment_name
         from: depl-vars
         path: /deployment_name
