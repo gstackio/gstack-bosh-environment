@@ -8,7 +8,7 @@ input_resources:
   - name: prometheus-boshrelease
     type: git
     uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
-    version: v21.1.1
+    version: v22.0.2
 
 
 main_deployment_file: prometheus-boshrelease/manifests/prometheus.yml
@@ -48,14 +48,14 @@ deployment_vars:
 
   # Versions
 
-  prometheus_version: "21.1.1"
-  prometheus_sha1: a191bc2ad321a9670fdf5ff5eb545cb3474cd1e6
+  prometheus_version: "22.0.2"
+  prometheus_sha1: d813d755a1be7abbe2461ea9a7327235ed9a8996
 
-  postgres_version: "26"
-  postgres_sha1: a436047dae4d4156a1debe9f88bedf59bf40362b
+  # postgres_version: "28"
+  # postgres_sha1: c1fcec62cb9d2e95e3b191e3c91d238e2b9d23fa
 
-  # routing_version: "0.173.0"
-  # routing_sha1: 2c2ddd022f81f0f2d6e12fbd38bd1b1159edcf23
+  # routing_version: "0.175.0"
+  # routing_sha1: 7314e7b070520561aef6fd4026501f3d23c5d67c
 
   # stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
   # stemcell_version: "3541.12"
@@ -69,6 +69,19 @@ deployment_vars:
 
 
 imported_vars:
+  - subsys: concourse
+    imports:
+
+      # Versions
+
+      - name: postgres_version
+        from: depl-vars
+        path: /postgres_version
+      - name: postgres_sha1
+        from: depl-vars
+        path: /postgres_sha1
+
+
   - subsys: cf
     imports:
 

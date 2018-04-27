@@ -8,10 +8,10 @@
   value: 1GB
 
 
-- path: /instance_groups/name=prometheus/persistent_disk
+- path: /instance_groups/name=prometheus2/persistent_disk
   type: remove
 
-- path: /instance_groups/name=prometheus/persistent_disk_type?
+- path: /instance_groups/name=prometheus2/persistent_disk_type?
   type: replace
   value: 10GB
 

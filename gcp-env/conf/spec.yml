@@ -11,7 +11,7 @@ input_resources:
   - name: prometheus-boshrelease
     type: git
     uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
-    version: v20.0.0
+    version: v22.0.2
 
 
 infra_vars:
