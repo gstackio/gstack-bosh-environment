@@ -8,7 +8,7 @@ input_resources:
   - name: logsearch-boshrelease
     type: git
     uri: https://github.com/cloudfoundry-community/logsearch-boshrelease.git
-    version: v208.0.0
+    version: v209.0.0
 
 
 # main_deployment_file: ./conf/logsearch-deployment.yml
@@ -41,11 +41,11 @@ deployment_vars:
 
   # Versions
 
-  logsearch_version: "208.0.0"
-  logsearch_sha1: "578283fd9d8dbbd02e7f4f35e6d60671953a924f"
+  logsearch_version: "209.0.0"
+  logsearch_sha1: 76433fb23850e7237951312315e27da0bdf10f5e
 
-  logsearch_for_cloudfoundry_version: "206.0.0"
-  logsearch_for_cloudfoundry_sha1: "574720bed4d453ed4153f48d5244e2b4fde16354"
+  logsearch_for_cloudfoundry_version: "207.0.0"
+  logsearch_for_cloudfoundry_sha1: e6f740707042d29a1ac09a7481cf72b805b1469d
 
   # stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
   # stemcell_version: "3541.12"
