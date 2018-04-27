@@ -26,11 +26,15 @@ operations_files:
     # CF integration
     - manifests/operators/enable-cf-route-registrar
     - manifests/operators/enable-grafana-uaa
+
+    # If migration from Prometheus v1 is required
+    # - manifests/operators/migrations/migrate_from_prometheus_1
   20.local:
     - set-versions
     # - expose-ports
     - customize-routing
     - scale-disks
+    # - scale-disks-prometheus-v1 # only if 'migrate_from_prometheus_1' activated above
 
 
 deployment_vars:

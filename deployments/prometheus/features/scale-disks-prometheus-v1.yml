@@ -1,0 +1,9 @@
+---
+
+# Only necessary when enabling the 'migrate_from_prometheus_1.yml'
+# transitional ops file
+- path: /instance_groups/name=prometheus/persistent_disk
+  type: remove
+- path: /instance_groups/name=prometheus/persistent_disk_type?
+  type: replace
+  value: 10GB
