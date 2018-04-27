@@ -7,7 +7,7 @@ input_resources:
   - name: bosh-deployment
     type: git
     uri: https://github.com/cloudfoundry/bosh-deployment.git
-    version: 64b8ba9 # base for a v264.7 (as of March 12th, 2018)
+    version: bf1bb16 # v265.2 (as of April 16th, 2018)
   - name: prometheus-boshrelease
     type: git
     uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
