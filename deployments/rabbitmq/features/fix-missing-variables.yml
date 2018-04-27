@@ -21,3 +21,9 @@
   value:
     name: multitenant-rabbitmq-broker-password
     type: password
+
+- path: /variables?/name=rabbitmq-cookie
+  type: replace
+  value:
+    name: rabbitmq-cookie
+    type: password

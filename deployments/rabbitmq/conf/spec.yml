@@ -8,11 +8,11 @@ input_resources:
   - name: rabbitmq-boshrelease
     type: git
     uri: https://github.com/pivotal-cf/cf-rabbitmq-release.git
-    version: v238.0.0
+    version: v243.0.0
   # - name: rabbitmq-broker-boshrelease
   #   type: git
   #   uri: https://github.com/pivotal-cf/cf-rabbitmq-multitenant-broker-release.git
-  #   version: v13.0.0
+  #   version: v24.0.0
 
 
 main_deployment_file: rabbitmq-boshrelease/manifests/cf-rabbitmq-template.yml
@@ -51,17 +51,19 @@ deployment_vars:
 
   # Versions
 
-  rabbitmq_version: "238.0.0"
-  rabbitmq_sha1: 7a88d3cda9f92b34f28f056cf2c64f70f8546b7c
+  rabbitmq_version: "3.7"
 
-  rabbitmq_broker_version: "13.0.0"
-  rabbitmq_broker_sha1: 3b89a1c9abb2f5119ca20fd685ba578bfce3807d
+  rabbitmq_release_version: "243.0.0"
+  rabbitmq_release_sha1: f0a04849713d7033a4960b4a134e73504b148e52
+
+  rabbitmq_broker_version: "24.0.0"
+  rabbitmq_broker_sha1: 3710fa7d4fb8b6f348c80a45156c85b8f0931a55
 
   broker_registrar_version: "3.4.0"
   broker_registrar_sha1: d44d9af8fd06ecf6d50004c9bfd5516a6e482201
 
-  # routing_version: "0.173.0"
-  # routing_sha1: 2c2ddd022f81f0f2d6e12fbd38bd1b1159edcf23
+  # routing_version: "0.175.0"
+  # routing_sha1: 7314e7b070520561aef6fd4026501f3d23c5d67c
 
   # stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
   # stemcell_version: "3541.12"

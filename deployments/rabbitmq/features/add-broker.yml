@@ -79,6 +79,8 @@
           admin_password: ((cf-admin-password))
         broker:
           name: ((product-name))
+        smoke_tests:
+          org: system
     instances: 1
     lifecycle: errand
     vm_type: default
