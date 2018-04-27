@@ -65,13 +65,13 @@ deployment_vars:
   internal_cidr: 192.168.50.0/24
   outbound_network_name: NatNetwork
 
-  bosh_precompiled_version: "265.1.0"
-  bosh_precompiled_url: https://s3.amazonaws.com/bosh-compiled-release-tarballs/bosh-265.1.0-ubuntu-trusty-3541.9-20180313-024808-214070596-20180313024812.tgz
-  bosh_precompiled_sha1: 5f60716848f7d387e376181874074dc06e3dc8fe
+  bosh_precompiled_version: "265.2.0"
+  bosh_precompiled_url: https://s3.amazonaws.com/bosh-compiled-release-tarballs/bosh-265.2.0-ubuntu-trusty-3541.12-20180407-050558-541046641-20180407050603.tgz
+  bosh_precompiled_sha1: f6096eba8d1502f0c6fd13922d19c7271c911d45
 
   stemcell_name: bosh-vsphere-esxi-ubuntu-trusty-go_agent
-  stemcell_version: "3541.9"
-  stemcell_sha1: 0a5760c218d1dee51e5c968301238569e3741783
+  stemcell_version: "3541.12"
+  stemcell_sha1: 4c3a521aa0f4268acfa5073e58b1afcd8980c985
 
 
 imported_vars: {}

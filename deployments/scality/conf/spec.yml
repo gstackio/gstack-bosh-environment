@@ -32,9 +32,9 @@ deployment_vars:
   routing_version: "0.168.0"
   routing_sha1: "885321f95b530c4a5b8515c72155229cba26c449"
 
-  stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
-  stemcell_version: "3468.11"
-  stemcell_sha1: 74592d4c2b7f2aebacd767112dd0ef28b028532b
+  # stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+  # stemcell_version: "3541.12"
+  # stemcell_sha1: 14bd6dd50d3caa913af97846eab39e5075b240d7
 
 
   # Reference declarations
@@ -42,5 +42,15 @@ deployment_vars:
   network_name: default # injected in cloud-config and runtime-config
 
 
-imported_vars: []
-
+imported_vars:
+  - subsys: cf
+    imports:
+      - name: stemcell_name
+        from: depl-vars
+        path: /stemcell_name
+      - name: stemcell_version
+        from: depl-vars
+        path: /stemcell_version
+      - name: stemcell_sha1
+        from: depl-vars
+        path: /stemcell_sha1

@@ -42,8 +42,8 @@ deployment_vars:
   routing_sha1: 885321f95b530c4a5b8515c72155229cba26c449
 
   # stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
-  # stemcell_version: "3541.9"
-  # stemcell_sha1: 44138ff5e30cc1d7724d88eaa70fab955b8011bd
+  # stemcell_version: "3541.12"
+  # stemcell_sha1: 14bd6dd50d3caa913af97846eab39e5075b240d7
 
 
   # Plumbery

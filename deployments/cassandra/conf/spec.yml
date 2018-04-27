@@ -62,8 +62,8 @@ deployment_vars:
   shield_sha1: 6dd6acb2da7d5c451b53bca15d0ec5a8e767fa3c
 
   # stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
-  # stemcell_version: "3541.9"
-  # stemcell_sha1: 44138ff5e30cc1d7724d88eaa70fab955b8011bd
+  # stemcell_version: "3541.12"
+  # stemcell_sha1: 14bd6dd50d3caa913af97846eab39e5075b240d7
 
 
   # Reference declarations
