@@ -7,7 +7,7 @@ input_resources:
   - name: concourse-deployment
     type: git
     uri: https://github.com/concourse/concourse-deployment.git
-    version: 32443de # base for v3.9.2, as of March 13th, 2018
+    version: v3.12.0
 
 
 main_deployment_file: concourse-deployment/cluster/concourse.yml
@@ -37,14 +37,14 @@ deployment_vars:
 
   # Versions
 
-  concourse_version: "3.9.2"
-  concourse_sha1: a0ebed14c296273f37ed2a7ec79b9a7814734e16
+  concourse_version: "3.12.0"
+  concourse_sha1: 12746f25cd484bdd9a8ed7151cfed20a142de2fa
 
-  garden_runc_version: "1.12.0"
-  garden_runc_sha1: 9cb3ec63f04d6cfb3047229544f261ff737f203e
+  garden_runc_version: "1.13.1"
+  garden_runc_sha1: 54cbb89cae1be0708aa056185671665d7f4b2a4f
 
-  postgres_version: "26"
-  postgres_sha1: a436047dae4d4156a1debe9f88bedf59bf40362b
+  postgres_version: "28"
+  postgres_sha1: c1fcec62cb9d2e95e3b191e3c91d238e2b9d23fa
 
   # stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
   # stemcell_version: "3541.12"
