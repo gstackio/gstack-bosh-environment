@@ -8,11 +8,11 @@ input_resources:
   # - name: docker-boshrelease
   #   type: git
   #   uri: https://github.com/cloudfoundry-incubator/docker-boshrelease.git
-  #   version: v31.0.1
+  #   version: v32.0.0
   # - name: cf-containers-broker-boshrelease
   #   type: git
   #   uri: https://github.com/cloudfoundry-community/cf-containers-broker-boshrelease.git
-  #   version: v1.0.1
+  #   version: v1.0.3
   - name: docker-broker-deployment
     type: git
     uri: https://github.com/cloudfoundry-community/docker-broker-deployment.git
@@ -53,11 +53,11 @@ deployment_vars:
 
   # Versions
 
-  docker_version: "31.0.1"
-  docker_sha1: d7fba11988621d8a8b57c2d298067e7d85e26148
+  docker_version: "32.0.0"
+  docker_sha1: 75a3e4f85f8d1a59b58c6b34cf568f72397b5680
 
-  cf_containers_broker_version: "1.0.1"
-  cf_containers_broker_sha1: e2a2a64b0981d410b285a42b5c350762e7363bba
+  cf_containers_broker_version: "1.0.3"
+  cf_containers_broker_sha1: 11001a58965ce4243bd18f0e4301cdbbe949a2d9
 
   broker_registrar_version: "3.4.0"
   broker_registrar_sha1: d44d9af8fd06ecf6d50004c9bfd5516a6e482201
