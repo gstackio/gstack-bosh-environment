@@ -8,7 +8,7 @@ input_resources:
   - name: rabbitmq-boshrelease
     type: git
     uri: https://github.com/pivotal-cf/cf-rabbitmq-release.git
-    version: v243.0.0
+    version: v244.0.0
   # - name: rabbitmq-broker-boshrelease
   #   type: git
   #   uri: https://github.com/pivotal-cf/cf-rabbitmq-multitenant-broker-release.git
@@ -53,8 +53,8 @@ deployment_vars:
 
   rabbitmq_version: "3.7"
 
-  rabbitmq_release_version: "243.0.0"
-  rabbitmq_release_sha1: f0a04849713d7033a4960b4a134e73504b148e52
+  rabbitmq_release_version: "244.0.0"
+  rabbitmq_release_sha1: b9249354f5ee2de405cb6fbbcdcbba1a29217ffb
 
   rabbitmq_broker_version: "24.0.0"
   rabbitmq_broker_sha1: 3710fa7d4fb8b6f348c80a45156c85b8f0931a55
