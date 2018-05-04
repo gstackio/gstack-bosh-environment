@@ -296,17 +296,17 @@ function converge_usage() {
     local noul=$NOUNDERLINE
     local rst=$RESET
     echo "Usage:"
-    echo "  $ul$SCRIPT_NAME$noul  ${ul}converge$noul  [<deployment-name>]  [-n]"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}converge$noul  [<subsys-name>]  [-n]"
     echo "  $ul$SCRIPT_NAME$noul  ${ul}converge$noul  all"
     echo
-    echo "    <deployment-name>   The name of a deployment to converge."
+    echo "    <subsys-name>   The name of a subsys to converge."
     echo
-    echo "Converges one or all deployments towards their desired states,"
-    echo "or converge the BOSH environment if no deployment is specified."
+    echo "Converges one or all subsystems towards their desired states,"
+    echo "or converge the BOSH environment if no subsystem is specified."
     echo
     echo "When specifying ${b}all$rst, the recreation will not ask for any user"
     echo "input. Both cloud config and runtime config will be updated,"
-    echo "and all deployments will be converged."
+    echo "and all subsystems will be converged."
     echo
     echo "    -n"
     echo "        Run unattended. Don't ask for user input."
@@ -318,14 +318,15 @@ function recreate_usage() {
     local noul=$NOUNDERLINE
     local rst=$RESET
     echo "Usage:"
-    echo "  $ul$SCRIPT_NAME$noul  ${ul}recreate$noul  <deployment-name>  [-n]"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}recreate$noul  <subsys-name>  [-n]"
     echo "  $ul$SCRIPT_NAME$noul  ${ul}recreate$noul  all"
     echo
-    echo "    <deployment-name>   The name of a deployment to recreate."
+    echo "    <subsys-name>   The name of a subsys to recreate."
     echo
-    echo "Recreates one or all deployments towards their desired states."
-    echo "This command is supposed to recreate deployments that were"
+    echo "Recreates one or all subsystems towards their desired states."
+    echo "This command is supposed to recreate subsystems that were"
     echo "previously deployed with no errors."
+    echo
     echo "When specifying ${b}all$rst, the recreation will not ask for any"
     echo "user input."
     echo
@@ -339,17 +340,17 @@ function delete_usage() {
     local noul=$NOUNDERLINE
     local rst=$RESET
     echo "Usage:"
-    echo "  $ul$SCRIPT_NAME$noul  ${ul}delete$noul  <deployment-name>  [-n]"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}delete$noul  <subsys-name>  [-n]"
     echo "  $ul$SCRIPT_NAME$noul  ${ul}delete$noul  all"
     echo
-    echo "    <deployment-name>   The name of a deployment to delete."
+    echo "    <subsys-name>   The name of a subsys to delete."
     echo
-    echo "Deletes one or all deployments. Persistent disks will typically"
-    echo "be kept as orphaned disks for 5 days, but it's hard to rebuild"
+    echo "Deletes one or all subsystems. Persistent disks will typically be"
+    echo "kept by BOSH as orphaned disks for 5 days, but it's hard to rebuild"
     echo "any deployment with those, so this ${b}delete$rst operation is"
     echo "VERY DESTRUCTIVE."
     echo
-    echo "When destroying ${b}all$rst deployments, the deletion will not ask"
+    echo "When destroying ${b}all$rst subsystems, the deletion will not ask"
     echo "for any user input."
     echo
     echo "    -n"
@@ -364,7 +365,7 @@ function export_usage() {
     echo "Usage:"
     echo "  $ul$SCRIPT_NAME$noul  ${ul}export$noul  [<subsys-name>]"
     echo
-    echo "    <deployment-name>   The name of a subsys of type 'bosh-deployment'."
+    echo "    <subsys-name>   The name of a subsys of type 'bosh-deployment'."
     echo
     echo "Exports all compiled releases going through each deployments"
     echo "currently managed by the BOSH server."
@@ -383,16 +384,15 @@ function import_usage() {
     echo "Usage:"
     echo "  $ul$SCRIPT_NAME$noul  ${ul}import$noul  [<subsys-name>]"
     echo
-    echo "    <deployment-name>   The name of a subsys of type 'bosh-deployment'."
+    echo "    <subsys-name>   The name of a subsys of type 'bosh-deployment'."
     echo
     echo "Imports all compiled releases going through each deployments"
     echo "currently managed by the BOSH server."
     echo
-    echo "When specifying a subsys name, the set of exported releases is"
-    echo "restricted to those that are necessary to the deployment that is"
-    echo "releated to the subsys. This subsys must be of type 'bosh-deployment'"
-    echo "and there must be a subfolder of that name in the"
-    echo "'.cache/compiled-releases/' directory."
+    echo "When specifying a subsys name, the exported BOSH releases are those"
+    echo "that are necessary to the BOSH deployment that the subsys describes."
+    echo "This subsys must be of type 'bosh-deployment' and there must be a"
+    echo "subfolder of that name in the '.cache/compiled-releases/' directory."
     echo
 }
 
