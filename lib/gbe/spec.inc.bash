@@ -8,7 +8,7 @@ function spec_var() {
     local subsys_dir=${2:-$SUBSYS_DIR}
 
     if [ -z "$subsys_dir" ]; then
-        echo "ERROR: cannot fetch '$path' spec var: missing 'SUBSYS_DIR' variable. Aborting." >&2
+        echo "${RED}ERROR:$RESET cannot fetch '$path' spec var: missing 'SUBSYS_DIR' variable. Aborting." >&2
         return 1
     fi
 
@@ -23,9 +23,8 @@ function assert_subsys() {
     local subsys_type=$(spec_var /subsys/type)
     if [[ $subsys_type != $expected_type ]]; then
         local subsys_name=$(spec_var /subsys/name)
-        echo "ERROR: expected subsystem '$subsys_name' to be of type '$expected_type'" \
-         "but was '$subsys_type'. Aborting." >&2
-        exit 1
+        fatal "${RED}ERROR:$RESET expected subsystem '$subsys_name' to be of type '$expected_type'" \
+            "but was '$subsys_type'. Aborting."
     fi
 }
 
@@ -43,7 +42,7 @@ function fetch_input_resources() {
                 fetch_${rsc_type}_resource $rsc_path
                 ;;
             *)
-                echo "ERROR: unsupported resource type: '$rsc_type'. Aborting." >&2
+                echo "${RED}ERROR:$RESET unsupported resource type: '$rsc_type'. Aborting." >&2
                 return 1 ;;
         esac
         rsc_idx=$(($rsc_idx + 1))
@@ -233,7 +232,7 @@ function imports_from() {
                     "$(state_dir)/depl-creds.yml"
                 ;;
             *)
-                echo "ERROR: unsupported var import type: '$import_from'." \
+                echo "${RED}ERROR:$RESET unsupported var import type: '$import_from'." \
                     "Expected 'depl-vars', 'depl-manifest', or 'depl-creds'. Aborting." >&2
                 return 1 ;;
         esac

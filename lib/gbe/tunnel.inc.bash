@@ -11,9 +11,8 @@ function jumpbox_ip() {
 
 function ssh_jumpbox() {
     if [ ! -f "$(state_dir "$GBE_ENVIRONMENT")/depl-creds.yml" ]; then
-        echo "$SCRIPT_NAME: ERROR: the base BOSH environment is not created yet" \
+        fatal "${RED}ERROR:$RESET the base BOSH environment is not created yet." \
              "Please create it first. Aborting." >&2
-        exit 1
     fi
 
     local timeout_arg
