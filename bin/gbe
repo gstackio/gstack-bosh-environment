@@ -520,6 +520,15 @@ function each_deployment() {
     done
 }
 
+function assert_subsys_name() {
+    local subsys=$1
+    if [ ! -d "$BASE_DIR/deployments/$subsys" ]; then
+        echo "${RED}ERROR:$RESET no such $project_name subsys: '$subsys'."
+        return 1
+    fi
+    return 0
+}
+
 function run_hook_once() {
     local name=$1; shift
     local script=$1; shift
@@ -855,6 +864,7 @@ case $1 in
                 each_deployment converge_deployment -n
                 ;;
             *)
+                assert_subsys_name "$1" || ( converge_usage && exit 2 )
                 ensure_reachability
                 converge_deployment "$@" ;;
         esac
@@ -869,6 +879,7 @@ case $1 in
                 list_deployments
                 each_deployment converge_deployment -n --recreate --fix --canaries=0 ;;
             *)
+                assert_subsys_name "$1" || ( recreate_usage && exit 2 )
                 converge_deployment "$@" --recreate --fix --canaries=0 ;;
         esac
         ;;
@@ -885,6 +896,7 @@ case $1 in
                 list_deployments --reverse
                 each_deployment --reverse delete_deployment -n "$@";;
             *)
+                assert_subsys_name "$1" || ( delete_usage && exit 2 )
                 ensure_reachability
                 delete_deployment "$@" ;;
         esac
