@@ -1,6 +1,6 @@
 [
   {
-    "destination": "10.0.0.0/8",
+    "destination": "10.244.64.0/21",
     "protocol": "tcp",
     "ports": "9042",
     "description": "Allow traffic to Cassandra"

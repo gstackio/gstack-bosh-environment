@@ -11,7 +11,7 @@
 
 - path: /instance_groups/name=cassandra-seeds/networks
   type: replace
-  value: &cassandra_networks [ name: default ]
+  value: &cassandra_networks [ name: ((network_name)) ]
 
 - path: /instance_groups/name=cassandra-servers/networks
   type: replace
