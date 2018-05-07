@@ -35,12 +35,6 @@
   value:
     name: ((network_name))
 
-# Disks
-
-- path: /instance_groups/name=shield/persistent_disk_type
-  type: replace
-  value: ((shield_disk_type))
-
 
 
 # Plumbery
