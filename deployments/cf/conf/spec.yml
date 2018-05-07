@@ -24,13 +24,14 @@ operations_files:
     - operations/rename-deployment
     - operations/rename-network
 
+    # - operations/backup-and-restore/enable-backup-restore
+
     # - operations/experimental/bits-service
     # - operations/experimental/bits-service-local
 
     # - operations/experimental/disable-consul
     # - operations/experimental/disable-consul-bosh-lite
 
-    # - operations/experimental/enable-backup-restore
     # - operations/experimental/enable-bpm
     # - operations/experimental/routing-integrity
     # - operations/experimental/enable-prefer-declarative-healthchecks
