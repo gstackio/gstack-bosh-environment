@@ -37,13 +37,13 @@ deployment_vars:
   rabbitmq-broker-hostname: rabbitmq-broker
   bosh-domain: easyfoundry.prototyp.it
 
-  product-name: rabbitmq
+  product-name: rabbitmq # as displayed in 'cf marketplace'
 
 
   # Customizations
 
   persistent_disk_type: 1GB
-  disk_alarm_threshold: 100_000_000 # 100MB # cannot use the default "{mem_relative,0.4}" in Bosh-Lite
+  disk_alarm_threshold: 100_000_000 # 100MB # in Bosh-Lite, we can'no't use the default "{mem_relative,0.4}" or the Pivotal-recommended "{mem_relative,1.5}"
   cluster-partition-handling-strategy: autoheal # Recommended for BOSH-Lite instead of the default 'pause_minority'
   rabbitmq_instances: 2
   haproxy-instances: 1
