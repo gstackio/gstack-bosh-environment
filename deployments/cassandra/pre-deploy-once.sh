@@ -31,10 +31,11 @@ function cf_login() {
 
 set -ex
 
-pushd "$BASE_DIR/.cache/resources/cassandra-boshrelease" || exit 115
+dev_release_name=cassandra
+pushd "$BASE_DIR/.cache/resources/$dev_release_name-boshrelease" || exit 115
     git submodule update --init --recursive
 
-    latest_dev_release=$(ls -t dev_releases/cassandra/cassandra-*.yml 2> /dev/null | head -n 1)
+    latest_dev_release=$(ls -t dev_releases/$dev_release_name/$dev_release_name-*.yml 2> /dev/null | head -n 1)
     if [ -z "$latest_dev_release" -o "$(bosh int "$latest_dev_release" --path /commit_hash)" != "$(git rev-parse --short HEAD)" ]; then
         bosh reset-release
         bosh create-release --force
