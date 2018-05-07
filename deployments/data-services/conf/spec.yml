@@ -9,14 +9,10 @@ input_resources:
   #   type: git
   #   uri: https://github.com/cloudfoundry-incubator/docker-boshrelease.git
   #   version: v32.0.0
-  # - name: cf-containers-broker-boshrelease
-  #   type: git
-  #   uri: https://github.com/cloudfoundry-community/cf-containers-broker-boshrelease.git
-  #   version: v1.0.3
-  - name: docker-broker-deployment
+  - name: cf-containers-broker-boshrelease
     type: git
-    uri: https://github.com/cloudfoundry-community/docker-broker-deployment.git
-    version: 2eb6456 # in the 'cf-containers-broker-boshrelease' branch, as of Dec. 1st, 2017
+    uri: https://github.com/cloudfoundry-community/cf-containers-broker-boshrelease.git
+    version: v1.0.3
   - name: broker-registrar-boshrelease
     type: git
     uri: https://github.com/cloudfoundry-community/broker-registrar-boshrelease.git
@@ -24,15 +20,15 @@ input_resources:
 
 
 # main_deployment_file: docker-boshrelease/manifests/containers/example.yml
-main_deployment_file: docker-broker-deployment/docker-broker.yml
+main_deployment_file: cf-containers-broker-boshrelease/manifests/docker-broker.yml
 
 
 operations_files:
-  10.docker-broker-deployment:
-    - operators/cf-integration
-    - operators/services/mysql56
-    - operators/services/postgresql96
-    - operators/services/redis32
+  10.cf-containers-broker-boshrelease:
+    - manifests/operators/cf-integration
+    - manifests/operators/services/mysql56
+    - manifests/operators/services/postgresql96
+    - manifests/operators/services/redis32
   15.broker-registrar-boshrelease:
     - manifests/operators/cf-admin-user
   20.local:
@@ -53,11 +49,16 @@ deployment_vars:
 
   # Versions
 
+  cf_containers_broker_version: "1.0.3"
+  cf_containers_broker_sha1: 11001a58965ce4243bd18f0e4301cdbbe949a2d9
+
   docker_version: "32.0.0"
   docker_sha1: 75a3e4f85f8d1a59b58c6b34cf568f72397b5680
 
-  cf_containers_broker_version: "1.0.3"
-  cf_containers_broker_sha1: 11001a58965ce4243bd18f0e4301cdbbe949a2d9
+  bpm_version: "0.5.0"
+  bpm_sha1: f64f58784709df650754f8f5f9ed7d0a1a02a5a8
+  # bpm_version: "0.6.0"
+  # bpm_sha1: 4f0f239abdc801d71de9063625aa56e3c42634b5
 
   broker_registrar_version: "3.4.0"
   broker_registrar_sha1: d44d9af8fd06ecf6d50004c9bfd5516a6e482201
