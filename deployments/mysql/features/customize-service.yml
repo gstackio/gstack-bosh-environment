@@ -20,7 +20,7 @@
           cluster. Binding applications provisions unique credentials for each
           application to access the database.
           The MySQL cluster has good data duration but is shared between all
-          Cloud Foundry organizations dans spaces.
+          Cloud Foundry organizations and spaces.
         providerDisplayName: Cloud Foundry
         supportUrl: https://www.gstack.io
       plan_updateable: true
