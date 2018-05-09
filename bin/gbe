@@ -410,11 +410,19 @@ function add_routes() {
         fatal "${RED}ERROR:$RESET please run 'gbe update cloud-config'" \
             "before running 'gbe routes'. Aborting."
     fi
-    local network_cidr=$(bosh int "$rendered_cloud_config" --path /networks/name=default/subnets/0/range)
-    if netstat -nr | awk '{print $1}' | grep -qE "^$(echo "$network_cidr" | sed -e 's`/.*$``; s/\./\\./g')$"; then
+    local network_cidr
+    network_cidr=$(bosh int "$rendered_cloud_config" --path /networks/name=default/subnets/0/range)
+    local netstat_pattern
+    local platform=$(platform)
+    case $platform in
+        darwin) netstat_pattern=$(echo "$network_cidr" | sed -e 's/\.0//g') ;;
+        linux)  netstat_pattern=$(echo "$netstat_cidr" \
+                                        | sed -e 's`/.*$``; s/\./\\./g') ;;
+    esac
+    if netstat -nr | awk '{print $1}' | grep -qE "^$netstat_pattern\$"; then
         return
     fi
-    case $(platform) in
+    case $platform in
         darwin) sudo route add -net "$network_cidr"    $(internal_ip) ;;
         linux)  sudo route add -net "$network_cidr" gw $(internal_ip) ;;
     esac
