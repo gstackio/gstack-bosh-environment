@@ -41,8 +41,8 @@ deployment_vars:
   # cf_mysql_sha1: 401cd27775423ee6b3a6e53e89010261c17e0c5c
 
   # stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
-  # stemcell_version: "3541.12"
-  # stemcell_sha1: 14bd6dd50d3caa913af97846eab39e5075b240d7
+  # stemcell_version: "3541.24"
+  # stemcell_sha1: 08d4a99454999fe22d650afd990f8c4de279fe7b
 
 
   # Reference declarations
