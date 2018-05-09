@@ -8,7 +8,7 @@ input_resources:
   - name: cf-mysql-deployment
     type: git
     uri: https://github.com/cloudfoundry/cf-mysql-deployment.git
-    version: v36.12.0
+    version: v36.13.0
 
 
 main_deployment_file: cf-mysql-deployment/cf-mysql-deployment.yml
@@ -37,8 +37,8 @@ deployment_vars:
 
   # Versions
 
-  # cf_mysql_version: "36.12.0"
-  # cf_mysql_sha1: 401cd27775423ee6b3a6e53e89010261c17e0c5c
+  # cf_mysql_version: "36.13.0"
+  # cf_mysql_sha1: dc09695207bce0df81e85c5b8284a69a4e814651
 
   # stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
   # stemcell_version: "3541.24"

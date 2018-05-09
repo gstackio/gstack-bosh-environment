@@ -7,7 +7,7 @@ input_resources:
   - name: cf-deployment
     type: git
     uri: https://github.com/cloudfoundry/cf-deployment.git
-    version: v1.29.0
+    version: v1.30.0
   - name: prometheus-boshrelease
     type: git
     uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
@@ -81,8 +81,8 @@ deployment_vars:
 
   # Reference declarations
 
-  cf_mysql_version: "36.12.0"
-  cf_mysql_sha1: 401cd27775423ee6b3a6e53e89010261c17e0c5c
+  cf_mysql_version: "36.13.0"
+  cf_mysql_sha1: dc09695207bce0df81e85c5b8284a69a4e814651
 
   network_name: default # injected in cloud-config
 
