@@ -7,7 +7,7 @@ input_resources:
   - name: bosh-deployment
     type: git
     uri: https://github.com/cloudfoundry/bosh-deployment.git
-    version: 64b8ba9 # base for a v264.7 (as of March 12th, 2018)
+    version: 010bd49 # v265.2 (as of May 3rd, 2018)
   # - name: node-exporter-boshrelease
   #   type: git
   #   uri: https://github.com/bosh-prometheus/node-exporter-boshrelease.git
@@ -17,8 +17,6 @@ input_resources:
 main_config_file: bosh-deployment/runtime-configs/dns.yml
 
 operations_files:
-  10.bosh-deployment:
-    - experimental/dns-addon-with-api-certificates
   20.local:
     - cf-use-bosh-dns
     - prometheus-support

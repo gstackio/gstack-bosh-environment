@@ -28,9 +28,9 @@
         tls: ((/dns_healthcheck_client_tls))
     api:
       client:
-        tls: ((dns_api_client_tls))
+        tls: ((/dns_api_client_tls))
       server:
-        tls: ((dns_api_server_tls))
+        tls: ((/dns_api_server_tls))
     aliases:
       _.cell.service.cf.internal:
         - _.diego-cell.((cf_network_name)).((cf_deployment_name)).bosh
