@@ -658,7 +658,7 @@ function gbe_up() {
         ssh-keygen -f ~/.ssh/known_hosts -R "$(jumpbox_ip)"
     fi
     ssh-keyscan -t ecdsa "$(jumpbox_ip)" 2> /dev/null \
-        > ~/.ssh/known_hosts
+        >> ~/.ssh/known_hosts
 
     ensure_reachability
     setup_firewall
