@@ -41,9 +41,17 @@ function env_exports_hook() {
 function setup_firewall_hook() {
     assert_utilities jq vboxmanage "to update forwarded ports"
 
+    local vboxmanage=vboxmanage
+    local vbox_host vbox_username
+    vbox_host=$(spec_var /deployment_vars/vbox_host "$BASE_DIR/$GBE_ENVIRONMENT")
+    vbox_username=$(spec_var /deployment_vars/vbox_username "$BASE_DIR/$GBE_ENVIRONMENT")
+    if [ -n "$vbox_host" ]; then
+        vboxmanage="ssh $vbox_username@$vbox_host vboxmanage"
+    fi
+
     local vm_cid nic_num
     vm_cid=$(jq -r .current_vm_cid "$(state_dir "$GBE_ENVIRONMENT")/env-infra-state.json")
-    nic_num=$(vboxmanage showvminfo "$vm_cid" | sed -ne 's/^NIC \([0-9]\{1,\}\):.* Attachment: NAT,.*/\1/p')
+    nic_num=$($vboxmanage showvminfo "$vm_cid" | sed -ne 's/^NIC \([0-9]\{1,\}\):.* Attachment: NAT,.*/\1/p')
 
     if [ -z "$nic_num" ]; then
         # Nothing to do when no NIC is attached to any NAT connection
@@ -52,18 +60,18 @@ function setup_firewall_hook() {
         local external_ip=$(external_ip)
         local traefik_ip=10.244.0.34
         local default_network=10.244.0.0/20
-        if ! gbe ssh sudo iptables -t nat -nvL | grep -qF gbe[f55fc128-6cec-4f38-9303-2e45b0010c76]; then
-            gbe ssh sudo iptables -t nat -I PREROUTING 2 -i w+ -p tcp -d "$external_ip" --dport 80 -j DNAT --to-dest "$traefik_ip" -m comment --comment "gbe[f55fc128-6cec-4f38-9303-2e45b0010c76]"
+        if ! ssh_jumpbox sudo iptables -t nat -nvL | grep -qF gbe[f55fc128-6cec-4f38-9303-2e45b0010c76]; then
+            ssh_jumpbox sudo iptables -t nat -I PREROUTING 2 -i w+ -p tcp -d "$external_ip" --dport 80 -j DNAT --to-dest "$traefik_ip" -m comment --comment "gbe[f55fc128-6cec-4f38-9303-2e45b0010c76]"
         fi
-        if ! gbe ssh sudo iptables -t nat -nvL | grep -qF gbe[f55fc128-6cec-4f38-9303-2e45b0010c77]; then
-            gbe ssh sudo iptables -t nat -I PREROUTING 3 -i w+ -p tcp -d "$external_ip" --dport 443 -j DNAT --to-dest "$traefik_ip" -m comment --comment "gbe[f55fc128-6cec-4f38-9303-2e45b0010c77]"
+        if ! ssh_jumpbox sudo iptables -t nat -nvL | grep -qF gbe[f55fc128-6cec-4f38-9303-2e45b0010c77]; then
+            ssh_jumpbox sudo iptables -t nat -I PREROUTING 3 -i w+ -p tcp -d "$external_ip" --dport 443 -j DNAT --to-dest "$traefik_ip" -m comment --comment "gbe[f55fc128-6cec-4f38-9303-2e45b0010c77]"
 
         fi
-        if ! gbe ssh sudo iptables -t nat -nvL | grep -qF gbe[f55fc128-6cec-4f38-9303-2e45b0010c78]; then
-            gbe ssh sudo iptables -t nat -I POSTROUTING 1 -o w+ -p tcp -s "$default_network" -d "$traefik_ip" --dport 80 -j MASQUERADE -m comment --comment "gbe[f55fc128-6cec-4f38-9303-2e45b0010c78]"
+        if ! ssh_jumpbox sudo iptables -t nat -nvL | grep -qF gbe[f55fc128-6cec-4f38-9303-2e45b0010c78]; then
+            ssh_jumpbox sudo iptables -t nat -I POSTROUTING 1 -o w+ -p tcp -s "$default_network" -d "$traefik_ip" --dport 80 -j MASQUERADE -m comment --comment "gbe[f55fc128-6cec-4f38-9303-2e45b0010c78]"
         fi
-        if ! gbe ssh sudo iptables -t nat -nvL | grep -qF gbe[f55fc128-6cec-4f38-9303-2e45b0010c79]; then
-            gbe ssh sudo iptables -t nat -I POSTROUTING 2 -o w+ -p tcp -s "$default_network" -d "$traefik_ip" --dport 443 -j MASQUERADE -m comment --comment "gbe[f55fc128-6cec-4f38-9303-2e45b0010c79]"
+        if ! ssh_jumpbox sudo iptables -t nat -nvL | grep -qF gbe[f55fc128-6cec-4f38-9303-2e45b0010c79]; then
+            ssh_jumpbox sudo iptables -t nat -I POSTROUTING 2 -o w+ -p tcp -s "$default_network" -d "$traefik_ip" --dport 443 -j MASQUERADE -m comment --comment "gbe[f55fc128-6cec-4f38-9303-2e45b0010c79]"
         fi
 
         return
@@ -71,10 +79,10 @@ function setup_firewall_hook() {
 
     echo -e "\n${BLUE}Updating ${BOLD}forwarded ports$RESET in Virtualbox.\n"
 
-    vboxmanage showvminfo "$vm_cid" \
+    $vboxmanage showvminfo "$vm_cid" \
         | grep -E "^NIC ${nic_num} Rule\\([[:digit:]]+\\):.* name = tcp-pf-rule-[[:digit:]]+," \
         | awk '{print $6}' | tr -d , \
-        | xargs -n 1 vboxmanage controlvm "$vm_cid" "natpf$nic_num" delete
+        | xargs -n 1 $vboxmanage controlvm "$vm_cid" "natpf$nic_num" delete
 
     local add_end_nl=false
 
@@ -86,11 +94,11 @@ function setup_firewall_hook() {
     local prometheus_ports="3000 9090 9093"
     for tcp_port in $bosh_ports $cf_ports $concourse_ports $mysql_ports \
                     $shield_ports $prometheus_ports; do
-        if ! vboxmanage showvminfo "$vm_cid" \
+        if ! $vboxmanage showvminfo "$vm_cid" \
                 | grep -qE "^NIC ${nic_num} Rule\\([[:digit:]]+\\):.*, guest port = $tcp_port\$"; then
             echo "  - $tcp_port"
             add_end_nl=true
-            vboxmanage controlvm "$vm_cid" "natpf$nic_num" tcp-pf-rule-$tcp_port,tcp,,$tcp_port,10.0.2.15,$tcp_port
+            $vboxmanage controlvm "$vm_cid" "natpf$nic_num" tcp-pf-rule-$tcp_port,tcp,,$tcp_port,10.0.2.15,$tcp_port
         fi
     done
     if [ "$add_end_nl" == true ]; then

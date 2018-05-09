@@ -112,11 +112,8 @@ specific GCP project ID. You can tweak your GCP zone, though and change the
 
 #### 2. Provision Virtualbox [local Virtualbox only]
 
-Create a route to access the BOSH environment.
-
-```bash
-gbe routes
-```
+Install Virtualbox 5.2+. On macOS, run `brew cask install virtualbox` and on
+Linux, [follow the documentation](https://www.virtualbox.org/wiki/Linux_Downloads).
 
 
 #### 2. Provision Virtualbox [distant Virtualbox only]
@@ -125,8 +122,8 @@ Run the provided Ansible playbook to install Virtualbox and setup the network.
 
 ```bash
 cd ddbox-env/provision
-vim ansible.cfg # review your username, and make sure it has your public key in its '~/.ssh/authorized_keys' file
-vim inventory.cfg # put the IP address of your remote box in the 'dedibox' section
+$EDITOR ansible.cfg # review your username, and make sure it has your public key in its '~/.ssh/authorized_keys' file
+$EDITOR inventory.cfg # put the IP address of your remote box in the 'dedibox' section
 ansible-playbook -i inventory.cfg --ask-become provision.yml
 ```
 
@@ -136,7 +133,9 @@ ansible-playbook -i inventory.cfg --ask-become provision.yml
 Edit the “gcp” environment's `spec.yml` file.
 
 ```bash
-vi gcp-env/conf/spec.yml # in the 'infra_vars' section, set the GCP region & zone, and also check GCP project ID
+$EDITOR gcp-env/conf/spec.yml # in the 'infra_vars' section,
+                              # set the GCP region & zone,
+                              # and also check GCP project ID
 export GBE_ENVIRONMENT=gcp-env
 ```
 
@@ -146,7 +145,29 @@ export GBE_ENVIRONMENT=gcp-env
 Edit the `ddbox-env` environment's `spec.yml` file.
 
 ```bash
-vi ddbox-env/conf/spec.yml # in the 'deployment_vars' section, put your server external IP as 'external_ip'
+$EDITOR ddbox-env/conf/spec.yml
+```
+
+In the `operations_files` section, enable the `virtualbox/remote` ops file.
+
+In the `deployment_vars` section, input these variables
+
+```yaml
+  external_ip: "192.168.50.6"
+  vbox_host: "<the public IP of your distant box>"
+  vbox_username: "<an SSH-accessible username on the distant box>"
+  vbox_ssh:
+    private_key: |
+      -----BEGIN RSA PRIVATE KEY-----
+      <a valid SSH key for accessing the distant box with the specified username>
+      -----END RSA PRIVATE KEY-----
+```
+
+Establish a tunnel from your local machine to your distant box, using the same
+IP address and username.
+
+```bash
+sshuttle -r <username>@<distant-box-ip> 192.168.50.0/24 10.244.0.0/16
 ```
 
 
@@ -155,13 +176,14 @@ vi ddbox-env/conf/spec.yml # in the 'deployment_vars' section, put your server e
 Adjust the VM size for the “ddbox” environment.
 
 ```bash
-vi ddbox-env/features/scale-vm-size.yml # set the number of CPUs to 4, and VM memory size to 8000 MB
+$EDITOR ddbox-env/features/scale-vm-size.yml # set the number of CPUs to 4,
+                                             # and VM memory size to 8000 MB
 ```
 
 Edit the `ddbox-env` environment's `spec.yml` file.
 
 ```bash
-vi ddbox-env/conf/spec.yml
+$EDITOR ddbox-env/conf/spec.yml
 ```
 
 And set the `dns` section like this:

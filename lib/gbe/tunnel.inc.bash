@@ -15,25 +15,25 @@ function ssh_jumpbox() {
              "Please create it first. Aborting." >&2
     fi
 
-    local timeout_arg
-    case $(platform) in
-        darwin) timeout_arg=-t ;;
-        linux)  timeout_arg=-W ;;
-    esac
-    local jumpbox_ip=$(jumpbox_ip)
+    # local timeout_arg
+    # case $(platform) in
+    #     darwin) timeout_arg=-t ;;
+    #     linux)  timeout_arg=-W ;;
+    # esac
+    # local jumpbox_ip=$(jumpbox_ip)
 
-    # Wait for target to respond to ping
-    while ! ping -q -c 1 $timeout_arg 3 "$jumpbox_ip" > /dev/null; do
-        echo "$(date +'%F %T') waiting $jumpbox_ip to respond to ping"
-        sleep 2
-        status=$?
-        if [ "$status" -gt 128 ]; then
-            # When interrupted by a signal, abort with same status
-            exit $status
-        fi
-    done
+    # # Wait for target to respond to ping
+    # while ! ping -q -c 1 $timeout_arg 3 "$jumpbox_ip" > /dev/null; do
+    #     echo "$(date +'%F %T') waiting $jumpbox_ip to respond to ping"
+    #     sleep 2
+    #     status=$?
+    #     if [ "$status" -gt 128 ]; then
+    #         # When interrupted by a signal, abort with same status
+    #         exit $status
+    #     fi
+    # done
 
-	jumpbox_key
+    jumpbox_key
 
     TERM=xterm-color ssh \
         -i "$(state_dir "$GBE_ENVIRONMENT")/jumpbox.key" \
