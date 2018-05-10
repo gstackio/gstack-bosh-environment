@@ -23,6 +23,7 @@ operations_files:
   20.local:
     - inject-variables
     - set-versions
+    - randomize-az-placement
     - routing
     - shield-integration
 

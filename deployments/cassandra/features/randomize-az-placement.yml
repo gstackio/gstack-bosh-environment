@@ -1,0 +1,5 @@
+---
+
+- path: /features?/randomize_az_placement
+  type: replace
+  value: true
