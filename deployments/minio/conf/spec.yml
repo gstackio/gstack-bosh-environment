@@ -1,0 +1,56 @@
+---
+subsys:
+  name: minio
+  type: bosh-deployment
+
+input_resources:
+  - name: minio-boshrelease
+    type: git
+    uri: https://github.com/minio/minio-boshrelease.git
+    version: 3163cb6 # '2018-04-27T23-33-52Z' release, as of April 29th, 2018
+
+
+main_deployment_file: minio-boshrelease/manifests/manifest-dist-example.yaml
+
+
+operations_files:
+  local:
+    - rename-deployment
+    - set-versions
+    - use-generated-password
+    - scale-vms-and-disks
+    - randomize-az-placement
+
+
+deployment_vars:
+  deployment_name: easyfoundry-minio
+
+  minio_instances: 4 # a minimum or 4 is required when using erasure coding (the default)
+  persistent_disk_type: 2GB
+
+
+  # Versions
+
+  minio_version: 2018-04-27T23-33-52Z
+  minio_sha1: b45b8c7790e96d3600f5a61b076f26a703c76953
+
+  # stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+  # stemcell_version: "3541.24"
+  # stemcell_sha1: 08d4a99454999fe22d650afd990f8c4de279fe7b
+
+
+imported_vars:
+  - subsys: cf
+    imports:
+
+      # Versions
+
+      - name: stemcell_name
+        from: depl-vars
+        path: /stemcell_name
+      - name: stemcell_version
+        from: depl-vars
+        path: /stemcell_version
+      - name: stemcell_sha1
+        from: depl-vars
+        path: /stemcell_sha1

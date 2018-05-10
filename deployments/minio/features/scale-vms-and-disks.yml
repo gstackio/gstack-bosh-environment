@@ -1,0 +1,13 @@
+---
+
+- path: /instance_groups/name=minio/azs
+  type: replace
+  value: [ z1, z2, z3 ]
+
+- path: /instance_groups/name=minio/instances
+  type: replace
+  value: ((minio_instances))
+
+- path: /instance_groups/name=minio/persistent_disk_type
+  type: replace
+  value: ((persistent_disk_type))
