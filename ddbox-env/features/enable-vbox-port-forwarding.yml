@@ -2,6 +2,10 @@
 
 # Only NAT (not NATNet) allows us to expose ports to the internet.
 # See: <https://forums.virtualbox.org/viewtopic.php?f=7&t=82039#p386722>
+#
+# The problem is that when Virtulbox is running as a standard non-root Linux
+# user (which is our use-case for the moment), then ports below 1024 cannot be
+# bound using this 'nat' network feature.
 
 - type: replace
   path: /networks/-

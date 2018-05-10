@@ -77,7 +77,7 @@ deployment_vars:
 
   # Plumbery
 
-  rabbitmq-management-username: admin # used by human ops when connecting to rabbit
+  rabbitmq-management-username: admin # used by human ops when connecting to rabbit (optional, set this to ~ in order to disable)
   rabbitmq-broker-username: broker # used by broker to access rabbit
   multitenant-rabbitmq-broker-username: capi # used by CC when connecting to the broker
 
