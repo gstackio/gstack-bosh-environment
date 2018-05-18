@@ -57,6 +57,7 @@ operations_files:
     - expose-admin-user-as-link
     - cassandra-support
     - enable-service-discovery-bosh-lite
+    - database-mysql-bosh-lite
     - scale-disks
 
 

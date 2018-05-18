@@ -1,0 +1,5 @@
+---
+
+- path: /instance_groups/name=database/jobs/name=mysql/properties/cf_mysql/mysql/innodb_buffer_pool_size?
+  type: replace
+  value: 128M
