@@ -131,6 +131,19 @@ function read_bosh-config_spec() {
     populate_operations_arguments
 }
 
+function bosh_int_with_value() {
+    local var_value=$1; shift
+    if echo "$var_value" | grep -q ^-----BEGIN; then
+        # Note: we use the --var-file form here, because it
+        # supports structured data for certificates.
+        bosh int --var-file var_value=<(echo -n "$var_value") "$@"
+    else
+        # Note: we use the --var form here, because we feed it
+        # with a plain value, and not with structured YAML data.
+        bosh int --var var_value="$var_value" "$@"
+    fi
+}
+
 function import_file_value() {
     local base_path=$1
     local vars_file=$2
@@ -145,45 +158,59 @@ function import_file_value() {
             --vars-file "$vars_file"
     else
         var_value=$(bosh int "$vars_file" --path "$import_path")
-        if echo "$var_value" | grep -q ^-----BEGIN; then
-            bosh int <(echo "$var_name: ((value))") --var-file value=<(echo "$var_value")
-        else
-            bosh int <(echo "$var_name: ((value))") --var value="$var_value"
-        fi
+        bosh_int_with_value "$var_value" <(echo "$var_name: ((var_value))")
     fi
 }
 
 function import_state_value() {
     local subsys_name=$1
-    local import_from=$2
+    local import_from=$2 # Base name of input YAML file, to be found in state
+                         # dir of the subsystem designated by $subsys_name
     local base_path=$3
-    local to_yaml_file=$4
+    local to_yaml_file=$4 # Absolute path the output YAML file
 
     local var_name=$(spec_var "$base_path/name")
+    local var_value_tmpl=$(spec_var "$base_path/value")
     local import_path=$(spec_var "$base_path/path")
 
-    local var_value=$(bosh int "$(state_dir "$subsys_name")/${import_from}.yml" \
-        --path "$import_path")
+    local vars_file=$(state_dir "$subsys_name")/${import_from}.yml
 
-    function bosh_int_with_value() {
-        if echo "$var_value" | grep -q ^-----BEGIN; then
-            # Note: we use the --var-file form here, because it
-            # supports structured data for certificates.
-            bosh int --var-file var_value=<(echo -n "$var_value") "$@"
+    if [ -n "$var_value_tmpl" ]; then
+        if [ -z "$to_yaml_file" ]; then
+            # FIXME: poor YAML escaping here below
+            bosh int <(echo "$var_name: $var_value_tmpl") \
+                --vars-file "$vars_file"
         else
-            # Note: we use the --var form here, because we feed it
-            # with a plain value, and not with structured YAML data.
-            bosh int --var var_value="$var_value" "$@"
+            local tmp_file=$(mktemp)
+            # Merge $var_value_tmpl YAML node (as the result of any variable
+            # interpolation using the variables in $vars_file) at the root
+            # level of the YAML file (as designated by $to_yaml_file) at key
+            # $var_name
+            #
+            # FIXME: poor YAML escaping here below
+            echo "--- [ { path: '/${var_name}?', value: $var_value_tmpl, type: replace } ]" \
+                | bosh int \
+                       --ops-file /dev/stdin \
+                       --vars-file "$vars_file" \
+                       "$to_yaml_file" \
+                   > "$tmp_file"
+
+            cp "$tmp_file" "$to_yaml_file"
+            rm -f "$tmp_file"
         fi
-    }
+        return
+    fi
+
+    var_value=$(bosh int "$vars_file" --path "$import_path")
 
     if [ -z "$to_yaml_file" ]; then
-        bosh_int_with_value <(echo "$var_name: ((var_value))")
+        bosh_int_with_value "$var_value" <(echo "$var_name: ((var_value))")
     else
         local tmp_file=$(mktemp)
-
+        # Merge $var_value YAML node at the root level of the YAML file (as
+        # designated by $to_yaml_file) at key $var_name
         echo "--- [ { path: '/${var_name}?', value: ((var_value)), type: replace } ]" \
-            | bosh_int_with_value \
+            | bosh_int_with_value "$var_value" \
                    --ops-file /dev/stdin \
                    "$to_yaml_file" \
                > "$tmp_file"
@@ -193,18 +220,28 @@ function import_state_value() {
     fi
 }
 
+function get_subsys_dir_from_subsys_name() {
+    local subsys_name=$1
+
+    local subsys_dir
+    if [[ $subsys_name == base-env ]]; then
+        subsys_dir=$BASE_DIR/$GBE_ENVIRONMENT
+    elif [[ $subsys_name == dns ]]; then
+        subsys_dir=$BASE_DIR/$subsys_name
+    elif [[ $subsys_name == cloud-config || $subsys_name == runtime-config ]]; then
+        subsys_dir=$BASE_DIR/$GBE_ENVIRONMENT/$subsys_name
+    else
+        subsys_dir=$BASE_DIR/deployments/$subsys_name
+    fi
+    echo "$subsys_dir"
+}
+
 function imports_from() {
     local subsys_name=$1
     local base_path=$2
 
     local subsys_dir
-    if [[ "$subsys_name" == base-env || "$subsys_name" == dns ]]; then
-        subsys_dir=$BASE_DIR/$subsys_name
-    elif [[ "$subsys_name" == cloud-config || "$subsys_name" == runtime-config ]]; then
-        subsys_dir=$BASE_DIR/$GBE_ENVIRONMENT/$subsys_name
-    else
-        subsys_dir=$BASE_DIR/deployments/$subsys_name
-    fi
+    subsys_dir=$(get_subsys_dir_from_subsys_name "$subsys_name")
     if [[ "$subsys_name" == base-env ]]; then
         subsys_name=$GBE_ENVIRONMENT
     fi
@@ -241,6 +278,8 @@ function imports_from() {
     done
 }
 
+# CONCURRENCY WARNING: imported_vars() not only output variables, because
+# credentials are actually written to the "$(state_dir)/depl-creds.yml" file.
 function imported_vars() {
     local subsys_count=$(spec_var /imported_vars \
                          | awk '/^-/{print $1}' | wc -l)
