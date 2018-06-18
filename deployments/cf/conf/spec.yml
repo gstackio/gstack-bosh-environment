@@ -36,7 +36,11 @@ operations_files:
     # - operations/experimental/routing-integrity
     # - operations/experimental/enable-prefer-declarative-healthchecks
 
-    - operations/experimental/use-silk-release
+    - operations/experimental/use-silk-release # This is Silk v1, whereas cf-networking v2 comes with Silk v2
+    # - operations/experimental/use-cf-networking-2
+    # - operations/experimental/use-bosh-dns-for-containers-with-networking-2
+    # - operations/experimental/enable-iptables-logger-with-networking-2
+
     - operations/experimental/enable-service-discovery
 
     # - operations/experimental/secure-service-credentials
@@ -45,6 +49,7 @@ operations_files:
     # - operations/experimental/rootless-containers
 
     # - operations/enable-nfs-volume-service
+    # - operations/enable-nfs-ldap
     # - operations/experimental/enable-nfs-broker-backup
 
   20.prometheus-boshrelease:
