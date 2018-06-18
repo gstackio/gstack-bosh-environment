@@ -23,6 +23,7 @@ operations_files:
     - operations/bosh-lite
     - operations/rename-deployment
     - operations/rename-network
+    - operations/override-app-domains
 
     # - operations/backup-and-restore/enable-backup-restore
 
@@ -72,7 +73,10 @@ deployment_vars:
 
   # User-facing settings
 
-  system_domain: cf.easyfoundry.prototyp.it
+  system_domain: sys.easyfoundry.prototyp.it
+  app_domains:
+    - name: &apps_domain apps.easyfoundry.prototyp.it
+  smoke_test_app_domain: *apps_domain
 
 
   # Versions

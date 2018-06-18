@@ -115,7 +115,7 @@ imported_vars:
 
       - name: cf_app_domain
         from: depl-vars
-        path: /system_domain
+        path: /app_domains/0/name
 
   - subsys: shield-v7
     imports:

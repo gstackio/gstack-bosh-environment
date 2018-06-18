@@ -24,6 +24,7 @@ operations_files:
     - set-versions
     - customize-service
     - scale-disks
+    - workaround-cf-apps-domain-issue
 
 
 deployment_vars:
@@ -97,3 +98,12 @@ imported_vars:
       - name: cf_admin_password
         from: depl-creds
         path: /cf_admin_password
+
+      - name: cf_main_app_domain
+        from: depl-vars
+        path: /system_domain
+        path: /app_domains/0/name
+
+      - name: cf_network_name
+        from: depl-vars
+        path: /network_name

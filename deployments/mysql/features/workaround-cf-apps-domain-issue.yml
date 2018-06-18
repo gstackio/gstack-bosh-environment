@@ -1,0 +1,10 @@
+---
+
+- path: /instance_groups/name=smoke-tests-vm/jobs/name=smoke-tests/consumes?/cloud_controller
+  type: replace
+  value:
+    instances:
+      - 0.api.((cf_network_name)).((cf_deployment_name)).bosh
+    properties:
+      app_domains:
+        - ((cf_main_app_domain))
