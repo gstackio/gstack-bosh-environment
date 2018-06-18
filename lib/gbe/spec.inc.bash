@@ -66,7 +66,7 @@ function fetch_git_resource() {
             fi
         popd > /dev/null
     else
-        mkdir -p "$cache_dir"
+        mkdir -p "$(dirname "$rsc_dir")"
         git clone -q "$git_remote" "$rsc_dir" \
             || (echo "Error while cloning repository '$git_remote'" > /dev/stderr \
                 && exit 1)
