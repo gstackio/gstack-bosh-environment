@@ -166,31 +166,31 @@ function usage() {
     echo "  env         Sourceable envrionment variables for CLI clients"
     echo "  gcp         Configures the Google Cloud credentials"
     echo "  firewall    Configures the Google Cloud firewall rules"
-    echo "  tunnel      Creates a SSH tunnel to the Bosh server, acting as a SOCKS5 proxy"
+    echo "  tunnel      Creates a SSH tunnel to the BOSH director, acting as a SOCKS5 proxy"
     echo
     echo "  $BOLD${MAGENTA}BOSH ENVIRONMENT:$RESET"
-    echo "  up          Converges the infrastructure and the Bosh environment towards their desired states"
-    echo "  down        Deletes the Bosh environment and the related infrastructure"
+    echo "  up          Converges the base infrastructure environment towards its desired state"
+    echo "  down        Destroys the base infrastructure environment"
     echo "  ip          Outputs the main exernal IP address of the environment"
     echo "  dns         Converge DNS towards the expected DNSControl configuration"
-    echo "  ssh         Logs into the Bosh environment VM with SSH"
+    echo "  ssh         Logs into the BOSH environment VM with SSH"
     echo
-    echo "  $BOLD${MAGENTA}MANAGED DEPLOYMENTS:$RESET"
+    echo "  $BOLD${MAGENTA}MANAGED SUBSYSTEMS:$RESET"
     echo "  update      Updates the cloud config or the runtime config"
-    echo "  converge    Converges one or all Bosh deployments towards their desired states"
-    echo "  recreate    Recreates one or all Bosh deployments towards their desired states"
-    echo "  delete      Deletes one or all Bosh deployments"
+    echo "  converge    Converges one or many subsystems towards their desired states"
+    echo "  recreate    Recreates one or many subsystems towards their desired states"
+    echo "  delete      Deletes one or many subsystems"
     echo
     echo "  $BOLD${MAGENTA}UTILITIES SETUP:$RESET"
-    echo "  bbl         Installs locally the supported version of Bosh-Bootloader CLI"
+    echo "  bbl         Installs locally the supported version of BOSH-Bootloader CLI"
     echo "  terraform   Installs locally the supported version of Terraform CLI"
-    echo "  bosh        Installs locally the supported version of Bosh CLI"
+    echo "  bosh        Installs locally the supported version of BOSH CLI"
     echo "  dnscontrol  Installs locally the supported version of DNSControl CLI"
     echo "  cf          Installs locally the supported version of Cloud Foundry CLI"
     echo
     echo "  $BOLD${MAGENTA}COMPILED RELEASES:$RESET"
     echo "  export      Popoulate the local cache with all compiled releases"
-    echo "  import      Import all compiled releases from the cache to the Bosh server"
+    echo "  import      Import all compiled releases from the cache to the BOSH director"
     echo "  cleanup     Delete stale compiled releases from the cache"
     echo
 }
@@ -217,14 +217,14 @@ function up_usage() {
     echo "Usage:"
     echo "  $ul$SCRIPT_NAME$noul  ${ul}up$noul"
     echo
-    echo "Creates or converges the Bosh environment VM with 'bosh create-env'."
+    echo "Creates or converges the BOSH environment VM with 'bosh create-env'."
     echo
     echo "Before the environment is converged, the required utilities are"
     echo "downloaded, if absent."
     echo
     echo "After the environment is converged, a SSH tunnel is started, enabling"
-    echo "access the Bosh server. Then the Bosh environnment is referenced in the"
-    echo "Bosh CLI config. A use of $ul$SCRIPT_NAME env$noul might be necessary though."
+    echo "access the BOSH director. Then the BOSH environnment is referenced in the"
+    echo "BOSH CLI config. A use of $ul$SCRIPT_NAME env$noul might be necessary though."
     echo
     echo "Any previously trusted SSH key (from the '~/.ssh/known_hosts') is replaced"
     echo "before the tunnel is started, in case it has changed, to avoid connection"
@@ -238,10 +238,13 @@ function down_usage() {
     echo "Usage:"
     echo "  $ul$SCRIPT_NAME$noul  ${ul}down$noul  [-k]"
     echo
-    echo "Destroys the Bosh environment VM and related infrastructure."
+    echo "Destroys the base infrastructure environment, including the related"
+    echo "BOSH director."
     echo
     echo "    -k"
-    echo "        Keep infrastructure, which is useful to preserve the allocated IP address."
+    echo "        Keep some allocated resources on the automated infrastructure,"
+    echo "        which is useful to preserve the allocated public IP address for"
+    echo "        the BOSH director."
     echo
 }
 
@@ -269,7 +272,7 @@ function tunnel_usage() {
     echo
     echo "Start or stop a SOCKS5 compatible SSH tunnel, or get its status, or"
     echo "obtain any logs produced. This tunnel is necessary in order to access"
-    echo "the BOSH server, and keep it away from being exposed to the entire"
+    echo "the BOSH director, and keep it away from being exposed to the entire"
     echo "Internet, protected behind firewall rules."
     echo
     echo "Environment variables might then need to be be refreshed. Run ${ul}gbe env$noul"
@@ -284,7 +287,7 @@ function update_usage() {
     echo "  $ul$SCRIPT_NAME$noul  ${ul}update$noul  cloud-config    [-n]"
     echo "  $ul$SCRIPT_NAME$noul  ${ul}update$noul  runtime-config  [-n]"
     echo
-    echo "Updates the cloud config or the runtime config in BOSH server."
+    echo "Updates the cloud config or the runtime config in BOSH director."
     echo
     echo "    -n"
     echo "        Don't ask for user input"
@@ -307,11 +310,12 @@ function converge_usage() {
     echo
     echo "    <subsys-name>   The name of a subsys to converge."
     echo
-    echo "Converges one or all subsystems towards their desired states,"
-    echo "or converge the BOSH environment if no subsystem is specified."
+    echo "Converges one or all subsystems towards their desired states, or"
+    echo "converge the base infrastructure environment if no subsystem is"
+    echo "specified."
     echo
-    echo "When specifying ${b}all$rst, the recreation will not ask for any user"
-    echo "input. Both cloud config and runtime config will be updated,"
+    echo "When specifying ${b}all$rst, the recreation will not ask for any"
+    echo "user input. Both cloud config and runtime config will be updated,"
     echo "and all subsystems will be converged."
     echo
     echo "When specifying ${b}list$rst, the list of subsystems to converge is"
@@ -357,9 +361,7 @@ function delete_usage() {
     echo
     echo "    <subsys-name>   The name of a subsys to delete."
     echo
-    echo "Deletes one or all subsystems. Persistent disks will typically be"
-    echo "kept by BOSH as orphaned disks for 5 days, but it's hard to rebuild"
-    echo "any deployment with those, so this ${b}delete$rst operation is"
+    echo "Deletes one or all subsystems. This ${b}delete$rst operation is"
     echo "VERY DESTRUCTIVE."
     echo
     echo "When destroying ${b}all$rst subsystems, the deletion will not ask"
@@ -383,12 +385,12 @@ function export_usage() {
     echo "    <subsys-name>   The name of a subsys of type 'bosh-deployment'."
     echo
     echo "Exports all compiled releases going through each deployments"
-    echo "currently managed by the BOSH server."
+    echo "currently managed by the BOSH director."
     echo
     echo "When specifying a subsys name, the set of exported releases is"
-    echo "restricted to those that are necessary to the deployment that is"
-    echo "related to the subsys. This subsys must be of type 'bosh-deployment'"
-    echo "and the related deployment must exist in the BOSH server."
+    echo "restricted to those related to the specified subsystem. This"
+    echo "subsystem must be of type 'bosh-deployment' and the related"
+    echo "BOSH deployment must exist in the BOSH director."
     echo
 }
 
@@ -402,7 +404,7 @@ function import_usage() {
     echo "    <subsys-name>   The name of a subsys of type 'bosh-deployment'."
     echo
     echo "Imports all compiled releases going through each deployments"
-    echo "currently managed by the BOSH server."
+    echo "currently managed by the BOSH director."
     echo
     echo "When specifying a subsys name, the exported BOSH releases are those"
     echo "that are necessary to the BOSH deployment that the subsys describes."
@@ -463,7 +465,7 @@ function update_config() {
     mkdir -p "$subsys_state_dir"
 
 
-    echo -e "\n${BLUE}Updating $BOLD$cfg_type config$RESET in BOSH server.\n"
+    echo -e "\n${BLUE}Updating $BOLD$cfg_type config$RESET in BOSH director.\n"
 
     bosh interpolate "$MAIN_CONFIG_FILE" \
         "${OPERATIONS_ARGUMENTS[@]}" \
@@ -499,7 +501,7 @@ function upload_stemcell() {
 }
 
 function list_deployments() {
-    echo -e "\n$BLUE${BOLD}Affected deployments$RESET in order:\n"
+    echo -e "\n$BLUE${BOLD}Affected subsystems$RESET in order:\n"
     each_deployment "$@" print_deployment_name
     echo
 }
@@ -555,7 +557,7 @@ function assert_subsys_name() {
 function converge_deployment() {
     local depl_name=$1; shift
 
-    echo -e "\n${BLUE}Converging the $BOLD'$depl_name'$RESET deployment.\n"
+    echo -e "\n${BLUE}Converging the $BOLD'$depl_name'$RESET subsystem.\n"
 
     SUBSYS_DIR=$BASE_DIR/deployments/$depl_name
     eval "$(env_exports)"
@@ -586,7 +588,7 @@ function converge_deployment() {
 function delete_deployment() {
     local subsys_name=$1; shift
 
-    echo -e "\n${BLUE}Deleting the $BOLD'$subsys_name'$RESET deployment.\n"
+    echo -e "\n${BLUE}Deleting the $BOLD'$subsys_name'$RESET subsystem.\n"
 
     export SUBSYS_DIR=$BASE_DIR/deployments/$subsys_name
     eval "$(env_exports)"

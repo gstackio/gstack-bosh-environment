@@ -35,7 +35,11 @@ function run_hook() {
         return
     fi
 
-    echo -e "\n${BLUE}Running hook $BOLD'$(basename "$script")'$RESET.\n"
+    local inferred_hook_name inferred_subsys_name
+    inferred_hook_name=$(basename "$script")
+    inferred_subsys_name=$(basename "$SUBSYS_DIR")
+    echo -e "\n${BLUE}Running the '$BOLD${inferred_hook_name%.sh}$RESET' hook for" \
+        "the '$BOLD${inferred_subsys_name}$RESET' subsystem.\n"
 
     export BASE_DIR
     export GBE_ENVIRONMENT
