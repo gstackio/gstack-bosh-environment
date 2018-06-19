@@ -1,0 +1,42 @@
+---
+
+# Remove old-fashioned way of customizing route
+
+- path: /instance_groups/name=cf-redis-broker/properties/route_registrar?
+  type: remove
+
+
+
+# Set our own config
+
+- path: /instance_groups/name=cf-redis-broker/jobs/name=route_registrar/properties?
+  type: replace
+  value:
+    route_registrar:
+      routes:
+      - name: ((deployment_name))-broker
+        port: 12350
+        registration_interval: 20s
+        uris: [ ((redis_domain)) ]
+        tags:
+          component: redis-broker
+          env: production
+        health_check:
+          name: ((broker_name))
+          script_path: /var/vcap/jobs/cf-redis-broker/bin/health_check.sh
+
+
+
+# Align broker config
+
+- path: /instance_groups/name=broker-registrar?/properties/broker/host
+  type: replace
+  value: ((redis_domain))
+
+- path: /instance_groups/name=broker-deregistrar?/properties/broker/host
+  type: replace
+  value: ((redis_domain))
+
+- path: /properties/broker/host
+  type: replace
+  value: ((redis_domain))

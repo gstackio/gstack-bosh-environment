@@ -1,0 +1,28 @@
+---
+
+# Releases versions
+
+- path: /releases/name=cf-redis?
+  type: replace
+  value:
+    name: cf-redis
+    version: ((redis_release_version))
+    url: https://bosh.io/d/github.com/pivotal-cf/cf-redis-release?v=((redis_release_version))
+    sha1: ((redis_release_sha1))
+
+- path: /releases/name=routing?
+  type: replace
+  value:
+    name: routing
+    version: ((routing_version))
+    url: https://bosh.io/d/github.com/cloudfoundry-incubator/cf-routing-release?v=((routing_version))
+    sha1: ((routing_sha1))
+
+# Stemcell version
+
+- path: /stemcells/alias=default?
+  type: replace
+  value:
+    alias: default
+    name: ((stemcell_name))
+    version: ((stemcell_version))
