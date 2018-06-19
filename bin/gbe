@@ -317,7 +317,7 @@ function converge_usage() {
     echo "When specifying ${b}list$rst, the list of subsystems to converge is"
     echo "displayed, in the order ${b}gbe converge all$rst would treat them."
     echo
-    echo "    -n"
+    echo "    -y"
     echo "        Run unattended. Don't ask for user input."
     echo
 }
@@ -340,7 +340,7 @@ function recreate_usage() {
     echo "When specifying ${b}all$rst, the recreation will not ask for any"
     echo "user input."
     echo
-    echo "    -n"
+    echo "    -y"
     echo "        Run unattended. Don't ask for user input."
     echo
 }
@@ -368,7 +368,7 @@ function delete_usage() {
     echo "When specifying ${b}list$rst, the list of subsystems to delete is"
     echo "displayed, in the order ${b}gbe delete all$rst would treat them."
     echo
-    echo "    -n"
+    echo "    -y"
     echo "        Run unattended. Don't ask for user input. NOT RECOMMENDED."
     echo
 }
@@ -803,82 +803,115 @@ case $1 in
         ;;
     update)
         shift
-        case $1 in
-            cloud-config)
-                shift
-                ensure_reachability
-                update_config cloud "$@"
-                ;;
-            runtime-config)
-                shift
-                ensure_reachability
-                update_config runtime "$@"
-                ;;
-            *)
-                update_usage ;;
-        esac
+        non_interactive=
+        while [[ -n $1 ]]; do
+            case $1 in
+                -y)
+                    non_interactive=yes ;;
+                cloud-config)
+                    shift
+                    ensure_reachability
+                    update_config cloud ${non_interactive:+"-n"} "$@"
+                    break ;;
+                runtime-config)
+                    shift
+                    ensure_reachability
+                    update_config runtime ${non_interactive:+"-n"} "$@"
+                    break ;;
+                *)
+                    update_usage
+                    break ;;
+            esac
+            shift
+        done
         ;;
     converge)
         shift
-        case $1 in
-            -h)
-                converge_usage ;;
-            "")
-                gbe_up ;;
-            list)
-                list_deployments ;;
-            all)
-                ensure_reachability
-                upload_compiled_releases
-                update_config cloud -n
-                update_config runtime -n
-                list_deployments
-                each_deployment converge_deployment -n
-                ;;
-            deployments)
-                ensure_reachability
-                update_config cloud -n
-                update_config runtime -n
-                list_deployments
-                each_deployment converge_deployment -n
-                ;;
-            *)
-                assert_subsys_name "$1" || ( converge_usage && exit 2 )
-                ensure_reachability
-                converge_deployment "$@" ;;
-        esac
+        non_interactive=
+        while [[ -n $1 ]]; do
+            case $1 in
+                -h)
+                    converge_usage
+                    break ;;
+                -y)
+                    non_interactive=yes ;;
+                "")
+                    gbe_up
+                    break ;;
+                list)
+                    list_deployments
+                    break ;;
+                all)
+                    ensure_reachability
+                    upload_compiled_releases
+                    update_config cloud -n
+                    update_config runtime -n
+                    list_deployments
+                    each_deployment converge_deployment -n
+                    break ;;
+                deployments)
+                    ensure_reachability
+                    update_config cloud -n
+                    update_config runtime -n
+                    list_deployments
+                    each_deployment converge_deployment -n
+                    break ;;
+                *)
+                    assert_subsys_name "$1" || ( converge_usage && exit 2 )
+                    ensure_reachability
+                    converge_deployment "$1" ${non_interactive:+"-n"} ;;
+            esac
+            shift
+        done
         ;;
     recreate)
         shift
-        case $1 in
-            -h)
-                recreate_usage ;;
-            all)
-                ensure_reachability
-                list_deployments
-                each_deployment converge_deployment -n --recreate --fix --canaries=0 ;;
-            *)
-                assert_subsys_name "$1" || ( recreate_usage && exit 2 )
-                converge_deployment "$@" --recreate --fix --canaries=0 ;;
-        esac
+        non_interactive=
+        while [[ -n $1 ]]; do
+            case $1 in
+                -h)
+                    recreate_usage
+                    break ;;
+                -y)
+                    non_interactive=yes ;;
+                all)
+                    ensure_reachability
+                    list_deployments
+                    each_deployment converge_deployment -n --recreate --fix --canaries=0
+                    break ;;
+                *)
+                    assert_subsys_name "$1" || ( recreate_usage && exit 2 )
+                    converge_deployment "$1" ${non_interactive:+"-n"} --recreate --fix --canaries=0 ;;
+            esac
+            shift
+        done
         ;;
     delete)
         shift
-        case $1 in
-            ""|-h)
-                delete_usage ;;
-            list)
-                list_deployments --reverse ;;
-            all)
-                shift
-                ensure_reachability
-                list_deployments --reverse
-                each_deployment --reverse delete_deployment -n "$@";;
-            *)
-                assert_subsys_name "$1" || ( delete_usage && exit 2 )
-                ensure_reachability
-                delete_deployment "$@" ;;
-        esac
+        non_interactive=
+        while [[ -n $1 ]]; do
+            case $1 in
+                ""|-h)
+                    delete_usage
+                    break ;;
+                -y)
+                    non_interactive=yes ;;
+                list)
+                    list_deployments --reverse
+                    break ;;
+                all)
+                    shift
+                    ensure_reachability
+                    list_deployments --reverse
+                    each_deployment --reverse delete_deployment -n "$@"
+                    break ;;
+                *)
+                    assert_subsys_name "$1" || ( delete_usage && exit 2 )
+                    ensure_reachability
+                    delete_deployment "$1" ${non_interactive:+"-n"} ;;
+            esac
+            shift
+        done
         ;;
     export)
         shift
