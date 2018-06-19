@@ -8,7 +8,7 @@ input_resources:
   - name: cf-mysql-deployment
     type: git
     uri: https://github.com/cloudfoundry/cf-mysql-deployment.git
-    version: v36.13.0
+    version: v36.14.0
 
 
 main_deployment_file: cf-mysql-deployment/cf-mysql-deployment.yml
@@ -20,7 +20,7 @@ operations_files:
     - operations/no-arbitrator
     - operations/register-proxy-route
   20.local:
-    - inject-variables
+    - rename-deployment
     - set-versions
     - customize-service
     - scale-disks
@@ -38,8 +38,8 @@ deployment_vars:
 
   # Versions
 
-  # cf_mysql_version: "36.13.0"
-  # cf_mysql_sha1: dc09695207bce0df81e85c5b8284a69a4e814651
+  # cf_mysql_version: # imported below
+  # cf_mysql_sha1:    # imported below
 
   # stemcell_name:    # imported below
   # stemcell_version: # imported below

@@ -8,9 +8,11 @@
       dashboard_client:
         id: mysql-shared
         secret: ((cf_mysql_shared_mysql_dashboard_secret))
-      description: MariaDB 10.1 service with production-class durability, on a multi-nodes cluster, shared by all applications
+      description:
+        Galera cluster (see specificities over plain MySQL), high data
+        durability, and shared performances by all applications
       metadata:
-        displayName: MySQL for Cloud Foundry
+        displayName: Galera MySQL for Cloud Foundry
         documentationUrl: https://github.com/cloudfoundry/cf-mysql-release/blob/master/README.md
         # TODO: the following is still the Pivotal 256x256 logo, to be
         # replaced at some point
@@ -19,8 +21,8 @@
           Creating a service instance provisions a database on a shared MySQL
           cluster. Binding applications provisions unique credentials for each
           application to access the database.
-          The MySQL cluster has good data duration but is shared between all
-          Cloud Foundry organizations and spaces.
+          The MySQL cluster has good data durability, but performances are
+          shared by all Cloud Foundry organizations and spaces.
         providerDisplayName: Cloud Foundry
         supportUrl: https://www.gstack.io
       plan_updateable: true
