@@ -8,11 +8,11 @@ input_resources:
   - name: rabbitmq-boshrelease
     type: git
     uri: https://github.com/pivotal-cf/cf-rabbitmq-release.git
-    version: v244.0.0
+    version: v247.0.0
   # - name: rabbitmq-broker-boshrelease
   #   type: git
   #   uri: https://github.com/pivotal-cf/cf-rabbitmq-multitenant-broker-release.git
-  #   version: v24.0.0
+  #   version: v29.0.0
 
 
 main_deployment_file: rabbitmq-boshrelease/manifests/cf-rabbitmq-template.yml
@@ -53,17 +53,20 @@ deployment_vars:
 
   rabbitmq_version: "3.7"
 
-  rabbitmq_release_version: "244.0.0"
-  rabbitmq_release_sha1: b9249354f5ee2de405cb6fbbcdcbba1a29217ffb
+  rabbitmq_release_version: "247.0.0"
+  rabbitmq_release_sha1: 21276f0a96bde9c778e7f5816f12836a5fd62dbe
 
-  rabbitmq_broker_version: "24.0.0"
-  rabbitmq_broker_sha1: 3710fa7d4fb8b6f348c80a45156c85b8f0931a55
+  rabbitmq_broker_version: "29.0.0"
+  rabbitmq_broker_sha1: f489880faeb4f4fbc357e63b69ba2494448aef48
+
+  cf_cli_release_version: "1.5.0"
+  cf_cli_release_sha1: 6749a07026e335f7744f013c9707911fb72170b5
 
   broker_registrar_version: "3.4.0"
   broker_registrar_sha1: d44d9af8fd06ecf6d50004c9bfd5516a6e482201
 
-  # routing_version: "0.175.0"
-  # routing_sha1: 7314e7b070520561aef6fd4026501f3d23c5d67c
+  # routing_version:  # imported below
+  # routing_sha1:     # imported below
 
   # stemcell_name:    # imported below
   # stemcell_version: # imported below

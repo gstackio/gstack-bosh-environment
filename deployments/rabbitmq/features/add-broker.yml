@@ -8,6 +8,14 @@
     url: https://bosh.io/d/github.com/pivotal-cf/cf-rabbitmq-multitenant-broker-release?v=((rabbitmq_broker_version))
     sha1: ((rabbitmq_broker_sha1))
 
+- path: /releases/name=cf-cli?
+  type: replace
+  value:
+    name: cf-cli
+    version: ((cf_cli_release_version))
+    url: https://bosh.io/d/github.com/bosh-packages/cf-cli-release?v=((cf_cli_release_version))
+    sha1: ((cf_cli_release_sha1))
+
 - path: /instance_groups/name=rmq-broker?
   type: replace
   value:
@@ -81,6 +89,8 @@
           name: ((product-name))
         smoke_tests:
           org: system
+    - name: cf-cli-6-linux
+      release: cf-cli
     instances: 1
     lifecycle: errand
     vm_type: default
