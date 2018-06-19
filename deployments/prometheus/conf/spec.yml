@@ -55,11 +55,11 @@ deployment_vars:
   prometheus_version: "22.0.2"
   prometheus_sha1: d813d755a1be7abbe2461ea9a7327235ed9a8996
 
-  # postgres_version: "28"
-  # postgres_sha1: c1fcec62cb9d2e95e3b191e3c91d238e2b9d23fa
+  # postgres_version: # imported below
+  # postgres_sha1:    # imported below
 
-  # routing_version: "0.175.0"
-  # routing_sha1: 7314e7b070520561aef6fd4026501f3d23c5d67c
+  # routing_version:  # imported below
+  # routing_sha1:     # imported below
 
   # stemcell_name:    # imported below
   # stemcell_version: # imported below

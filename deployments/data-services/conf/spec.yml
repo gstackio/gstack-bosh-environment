@@ -59,12 +59,14 @@ deployment_vars:
   bpm_sha1: f64f58784709df650754f8f5f9ed7d0a1a02a5a8
   # bpm_version: "0.6.0"
   # bpm_sha1: 4f0f239abdc801d71de9063625aa56e3c42634b5
+  # bpm_version: "0.7.0"
+  # bpm_sha1: 6ac1181ddb557002387606b0d8664f0c4d171c5d
 
   broker_registrar_version: "3.4.0"
   broker_registrar_sha1: d44d9af8fd06ecf6d50004c9bfd5516a6e482201
 
-  # routing_version: "0.173.0"
-  # routing_sha1: 2c2ddd022f81f0f2d6e12fbd38bd1b1159edcf23
+  # routing_version:  # imported below
+  # routing_sha1:     # imported below
 
   # stemcell_name:    # imported below
   # stemcell_version: # imported below

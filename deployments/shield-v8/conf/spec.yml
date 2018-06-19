@@ -38,8 +38,8 @@ deployment_vars:
   shield_version: "8.0.8"
   shield_sha1: 55d1d6d8557f9b185fef7b5c6d73017b4c654f03
 
-  routing_version: "0.168.0"
-  routing_sha1: 885321f95b530c4a5b8515c72155229cba26c449
+  # routing_version:  # imported below
+  # routing_sha1:     # imported below
 
   # stemcell_name:    # imported below
   # stemcell_version: # imported below
@@ -60,6 +60,13 @@ deployment_vars:
 imported_vars:
   - subsys: cf
     imports:
+
+      - name: routing_version
+        from: depl-vars
+        path: /routing_version
+      - name: routing_sha1
+        from: depl-vars
+        path: /routing_sha1
 
       - name: stemcell_name
         from: depl-vars

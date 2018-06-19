@@ -18,11 +18,11 @@ operations_files: {}
 deployment_vars:
   deployment_name: release-compiler-tmp
 
-  # bosh_dns_version: "1.5.0"
-  # bosh_dns_sha1: 66e74bb601b691ea4836f859c556de8a5c6c1264
+  # bosh_dns_version: # imported below
+  # bosh_dns_sha1:    # imported below
 
-  # node_exporter_version: "3.0.1"
-  # node_exporter_sha1: 9eef05f8290e093d3ddab66596cdff7b64f2021b
+  # node_exporter_version: # imported below
+  # node_exporter_sha1:    # imported below
 
   # stemcell_name:    # imported below
   # stemcell_version: # imported below
