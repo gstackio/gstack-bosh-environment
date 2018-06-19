@@ -70,6 +70,11 @@ Virtualbox. The Virtualbox is not really for your laptop (though GBE supports
 this use-case), but for being used on a bare-metal (physical) server of your
 own. We recommend providing ≈50GB of RAM for a complete Easy Foundry setup.
 
+Bash version 4 is necessary. On Linux boxes, this is now the default with
+recent distributions. On macOS though, the default is a Bash version 3. In
+this case, you need to install a more recent one whith `brew install bash` and
+ensure that `/usr/local/bin` in front of your `$PATH`.
+
 Depending on the flavor you choose, read one of these:
 - [GCP prerequisites](./docs/gcp-prerequisites.md)
 - [Virtualbox prerequisites](./docs/virtualbox-prerequisites.md)
