@@ -2,6 +2,11 @@
 
 SUBSYS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
+function spec_var() {
+    local path=$1
+    bosh int "$SUBSYS_DIR/conf/spec.yml" --path "$path"
+}
+
 function cf_state_var() {
     local state_file=$1
     local path=$2
@@ -32,7 +37,9 @@ function cf_login() {
 set -ex
 
 dev_release_name=cassandra
-pushd "$BASE_DIR/.cache/resources/$dev_release_name-boshrelease" || exit 115
+
+rsc_name=$(spec_var /input_resources/0/name)
+pushd "$BASE_DIR/.cache/resources/$rsc_name" || exit 115
     git submodule update --init --recursive
 
     latest_dev_release=$(ls -t dev_releases/$dev_release_name/$dev_release_name-*.yml 2> /dev/null | head -n 1)
