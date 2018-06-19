@@ -827,42 +827,43 @@ case $1 in
         ;;
     converge)
         shift
-        non_interactive=
-        while [[ -n $1 ]]; do
-            case $1 in
-                -h)
-                    converge_usage
-                    break ;;
-                -y)
-                    non_interactive=yes ;;
-                "")
-                    gbe_up
-                    break ;;
-                list)
-                    list_deployments
-                    break ;;
-                all)
-                    ensure_reachability
-                    upload_compiled_releases
-                    update_config cloud -n
-                    update_config runtime -n
-                    list_deployments
-                    each_deployment converge_deployment -n
-                    break ;;
-                deployments)
-                    ensure_reachability
-                    update_config cloud -n
-                    update_config runtime -n
-                    list_deployments
-                    each_deployment converge_deployment -n
-                    break ;;
-                *)
-                    assert_subsys_name "$1" || ( converge_usage && exit 2 )
-                    ensure_reachability
-                    converge_deployment "$1" ${non_interactive:+"-n"} ;;
-            esac
-            shift
-        done
+        if [[ -z $1 ]]; then
+            gbe_up
+        else
+            non_interactive=
+            while [[ -n $1 ]]; do
+                case $1 in
+                    -h)
+                        converge_usage
+                        break ;;
+                    -y)
+                        non_interactive=yes ;;
+                    list)
+                        list_deployments
+                        break ;;
+                    all)
+                        ensure_reachability
+                        upload_compiled_releases
+                        update_config cloud -n
+                        update_config runtime -n
+                        list_deployments
+                        each_deployment converge_deployment -n
+                        break ;;
+                    deployments)
+                        ensure_reachability
+                        update_config cloud -n
+                        update_config runtime -n
+                        list_deployments
+                        each_deployment converge_deployment -n
+                        break ;;
+                    *)
+                        assert_subsys_name "$1" || ( converge_usage && exit 2 )
+                        ensure_reachability
+                        converge_deployment "$1" ${non_interactive:+"-n"} ;;
+                esac
+                shift
+            done
+        fi
         ;;
     recreate)
         shift
