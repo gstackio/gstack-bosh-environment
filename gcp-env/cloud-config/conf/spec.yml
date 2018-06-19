@@ -7,7 +7,7 @@ input_resources:
   - name: cf-deployment
     type: git
     uri: https://github.com/cloudfoundry/cf-deployment.git
-    version: v1.30.0
+    version: v1.40.0
   - name: traefik-boshrelease
     type: git
     uri: https://github.com/gstackio/traefik-boshrelease.git

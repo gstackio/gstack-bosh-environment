@@ -1,5 +1,0 @@
----
-
-- path: /instance_groups/name=service-discovery/instances
-  type: replace
-  value: 1
