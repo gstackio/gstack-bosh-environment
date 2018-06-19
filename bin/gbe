@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -o pipefail
+
 BASE_DIR=$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)")
 readonly BASE_DIR
 
@@ -470,9 +472,9 @@ function update_config() {
 function upload_stemcell() {
     local stemcell_name stemcell_version stemcell_sha1
 
-    stemcell_name=$(spec_var /deployment_vars/stemcell_name)
-    stemcell_version=$(spec_var /deployment_vars/stemcell_version)
-    stemcell_sha1=$(spec_var /deployment_vars/stemcell_sha1)
+    stemcell_name=$(spec_var /deployment_vars/stemcell_name) || true
+    stemcell_version=$(spec_var /deployment_vars/stemcell_version) || true
+    stemcell_sha1=$(spec_var /deployment_vars/stemcell_sha1) || true
 
     if [ -z "$stemcell_name" -o -z "$stemcell_version" -o -z "$stemcell_sha1" ]; then
         return

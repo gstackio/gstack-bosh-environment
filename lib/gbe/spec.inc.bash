@@ -20,23 +20,23 @@ function spec_var() {
 function assert_subsys() {
     local expected_type=$1
 
-    local subsys_type=$(spec_var /subsys/type)
+    local subsys_type subsys_name
+    subsys_type=$(spec_var /subsys/type) || true
     if [[ $subsys_type != $expected_type ]]; then
-        local subsys_name=$(spec_var /subsys/name)
+        subsys_name=$(spec_var /subsys/name) || true
         fatal "${RED}ERROR:$RESET expected subsystem '$subsys_name' to be of type '$expected_type'" \
             "but was '$subsys_type'. Aborting."
     fi
 }
 
 function fetch_input_resources() {
-    local subsys_spec=
-
-    local rsc_count=$(spec_var /input_resources \
-                         | awk '/^-/{print $1}' | wc -l)
-    local rsc_idx=0
+    local rsc_count rsc_idx rsc_path rsc_type
+    rsc_count=$(spec_var /input_resources | awk '/^-/{print $1}' \
+                    | wc -l | tr -d ' ') || true
+    rsc_idx=0
     while [[ $rsc_idx -lt $rsc_count ]]; do
-        local rsc_path=/input_resources/$rsc_idx
-        local rsc_type=$(spec_var "$rsc_path/type")
+        rsc_path=/input_resources/$rsc_idx
+        rsc_type=$(spec_var "$rsc_path/type")
         case $rsc_type in
             git|local-dir)
                 fetch_${rsc_type}_resource $rsc_path
@@ -118,14 +118,25 @@ function populate_operations_arguments() {
 }
 
 function read_bosh-deployment_spec() {
-    local depl_rsc_file=$(spec_var /main_deployment_file)
+    local depl_rsc_file
+    depl_rsc_file=$(spec_var /main_deployment_file) || true
+    if [[ -z $depl_rsc_file ]]; then
+        echo "ERROR: missing 'main_deployment_file' in subsys spec." >&2
+        return 1
+    fi
+
     MAIN_DEPLOYMENT_FILE=$(expand_resource_dir "$depl_rsc_file")
 
     populate_operations_arguments
 }
 
 function read_bosh-config_spec() {
-    local config_rsc_file=$(spec_var /main_config_file)
+    local config_rsc_file
+    config_rsc_file=$(spec_var /main_config_file) || true
+    if [[ -z $config_rsc_file ]]; then
+        echo "ERROR: missing 'main_config_file' in subsys spec." >&2
+        return 1
+    fi
     MAIN_CONFIG_FILE=$(expand_resource_dir "$config_rsc_file")
 
     populate_operations_arguments
@@ -148,15 +159,24 @@ function import_file_value() {
     local base_path=$1
     local vars_file=$2
 
-    local var_name=$(spec_var "$base_path/name")
-    local var_value=$(spec_var "$base_path/value")
-    local import_path=$(spec_var "$base_path/path")
+    local var_name var_value import_path
+    var_name=$(spec_var "$base_path/name") || true
+    var_value=$(spec_var "$base_path/value") || true
+    import_path=$(spec_var "$base_path/path") || true
+    if [[ -z $var_name ]]; then
+        echo "ERROR: missing '$base_path/name' YAML node in subsys spec." >&2
+        return 1
+    fi
 
     if [ -n "$var_value" ]; then
         # FIXME: poor YAML escaping here below
         bosh int <(echo "$var_name: $var_value") \
             --vars-file "$vars_file"
     else
+        if [[ -z $import_path ]]; then
+            echo "ERROR: missing '$base_path/path' YAML node in subsys spec." >&2
+            return 1
+        fi
         var_value=$(bosh int "$vars_file" --path "$import_path")
         bosh_int_with_value "$var_value" <(echo "$var_name: ((var_value))")
     fi
@@ -240,18 +260,18 @@ function imports_from() {
     local subsys_name=$1
     local base_path=$2
 
-    local subsys_dir
+    local subsys_dir vars_count var_idx var_path import_from
     subsys_dir=$(get_subsys_dir_from_subsys_name "$subsys_name")
     if [[ "$subsys_name" == base-env ]]; then
         subsys_name=$GBE_ENVIRONMENT
     fi
 
-    local vars_count=$(spec_var "$base_path" \
-                         | awk '/^-/{print $1}' | wc -l)
-    local var_idx=0
+    vars_count=$(spec_var "$base_path" | awk '/^-/{print $1}' \
+                        | wc -l | tr -d ' ') || true
+    var_idx=0
     while [[ $var_idx -lt $vars_count ]]; do
-        local var_path=$base_path/$var_idx
-        local import_from=$(spec_var "$var_path/from")
+        var_path=$base_path/$var_idx
+        import_from=$(spec_var "$var_path/from") || true
         case $import_from in
             bbl-vars)
                 import_file_value "$var_path" \
@@ -281,19 +301,21 @@ function imports_from() {
 # CONCURRENCY WARNING: imported_vars() not only output variables, because
 # credentials are actually written to the "$(state_dir)/depl-creds.yml" file.
 function imported_vars() {
-    local subsys_count=$(spec_var /imported_vars \
-                         | awk '/^-/{print $1}' | wc -l)
-    local idx=0
+    local subsys_count idx subsys_path subsys_name
+    subsys_count=$(spec_var /imported_vars | awk '/^-/{print $1}' \
+                    | wc -l | tr -d ' ') || true
+    idx=0
     while [[ $idx -lt $subsys_count ]]; do
-        local subsys_path=/imported_vars/$idx
-        local subsys_name=$(spec_var "$subsys_path/subsys")
+        subsys_path=/imported_vars/$idx
+        subsys_name=$(spec_var "$subsys_path/subsys")
         imports_from "$subsys_name" "$subsys_path/imports"
         idx=$(($idx + 1))
     done
 }
 
 function state_dir() {
-    local gbe_subsys=${1:-$(spec_var /subsys/name)}
+    local gbe_subsys
+    gbe_subsys=${1:-$(spec_var /subsys/name)} || true
     if [ -z "$gbe_subsys" ]; then
         echo "ERROR: missing subsys name. Aborting." >&2
         return 1
