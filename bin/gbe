@@ -296,12 +296,14 @@ function update_usage() {
 }
 
 function converge_usage() {
+    local b=$BOLD
     local ul=$UNDERLINE
     local noul=$NOUNDERLINE
     local rst=$RESET
     echo "Usage:"
     echo "  $ul$SCRIPT_NAME$noul  ${ul}converge$noul  [<subsys-name>]  [-n]"
     echo "  $ul$SCRIPT_NAME$noul  ${ul}converge$noul  all"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}converge$noul  list"
     echo
     echo "    <subsys-name>   The name of a subsys to converge."
     echo
@@ -312,12 +314,16 @@ function converge_usage() {
     echo "input. Both cloud config and runtime config will be updated,"
     echo "and all subsystems will be converged."
     echo
+    echo "When specifying ${b}list$rst, the list of subsystems to converge is"
+    echo "displayed, in the order ${b}gbe converge all$rst would treat them."
+    echo
     echo "    -n"
     echo "        Run unattended. Don't ask for user input."
     echo
 }
 
 function recreate_usage() {
+    local b=$BOLD
     local ul=$UNDERLINE
     local noul=$NOUNDERLINE
     local rst=$RESET
@@ -340,12 +346,14 @@ function recreate_usage() {
 }
 
 function delete_usage() {
+    local b=$BOLD
     local ul=$UNDERLINE
     local noul=$NOUNDERLINE
     local rst=$RESET
     echo "Usage:"
     echo "  $ul$SCRIPT_NAME$noul  ${ul}delete$noul  <subsys-name>  [-n]"
     echo "  $ul$SCRIPT_NAME$noul  ${ul}delete$noul  all"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}delete$noul  list"
     echo
     echo "    <subsys-name>   The name of a subsys to delete."
     echo
@@ -356,6 +364,9 @@ function delete_usage() {
     echo
     echo "When destroying ${b}all$rst subsystems, the deletion will not ask"
     echo "for any user input."
+    echo
+    echo "When specifying ${b}list$rst, the list of subsystems to delete is"
+    echo "displayed, in the order ${b}gbe delete all$rst would treat them."
     echo
     echo "    -n"
     echo "        Run unattended. Don't ask for user input. NOT RECOMMENDED."
