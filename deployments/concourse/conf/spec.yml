@@ -46,9 +46,9 @@ deployment_vars:
   postgres_version: "28"
   postgres_sha1: c1fcec62cb9d2e95e3b191e3c91d238e2b9d23fa
 
-  # stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
-  # stemcell_version: "3541.24"
-  # stemcell_sha1: 08d4a99454999fe22d650afd990f8c4de279fe7b
+  # stemcell_name:    # imported below
+  # stemcell_version: # imported below
+  # stemcell_sha1:    # imported below
 
 
   # Scaling properties

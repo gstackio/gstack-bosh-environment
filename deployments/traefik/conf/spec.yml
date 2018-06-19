@@ -36,9 +36,9 @@ deployment_vars:
   web_backend_username: gstack
   web_backend_md5_htpasswd: $apr1$exP13HG4$eJjE8uEIVmmS8o1mKCfL5.
 
-  # stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
-  # stemcell_version: "3541.24"
-  # stemcell_sha1: 08d4a99454999fe22d650afd990f8c4de279fe7b
+  # stemcell_name:    # imported below
+  # stemcell_version: # imported below
+  # stemcell_sha1:    # imported below
 
 
 imported_vars:

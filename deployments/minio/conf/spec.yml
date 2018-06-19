@@ -34,9 +34,9 @@ deployment_vars:
   minio_version: 2018-04-27T23-33-52Z
   minio_sha1: b45b8c7790e96d3600f5a61b076f26a703c76953
 
-  # stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
-  # stemcell_version: "3541.24"
-  # stemcell_sha1: 08d4a99454999fe22d650afd990f8c4de279fe7b
+  # stemcell_name:    # imported below
+  # stemcell_version: # imported below
+  # stemcell_sha1:    # imported below
 
 
 imported_vars:

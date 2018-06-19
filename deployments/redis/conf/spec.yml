@@ -41,6 +41,10 @@ deployment_vars:
   redis_release_version: "431.0.0"
   redis_release_sha1: 183f6d154ff6a752bd9cdb634a84a02c34eef68a
 
+  # stemcell_name:    # imported below
+  # stemcell_version: # imported below
+  # stemcell_sha1:    # imported below
+
 
   # Plumbery
 

@@ -47,9 +47,9 @@ deployment_vars:
   logsearch_for_cloudfoundry_version: "207.0.0"
   logsearch_for_cloudfoundry_sha1: e6f740707042d29a1ac09a7481cf72b805b1469d
 
-  # stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
-  # stemcell_version: "3541.24"
-  # stemcell_sha1: 08d4a99454999fe22d650afd990f8c4de279fe7b
+  # stemcell_name:    # imported below
+  # stemcell_version: # imported below
+  # stemcell_sha1:    # imported below
 
 
   # Reference declarations
