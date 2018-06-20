@@ -8,7 +8,7 @@ input_resources:
   - name: shield-boshrelease-v8
     type: git
     uri: https://github.com/starkandwayne/shield-boshrelease.git
-    version: v8.0.8
+    version: v8.0.10
 
 
 main_deployment_file: shield-boshrelease-v8/manifests/shield.yml
@@ -35,8 +35,8 @@ deployment_vars:
 
   # Versions
 
-  shield_version: "8.0.8"
-  shield_sha1: 55d1d6d8557f9b185fef7b5c6d73017b4c654f03
+  shield_version: "8.0.10"
+  shield_sha1: 6b91a9a14a9e4f055a58acdb1b99e5920abdf16f
 
   # routing_version:  # imported below
   # routing_sha1:     # imported below
