@@ -8,7 +8,7 @@ input_resources:
   - name: prometheus-boshrelease
     type: git
     uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
-    version: v22.0.2
+    version: v23.0.0
 
 
 main_deployment_file: prometheus-boshrelease/manifests/prometheus.yml
@@ -19,13 +19,27 @@ operations_files:
     # Bosh monitoring
     - manifests/operators/monitor-bosh
     - manifests/operators/enable-bosh-uaa
+    - manifests/operators/monitor-node
 
     # CF monitoring
     - manifests/operators/monitor-cf
+    - manifests/operators/monitor-nats
+    - manifests/operators/monitor-mysql
+
+    # CF Services monitoring
+    - manifests/operators/monitor-p-rabbitmq
+    - manifests/operators/monitor-p-redis
+    - manifests/operators/monitor-rabbitmq
+    - manifests/operators/monitor-redis
+    - manifests/operators/monitor-shield
+    # - manifests/operators/monitor-mongodb
+
+    - manifests/operators/monitor-concourse
 
     # CF integration
     - manifests/operators/enable-cf-route-registrar
     - manifests/operators/enable-grafana-uaa
+    # - manifests/operators/enable-cf-route-registrar
 
     # If migration from Prometheus v1 is required
     # - manifests/operators/migrations/migrate_from_prometheus_1
@@ -52,8 +66,8 @@ deployment_vars:
 
   # Versions
 
-  prometheus_version: "22.0.2"
-  prometheus_sha1: d813d755a1be7abbe2461ea9a7327235ed9a8996
+  prometheus_version: "23.0.0"
+  prometheus_sha1: 39618a294031af235c45035aa1d282fe9acf53c0
 
   # postgres_version: # imported below
   # postgres_sha1:    # imported below

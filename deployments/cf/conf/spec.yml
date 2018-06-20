@@ -11,7 +11,7 @@ input_resources:
   - name: prometheus-boshrelease
     type: git
     uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
-    version: v22.0.2
+    version: v23.0.0
 
 
 main_deployment_file: cf-deployment/cf-deployment.yml
