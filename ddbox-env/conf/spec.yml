@@ -51,7 +51,7 @@ operations_files:
 
 
 deployment_vars:
-  director_name: easy-foundry-director
+  director_name: easyfoundry-director
 
   disk_size: 200_000 # i.e. 200MB
 
