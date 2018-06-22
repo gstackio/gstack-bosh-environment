@@ -1,0 +1,26 @@
+---
+
+- path: /instance_groups/name=bosh/jobs/name=networking?
+  type: replace
+  value:
+    name: iptables
+    release: networking
+    properties:
+      iptables:
+        nat:
+          PREROUTING:
+            - -i w+ -p tcp -d ((external_ip)) --dport 80   -j DNAT --to-dest 10.244.0.34 -m comment --comment "gbe[f55fc128-6cec-4f38-9303-2e45b0010c71]"
+            - -i w+ -p tcp -d ((external_ip)) --dport 443  -j DNAT --to-dest 10.244.0.34 -m comment --comment "gbe[f55fc128-6cec-4f38-9303-2e45b0010c72]"
+            - -i w+ -p tcp -d ((external_ip)) --dport 2222 -j DNAT --to-dest 10.244.0.34 -m comment --comment "gbe[f55fc128-6cec-4f38-9303-2e45b0010c73]"
+          POSTROUTING:
+            - -o w+ -p tcp -s 10.244.0.0/16 -d 10.244.0.34 --dport 80   -j MASQUERADE -m comment --comment "gbe[f55fc128-6cec-4f38-9303-2e45b0010c81]"
+            - -o w+ -p tcp -s 10.244.0.0/16 -d 10.244.0.34 --dport 443  -j MASQUERADE -m comment --comment "gbe[f55fc128-6cec-4f38-9303-2e45b0010c82]"
+            - -o w+ -p tcp -s 10.244.0.0/16 -d 10.244.0.34 --dport 2222 -j MASQUERADE -m comment --comment "gbe[f55fc128-6cec-4f38-9303-2e45b0010c83]"
+
+- path: /releases/name=networking?
+  type: replace
+  value:
+    name: networking
+    version: "9"
+    url: https://bosh.io/d/github.com/cloudfoundry/networking-release?v=9
+    sha1: 9b5f9d27917c3754e492470ac6c9af80d62963db

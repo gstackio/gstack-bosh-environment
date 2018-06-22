@@ -48,6 +48,7 @@ operations_files:
     - set-disk-size
     - scale-vm-size
     - enable-index-based-dns-aliases
+    # - fixup-lb-networking # not working yet
 
 
 deployment_vars:
