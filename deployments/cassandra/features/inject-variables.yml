@@ -1,39 +1,5 @@
 ---
 
-# Set deployment name
-
-- path: /name
-  type: replace
-  value: ((deployment_name))
-
-
-# Set networks names
-
-- path: /instance_groups/name=cassandra-seeds/networks
-  type: replace
-  value: &cassandra_networks [ name: ((network_name)) ]
-
-- path: /instance_groups/name=cassandra-servers/networks
-  type: replace
-  value: *cassandra_networks
-
-- path: /instance_groups/name=cassandra-brokers/networks
-  type: replace
-  value: *cassandra_networks
-
-- path: /instance_groups/name=cassandra-smoke-tests/networks
-  type: replace
-  value: *cassandra_networks
-
-- path: /instance_groups/name=broker-registrar-vm/networks
-  type: replace
-  value: *cassandra_networks
-
-- path: /instance_groups/name=broker-deregistrar-vm/networks
-  type: replace
-  value: *cassandra_networks
-
-
 # Set correct instance
 
 - path: /instance_groups/name=broker-registrar-vm/jobs/name=broker-registrar/consumes/servicebroker/instances

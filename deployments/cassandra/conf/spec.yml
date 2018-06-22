@@ -5,21 +5,21 @@ subsys:
   deploy_after: shield-v7 # which itself is to "deploy_after: cf"
 
 input_resources:
-  - name: cassandra-boshrelease
+  - name: cassandra-deployment
     type: git
-    uri: https://github.com/orange-cloudfoundry/cassandra-cf-service-boshrelease.git
-    version: 0ce5af0 # on 'implement-topology-mapping' branch, v6 with fixes and features, as of Apr. 4th, 2018
+    uri: https://github.com/orange-cloudfoundry/cassandra-deployment.git
+    version: v8 # as of June 22st, 2018
 
 
-main_deployment_file: cassandra-boshrelease/deployment/cassandra.yml
+main_deployment_file: cassandra-deployment/cassandra.yml
 
 
 operations_files:
-  10.cassandra-boshrelease:
-    - deployment/operations/bosh-lite
-    - deployment/operations/cf-service-broker
-    - deployment/operations/shield-v7-agent
-    - deployment/operations/use-bpm
+  10.cassandra-deployment:
+    - operations/bosh-lite
+    - operations/cf-service-broker
+    - operations/shield-v7-agent
+    - operations/use-bpm
   20.local:
     - inject-variables
     - set-versions
@@ -54,13 +54,20 @@ deployment_vars:
 
   # Versions
 
-  cassandra_version: latest # "6+dev.1"
+  cassandra_version: "8"
+  cassandra_sha1: e8b8221f89a09f66e015d9e2356fa2d4a23d1aa9
+
+  bpm_version: "0.6.0"
+  bpm_sha1: 4f0f239abdc801d71de9063625aa56e3c42634b5
 
   broker_registrar_version: "3.4.0"
   broker_registrar_sha1: d44d9af8fd06ecf6d50004c9bfd5516a6e482201
 
   shield_version: "7.0.4"
   shield_sha1: 6dd6acb2da7d5c451b53bca15d0ec5a8e767fa3c
+
+  # routing_version:  # imported below
+  # routing_sha1:     # imported below
 
   # stemcell_name:    # imported below
   # stemcell_version: # imported below
