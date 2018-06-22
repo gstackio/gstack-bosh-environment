@@ -5,6 +5,7 @@
 /bin/dnscontrol
 /bin/credhub
 /bin/cf
+/bin/humanize-manifest
 creds.yml
 creds.json
 *-creds.yml

@@ -472,6 +472,9 @@ function update_config() {
         --vars-file <(spec_var /config_vars) \
         --vars-file <(imported_vars) \
         > "$subsys_state_dir/${cfg_type}-config.yml"
+    [ -x "$(which humanize-manifest)" ] && \
+        humanize-manifest "$subsys_state_dir/${cfg_type}-config.yml" \
+            > "$subsys_state_dir/${cfg_type}-config-humanized.yml"
 
     if [ ! -s "$subsys_state_dir/${cfg_type}-config.yml" ]; then
         echo "${cfg_type} config file is empty." \
@@ -575,6 +578,9 @@ function converge_deployment() {
 
     restrict_permissions "$subsys_state_dir/depl-creds.yml"
     bosh_ro_invoke interpolate > "$subsys_state_dir/depl-manifest.yml"
+    [ -x "$(which humanize-manifest)" ] && \
+        humanize-manifest "$subsys_state_dir/depl-manifest.yml" \
+            > "$subsys_state_dir/depl-manifest-humanized.yml"
 
     run_hook_once pre-deploy "$SUBSYS_DIR/pre-deploy-once.sh"
     run_hook "$SUBSYS_DIR/pre-deploy.sh"
@@ -676,6 +682,9 @@ function create_env() {
     echo -e "\n${BLUE}Running ${BOLD}bosh create-env$RESET to create the BOSH environment\n"
 
     infra_bosh_ro_invoke interpolate > "$state_dir/depl-manifest.yml"
+    [ -x "$(which humanize-manifest)" ] && \
+        humanize-manifest "$state_dir/depl-manifest.yml" \
+            > "$state_dir/depl-manifest-humanized.yml"
 
     export BOSH_LOG_LEVEL=DEBUG
     export BOSH_LOG_PATH=$state_dir/bosh-create-env.log
@@ -703,6 +712,9 @@ function delete_env() {
     local state_dir
     state_dir=$(state_dir "$GBE_ENVIRONMENT")
     infra_bosh_ro_invoke interpolate > "$state_dir/depl-manifest.yml"
+    [ -x "$(which humanize-manifest)" ] && \
+        humanize-manifest "$state_dir/depl-manifest.yml" \
+            > "$state_dir/depl-manifest-humanized.yml"
 
     echo -e "\n${BLUE}Logging out from credhub and closing SSH tunnel$RESET\n"
 
