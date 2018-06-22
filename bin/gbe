@@ -432,13 +432,16 @@ function add_routes() {
     local netstat_pattern
     local platform=$(platform)
     case $platform in
-        darwin) netstat_pattern=$(echo "$network_cidr" | sed -e 's/\.0//g') ;;
+        darwin) netstat_pattern=$(echo "$network_cidr" \
+                                    | sed -E -e 's`(\.0)+(/[0-9]+)?$`\2`') ;;
         linux)  netstat_pattern=$(echo "$netstat_cidr" \
-                                        | sed -e 's`/.*$``; s/\./\\./g') ;;
+                                    | sed -r -e 's`/[0-9]+$``') ;;
     esac
-    if netstat -nr | awk '{print $1}' | grep -qE "^$netstat_pattern\$"; then
+    if netstat -nr | awk '{print $1}' | grep -qE "^${netstat_pattern//./\\.}\$"; then
         return
     fi
+    echo -e "\n${BLUE}Adding ${BOLD}route$RESET to reach the BOSH director and deployed nodes\n"
+    echo -e "${MAGENTA}Note: this might ask for your ${UNDERLINE}local$NOUNDERLINE ${BOLD}sudo password$RESET:"
     case $platform in
         darwin) sudo route add -net "$network_cidr"    $(internal_ip) ;;
         linux)  sudo route add -net "$network_cidr" gw $(internal_ip) ;;
