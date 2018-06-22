@@ -2,4 +2,6 @@
 
 set -ex
 
-bosh run-errand broker-registrar
+if bosh instances | grep -qF broker-registrar; then
+    bosh run-errand broker-registrar
+fi

@@ -27,13 +27,6 @@ function cf_login() {
     set -x
 }
 
-set -ex
-
-cf_login
-
-cf create-org service-sandbox
-cf create-space cassandra-smoke-tests -o service-sandbox
-
 function cleanup() {
     cf target -o service-sandbox -s cassandra-smoke-tests
     cf delete cassandra-example-app -r -f
@@ -42,6 +35,15 @@ function cleanup() {
     cf logout
 }
 
-trap cleanup EXIT
+set -ex
 
-bosh run-errand cassandra-smoke-tests
+if bosh instances | grep -qF smoke-tests; then
+    cf_login
+
+    cf create-org service-sandbox
+    cf create-space cassandra-smoke-tests -o service-sandbox
+
+    trap cleanup EXIT
+
+    bosh run-errand broker-smoke-tests
+fi
