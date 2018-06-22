@@ -55,12 +55,8 @@ deployment_vars:
   docker_version: "32.0.0"
   docker_sha1: 75a3e4f85f8d1a59b58c6b34cf568f72397b5680
 
-  bpm_version: "0.5.0"
-  bpm_sha1: f64f58784709df650754f8f5f9ed7d0a1a02a5a8
-  # bpm_version: "0.6.0"
-  # bpm_sha1: 4f0f239abdc801d71de9063625aa56e3c42634b5
-  # bpm_version: "0.7.0"
-  # bpm_sha1: 6ac1181ddb557002387606b0d8664f0c4d171c5d
+  bpm_version: "0.6.0"
+  bpm_sha1: 4f0f239abdc801d71de9063625aa56e3c42634b5
 
   broker_registrar_version: "3.4.0"
   broker_registrar_sha1: d44d9af8fd06ecf6d50004c9bfd5516a6e482201
