@@ -657,7 +657,9 @@ function create_env() {
 
     fetch_input_resources
     "read_$(spec_var /subsys/type)_spec"
-    mkdir -p "$(state_dir "$GBE_ENVIRONMENT")"
+    local state_dir
+    state_dir=$(state_dir "$GBE_ENVIRONMENT")
+    mkdir -p "$state_dir"
 
 
     pre_create_env_hook
@@ -673,10 +675,10 @@ function create_env() {
 
     echo -e "\n${BLUE}Running ${BOLD}bosh create-env$RESET to create the BOSH environment\n"
 
-    infra_bosh_ro_invoke interpolate > "$(state_dir "$GBE_ENVIRONMENT")/depl-manifest.yml"
+    infra_bosh_ro_invoke interpolate > "$state_dir/depl-manifest.yml"
 
     export BOSH_LOG_LEVEL=DEBUG
-    export BOSH_LOG_PATH=$(state_dir "$GBE_ENVIRONMENT")/bosh-create-env.log
+    export BOSH_LOG_PATH=$state_dir/bosh-create-env.log
     infra_bosh_rw_invoke create-env
 
 
@@ -698,7 +700,9 @@ function delete_env() {
     mkdir -p "$(state_dir "$GBE_ENVIRONMENT")"
 
 
-    infra_bosh_ro_invoke interpolate > "$(state_dir "$GBE_ENVIRONMENT")/depl-manifest.yml"
+    local state_dir
+    state_dir=$(state_dir "$GBE_ENVIRONMENT")
+    infra_bosh_ro_invoke interpolate > "$state_dir/depl-manifest.yml"
 
     echo -e "\n${BLUE}Logging out from credhub and closing SSH tunnel$RESET\n"
 
@@ -709,25 +713,25 @@ function delete_env() {
     unset BOSH_ALL_PROXY
 
 
-    if [ ! -e "$(state_dir "$GBE_ENVIRONMENT")/depl-creds.yml" ]; then
+    if [ ! -e "$state_dir/depl-creds.yml" ]; then
         echo -e "\n${BLUE}Skipping ${BOLD}bosh delete-env$RESET, as the 'state/$GBE_ENVIRONMENT/depl-creds.yml' file is absent\n"
     else
         echo -e "\n${BLUE}Running ${BOLD}bosh delete-env$RESET to destroy the BOSH environment\n"
         infra_bosh_rw_invoke delete-env
-        rm -vf "$(state_dir "$GBE_ENVIRONMENT")/depl-creds.yml"
+        rm -vf "$state_dir/depl-creds.yml"
     fi
 
     rm -f "$BASE_DIR"/state/*/{pre,post}-deploy-hook.yml
 
-    if [ ! -e "$(state_dir "$GBE_ENVIRONMENT")/jumpbox.key" ]; then
+    if [ ! -e "$state_dir/jumpbox.key" ]; then
         echo -e "\n${BLUE}Skipping ${BOLD}SSH key removal$RESET, as it is absent\n"
     else
         echo -e "\n${BLUE}Removing ${BOLD}SSH key$RESET from SSH Agent\n"
-        ssh-keygen -y -f "$(state_dir "$GBE_ENVIRONMENT")/jumpbox.key" > "$(state_dir "$GBE_ENVIRONMENT")/jumpbox.key.pub"
-        if ssh-add -L | grep -qF "$(cat "$(state_dir "$GBE_ENVIRONMENT")/jumpbox.key.pub")"; then
-            ssh-add -d "$(state_dir "$GBE_ENVIRONMENT")/jumpbox.key.pub"
+        ssh-keygen -y -f "$state_dir/jumpbox.key" > "$state_dir/jumpbox.key.pub"
+        if ssh-add -L | grep -qF "$(cat "$state_dir/jumpbox.key.pub")"; then
+            ssh-add -d "$state_dir/jumpbox.key.pub"
         fi
-        rm -vf "$(state_dir "$GBE_ENVIRONMENT")/jumpbox.key" "$(state_dir "$GBE_ENVIRONMENT")/jumpbox.key.pub"
+        rm -vf "$state_dir/jumpbox.key" "$state_dir/jumpbox.key.pub"
         ssh-keygen -f ~/.ssh/known_hosts -R "$(jumpbox_ip)"
     fi
 
