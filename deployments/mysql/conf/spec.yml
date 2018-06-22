@@ -34,6 +34,7 @@ deployment_vars:
   # User-facing settings
 
   cf_mysql_external_host: mysql.easyfoundry.prototyp.it
+  cf_service_name: mysql
 
 
   # Versions

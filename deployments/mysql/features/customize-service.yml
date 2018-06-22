@@ -3,7 +3,7 @@
 - type: replace
   path: /instance_groups/name=broker/jobs/name=cf-mysql-broker/properties/cf_mysql/broker/services
   value: &mysql_services
-    - name: mysql-shared
+    - name: ((cf_service_name))
       id: e5e3fc4b-4695-4ad1-9dcd-da4ebf8f8957
       dashboard_client:
         id: mysql-shared
