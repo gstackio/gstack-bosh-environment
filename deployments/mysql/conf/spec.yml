@@ -28,7 +28,7 @@ operations_files:
 
 
 deployment_vars:
-  deployment_name: easyfoundry-durable-mysql
+  deployment_name: easyfoundry-mysql
 
 
   # User-facing settings
