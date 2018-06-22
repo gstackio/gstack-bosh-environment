@@ -47,6 +47,7 @@ operations_files:
     - disable-resurrector
     - set-disk-size
     - scale-vm-size
+    - enable-index-based-dns-aliases
 
 
 deployment_vars:

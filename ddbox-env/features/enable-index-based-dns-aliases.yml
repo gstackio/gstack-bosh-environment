@@ -1,0 +1,5 @@
+---
+
+- path: /instance_groups/name=bosh/properties/director/local_dns/include_index?
+  type: replace
+  value: true

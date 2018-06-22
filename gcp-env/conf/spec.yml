@@ -48,6 +48,7 @@ operations_files:
     # - custom-bosh-version
     - disable-resurrector
     - scale-vm-and-disk
+    - enable-index-based-dns-aliases
 
 
 deployment_vars:
