@@ -1,0 +1,9 @@
+---
+
+- path: /instance_groups/name=etcd/persistent_disk_type
+  type: replace
+  value: 500MB
+
+- path: /instance_groups/name=cell/persistent_disk_type
+  type: replace
+  value: ((cell_disk_type))

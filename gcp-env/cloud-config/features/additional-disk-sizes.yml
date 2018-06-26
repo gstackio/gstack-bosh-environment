@@ -6,6 +6,12 @@
     name: 100MB
     disk_size: 100
 
+- path: /disk_types/name=500MB?
+  type: replace
+  value:
+    name: 500MB
+    disk_size: 500
+
 - path: /disk_types/name=20GB?
   type: replace
   value:

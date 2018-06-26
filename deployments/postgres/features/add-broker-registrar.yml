@@ -1,0 +1,64 @@
+---
+
+- path: /releases/name=broker-registrar?
+  type: replace
+  value:
+    name: broker-registrar
+    version: ((broker_registrar_version))
+    url: https://bosh.io/d/github.com/cloudfoundry-community/broker-registrar-boshrelease?v=((broker_registrar_version))
+    sha1: ((broker_registrar_sha1))
+
+- path: /instance_groups/name=broker-registrar-vm?
+  type: replace
+  value:
+    name: broker-registrar-vm
+    instances: 1
+    azs: [ z1 ]
+    lifecycle: errand
+    jobs:
+      - name: broker-registrar
+        release: broker-registrar
+        consumes: &consumed_links
+          servicebroker:
+            # Note: the dingo-postgres broker doesn't provide this link yet,
+            # so we revert back to manual linking
+            instances:
+              # This is dummy BOSH DNS alias. In fact we don't need it to
+              # resolve to any IP address since only the 'external_host' is
+              # actually used by the 'broker-registrar' job, and not this
+              # instance address.
+              - 0.router.((network_name)).((deployment_name)).bosh # Provided by a Bosh DNS alias
+            properties:
+              external_host: ((broker_external_host))
+              port: 8888
+              ssl_enabled: false
+              name: postgres-broker
+              username: broker
+              password: ((servicebroker_password))
+          cf-admin-user:
+            from: cf-admin-user
+            deployment: ((cf_deployment_name))
+        properties: &additional_properties
+          cf:
+            skip_ssl_validation: ((cf_skip_ssl_validation)) # not provided by the 'cf-admin-user' link
+    stemcell: default
+    vm_type: minimal
+    networks:
+      - name: ((network_name))
+
+- path: /instance_groups/name=broker-deregistrar-vm?
+  type: replace
+  value:
+    name: broker-deregistrar-vm
+    instances: 1
+    azs: [ z1 ]
+    lifecycle: errand
+    jobs:
+      - name: broker-deregistrar
+        release: broker-registrar
+        consumes: *consumed_links
+        properties: *additional_properties
+    stemcell: default
+    vm_type: minimal
+    networks:
+      - name: ((network_name))

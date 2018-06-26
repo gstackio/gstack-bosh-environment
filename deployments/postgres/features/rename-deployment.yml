@@ -1,0 +1,5 @@
+---
+
+- path: /name
+  type: replace
+  value: ((deployment_name))

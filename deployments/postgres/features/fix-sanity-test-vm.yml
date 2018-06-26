@@ -1,0 +1,5 @@
+---
+
+- path: /instance_groups/name=sanity-test/name
+  type: replace
+  value: sanity-test-vm

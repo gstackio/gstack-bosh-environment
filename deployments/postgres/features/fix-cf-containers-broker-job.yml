@@ -1,0 +1,5 @@
+---
+
+- path: /instance_groups/name=cell/jobs/name=cf-containers-broker/release
+  type: replace
+  value: cf-containers-broker

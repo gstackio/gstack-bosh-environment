@@ -1,0 +1,140 @@
+---
+subsys:
+  name: postgres
+  type: bosh-deployment
+  deploy_after: cf
+
+input_resources:
+  - name: dingo-postgresql-release-bosh2
+    type: git
+    uri: https://github.com/dingotiles/dingo-postgresql-release.git
+    # version: bd0f88f # on the 'links-and-cloud-config' branch (version 0.10.3-rc.38), as of April 19th, 2017
+    version: links-and-cloud-config # ongoing work on the 'links-and-cloud-config' branch (version 0.10.3-rc.38), as of June 23rd, 2018
+
+  # # The problem with version 0.10.2 below is that is is late compared to
+  # # master or the the 'links-and-cloud-config' branch, and that it does not
+  # # support BOSH v2.0
+  # - name: dingo-postgresql-release
+  #   type: git
+  #   uri: https://github.com/dingotiles/dingo-postgresql-release.git
+  #   version: v0.10.2
+  #   # main_deployment_file: dingo-postgresql-release/templates/deployment.yml
+
+
+main_deployment_file: dingo-postgresql-release-bosh2/manifests/dingo-postgresql.yml
+
+operations_files:
+  local:
+    - rename-deployment
+    - rename-network
+    - pin-versions
+    - scale-disks
+    - add-broker-registrar
+    - setup-broker-route
+    - fix-sanity-test-vm
+    # - fix-cf-containers-broker-job
+
+
+deployment_vars:
+  deployment_name: easyfoundry-postgres
+
+
+  # User-facing settings
+
+  broker_external_host: postgres.easyfoundry.prototyp.it
+
+
+  # Settings
+
+  cell_max_containers: 5 # (typically 20 max for 14GB RAM VMs in production)
+  cell_disk_type: 5GB
+
+  # Broker
+  # clusterdata backups
+  backups_clusterdata_bucket_name: ~
+  backups_clusterdata_region: ~
+  backups_clusterdata_aws_access_key_id: ~
+  backups_clusterdata_aws_secret_access_key: ~
+  # database_storage backups
+  backups_database_storage_bucket_name: ~
+  backups_database_storage_region: ~
+  backups_database_storage_aws_access_key_id: ~
+  backups_database_storage_aws_secret_access_key: ~
+
+
+  # Versions
+
+  # dingo_postgres_version: "0.10.2"
+  # dingo_postgres_sha1: 6a863309a1870c546664ace610a20a6b1a1b1850
+
+  simple_remote_syslog_version: "2.2.1"
+  simple_remote_syslog_sha1: 17f8fbd534599920e7e86ca87fcceabe63cf2a71
+
+  dingo_etcd2_version: "95.2"
+  dingo_etcd2_sha1: 1b449036b25e302ab1a56965a6861dc1b4ed9516
+
+  docker_version: "30.1.0"
+  docker_sha1: bcc2e859836415c37b5a668eff5d17761e5321b5
+  # docker_version: "32.0.0"
+  # docker_sha1: 75a3e4f85f8d1a59b58c6b34cf568f72397b5680
+
+  # cf_containers_broker_version: "1.0.3"
+  # cf_containers_broker_sha1: 11001a58965ce4243bd18f0e4301cdbbe949a2d9
+
+  broker_registrar_version: "3.4.0"
+  broker_registrar_sha1: d44d9af8fd06ecf6d50004c9bfd5516a6e482201
+
+  # routing_version:  # imported below
+  # routing_sha1:     # imported below
+
+  # stemcell_name:    # imported below
+  # stemcell_version: # imported below
+  # stemcell_sha1:    # imported below
+
+
+  # Reference declarations
+
+  network_name: default
+  # patroni_network_name: postgres-patroni-network # not used anymore
+  # router_network_name: postgres-router-network # not used anymore
+
+
+imported_vars:
+  - subsys: cf
+    imports:
+      - name: stemcell_name
+        from: depl-vars
+        path: /stemcell_name
+      - name: stemcell_version
+        from: depl-vars
+        path: /stemcell_version
+      - name: stemcell_sha1
+        from: depl-vars
+        path: /stemcell_sha1
+
+      - name: routing_version
+        from: depl-vars
+        path: /routing_version
+      - name: routing_sha1
+        from: depl-vars
+        path: /routing_sha1
+
+      - name: cf_deployment_name
+        from: depl-vars
+        path: /deployment_name
+
+      - name: cf_skip_ssl_validation
+        from: depl-manifest
+        path: /instance_groups/name=smoke-tests/jobs/name=smoke_tests/properties/smoke_tests/skip_ssl_validation
+
+      - name: cf_admin_username
+        from: depl-manifest
+        path: /instance_groups/name=api/jobs/name=cf-admin-user/properties/admin_username
+
+      - name: cf_admin_password
+        from: depl-creds
+        path: /cf_admin_password
+
+      - name: cf_system_domain
+        from: depl-vars
+        path: /system_domain

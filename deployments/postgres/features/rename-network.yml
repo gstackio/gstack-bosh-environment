@@ -1,0 +1,25 @@
+---
+
+- path: /instance_groups/name=etcd/networks/name=default/name
+  type: replace
+  value: ((network_name))
+
+- path: /instance_groups/name=cell/networks/name=default/name
+  type: replace
+  value: ((network_name))
+
+- path: /instance_groups/name=router/networks/name=default/name
+  type: replace
+  value: ((network_name))
+
+- path: /instance_groups/name=sanity-test/networks/name=default/name
+  type: replace
+  value: ((network_name))
+
+- path: /instance_groups/name=integration-test/networks/name=default/name
+  type: replace
+  value: ((network_name))
+
+- path: /instance_groups/name=disaster-recovery/networks/name=default/name
+  type: replace
+  value: ((network_name))
