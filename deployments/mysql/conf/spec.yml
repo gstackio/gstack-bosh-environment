@@ -102,7 +102,6 @@ imported_vars:
 
       - name: cf_main_app_domain
         from: depl-vars
-        path: /system_domain
         path: /app_domains/0/name
 
       - name: cf_network_name
