@@ -284,8 +284,7 @@ function update_usage() {
     local ul=$UNDERLINE
     local noul=$NOUNDERLINE
     echo "Usage:"
-    echo "  $ul$SCRIPT_NAME$noul  ${ul}update$noul  cloud-config    [-n]"
-    echo "  $ul$SCRIPT_NAME$noul  ${ul}update$noul  runtime-config  [-n]"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}update$noul  [-y]  [(cloud-config | runtime-config)...]"
     echo
     echo "Updates the cloud config or the runtime config in BOSH director."
     echo
@@ -304,7 +303,8 @@ function converge_usage() {
     local noul=$NOUNDERLINE
     local rst=$RESET
     echo "Usage:"
-    echo "  $ul$SCRIPT_NAME$noul  ${ul}converge$noul  [<subsys-name>]  [-n]"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}converge$noul"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}converge$noul  [-y]  <subsys-name>..."
     echo "  $ul$SCRIPT_NAME$noul  ${ul}converge$noul  all"
     echo "  $ul$SCRIPT_NAME$noul  ${ul}converge$noul  list"
     echo
@@ -332,7 +332,7 @@ function recreate_usage() {
     local noul=$NOUNDERLINE
     local rst=$RESET
     echo "Usage:"
-    echo "  $ul$SCRIPT_NAME$noul  ${ul}recreate$noul  <subsys-name>  [-n]"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}recreate$noul  [-y]  <subsys-name>..."
     echo "  $ul$SCRIPT_NAME$noul  ${ul}recreate$noul  all"
     echo
     echo "    <subsys-name>   The name of a subsys to recreate."
@@ -355,7 +355,7 @@ function delete_usage() {
     local noul=$NOUNDERLINE
     local rst=$RESET
     echo "Usage:"
-    echo "  $ul$SCRIPT_NAME$noul  ${ul}delete$noul  <subsys-name>  [-n]"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}delete$noul  [-y]  <subsys-name>..."
     echo "  $ul$SCRIPT_NAME$noul  ${ul}delete$noul  all"
     echo "  $ul$SCRIPT_NAME$noul  ${ul}delete$noul  list"
     echo
@@ -830,15 +830,13 @@ case $1 in
                 -y)
                     non_interactive=yes ;;
                 cloud-config)
-                    shift
                     ensure_reachability
-                    update_config cloud ${non_interactive:+"-n"} "$@"
-                    break ;;
+                    update_config cloud ${non_interactive:+"-n"}
+                    ;;
                 runtime-config)
-                    shift
                     ensure_reachability
-                    update_config runtime ${non_interactive:+"-n"} "$@"
-                    break ;;
+                    update_config runtime ${non_interactive:+"-n"}
+                    ;;
                 *)
                     update_usage
                     break ;;
