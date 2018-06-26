@@ -384,8 +384,9 @@ function export_usage() {
     echo
     echo "    <subsys-name>   The name of a subsys of type 'bosh-deployment'."
     echo
-    echo "Exports all compiled releases going through each deployments"
-    echo "currently managed by the BOSH director."
+    echo "Exports all compiled releases from the BOSH Director, going through"
+    echo "all deployments currently managed by the BOSH director, as desribed by"
+    echo "all subsystems."
     echo
     echo "When specifying a subsys name, the set of exported releases is"
     echo "restricted to those related to the specified subsystem. This"
