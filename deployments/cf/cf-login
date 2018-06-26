@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+SUBSYS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+BASE_DIR=$(cd "$SUBSYS_DIR/../.." && pwd)
+
 function cf_state_var() {
     local state_file=$1
     local path=$2
