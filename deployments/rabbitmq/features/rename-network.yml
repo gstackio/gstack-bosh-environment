@@ -1,0 +1,9 @@
+---
+
+- path: /instance_groups/name=rmq/networks/name=default/name
+  type: replace
+  value: ((network_name))
+
+- path: /instance_groups/name=haproxy/networks/name=default/name
+  type: replace
+  value: ((network_name))
