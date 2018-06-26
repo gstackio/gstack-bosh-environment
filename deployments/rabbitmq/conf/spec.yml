@@ -20,6 +20,7 @@ main_deployment_file: rabbitmq-boshrelease/manifests/cf-rabbitmq-template.yml
 
 operations_files:
   local:
+    - rename-deployment
     - set-versions
     - fix-missing-variables
     - scale-for-bosh-lite
