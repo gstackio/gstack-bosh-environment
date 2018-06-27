@@ -22,7 +22,7 @@ operations_files:
   20.local:
     - add-tls-vars
     - add-basic-auth-vars
-    - set-stemcell-version
+    - pin-stemcell-version
     - use-http-not-recommended
 
 
