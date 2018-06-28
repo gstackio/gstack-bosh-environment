@@ -1,0 +1,13 @@
+---
+
+- path: /instance_groups/name=web/jobs/name=atc/properties/log_level
+  type: replace
+  value: ((log_level))
+
+- path: /instance_groups/name=web/jobs/name=tsa/properties/log_level
+  type: replace
+  value: ((log_level))
+
+- path: /instance_groups/name=worker/jobs/name=baggageclaim/properties/log_level
+  type: replace
+  value: ((log_level))

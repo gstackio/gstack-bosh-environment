@@ -1,0 +1,45 @@
+---
+
+- path: /instance_groups/name=web/jobs/name=atc/properties/external_url
+  type: replace
+  value: https://((concourse_domain))
+
+- path: /instance_groups/name=web/jobs/name=atc/properties/tls_bind_port?
+  type: replace
+  value: 4443
+
+
+- path: /instance_groups/name=web/jobs/name=atc/properties/x_frame_options?
+  type: replace
+  # Prevent clickjacking attacks
+  # See <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options>
+  # See <https://en.wikipedia.org/wiki/clickjacking>
+  value: DENY
+
+
+- path: /releases/name=routing?
+  type: replace
+  value:
+    name: routing
+    version: ((routing_version))
+    url: https://bosh.io/d/github.com/cloudfoundry-incubator/cf-routing-release?v=((routing_version))
+    sha1: ((routing_sha1))
+
+- type: replace
+  path: /instance_groups/name=web/jobs/name=route_registrar?
+  value:
+    name: route_registrar
+    release: routing
+    consumes:
+      nats:
+        from: nats
+        deployment: ((cf_deployment_name))
+    properties:
+      route_registrar:
+        routes:
+          - name: ((deployment_name))_https
+            tls_port: 4443
+            server_cert_domain_san: ((concourse_domain))
+            registration_interval: 20s
+            uris:
+              - ((concourse_domain))

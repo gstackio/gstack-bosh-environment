@@ -14,16 +14,19 @@ main_deployment_file: concourse-deployment/cluster/concourse.yml
 
 operations_files:
   10.concourse-deployment:
-    - cluster/operations/tls
-    # - cluster/operations/tls-vars
-    - cluster/operations/basic-auth
     - cluster/operations/web-network-extension
     - cluster/operations/worker-ephemeral-disk
+    - cluster/operations/static-web
   20.local:
-    - tls-with-vars-and-external-ca
-    - basic-auth-with-vars
     - pin-stemcell-version
-    - use-http-not-recommended
+    - set-log-level
+    - basic-auth-with-vars       # replaces 'cluster/operations/basic-auth'
+    # We still have an issue with this encryption key and the bosh v2.0.45 CLI
+    - atc-db-encryption-with-var # replaces 'cluster/operations/encryption'
+    # - use-http-not-recommended
+    - tls-with-vars-and-external-ca # replaces 'cluster/operations/tls' and 'cluster/operations/tls-vars'
+    - credhub-integration-with-uaa-and-db-tls
+    - routing # requires 'cluster/operations/static-web'
 
 
 deployment_vars:
@@ -32,8 +35,8 @@ deployment_vars:
 
   # User-facing settings
 
-  external_url: ci.easyfoundry.prototyp.it
-  atc_basic_auth: { username: admin }
+  concourse_domain: ci.easyfoundry.prototyp.it
+  atc_basic_auth_username: admin
 
 
   # Versions
@@ -46,6 +49,18 @@ deployment_vars:
 
   postgres_version: "28"
   postgres_sha1: c1fcec62cb9d2e95e3b191e3c91d238e2b9d23fa
+
+  credhub_version: "1.9.3"
+  credhub_sha1: 648658efdef2ff18a69914d958bcd7ebfa88027a
+
+  os_conf_version: "20"
+  os_conf_sha1: 42b1295896c1fbcd36b55bfdedfe86782b2c9fba
+
+  # uaa_version:  # imported below
+  # uaa_sha1:     # imported below
+
+  # routing_version:  # imported below
+  # routing_sha1:     # imported below
 
   # stemcell_name:    # imported below
   # stemcell_version: # imported below
@@ -60,12 +75,14 @@ deployment_vars:
   worker_vm_type: default # m3.medium    # 1 CPU, 3.75GB RAM
   # A VM extension from your BOSH Director's cloud config that will attach
   # sufficient ephemeral storage to worker VMs.
-  worker_ephemeral_disk: 50GB_ephemeral_disk # consider 100GB for production systems
+  worker_ephemeral_disk: 50GB_ephemeral_disk # consider 200GB for production systems
+  log_level: info # set this to 'debug' whenever necessary
 
 
   # Reference declarations
 
   network_name: &network_name concourse-network # injected in cloud-config
+  web_ip: 10.244.16.2 # first address in the 'static' range
   # A VM extension from your BOSH Director's cloud config that will attach 'web'
   # instances to your ELB.
   web_network_vm_extension: concourse-atc-loadbalancer
@@ -85,3 +102,21 @@ imported_vars:
       - name: stemcell_sha1
         from: depl-vars
         path: /stemcell_sha1
+
+      - name: routing_version
+        from: depl-vars
+        path: /routing_version
+      - name: routing_sha1
+        from: depl-vars
+        path: /routing_sha1
+
+      - name: uaa_version
+        from: depl-vars
+        path: /uaa_version
+      - name: uaa_sha1
+        from: depl-vars
+        path: /uaa_sha1
+
+      - name: cf_deployment_name
+        from: depl-vars
+        path: /deployment_name

@@ -73,6 +73,7 @@ operations_files:
     - cassandra-support
     - database-mysql-bosh-lite
     - scale-disks
+    - tls-from-gorouters-to-backends
 
 
 deployment_vars:
@@ -89,9 +90,6 @@ deployment_vars:
 
   # Versions
 
-  routing_version: "0.179.0"
-  routing_sha1: 203061d0438ed76f25573080f9d1f73f06de5851
-
   stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
   stemcell_version: "3586.24"
   stemcell_sha1: 32c1e09391d509d24026e55555df07a166f8b8eb
@@ -99,8 +97,14 @@ deployment_vars:
 
   # Reference declarations
 
+  routing_version: "0.179.0"
+  routing_sha1: 203061d0438ed76f25573080f9d1f73f06de5851
+
   cf_mysql_version: "36.14.0"
   cf_mysql_sha1: 383f70fd4d776bf91d9043d8fd9ad79516cc8478
+
+  uaa_version: "59"
+  uaa_sha1: 6aa5cd78892f4ea09070c0cf5155aa7a12c17d13
 
   network_name: default # injected in cloud-config
 
@@ -111,3 +115,9 @@ imported_vars:
       - name: grafana_redirect_uri
         from: depl-vars
         value: https://uaa.((system_domain))/login
+
+  - subsys: concourse
+    imports:
+      - name: concourse_external_ca_certificate
+        from: depl-creds
+        path: /concourse-external-ca/certificate

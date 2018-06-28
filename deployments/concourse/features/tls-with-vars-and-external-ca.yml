@@ -1,9 +1,17 @@
 ---
 
-- path: /variables?/name=concourse_extern_ca
+- path: /instance_groups/name=web/jobs/name=atc/properties/tls_cert?
+  type: replace
+  value: ((atc_tls.certificate))
+
+- path: /instance_groups/name=web/jobs/name=atc/properties/tls_key?
+  type: replace
+  value: ((atc_tls.private_key))
+
+- path: /variables?/name=concourse-external-ca
   type: replace
   value:
-    name: concourse_extern_ca
+    name: concourse-external-ca
     type: certificate
     options:
       is_ca: true
@@ -15,5 +23,5 @@
     name: atc_tls
     type: certificate
     options:
-      ca: concourse_extern_ca
-      common_name: ((external_url))
+      ca: concourse-external-ca
+      common_name: ((concourse_domain))

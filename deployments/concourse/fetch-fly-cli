@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+SUBSYS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+BASE_DIR=$(cd "$SUBSYS_DIR/../.." && pwd)
+
+function spec_var() {
+    local path=$1
+    bosh int "$SUBSYS_DIR/conf/spec.yml" --path "$path"
+}
+
+set -e
+
+concourse_domain=$(spec_var /deployment_vars/concourse_domain)
+platform=$(uname -s | tr '[:upper:]' '[:lower:]')
+
+set -x
+
+curl -L "https://$concourse_domain/api/v1/cli?arch=amd64&platform=$platform" \
+    -o "$BASE_DIR/bin/fly"

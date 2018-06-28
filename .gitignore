@@ -6,6 +6,7 @@
 /bin/credhub
 /bin/cf
 /bin/humanize-manifest
+/bin/fly
 creds.yml
 creds.json
 *-creds.yml

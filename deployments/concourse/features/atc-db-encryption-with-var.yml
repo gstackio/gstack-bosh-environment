@@ -1,0 +1,20 @@
+---
+
+- path: /instance_groups/name=web/jobs/name=atc/properties/encryption_key?
+  type: replace
+  value: ((atc-db-encryption-key))
+
+- path: /variables/name=atc-db-encryption-key?
+  type: replace
+  value:
+    name: atc-db-encryption-key
+    type: password
+    options:
+      length: 32 # doesn't work with BOSH CLI v2.0.45
+
+- path: /variables/name=atc-db-encryption-key-tail?
+  type: replace
+  value:
+    # 12 chars of whcih are to be append to the above manually in depl-creds.yml
+    name: atc-db-encryption-key-tail
+    type: password

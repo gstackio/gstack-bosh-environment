@@ -1,0 +1,381 @@
+---
+
+# ----------- #
+# Internal CA #
+# ----------- #
+
+- path: /variables/name=concourse-internal-ca?
+  type: replace
+  value:
+    name: concourse-internal-ca
+    type: certificate
+    options:
+      is_ca: true
+      common_name: Concourse internal CA
+
+
+
+# ------- #
+# CredHub #
+# ------- #
+
+- path: /releases/name=credhub?
+  type: replace
+  value:
+    name: credhub
+    version: ((credhub_version))
+    url: https://bosh.io/d/github.com/pivotal-cf/credhub-release?v=((credhub_version))
+    sha1: ((credhub_sha1))
+
+- path: /instance_groups/name=web/jobs/name=credhub?
+  type: replace
+  value:
+    name: credhub
+    release: credhub
+    properties:
+      credhub:
+        port: 8844
+        tls: ((credhub-tls))
+        authentication:
+          uaa:
+            url: *uaa_url
+            verification_key: ((uaa-jwt))
+            ca_certs:
+              - ((uaa-tls.certificate))
+        data_storage:
+          type: postgres
+          username: &credhub_db_username credhub
+          password: &credhub_db_password ((credhub-database-password))
+          database: &credhub_db_name credhub
+        encryption:
+          keys:
+            - provider_name: internal_ecrypter
+              key_properties:
+                encryption_password: ((credhub-encryption-password))
+              active: true
+          providers:
+            - name: internal_ecrypter
+              type: internal
+        log_level: ((log_level))
+
+- path: /instance_groups/name=db/jobs/name=postgres/properties/databases/databases/-
+  type: replace
+  value:
+    name: *credhub_db_name
+
+- path: /instance_groups/name=db/jobs/name=postgres/properties/databases/roles/-
+  type: replace
+  value:
+    name: *credhub_db_username
+    password: *credhub_db_password
+
+- path: /variables/name=credhub-tls?
+  type: replace
+  value:
+    name: credhub-tls
+    type: certificate
+    options:
+      ca: concourse-internal-ca
+      common_name: 127.0.0.1
+      alternative_names:
+        - ((web_ip))
+
+- path: /variables/name=credhub-database-password?
+  type: replace
+  value:
+    name: credhub-database-password
+    type: password
+
+- path: /variables/name=credhub-encryption-password?
+  type: replace
+  value:
+    name: credhub-encryption-password
+    type: password
+
+
+
+# --- #
+# UAA #
+# --- #
+
+- path: /releases/name=uaa?
+  type: replace
+  value:
+    name: uaa
+    version: ((uaa_version))
+    url: https://bosh.io/d/github.com/cloudfoundry/uaa-release?v=((uaa_version))
+    sha1: ((uaa_sha1))
+
+- path: /instance_groups/name=web/jobs/name=uaa?
+  type: replace
+  value:
+    name: uaa
+    release: uaa
+    consumes:
+      database: { from: postgres }
+    properties:
+      bpm: { enabled: false }
+      uaa:
+        port: -1 # Deactivate HTTP port 8080 for the healthcheck to properly
+                 # curl the 8443 port (this has been fixed in UAA v60)
+        ssl: { port: 8443 }
+        url: &uaa_url https://127.0.0.1:8443
+        catalina_opts: -Djava.security.egd=file:/dev/./urandom -Xmx768m -XX:MaxMetaspaceSize=256m
+        scim:
+          users:
+            - name: admin
+              password: ((uaa-admin-user-password))
+              groups:
+                - scim.write
+                - scim.read
+                - credhub.read
+                - credhub.write
+        admin: { client_secret: ((uaa-admin-client-secret)) }
+        login: { client_secret: ((uaa-login-client-secret)) }
+        zones: { internal: { hostnames: [] } }
+        sslCertificate: ((uaa-tls.certificate))
+        sslPrivateKey: ((uaa-tls.private_key))
+        jwt:
+          revocable: true
+          policy:
+            active_key_id: key-1
+            keys:
+              key-1:
+                signingKey: ((uaa-jwt.private_key))
+        logging_level: ((log_level))
+      uaadb:
+        port: 5432
+        db_scheme: postgresql
+        databases:
+          - tag: uaa
+            name: &uaa_db_name uaa
+        roles:
+          - tag: admin
+            name: &uaa_db_username uaa
+            password: ((uaa-db-password))
+      login:
+        saml:
+          serviceProviderCertificate: ((uaa-tls.certificate))
+          serviceProviderKey: ((uaa-tls.private_key))
+          serviceProviderKeyPassword: ""
+      encryption:
+        active_key_label: encryption_key1
+        encryption_keys:
+          - label: encryption_key1
+            passphrase: ((uaa-encryption-passphrase))
+
+- path: /instance_groups/name=web/update?/canary_watch_time
+  type: replace
+  # With UAA, and CreHub starting after it, the startup may be slower
+  value: 20000-90000
+
+- path: /instance_groups/name=web/update?/update_watch_time
+  type: replace
+  value: 20000-90000
+
+
+- path: /instance_groups/name=db/jobs/name=postgres/properties/databases/databases/-
+  type: replace
+  value:
+    name: *uaa_db_name
+
+- path: /instance_groups/name=db/jobs/name=postgres/properties/databases/roles/-
+  type: replace
+  value:
+    name: *uaa_db_username
+    password: ((uaa-db-password))
+
+
+- path: /variables/name=uaa-admin-user-password?
+  type: replace
+  value:
+    name: uaa-admin-user-password
+    type: password
+
+- path: /variables/name=uaa-jwt?
+  type: replace
+  value:
+    name: uaa-jwt
+    type: rsa
+    options:
+      key_length: 4096
+
+- path: /variables/name=uaa-tls?
+  type: replace
+  value:
+    name: uaa-tls
+    type: certificate
+    options:
+      ca: concourse-external-ca
+      common_name: 127.0.0.1
+      alternative_names:
+        - ((web_ip))
+        - ((concourse_domain))
+
+- path: /variables/name=uaa-admin-client-secret?
+  type: replace
+  value:
+    name: uaa-admin-client-secret
+    type: password
+
+- path: /variables/name=uaa-login-client-secret?
+  type: replace
+  value:
+    name: uaa-login-client-secret
+    type: password
+
+- path: /variables/name=uaa-db-password?
+  type: replace
+  value:
+    name: uaa-db-password
+    type: password
+
+- path: /variables/name=uaa-encryption-passphrase?
+  type: replace
+  value:
+    name: uaa-encryption-passphrase
+    type: password
+
+
+
+# --------------------------- #
+# UAA integration for CredHub #
+# --------------------------- #
+
+- path: /instance_groups/name=web/jobs/name=uaa/properties/uaa/clients?/credhub_cli
+  type: replace
+  value:
+    override: true
+    authorized-grant-types: password,refresh_token
+    scope: credhub.read,credhub.write
+    authorities: uaa.resource
+    access-token-validity: 30
+    refresh-token-validity: 3600
+    secret: ""
+
+- path: /instance_groups/name=web/jobs/name=uaa/properties/uaa/clients?/credhub-admin
+  type: replace
+  value:
+    override: true
+    authorized-grant-types: client_credentials
+    scope: ""
+    authorities: credhub.read,credhub.write
+    access-token-validity: 3600
+    secret: ((credhub-admin-client-secret))
+
+- path: /variables/-
+  type: replace
+  value:
+    name: credhub-admin-client-secret
+    type: password
+
+
+
+# --------------------------------- #
+# CredHub integration for Concourse #
+# --------------------------------- #
+
+# From turbo <https://github.com/pivotalservices/turbo/blob/master/deployments/ucc/manifest/manifest.yml#L68-L76>
+- path: /instance_groups/name=web/jobs/name=atc/properties/credhub?
+  type: replace
+  value:
+    path_prefix: /concourse
+    url: https://127.0.0.1:8844
+    tls:
+      ca_cert:
+        certificate: ((concourse-internal-ca.certificate))
+      insecure_skip_verify: false
+    client_id: concourse-to-credhub
+    client_secret: ((concourse-to-credhub-client-secret))
+
+# From turbo <https://github.com/pivotalservices/turbo/blob/master/deployments/ucc/manifest/manifest.yml#L137-L145>
+# From BUCC <https://github.com/starkandwayne/bucc/blob/master/ops/4-concourse-credhub.yml#L12-L20>
+- path: /instance_groups/name=web/jobs/name=uaa/properties/uaa/clients/concourse-to-credhub?
+  type: replace
+  value:
+    override: true
+    authorized-grant-types: client_credentials,password,refresh_token
+    scope: ""
+    authorities: credhub.read,credhub.write
+    access-token-validity: 3600
+    refresh-token-validity: 3600
+    secret: ((concourse-to-credhub-client-secret))
+
+- path: /variables/name=concourse-to-credhub-client-secret?
+  type: replace
+  value:
+    name: concourse-to-credhub-client-secret
+    type: password
+
+
+
+# ------------------------------------- #
+# Database TLS for ATC, CredHub and UAA #
+# ------------------------------------- #
+
+- path: /releases/name=os-conf?
+  type: replace
+  value:
+    name: os-conf
+    version: ((os_conf_version))
+    url: https://bosh.io/d/github.com/cloudfoundry/os-conf-release?v=((os_conf_version))
+    sha1: ((os_conf_sha1))
+
+
+- path: /instance_groups/name=web/jobs/name=atc/properties/postgresql/sslmode?
+  type: replace
+  value: verify-ca
+
+- path: /instance_groups/name=web/jobs/name=atc/properties/postgresql/ca_cert?
+  type: replace
+  value: ((database-tls.ca))
+
+
+- path: /instance_groups/name=web/jobs/name=credhub/properties/credhub/data_storage/require_tls?
+  type: replace
+  value: true
+
+- path: /instance_groups/name=web/jobs/name=credhub/properties/credhub/data_storage/tls_ca?
+  type: replace
+  value: ((database-tls.ca))
+
+
+- path: /instance_groups/name=web/jobs/name=ca_certs?
+  type: replace
+  value:
+    name: ca_certs
+    release: os-conf
+    properties:
+      certs: |
+        ((database-tls.ca))
+
+- path: /instance_groups/name=web/jobs/name=uaa/properties/uaadb/tls_enabled?
+  type: replace
+  # Note: enabling this requires the CA cert to be in
+  # /usr/local/share/ca-certificates, as the 'ca_cert' job of 'os-conf'
+  # release does above.
+  value: true
+
+
+- path: /instance_groups/name=web/jobs/name=uaa/properties/uaadb/skip_ssl_validation?
+  type: replace
+  value: false
+
+- path: /instance_groups/name=db/jobs/name=postgres/properties/databases/tls?
+  type: replace
+  value:
+    ca: ((database-tls.ca))
+    certificate: ((database-tls.certificate))
+    private_key: ((database-tls.private_key))
+
+
+- path: /variables/name=database-tls?
+  type: replace
+  value:
+    name: database-tls
+    type: certificate
+    options:
+      ca: concourse-internal-ca
+      common_name: 127.0.0.1
+      alternative_names:
+        - ((web_ip))
