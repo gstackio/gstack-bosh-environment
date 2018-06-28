@@ -20,8 +20,8 @@ operations_files:
     - cluster/operations/web-network-extension
     - cluster/operations/worker-ephemeral-disk
   20.local:
-    - add-tls-vars
-    - add-basic-auth-vars
+    - tls-with-vars-and-external-ca
+    - basic-auth-with-vars
     - pin-stemcell-version
     - use-http-not-recommended
 
