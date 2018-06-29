@@ -182,6 +182,25 @@ function import_file_value() {
     fi
 }
 
+function merge_yaml_value_in_vars_file() {
+    local src_var_value=$1
+    local dst_var_name=$2
+    local dst_yaml_file=$3
+
+    local tmp_file
+    tmp_file=$(mktemp)
+    # Merge $var_value YAML node at the root level of the destination YAML
+    # file (as designated by $dst_yaml_file) at key $dst_var_name
+    echo "--- [ { path: '/${dst_var_name}?', value: ((var_value)), type: replace } ]" \
+        | bosh_int_with_value "$src_var_value" \
+               --ops-file /dev/stdin \
+               "$dst_yaml_file" \
+           > "$tmp_file"
+
+    cp "$tmp_file" "$dst_yaml_file"
+    rm -f "$tmp_file"
+}
+
 function import_state_value() {
     local subsys_name=$1
     local import_from=$2 # Base name of input YAML file, to be found in state
@@ -189,11 +208,12 @@ function import_state_value() {
     local base_path=$3
     local to_yaml_file=$4 # Absolute path the output YAML file
 
-    local var_name=$(spec_var "$base_path/name")
-    local var_value_tmpl=$(spec_var "$base_path/value")
-    local import_path=$(spec_var "$base_path/path")
+    local var_name var_value_tmpl import_path vars_file var_value
+    var_name=$(spec_var "$base_path/name")
+    var_value_tmpl=$(spec_var "$base_path/value")
+    import_path=$(spec_var "$base_path/path")
 
-    local vars_file=$(state_dir "$subsys_name")/${import_from}.yml
+    vars_file=$(state_dir "$subsys_name")/${import_from}.yml
 
     if [ -n "$var_value_tmpl" ]; then
         if [ -z "$to_yaml_file" ]; then
@@ -226,17 +246,7 @@ function import_state_value() {
     if [ -z "$to_yaml_file" ]; then
         bosh_int_with_value "$var_value" <(echo "$var_name: ((var_value))")
     else
-        local tmp_file=$(mktemp)
-        # Merge $var_value YAML node at the root level of the YAML file (as
-        # designated by $to_yaml_file) at key $var_name
-        echo "--- [ { path: '/${var_name}?', value: ((var_value)), type: replace } ]" \
-            | bosh_int_with_value "$var_value" \
-                   --ops-file /dev/stdin \
-                   "$to_yaml_file" \
-               > "$tmp_file"
-
-        cp "$tmp_file" "$to_yaml_file"
-        rm -f "$tmp_file"
+        merge_yaml_value_in_vars_file "$var_value" "$var_name" "$to_yaml_file"
     fi
 }
 
