@@ -36,7 +36,13 @@ function post_create_env_hook() {
 }
 
 function ensure_reachability_hook() {
-	add_routes
+    local vbox_host
+    vbox_host=$(env_depl_var vbox_host 2> /dev/null) \
+        || true # we don't mind if 'vbox_host' is not defined
+    if [[ -z $vbox_host || $vbox_host == null ]]; then
+        # We need to add this route only when using a local virtualbox
+        add_routes
+    fi
 }
 
 function env_exports_hook() {
