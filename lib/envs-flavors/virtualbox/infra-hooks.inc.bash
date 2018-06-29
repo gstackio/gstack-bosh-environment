@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 
+function env_depl_var() {
+    local depl_var_name=$1
+    spec_var "/deployment_vars/$depl_var_name" "$BASE_DIR/$GBE_ENVIRONMENT"
+}
+
 function internal_ip_hook() {
-    spec_var /deployment_vars/internal_ip "$BASE_DIR/$GBE_ENVIRONMENT"
+    env_depl_var internal_ip
 }
 
 function external_ip_hook() {
-    spec_var /deployment_vars/external_ip "$BASE_DIR/$GBE_ENVIRONMENT"
+    env_depl_var external_ip
 }
 
 function reachable_ip_hook() {
@@ -22,7 +27,7 @@ function pre_create_env_hook() {
 }
 
 function extern_infra_vars_hook() {
-    local internal_ip=$(spec_var /deployment_vars/internal_ip "$BASE_DIR/$GBE_ENVIRONMENT")
+    local internal_ip=$(env_depl_var internal_ip)
     echo "--- { internal_ip: \"$internal_ip\" }"
 }
 
@@ -35,7 +40,7 @@ function ensure_reachability_hook() {
 }
 
 function env_exports_hook() {
-	echo "unset BOSH_ALL_PROXY"
+    echo "unset BOSH_ALL_PROXY"
 }
 
 function setup_firewall_hook() {
@@ -43,8 +48,8 @@ function setup_firewall_hook() {
 
     local vboxmanage=vboxmanage
     local vbox_host vbox_username
-    vbox_host=$(spec_var /deployment_vars/vbox_host "$BASE_DIR/$GBE_ENVIRONMENT")
-    vbox_username=$(spec_var /deployment_vars/vbox_username "$BASE_DIR/$GBE_ENVIRONMENT")
+    vbox_host=$(env_depl_var vbox_host)
+    vbox_username=$(env_depl_var vbox_username)
     if [ -n "$vbox_host" ]; then
         vboxmanage="ssh $vbox_username@$vbox_host vboxmanage"
     fi
