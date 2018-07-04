@@ -582,7 +582,11 @@ function converge_deployment() {
 
     set -e
 
-    fetch_input_resources
+    local offline
+    if [[ $@ == *--offline* ]]; then
+        offline=yes
+    fi
+    fetch_input_resources ${offline:+--offline}
     local subsys_type subsys_state_dir
     subsys_type=$(spec_var --required /subsys/type)
     "read_${subsys_type}_spec"
@@ -594,6 +598,13 @@ function converge_deployment() {
     [ -x "$(which humanize-manifest)" ] && \
         humanize-manifest "$subsys_state_dir/depl-manifest.yml" \
             > "$subsys_state_dir/depl-manifest-humanized.yml"
+
+    if [[ -n $offline ]]; then
+        bosh_rw_invoke interpolate > /dev/null # generate credentails if necessary
+        echo -e "\nBOSH deployment manifest is rendered (and credentials" \
+            "generated) in '${subsys_state_dir/#$PWD/.}' directory.\n"
+        return
+    fi
 
     run_hook_once pre-deploy "$SUBSYS_DIR/pre-deploy-once.sh"
     run_hook "$SUBSYS_DIR/pre-deploy.sh"
@@ -863,6 +874,7 @@ case $1 in
             gbe_up
         else
             non_interactive=
+            offline=
             while [[ -n $1 ]]; do
                 case $1 in
                     -h)
@@ -870,6 +882,8 @@ case $1 in
                         break ;;
                     -y)
                         non_interactive=yes ;;
+                    --offline)
+                        offline=yes ;;
                     list)
                         list_deployments
                         break ;;
@@ -891,7 +905,9 @@ case $1 in
                     *)
                         assert_subsys_name "$1" || ( converge_usage && exit 2 )
                         ensure_reachability
-                        converge_deployment "$1" ${non_interactive:+"-n"} ;;
+                        converge_deployment "$1" \
+                            ${non_interactive:+"-n"} \
+                            ${offline:+"--offline"} ;;
                 esac
                 shift
             done

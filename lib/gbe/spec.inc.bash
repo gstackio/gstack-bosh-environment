@@ -48,7 +48,7 @@ function fetch_input_resources() {
         rsc_type=$(spec_var --required "$rsc_path/type")
         case $rsc_type in
             git|local-dir)
-                fetch_${rsc_type}_resource $rsc_path
+                fetch_${rsc_type}_resource $rsc_path "$@"
                 ;;
             *)
                 echo "${RED}ERROR:$RESET unsupported resource type: '$rsc_type'. Aborting." >&2
@@ -59,7 +59,7 @@ function fetch_input_resources() {
 }
 
 function fetch_git_resource() {
-    local rsc_path=$1
+    local rsc_path=$1; shift
 
     local rsc_name git_remote git_version cache_dir rsc_dir
     rsc_name=$(spec_var --required "$rsc_path/name")
@@ -70,7 +70,7 @@ function fetch_git_resource() {
     rsc_dir=$cache_dir/$rsc_name
     if [ -d "$rsc_dir" -o -L "$rsc_dir" ]; then
         pushd "$rsc_dir" > /dev/null || exit 115
-            if [ -n "$(git remote)" ]; then
+            if [[ -n $(git remote) && $@ != *--offline* ]]; then
                 git fetch -q
             fi
         popd > /dev/null
