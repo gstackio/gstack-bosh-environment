@@ -17,6 +17,8 @@ function cf_creds_var() {
 }
 
 function cf_login() {
+    export LANG=en_US.UTF-8
+
     cf_api_url=$(cf_depl_var /instance_groups/name=api/jobs/name=cf-admin-user/properties/api_url)
     cf_skip_ssl_validation=$(cf_depl_var /instance_groups/name=smoke-tests/jobs/name=smoke_tests/properties/smoke_tests/skip_ssl_validation)
     cf api "$cf_api_url" ${cf_skip_ssl_validation:+--skip-ssl-validation}
