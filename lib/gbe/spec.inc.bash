@@ -189,6 +189,10 @@ function merge_yaml_value_in_vars_file() {
 
     local tmp_file
     tmp_file=$(mktemp)
+    if [[ ! -e $dst_yaml_file || ! -s $dst_yaml_file ]]; then
+        # non existing or empty file: we need it to be an empty YAML hash
+        echo '--- {}' >> "$dst_yaml_file"
+    fi
     # Merge $var_value YAML node at the root level of the destination YAML
     # file (as designated by $dst_yaml_file) at key $dst_var_name
     echo "--- [ { path: '/${dst_var_name}?', value: ((var_value)), type: replace } ]" \
