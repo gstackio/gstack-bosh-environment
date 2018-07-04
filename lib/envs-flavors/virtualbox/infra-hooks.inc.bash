@@ -1,16 +1,22 @@
 #!/usr/bin/env bash
 
 function env_depl_var() {
+    local required
+    if [[ $1 == --required ]]; then
+        shift
+        required=yes
+    fi
+
     local depl_var_name=$1
-    spec_var "/deployment_vars/$depl_var_name" "$BASE_DIR/$GBE_ENVIRONMENT"
+    spec_var ${required:+--required} "/deployment_vars/$depl_var_name" "$BASE_DIR/$GBE_ENVIRONMENT"
 }
 
 function internal_ip_hook() {
-    env_depl_var internal_ip
+    env_depl_var --required internal_ip
 }
 
 function external_ip_hook() {
-    env_depl_var external_ip
+    env_depl_var --required external_ip
 }
 
 function reachable_ip_hook() {
@@ -27,7 +33,8 @@ function pre_create_env_hook() {
 }
 
 function extern_infra_vars_hook() {
-    local internal_ip=$(env_depl_var internal_ip)
+    local internal_ip
+    internal_ip=$(env_depl_var --required internal_ip)
     echo "--- { internal_ip: \"$internal_ip\" }"
 }
 
@@ -37,8 +44,11 @@ function post_create_env_hook() {
 
 function ensure_reachability_hook() {
     local vbox_host
-    vbox_host=$(env_depl_var vbox_host 2> /dev/null) \
-        || true # we don't mind if 'vbox_host' is not defined
+    vbox_host=$(bosh int --path /vbox_host $(state_dir "$GBE_ENVIRONMENT")/depl-creds.yml 2> /dev/null) \
+        || true
+    if [[ -z $vbox_host || $vbox_host == null ]]; then
+        vbox_host=$(env_depl_var vbox_host)
+    fi
     if [[ -z $vbox_host || $vbox_host == null ]]; then
         # We need to add this route only when using a local virtualbox
         add_routes
@@ -53,10 +63,11 @@ function setup_firewall_hook() {
     assert_utilities jq vboxmanage "to update forwarded ports"
 
     local vboxmanage=vboxmanage
-    local vbox_host vbox_username
+    local vbox_host
     vbox_host=$(env_depl_var vbox_host)
-    vbox_username=$(env_depl_var vbox_username)
     if [ -n "$vbox_host" ]; then
+        local vbox_username
+        vbox_username=$(env_depl_var --required vbox_username)
         vboxmanage="ssh $vbox_username@$vbox_host vboxmanage"
     fi
 

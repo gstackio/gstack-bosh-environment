@@ -21,12 +21,17 @@ function pre_create_env_hook() {
         # here as a safeguard
         rm -f "$bbl_state_file"
     fi
+    local iaas region zone project_id
+    iaas=$(spec_var --required /infra_vars/iaas)
+    region=$(spec_var --required /infra_vars/region)
+    zone=$(spec_var --required /infra_vars/zone)
+    project_id=$(spec_var --required /infra_vars/project_id)
     bbl_invoke up \
-        --iaas "$(spec_var /infra_vars/iaas)" \
-        --gcp-region "$(spec_var /infra_vars/region)" \
-        --gcp-zone "$(spec_var /infra_vars/zone)" \
+        --iaas "$iaas" \
+        --gcp-region "$region" \
+        --gcp-zone "$zone" \
         --gcp-service-account-key "$BASE_DIR/$GBE_ENVIRONMENT/conf/gcp-service-account.key.json" \
-        --gcp-project-id "$(spec_var /infra_vars/project_id)" \
+        --gcp-project-id "$project_id" \
         --no-director
 
     # Ensure restricted permissions for state files containing sensitive

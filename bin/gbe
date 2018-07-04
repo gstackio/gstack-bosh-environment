@@ -81,19 +81,25 @@ function env_exports() {
         return
     fi
 
-    function get_var() {
+    function env_creds_var() {
         local path=$1
         bosh int "$env_creds" --path "$path"
     }
 
     env_exports_hook
-    echo "export BOSH_CA_CERT=\"$(get_var /default_ca/ca)\""
+    local ca_cert admin_password jumpbox_private_key env_alias depl_name
+    ca_cert=$(env_creds_var /default_ca/ca)
+    admin_password=$(env_creds_var /admin_password)
+    jumpbox_private_key=$(state_dir "$GBE_ENVIRONMENT")/jumpbox.key
+    env_alias=$(spec_var --required /infra_vars/alias "$BASE_DIR/$GBE_ENVIRONMENT")
+    echo "export BOSH_CA_CERT=\"$ca_cert\""
     echo "export BOSH_CLIENT=admin"
-    echo "export BOSH_CLIENT_SECRET=\"$(get_var /admin_password)\""
-    echo "export BOSH_GW_PRIVATE_KEY=\"$(state_dir "$GBE_ENVIRONMENT")/jumpbox.key\""
-    echo "export BOSH_ENVIRONMENT=\"$(spec_var /infra_vars/alias "$BASE_DIR/$GBE_ENVIRONMENT")\""
+    echo "export BOSH_CLIENT_SECRET=\"$admin_password\""
+    echo "export BOSH_GW_PRIVATE_KEY=\"$jumpbox_private_key\""
+    echo "export BOSH_ENVIRONMENT=\"$env_alias\""
     if [ -n "$SUBSYS_DIR" ]; then
-        echo "export BOSH_DEPLOYMENT=\"$(spec_var /deployment_vars/deployment_name)\""
+        depl_name=$(spec_var --required /deployment_vars/deployment_name)
+        echo "export BOSH_DEPLOYMENT=\"$depl_name\""
     fi
 }
 
@@ -464,8 +470,10 @@ function update_config() {
     echo -e "\n${BLUE}Fetching ${BOLD}input resources$RESET\n"
 
     fetch_input_resources
-    "read_$(spec_var /subsys/type)_spec"
-    local subsys_state_dir=$(state_dir)
+    local subsys_type subsys_state_dir
+    subsys_type=$(spec_var --required /subsys/type)
+    "read_${subsys_type}_spec"
+    subsys_state_dir=$(state_dir)
     mkdir -p "$subsys_state_dir"
 
 
@@ -492,9 +500,9 @@ function update_config() {
 function upload_stemcell() {
     local stemcell_name stemcell_version stemcell_sha1
 
-    stemcell_name=$(spec_var /deployment_vars/stemcell_name) || true
-    stemcell_version=$(spec_var /deployment_vars/stemcell_version) || true
-    stemcell_sha1=$(spec_var /deployment_vars/stemcell_sha1) || true
+    stemcell_name=$(spec_var /deployment_vars/stemcell_name)
+    stemcell_version=$(spec_var /deployment_vars/stemcell_version)
+    stemcell_sha1=$(spec_var /deployment_vars/stemcell_sha1)
 
     if [ -z "$stemcell_name" -o -z "$stemcell_version" -o -z "$stemcell_sha1" ]; then
         return
@@ -536,7 +544,7 @@ function each_deployment() {
     local subsys_dir deploy_after depl_by_deps
     depl_by_deps=()
     for subsys_dir in "${subsys_dirs[@]}"; do
-        deploy_after=$(spec_var /subsys/deploy_after "$subsys_dir") || true
+        deploy_after=$(spec_var /subsys/deploy_after "$subsys_dir")
         depl_by_deps+=("${deploy_after:--} $(basename "$subsys_dir")")
     done
 
@@ -575,9 +583,10 @@ function converge_deployment() {
     set -e
 
     fetch_input_resources
-    "read_$(spec_var /subsys/type)_spec"
-
-    local subsys_state_dir=$(state_dir)
+    local subsys_type subsys_state_dir
+    subsys_type=$(spec_var --required /subsys/type)
+    "read_${subsys_type}_spec"
+    subsys_state_dir=$(state_dir)
     mkdir -p "$subsys_state_dir"
 
     restrict_permissions "$subsys_state_dir/depl-creds.yml"
@@ -666,8 +675,9 @@ function create_env() {
     echo -e "\n${BLUE}Fetching ${BOLD}input resources$RESET\n"
 
     fetch_input_resources
-    "read_$(spec_var /subsys/type)_spec"
-    local state_dir
+    local subsys_type state_dir
+    subsys_type=$(spec_var --required /subsys/type)
+    "read_${subsys_type}_spec"
     state_dir=$(state_dir "$GBE_ENVIRONMENT")
     mkdir -p "$state_dir"
 
@@ -709,12 +719,13 @@ function delete_env() {
     echo -e "\n${BLUE}Fetching ${BOLD}input resources$RESET\n"
 
     fetch_input_resources
-    read_$(spec_var /subsys/type)_spec
-    mkdir -p "$(state_dir "$GBE_ENVIRONMENT")"
-
-
-    local state_dir
+    local subsys_type state_dir
+    subsys_type=$(spec_var --required /subsys/type)
+    "read_${subsys_type}_spec"
     state_dir=$(state_dir "$GBE_ENVIRONMENT")
+    mkdir -p "$state_dir"
+
+
     infra_bosh_ro_invoke interpolate > "$state_dir/depl-manifest.yml"
     [ -x "$(which humanize-manifest)" ] && \
         humanize-manifest "$state_dir/depl-manifest.yml" \
@@ -761,7 +772,8 @@ GBE_ENVIRONMENT=${GBE_ENVIRONMENT:-ddbox-env}
 function load_env_flavor_hooks() {
     setup_bosh_cli 2.0.45 >&2
 
-    local gbe_env_flavor=$(spec_var /infra_vars/iaas "$BASE_DIR/$GBE_ENVIRONMENT")
+    local gbe_env_flavor
+    gbe_env_flavor=$(spec_var --required /infra_vars/iaas "$BASE_DIR/$GBE_ENVIRONMENT")
 
     source "$BASE_DIR/lib/envs-flavors/$gbe_env_flavor/infra-hooks.inc.bash"
 }

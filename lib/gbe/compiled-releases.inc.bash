@@ -12,7 +12,7 @@ function each_used_release() {
         subsys=
         deployments=$(echo "$deployments_json" | jq -r '.Tables[0].Rows[] | .name')
     else
-        deployments=$(spec_var /deployment_vars/deployment_name "$BASE_DIR/deployments/$subsys")
+        deployments=$(spec_var --required /deployment_vars/deployment_name "$BASE_DIR/deployments/$subsys")
     fi
 
     mkdir -p "$BASE_DIR/.cache/compiled-releases${subsys:+/$subsys}"
