@@ -11,3 +11,9 @@
 - path: /instance_groups/name=minio/persistent_disk_type
   type: replace
   value: ((persistent_disk_type))
+
+- path: /instance_groups/name=tests/persistent_disk_type
+  type: remove
+
+- path: /instance_groups/name=bucket-seeding/persistent_disk_type
+  type: remove
