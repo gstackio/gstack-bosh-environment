@@ -8,9 +8,9 @@ function each_used_release() {
                 | awk '{sub("\\*$", "", $2); print $3 "/" $2}' \
                 | head -n1)
     deployments_json=$(bosh deployments --json)
-    if [ -z "$subsys" -o "$subsys" == '*' ]; then
+    if [[ -z $subsys || $subsys == '*' ]]; then
         subsys=
-        deployments=$(echo "$deployments_json" | jq -r '.Tables[0].Rows[] | .name')
+        deployments=$(jq -nr "$deployments_json | .Tables[0].Rows[] | .name")
     else
         deployments=$(spec_var --required /deployment_vars/deployment_name "$BASE_DIR/deployments/$subsys")
     fi
@@ -20,10 +20,9 @@ function each_used_release() {
 
     for depl_name in $deployments; do
 
-        depl_info_json=$(echo "$deployments_json" \
-            | jq '.Tables[0].Rows[] | select(.name == "'"$depl_name"'")')
+        depl_info_json=$(jq -n "$deployments_json | .Tables[0].Rows[] | select(.name == \"$depl_name\")")
 
-        for release in $(echo "$depl_info_json" | jq -r '.release_s'); do
+        for release in $(jq -nr "$depl_info_json | .release_s"); do
 
             base_filename=$(echo "$release" | tr / -)-$(echo "$stemcell" | tr / -)
 
