@@ -18,12 +18,31 @@ function spec_var() {
         return 1
     fi
 
+    local initial_errexit=$(echo "$-" | sed -e 's/[^e]//g')
+    if [[ -n $initial_errexit ]]; then set +e; fi
+
+    local return_status=0
     command=(bosh int --path "$path" "$subsys_dir/conf/spec.yml")
     if [[ -n $required ]]; then
-        "${command[@]}"
+        local err_message err_code
+        # https://stackoverflow.com/a/963857
+        exec 3>&1 4>&2 # duplicate fd1->fd3 and fd2->fd4
+        err_message=$( { "${command[@]}" 2>&4 1>&3; } 2>&1 )
+        err_code=$?
+        exec 3>&- 4>&- # release the extra file descriptors
+        if [[ $err_code -ne 0 ]]; then
+            echo "${RED}ERROR:$RESET cannot find the required '$path' spec variable" \
+                "in '$(basename "$subsys_dir")/conf/spec.yml' file. Aborting." >&2
+            echo "Original error was:" >&2
+            sed -e 's/^/    -> /' <<<"$err_message"
+            return_status=$err_code
+        fi
     else
-        "${command[@]}" 2> /dev/null || true
+        "${command[@]}" 2> /dev/null
     fi
+
+    if [[ -n $initial_errexit ]]; then set -e; fi
+    return $return_status
 }
 
 function assert_subsys() {
