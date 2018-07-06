@@ -715,8 +715,12 @@ function create_env() {
         humanize-manifest "$state_dir/depl-manifest.yml" \
             > "$state_dir/depl-manifest-humanized.yml"
 
-    export BOSH_LOG_LEVEL=DEBUG
-    export BOSH_LOG_PATH=$state_dir/bosh-create-env.log
+    if [[ -n $GBE_DEBUG_LEVEL ]]; then
+        # This is just an example of how we can have verbose logs using the
+        # GBE_DEBUG_LEVEL environment variable.
+        export BOSH_LOG_LEVEL=DEBUG
+        export BOSH_LOG_PATH=$state_dir/bosh-create-env.log
+    fi
     infra_bosh_rw_invoke create-env
 
 
