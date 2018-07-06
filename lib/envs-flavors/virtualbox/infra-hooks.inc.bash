@@ -44,12 +44,8 @@ function post_create_env_hook() {
 
 function ensure_reachability_hook() {
     local vbox_host
-    vbox_host=$(bosh int --path /vbox_host $(state_dir "$GBE_ENVIRONMENT")/depl-creds.yml 2> /dev/null) \
-        || true
-    if [[ -z $vbox_host || $vbox_host == null ]]; then
-        vbox_host=$(env_depl_var vbox_host)
-    fi
-    if [[ -z $vbox_host || $vbox_host == null ]]; then
+    vbox_host=$(env_depl_var vbox_host | sed -e 's/^null$//')
+    if [[ -z $vbox_host ]]; then
         # We need to add this route only when using a local virtualbox
         add_routes
     else
@@ -66,7 +62,7 @@ function setup_firewall_hook() {
 
     local vboxmanage=vboxmanage
     local vbox_host
-    vbox_host=$(env_depl_var vbox_host)
+    vbox_host=$(env_depl_var vbox_host | sed -e 's/^null$//')
     if [ -n "$vbox_host" ]; then
         local vbox_username
         vbox_username=$(env_depl_var --required vbox_username)
