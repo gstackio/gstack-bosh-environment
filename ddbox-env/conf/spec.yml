@@ -50,17 +50,21 @@ operations_files:
     - enable-index-based-dns-aliases
     # - fixup-lb-networking # not working yet
 
+variables_files:
+  local:
+    - secrets
+
 
 deployment_vars:
   director_name: easyfoundry-director
 
   disk_size: 200_000 # i.e. 200MB
 
-  external_ip: "62.210.146.202"
-  vbox_host: ~
-  vbox_username: ~
-  vbox_ssh:
-    private_key: ~
+  external_ip: ~   # must be specified here
+  vbox_host: ~     # must be specified here
+  vbox_username: ~ # must be specified here
+  # vbox_ssh:
+  #   private_key: ~ # specified in 'secrets.yml' and to be commened out here
 
   internal_ip: "192.168.50.6"
   internal_gw: "192.168.50.1"

@@ -147,6 +147,33 @@ function populate_operations_arguments() {
     done
 }
 
+function populate_vars_files_arguments() {
+    VARS_FILES_ARGUMENTS=()
+    local secrets_files=()
+
+    local key rsc vars_file_dir vars_file
+    for key in $(spec_var /variables_files | awk -F: '/^[^-]/{print $1}'); do
+        rsc=$(echo "$key" | sed -e 's/^[[:digit:]]\{1,\}\.//')
+        vars_file_dir=$(expand_resource_dir "$rsc" conf)
+        for vars_file in $(spec_var "/variables_files/$key" | sed -e 's/^- //'); do
+            if [[ $vars_file == *secrets* ]]; then
+                secrets_files+=("$vars_file_dir/${vars_file}.yml")
+            else
+                VARS_FILES_ARGUMENTS+=(-l "$vars_file_dir/${vars_file}.yml")
+            fi
+        done
+    done
+
+    local dst_vars_store secrets_file var_value
+    dst_vars_store=$(state_dir)/depl-creds.yml
+    for secrets_file in "${secrets_files[@]}"; do
+        for key in $(awk -F: '/^[^- #]/{print $1}' "$secrets_file"); do
+            var_value=$(bosh int "$secrets_file" --path "/$key")
+            merge_yaml_value_in_vars_file "$var_value" "$key" "$dst_vars_store"
+        done
+    done
+}
+
 function read_bosh-deployment_spec() {
     local depl_rsc_file
     depl_rsc_file=$(spec_var /main_deployment_file)
@@ -158,6 +185,7 @@ function read_bosh-deployment_spec() {
     MAIN_DEPLOYMENT_FILE=$(expand_resource_dir "$depl_rsc_file")
 
     populate_operations_arguments
+    populate_vars_files_arguments
 }
 
 function read_bosh-config_spec() {
@@ -170,6 +198,7 @@ function read_bosh-config_spec() {
     MAIN_CONFIG_FILE=$(expand_resource_dir "$config_rsc_file")
 
     populate_operations_arguments
+    populate_vars_files_arguments
 }
 
 function bosh_int_with_value() {
@@ -382,6 +411,7 @@ function bosh_ro_invoke() {
 
     bosh "$verb" "$MAIN_DEPLOYMENT_FILE" \
         "${OPERATIONS_ARGUMENTS[@]}" \
+        "${VARS_FILES_ARGUMENTS[@]}" \
         --vars-file <(imported_vars) \
         --vars-file <(spec_var /deployment_vars) \
         "$@"

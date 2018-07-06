@@ -10,6 +10,7 @@
 creds.yml
 creds.json
 *-creds.yml
+*secrets.yml
 bbl-state.json
 *.key
 *.key.json
