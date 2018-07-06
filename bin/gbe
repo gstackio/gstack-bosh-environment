@@ -429,15 +429,9 @@ function ensure_reachability() {
 }
 
 function add_routes() {
-    local rendered_cloud_config=$(state_dir cloud-config)/cloud-config.yml
-    if [ ! -e "$rendered_cloud_config" ]; then
-        fatal "${RED}ERROR:$RESET please run 'gbe update cloud-config'" \
-            "before running 'gbe routes'. Aborting."
-    fi
-    local network_cidr
-    network_cidr=$(bosh int "$rendered_cloud_config" --path /networks/name=default/subnets/0/range)
-    local netstat_pattern
-    local platform=$(platform)
+    local network_cidr platform netstat_pattern
+    network_cidr=$(spec_var --required /deployment_vars/routable_network_cidr "$BASE_DIR/$GBE_ENVIRONMENT")
+    platform=$(platform)
     case $platform in
         darwin) netstat_pattern=$(sed -E -e 's`(\.0)+(/[0-9]+)?$`\2`' <<<"$network_cidr") ;;
         linux)  netstat_pattern=$(sed -r -e 's`/[0-9]+$``' <<<"$netstat_cidr") ;;

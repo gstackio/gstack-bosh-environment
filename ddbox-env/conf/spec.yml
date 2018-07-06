@@ -65,6 +65,7 @@ deployment_vars:
   vbox_username: ~ # must be specified here
   # vbox_ssh:
   #   private_key: ~ # specified in 'secrets.yml' and to be commened out here
+  routable_network_cidr: 10.244.0.0/16
 
   internal_ip: "192.168.50.6"
   internal_gw: "192.168.50.1"
