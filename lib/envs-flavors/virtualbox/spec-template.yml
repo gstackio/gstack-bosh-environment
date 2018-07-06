@@ -46,7 +46,7 @@ operations_files:
 
 
 deployment_vars:
-  director_name: ~
+  director_name: easyfoundry-director
 
   disk_size: 200_000 # i.e. 200MB
 
@@ -55,19 +55,20 @@ deployment_vars:
   vbox_username: ~
   vbox_ssh:
     private_key: ~
+  routable_network_cidr: 10.244.0.0/16
 
   internal_ip: "192.168.50.6"
   internal_gw: "192.168.50.1"
   internal_cidr: 192.168.50.0/24
   outbound_network_name: NatNetwork
 
-  bosh_precompiled_version: "264.4.0"
-  bosh_precompiled_url: https://s3.amazonaws.com/bosh-compiled-release-tarballs/bosh-264.4.0-ubuntu-trusty-3468.11-20171204-211303-173868826-20171204211307.tgz
-  bosh_precompiled_sha1: "12f50c6d196a80d1a31eedb34ba1a1acd6904b56"
+  bosh_precompiled_version: "266.4.0"
+  bosh_precompiled_url: https://s3.amazonaws.com/bosh-compiled-release-tarballs/bosh-266.4.0-ubuntu-trusty-3586.24-20180621-165809-30266228-20180621165813.tgz?versionId=inkSsUYxrlYaflh19kcwA7kYkF3eAHLh
+  bosh_precompiled_sha1: 79ba3bdc160faff121e56ee5fd5f618ea48023ce
 
   stemcell_name: bosh-vsphere-esxi-ubuntu-trusty-go_agent
-  stemcell_version: "3468.11"
-  stemcell_sha1: a2526970375a1780cbb4f613bbe5ad8ef39f84ab
+  stemcell_version: "3586.24"
+  stemcell_sha1: 9428c4e94559eefe76026051d8065514732c383c
 
 
 imported_vars: {}
