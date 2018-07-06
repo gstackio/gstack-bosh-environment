@@ -52,6 +52,8 @@ function ensure_reachability_hook() {
     if [[ -z $vbox_host || $vbox_host == null ]]; then
         # We need to add this route only when using a local virtualbox
         add_routes
+    else
+        ensure_sshuttle
     fi
 }
 
