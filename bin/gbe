@@ -97,9 +97,12 @@ function env_exports() {
     echo "export BOSH_CLIENT_SECRET=\"$admin_password\""
     echo "export BOSH_GW_PRIVATE_KEY=\"$jumpbox_private_key\""
     echo "export BOSH_ENVIRONMENT=\"$env_alias\""
-    if [ -n "$SUBSYS_DIR" ]; then
-        depl_name=$(spec_var --required /deployment_vars/deployment_name)
-        echo "export BOSH_DEPLOYMENT=\"$depl_name\""
+    if [[ -n $SUBSYS_DIR ]]; then
+        subsys_type=$(spec_var --required /subsys/type)
+        if [[ $subsys_type == bosh-deployment ]]; then
+            depl_name=$(spec_var --required /deployment_vars/deployment_name)
+            echo "export BOSH_DEPLOYMENT=\"$depl_name\""
+        fi
     fi
 }
 
