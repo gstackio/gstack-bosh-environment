@@ -465,11 +465,11 @@ function update_config() {
     echo -e "\n${BLUE}Fetching ${BOLD}input resources$RESET\n"
 
     fetch_input_resources
-    local subsys_type subsys_state_dir
-    subsys_type=$(spec_var --required /subsys/type)
-    "read_${subsys_type}_spec"
+    local subsys_state_dir subsys_type
     subsys_state_dir=$(state_dir)
     mkdir -p "$subsys_state_dir"
+    subsys_type=$(spec_var --required /subsys/type)
+    "read_${subsys_type}_spec"
 
 
     echo -e "\n${BLUE}Updating $BOLD$cfg_type config$RESET in BOSH director.\n"
@@ -582,11 +582,11 @@ function converge_deployment() {
         offline=yes
     fi
     fetch_input_resources ${offline:+--offline}
-    local subsys_type subsys_state_dir
-    subsys_type=$(spec_var --required /subsys/type)
-    "read_${subsys_type}_spec"
+    local subsys_state_dir subsys_type
     subsys_state_dir=$(state_dir)
     mkdir -p "$subsys_state_dir"
+    subsys_type=$(spec_var --required /subsys/type)
+    "read_${subsys_type}_spec"
 
     restrict_permissions "$subsys_state_dir/depl-creds.yml"
     bosh_ro_invoke interpolate > "$subsys_state_dir/depl-manifest.yml"
@@ -685,11 +685,11 @@ function create_env() {
     echo -e "\n${BLUE}Fetching ${BOLD}input resources$RESET\n"
 
     fetch_input_resources
-    local subsys_type state_dir
+    local env_state_dir subsys_type
+    env_state_dir=$(state_dir "$GBE_ENVIRONMENT")
+    mkdir -p "$env_state_dir"
     subsys_type=$(spec_var --required /subsys/type)
     "read_${subsys_type}_spec"
-    state_dir=$(state_dir "$GBE_ENVIRONMENT")
-    mkdir -p "$state_dir"
 
 
     pre_create_env_hook
@@ -705,16 +705,16 @@ function create_env() {
 
     echo -e "\n${BLUE}Running ${BOLD}bosh create-env$RESET to create the BOSH environment\n"
 
-    infra_bosh_ro_invoke interpolate > "$state_dir/depl-manifest.yml"
+    infra_bosh_ro_invoke interpolate > "$env_state_dir/depl-manifest.yml"
     [ -x "$(which humanize-manifest)" ] && \
-        humanize-manifest "$state_dir/depl-manifest.yml" \
-            > "$state_dir/depl-manifest-humanized.yml"
+        humanize-manifest "$env_state_dir/depl-manifest.yml" \
+            > "$env_state_dir/depl-manifest-humanized.yml"
 
     if [[ -n $GBE_DEBUG_LEVEL ]]; then
         # This is just an example of how we can have verbose logs using the
         # GBE_DEBUG_LEVEL environment variable.
         export BOSH_LOG_LEVEL=DEBUG
-        export BOSH_LOG_PATH=$state_dir/bosh-create-env.log
+        export BOSH_LOG_PATH=$env_state_dir/bosh-create-env.log
     fi
     infra_bosh_rw_invoke create-env
 
@@ -733,17 +733,17 @@ function delete_env() {
     echo -e "\n${BLUE}Fetching ${BOLD}input resources$RESET\n"
 
     fetch_input_resources
-    local subsys_type state_dir
+    local subsys_state_dir subsys_type
+    subsys_state_dir=$(state_dir "$GBE_ENVIRONMENT")
+    mkdir -p "$subsys_state_dir"
     subsys_type=$(spec_var --required /subsys/type)
     "read_${subsys_type}_spec"
-    state_dir=$(state_dir "$GBE_ENVIRONMENT")
-    mkdir -p "$state_dir"
 
 
-    infra_bosh_ro_invoke interpolate > "$state_dir/depl-manifest.yml"
+    infra_bosh_ro_invoke interpolate > "$subsys_state_dir/depl-manifest.yml"
     [ -x "$(which humanize-manifest)" ] && \
-        humanize-manifest "$state_dir/depl-manifest.yml" \
-            > "$state_dir/depl-manifest-humanized.yml"
+        humanize-manifest "$subsys_state_dir/depl-manifest.yml" \
+            > "$subsys_state_dir/depl-manifest-humanized.yml"
 
     echo -e "\n${BLUE}Logging out from credhub and closing SSH tunnel$RESET\n"
 
@@ -754,25 +754,25 @@ function delete_env() {
     unset BOSH_ALL_PROXY
 
 
-    if [ ! -e "$state_dir/depl-creds.yml" ]; then
+    if [ ! -e "$subsys_state_dir/depl-creds.yml" ]; then
         echo -e "\n${BLUE}Skipping ${BOLD}bosh delete-env$RESET, as the 'state/$GBE_ENVIRONMENT/depl-creds.yml' file is absent\n"
     else
         echo -e "\n${BLUE}Running ${BOLD}bosh delete-env$RESET to destroy the BOSH environment\n"
         infra_bosh_rw_invoke delete-env
-        rm -vf "$state_dir/depl-creds.yml"
+        rm -vf "$subsys_state_dir/depl-creds.yml"
     fi
 
     rm -f "$BASE_DIR"/state/*/{pre,post}-deploy-hook.yml
 
-    if [ ! -e "$state_dir/jumpbox.key" ]; then
+    if [ ! -e "$subsys_state_dir/jumpbox.key" ]; then
         echo -e "\n${BLUE}Skipping ${BOLD}SSH key removal$RESET, as it is absent\n"
     else
         echo -e "\n${BLUE}Removing ${BOLD}SSH key$RESET from SSH Agent\n"
-        ssh-keygen -y -f "$state_dir/jumpbox.key" > "$state_dir/jumpbox.key.pub"
-        if ssh-add -L | grep -qF "$(cat "$state_dir/jumpbox.key.pub")"; then
-            ssh-add -d "$state_dir/jumpbox.key.pub"
+        ssh-keygen -y -f "$subsys_state_dir/jumpbox.key" > "$subsys_state_dir/jumpbox.key.pub"
+        if ssh-add -L | grep -qF "$(cat "$subsys_state_dir/jumpbox.key.pub")"; then
+            ssh-add -d "$subsys_state_dir/jumpbox.key.pub"
         fi
-        rm -vf "$state_dir/jumpbox.key" "$state_dir/jumpbox.key.pub"
+        rm -vf "$subsys_state_dir/jumpbox.key" "$subsys_state_dir/jumpbox.key.pub"
         ssh-keygen -f ~/.ssh/known_hosts -R "$(jumpbox_ip)"
     fi
 
