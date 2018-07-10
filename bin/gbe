@@ -333,6 +333,10 @@ function converge_usage() {
     echo "    -y"
     echo "        Run unattended. Don't ask for user input."
     echo
+    echo "    --manifest"
+    echo "        Don't actually deploy. Only render deployment manifest"
+    echo "        and generate credentials. Don't run BOSH or any hooks."
+    echo
     echo "    --dry-run"
     echo "        Don't actually deploy. Only render deployment manifest,"
     echo "        generate credentials, and run BOSH in dry-run mode. In this"
@@ -572,15 +576,19 @@ function assert_subsys_name() {
 function converge_deployment() {
     local depl_name=$1; shift
 
-    local dry_run offline
-    if [[ $@ == *--dry-run* ]]; then
-        dry_run=yes
-    fi
-    if [[ $@ == *--offline* ]]; then
-        offline=yes
+    local manifest dry_run offline
+    if [[ $@ == *--manifest* ]]; then manifest_only=yes; fi
+    if [[ $@ == *--dry-run* ]]; then  dry_run=yes; fi
+    if [[ $@ == *--offline* ]]; then  offline=yes; fi
+
+    local action="Converging"
+    if [[ -n $manifest_only ]]; then
+        action="Rendering deployment manifest and generating credentials for"
+    elif [[ -n $dry_run ]]; then
+        action="Converging (dry run)"
     fi
 
-    echo -e "\n${BLUE}Converging the $BOLD'$depl_name'$RESET subsystem.\n"
+    echo -e "\n${BLUE}$action the $BOLD'$depl_name'$RESET subsystem.\n"
 
     SUBSYS_DIR=$BASE_DIR/deployments/$depl_name
     eval "$(env_exports)"
@@ -590,7 +598,7 @@ function converge_deployment() {
 
     set -e
 
-    fetch_input_resources ${offline:+--offline}
+    fetch_input_resources ${offline:+"--offline"}
     local subsys_state_dir subsys_type
     subsys_state_dir=$(state_dir)
     mkdir -p "$subsys_state_dir"
@@ -603,7 +611,7 @@ function converge_deployment() {
         humanize-manifest "$subsys_state_dir/depl-manifest.yml" \
             > "$subsys_state_dir/depl-manifest-humanized.yml"
 
-    if [[ -n $offline ]]; then
+    if [[ -n $manifest_only || -n $offline ]]; then
         bosh_rw_invoke interpolate > /dev/null # generate credentails if necessary
         echo -e "\nBOSH deployment manifest is rendered (and credentials" \
             "generated) in '${subsys_state_dir/#$PWD/.}' directory.\n"
@@ -890,6 +898,7 @@ case $1 in
             gbe_up
         else
             non_interactive=
+            manifest_only=
             dry_run=
             offline=
             while [[ -n $1 ]]; do
@@ -898,6 +907,7 @@ case $1 in
                         converge_usage
                         break ;;
                     -y)         non_interactive=yes ;;
+                    --manifest) manifest_only=yes ;;
                     --dry-run)  dry_run=yes ;;
                     --offline)  offline=yes ;;
                     list)
@@ -923,6 +933,7 @@ case $1 in
                         ensure_reachability
                         converge_deployment "$1" \
                             ${non_interactive:+"-n"} \
+                            ${manifest_only:+"--manifest"} \
                             ${dry_run:+"--dry-run"} \
                             ${offline:+"--offline"} ;;
                 esac
