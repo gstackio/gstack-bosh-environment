@@ -20,7 +20,7 @@ operations_files:
     - set-versions
     - customize-routing
     - remove-director-uuid
-    - add-missing-broker-creds
+    - add-missing-broker-password-var
     - remove-syslog-migration
     - disambiguate-errand-names
 
