@@ -2,7 +2,7 @@
 DNS_CREDS_FILE=dns/conf/creds.json
 
 function has_dns_enabled() {
-    [ -s "$BASE_DIR/$DNS_CREDS_FILE" ]
+    [[ -s $BASE_DIR/$DNS_CREDS_FILE ]]
 }
 
 function render_dns_zone_config() {
@@ -29,7 +29,7 @@ function preview_dns_config() {
         --config "$(state_dir dns)/zone-config.js"
     local status=$?
 
-    if [ "$status" -eq 0 ]; then
+    if [[ $status -eq 0 ]]; then
         echo -e "\nIf the above is correct for you," \
             "then you can run '${BLUE}${BOLD}gbe dns push${RESET}' now.\n"
     fi

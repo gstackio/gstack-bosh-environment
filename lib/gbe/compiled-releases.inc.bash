@@ -39,7 +39,7 @@ function export_release_to_cache() {
     local stemcell=$1; shift
     local base_filename=$1; shift
 
-    if [ -n "$(find . -name "${base_filename}-*.tgz")" ]; then
+    if [[ -n $(find . -name "${base_filename}-*.tgz") ]]; then
         echo -e "\n${RED}Existing release$RESET $BOLD$BLUE$release$RESET" \
             "for stemcell $BOLD$GREEN$stemcell$RESET. Skipping.\n"
         return
@@ -62,7 +62,7 @@ function export_releases() {
 
 function upload_compiled_releases() {
     local subsys=$1
-    if [ ! -d "$BASE_DIR/.cache/compiled-releases" ]; then
+    if [[ ! -d $BASE_DIR/.cache/compiled-releases ]]; then
         return
     fi
     echo -e "\n${BLUE}Uploading all ${BOLD}compiled releases$RESET found in cache to the BOSH server.\n"
@@ -111,7 +111,7 @@ function cleanup_compiled_releases() {
         fi \
             | awk '{T+=$1} END{print "==> This operation is to free approximately " T/1024 " MiB of disk space."}'
         for f in "${stale_files[@]}"; do
-            if [ -n "$dry_run_arg" ]; then
+            if [[ -n $dry_run_arg ]]; then
                 echo "would remove: '$f'"
             else
                 rm -v "$f"

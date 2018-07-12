@@ -4,10 +4,10 @@ function run_hook_once() {
     local script=$1; shift
 
     local state_file=$(state_dir)/$name-hook.yml
-    if [ -f "$state_file" ] && grep -qF "status: success" "$state_file"; then
+    if [[ -f $state_file ]] && grep -qF "status: success" "$state_file"; then
         return
     fi
-    if [ ! -x "$script" ]; then
+    if [[ ! -x $script ]]; then
         return
     fi
 
@@ -31,7 +31,7 @@ function run_hook_once() {
 function run_hook() {
     local script=$1; shift
 
-    if [ ! -x "$script" ]; then
+    if [[ ! -x $script ]]; then
         return
     fi
 

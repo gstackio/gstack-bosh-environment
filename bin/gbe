@@ -68,7 +68,7 @@ function env_usage() {
 }
 
 function env_exports() {
-    if [ -t 1 ]; then
+    if [[ -t 1 ]]; then
         # When running in a terminal
         env_usage
         return
@@ -135,7 +135,7 @@ function setup_gcp() {
     local project_id=$2
 
     local service_account_key=$BASE_DIR/$GBE_ENVIRONMENT/conf/gcp-service-account.key.json
-    if [ -f "$service_account_key" ]; then
+    if [[ -f $service_account_key ]]; then
         echo -e "INFO: the 'gcp-service-account.key.json' credentials file" \
             "already exists in directory '$BASE_DIR/$GBE_ENVIRONMENT/conf/'. ${BLUE}Skipping${RESET}."
         return 0
@@ -157,7 +157,7 @@ function setup_gcp() {
     gcloud projects add-iam-policy-binding "$project_id" \
         --member="serviceAccount:${service_account_name}@${project_id}.iam.gserviceaccount.com" \
         --role='roles/editor'
-    if [ -z "$had_dash_e" ]; then
+    if [[ -z $had_dash_e ]]; then
         set +e
     fi
 
@@ -488,11 +488,11 @@ function update_config() {
         --vars-file <(spec_var /config_vars) \
         --vars-file <(imported_vars) \
         > "$subsys_state_dir/${cfg_type}-config.yml"
-    [ -x "$(which humanize-manifest)" ] && \
+    [[ -x $(which humanize-manifest) ]] && \
         humanize-manifest "$subsys_state_dir/${cfg_type}-config.yml" \
             > "$subsys_state_dir/${cfg_type}-config-humanized.yml"
 
-    if [ ! -s "$subsys_state_dir/${cfg_type}-config.yml" ]; then
+    if [[ ! -s $subsys_state_dir/${cfg_type}-config.yml ]]; then
         echo "${cfg_type} config file is empty." \
                 "${BLUE}Skipping$RESET update." \
             | awk '{print toupper(substr($0,1,1)) substr($0,2)}'
@@ -508,7 +508,7 @@ function upload_stemcell() {
     stemcell_version=$(spec_var /deployment_vars/stemcell_version)
     stemcell_sha1=$(spec_var /deployment_vars/stemcell_sha1)
 
-    if [ -z "$stemcell_name" -o -z "$stemcell_version" -o -z "$stemcell_sha1" ]; then
+    if [[ -z $stemcell_name || -z $stemcell_version || -z $stemcell_sha1 ]]; then
         return
     fi
 
@@ -532,7 +532,7 @@ function print_deployment_name() {
 
 function each_deployment() {
     local reverse_arg cmd
-    if [ "x$1" == x-r -o "x$1" == x--reverse ]; then
+    if [[ x$1 == x-r || x$1 == x--reverse ]]; then
         reverse_arg=$1; shift
     fi
     cmd=$1; shift
@@ -566,7 +566,7 @@ function each_deployment() {
 
 function assert_subsys_name() {
     local subsys=$1
-    if [ ! -d "$BASE_DIR/deployments/$subsys" ]; then
+    if [[ ! -d $BASE_DIR/deployments/$subsys ]]; then
         echo "${RED}ERROR:$RESET no such $project_name subsys: '$subsys'."
         return 1
     fi
@@ -607,7 +607,7 @@ function converge_deployment() {
 
     restrict_permissions "$subsys_state_dir/depl-creds.yml"
     bosh_ro_invoke interpolate > "$subsys_state_dir/depl-manifest.yml"
-    [ -x "$(which humanize-manifest)" ] && \
+    [[ -x $(which humanize-manifest) ]] && \
         humanize-manifest "$subsys_state_dir/depl-manifest.yml" \
             > "$subsys_state_dir/depl-manifest-humanized.yml"
 
@@ -677,7 +677,7 @@ function gbe_up() {
     SUBSYS_DIR=$BASE_DIR/$GBE_ENVIRONMENT
     create_env
 
-    if [ -f ~/.ssh/known_hosts ]; then
+    if [[ -f ~/.ssh/known_hosts ]]; then
         ssh-keygen -f ~/.ssh/known_hosts -R "$(jumpbox_ip)"
     fi
     ssh-keyscan -t ecdsa "$(jumpbox_ip)" 2> /dev/null \
@@ -727,7 +727,7 @@ function create_env() {
     echo -e "\n${BLUE}Running ${BOLD}bosh create-env$RESET to create the BOSH environment\n"
 
     infra_bosh_ro_invoke interpolate > "$env_state_dir/depl-manifest.yml"
-    [ -x "$(which humanize-manifest)" ] && \
+    [[ -x $(which humanize-manifest) ]] && \
         humanize-manifest "$env_state_dir/depl-manifest.yml" \
             > "$env_state_dir/depl-manifest-humanized.yml"
 
@@ -762,7 +762,7 @@ function delete_env() {
 
 
     infra_bosh_ro_invoke interpolate > "$subsys_state_dir/depl-manifest.yml"
-    [ -x "$(which humanize-manifest)" ] && \
+    [[ -x $(which humanize-manifest) ]] && \
         humanize-manifest "$subsys_state_dir/depl-manifest.yml" \
             > "$subsys_state_dir/depl-manifest-humanized.yml"
 
@@ -775,7 +775,7 @@ function delete_env() {
     unset BOSH_ALL_PROXY
 
 
-    if [ ! -e "$subsys_state_dir/depl-creds.yml" ]; then
+    if [[ ! -e $subsys_state_dir/depl-creds.yml ]]; then
         echo -e "\n${BLUE}Skipping ${BOLD}bosh delete-env$RESET, as the 'state/$GBE_ENVIRONMENT/depl-creds.yml' file is absent\n"
     else
         echo -e "\n${BLUE}Running ${BOLD}bosh delete-env$RESET to destroy the BOSH environment\n"
@@ -785,7 +785,7 @@ function delete_env() {
 
     rm -f "$BASE_DIR"/state/*/{pre,post}-deploy-hook.yml
 
-    if [ ! -e "$subsys_state_dir/jumpbox.key" ]; then
+    if [[ ! -e $subsys_state_dir/jumpbox.key ]]; then
         echo -e "\n${BLUE}Skipping ${BOLD}SSH key removal$RESET, as it is absent\n"
     else
         echo -e "\n${BLUE}Removing ${BOLD}SSH key$RESET from SSH Agent\n"

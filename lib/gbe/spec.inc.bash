@@ -13,7 +13,7 @@ function spec_var() {
     local path=$1
     local subsys_dir=${2:-$SUBSYS_DIR}
 
-    if [ -z "$subsys_dir" ]; then
+    if [[ -z $subsys_dir ]]; then
         echo "${RED}ERROR:$RESET cannot fetch '$path' spec var: missing 'SUBSYS_DIR' variable. Aborting." >&2
         return 1
     fi
@@ -80,7 +80,7 @@ function fetch_git_resource() {
 
     cache_dir="$BASE_DIR/.cache/resources"
     rsc_dir=$cache_dir/$rsc_name
-    if [ -d "$rsc_dir" -o -L "$rsc_dir" ]; then
+    if [[ -d $rsc_dir || -L $rsc_dir ]]; then
         pushd "$rsc_dir" > /dev/null || exit 115
             if [[ -n $(git remote) && $@ != *--offline* ]]; then
                 git fetch -q
@@ -281,8 +281,8 @@ function import_state_value() {
 
     vars_file=$(state_dir "$subsys_name")/${import_from}.yml
 
-    if [ -n "$var_value_tmpl" ]; then
-        if [ -z "$to_yaml_file" ]; then
+    if [[ -n $var_value_tmpl ]]; then
+        if [[ -z $to_yaml_file ]]; then
             # FIXME: poor YAML escaping here below
             bosh int <(echo "$var_name: $var_value_tmpl") \
                 --vars-file "$vars_file"
@@ -309,7 +309,7 @@ function import_state_value() {
 
     var_value=$(bosh int "$vars_file" --path "$import_path")
 
-    if [ -z "$to_yaml_file" ]; then
+    if [[ -z $to_yaml_file ]]; then
         bosh_int_with_value "$var_value" <(echo "$var_name: ((var_value))")
     else
         merge_yaml_value_in_vars_file "$var_value" "$var_name" "$to_yaml_file"
@@ -392,7 +392,7 @@ function imported_vars() {
 function state_dir() {
     local gbe_subsys
     gbe_subsys=${1:-$(spec_var /subsys/name)}
-    if [ -z "$gbe_subsys" ]; then
+    if [[ -z $gbe_subsys ]]; then
         echo "ERROR: missing subsys name. Aborting." >&2
         return 1
     fi

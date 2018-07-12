@@ -63,7 +63,7 @@ function setup_firewall_hook() {
     local vboxmanage=vboxmanage
     local vbox_host
     vbox_host=$(env_depl_var vbox_host | sed -e 's/^null$//')
-    if [ -n "$vbox_host" ]; then
+    if [[ -n $vbox_host ]]; then
         local vbox_username
         vbox_username=$(env_depl_var --required vbox_username)
         vboxmanage="ssh $vbox_username@$vbox_host vboxmanage"
@@ -73,7 +73,7 @@ function setup_firewall_hook() {
     vm_cid=$(jq -r .current_vm_cid "$(state_dir "$GBE_ENVIRONMENT")/env-infra-state.json")
     nic_num=$($vboxmanage showvminfo "$vm_cid" | sed -ne 's/^NIC \([0-9]\{1,\}\):.* Attachment: NAT,.*/\1/p')
 
-    if [ -z "$nic_num" ]; then
+    if [[ -z $nic_num ]]; then
         # Nothing to do when no NIC is attached to any NAT connection
 
         # FIXME: we now have some kludge shim here
@@ -134,7 +134,7 @@ function setup_firewall_hook() {
             $vboxmanage controlvm "$vm_cid" "natpf$nic_num" tcp-pf-rule-$tcp_port,tcp,,$tcp_port,10.0.2.15,$tcp_port
         fi
     done
-    if [ "$add_end_nl" == true ]; then
+    if [[ $add_end_nl == true ]]; then
         echo
     fi
 }

@@ -55,7 +55,7 @@ function extern_infra_vars_hook() {
 
 function post_create_env_hook() {
     # Restore any previous proxy setup, now that Bosh env is (re)created
-    if [ -n "$old_BOSH_ALL_PROXY" ]; then
+    if [[ -n $old_BOSH_ALL_PROXY ]]; then
         export BOSH_ALL_PROXY=$old_BOSH_ALL_PROXY
         unset old_BOSH_ALL_PROXY
     fi
@@ -99,9 +99,9 @@ function pre_delete_env_hook() {
 }
 
 function post_delete_env_hook() {
-    if [ "x$1" == "x-k" ]; then
+    if [[ x$1 == x-k ]]; then
         echo -e "\n${BLUE}Skipping ${BOLD}bbl destroy$RESET, as per user request\n"
-    elif [ ! -e "$(state_dir "$GBE_ENVIRONMENT")/bbl-state.json" ]; then
+    elif [[ ! -e $(state_dir "$GBE_ENVIRONMENT")/bbl-state.json ]]; then
         echo -e "\n${BLUE}Skipping ${BOLD}bbl destroy$RESET, as the 'state/bbl-state.json' file is absent\n"
     else
         echo -e "\n${BLUE}Running ${BOLD}bbl destroy$RESET to destroy infrastructure for the BOSH environment\n"

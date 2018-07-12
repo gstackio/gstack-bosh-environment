@@ -4,7 +4,7 @@ function assert_utilities() {
 
     while # NOTE: emulating do-while, see <https://stackoverflow.com/a/27761760>
         utilities+=("$1"); shift
-        [ $# -gt 1 ]
+        [[ $# -gt 1 ]]
     do :; done
     local reason=$1; shift # last argument
 
@@ -28,7 +28,7 @@ function setup_bbl() {
     fi
 
     local bbl_bin=$BASE_DIR/bin/bbl
-    if [ -f "$bbl_bin" ]; then
+    if [[ -f $bbl_bin ]]; then
         return 0
     fi
 
@@ -61,7 +61,7 @@ function setup_terraform() {
     fi
 
     local tf_bin=$BASE_DIR/bin/terraform
-    if [ -f "$tf_bin" ]; then
+    if [[ -f $tf_bin ]]; then
         return 0
     fi
 
@@ -97,7 +97,7 @@ function setup_bosh_cli() {
     fi
 
     local bosh_cli_bin=$BASE_DIR/bin/bosh
-    if [ -f "$bosh_cli_bin" ]; then
+    if [[ -f $bosh_cli_bin ]]; then
         return 0
     fi
 
@@ -121,7 +121,7 @@ function setup_credhub_cli() {
     fi
 
     local credhub_cli_bin=$BASE_DIR/bin/credhub
-    if [ -f "$credhub_cli_bin" ]; then
+    if [[ -f $credhub_cli_bin ]]; then
         return 0
     fi
 
@@ -157,7 +157,7 @@ function setup_dnscontrol() {
     fi
 
     local dnscontrol_bin=$BASE_DIR/bin/dnscontrol
-    if [ -f "$dnscontrol_bin" ]; then
+    if [[ -f $dnscontrol_bin ]]; then
         return 0
     fi
 
@@ -184,7 +184,7 @@ function setup_cf_cli() {
     fi
 
     local cf_cli_bin=$BASE_DIR/bin/cf
-    if [ -f "$cf_cli_bin" ]; then
+    if [[ -f $cf_cli_bin ]]; then
         return 0
     fi
 

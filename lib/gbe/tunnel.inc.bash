@@ -33,7 +33,7 @@ function ssh_jumpbox() {
     #     echo "$(date +'%F %T') waiting $jumpbox_ip to respond to ping"
     #     sleep 2
     #     status=$?
-    #     if [ "$status" -gt 128 ]; then
+    #     if [[ $status -gt 128 ]]; then
     #         # When interrupted by a signal, abort with same status
     #         exit $status
     #     fi
@@ -95,7 +95,7 @@ function start_tunnel() {
         return 1
     fi
     ensure_tunnel
-    if [ "$BOSH_ALL_PROXY" != "socks5://127.0.0.1:$TUNNEL_PORT" ]; then
+    if [[ $BOSH_ALL_PROXY != socks5://127.0.0.1:$TUNNEL_PORT ]]; then
         echo
         echo "${BLUE}You must ${BOLD}refresh your environment variables${RESET} like this:"
         env_usage
