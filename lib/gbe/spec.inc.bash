@@ -131,7 +131,7 @@ function populate_operations_arguments() {
     OPERATIONS_ARGUMENTS=()
 
     local key rsc op_dir op_file
-    for key in $(spec_var /operations_files | awk -F: '/^[^-]/{print $1}'); do
+    for key in $(spec_var /operations_files | awk -F: '/^[^- #].*:/{print $1}'); do
         rsc=$(echo "$key" | sed -e 's/^[[:digit:]]\{1,\}\.//')
         op_dir=$(expand_resource_dir "$rsc" features)
         for op_file in $(spec_var --required "/operations_files/$key" | sed -e 's/^- //'); do
@@ -145,7 +145,7 @@ function populate_vars_files_arguments() {
     local secrets_files=()
 
     local key rsc vars_file_dir vars_file
-    for key in $(spec_var /variables_files | awk -F: '/^[^-]/{print $1}'); do
+    for key in $(spec_var /variables_files | awk -F: '/^[^- #].*:/{print $1}'); do
         rsc=$(echo "$key" | sed -e 's/^[[:digit:]]\{1,\}\.//')
         vars_file_dir=$(expand_resource_dir "$rsc" conf)
         for vars_file in $(spec_var "/variables_files/$key" | sed -e 's/^- //'); do
@@ -160,7 +160,7 @@ function populate_vars_files_arguments() {
     local dst_vars_store secrets_file var_value
     dst_vars_store=$(state_dir)/depl-creds.yml
     for secrets_file in "${secrets_files[@]}"; do
-        for key in $(awk -F: '/^[^- #]/{print $1}' "$secrets_file"); do
+        for key in $(awk -F: '/^[^- #].*:/{print $1}' "$secrets_file"); do
             var_value=$(bosh int "$secrets_file" --path "/$key")
             merge_yaml_value_in_vars_file "$var_value" "$key" "$dst_vars_store"
         done
