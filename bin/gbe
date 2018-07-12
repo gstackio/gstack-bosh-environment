@@ -929,7 +929,9 @@ case $1 in
                         each_deployment converge_deployment -n
                         break ;;
                     *)
-                        assert_subsys_name "$1" || ( converge_usage && exit 2 )
+                        if ! assert_subsys_name "$1"; then
+                            converge_usage; exit 2
+                        fi
                         ensure_reachability
                         converge_deployment "$1" \
                             ${non_interactive:+"-n"} \
@@ -957,7 +959,9 @@ case $1 in
                     each_deployment converge_deployment -n --recreate --fix --canaries=0
                     break ;;
                 *)
-                    assert_subsys_name "$1" || ( recreate_usage && exit 2 )
+                    if ! assert_subsys_name "$1"; then
+                        recreate_usage; exit 2
+                    fi
                     converge_deployment "$1" ${non_interactive:+"-n"} --recreate --fix --canaries=0 ;;
             esac
             shift
@@ -983,7 +987,9 @@ case $1 in
                     each_deployment --reverse delete_deployment -n "$@"
                     break ;;
                 *)
-                    assert_subsys_name "$1" || ( delete_usage && exit 2 )
+                    if ! assert_subsys_name "$1"; then
+                        delete_usage; exit 2
+                    fi
                     ensure_reachability
                     delete_deployment "$1" ${non_interactive:+"-n"} ;;
             esac
