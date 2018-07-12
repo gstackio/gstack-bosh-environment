@@ -29,6 +29,8 @@ subsys_name=$(spec_var /subsys/name)
 
 set -x
 
+mkdir -p "$BASE_DIR/.cache/compiled-releases"
+
 bosh -d "$deployment_name" \
     export-release \
     --job=bosh-dns \
@@ -44,16 +46,16 @@ gbe delete -y "$subsys_name"
 
 
 
-concourse_version=$(sibling_subsys_depl_var concourse /concourse_version)
-non_windows_jobs=($(bosh inspect-release "concourse/$concourse_version" \
-            | sed -e '/^$/,$d; /^ /d' \
-            | awk '{print $1}' | cut -d/ -f1 | grep -v -- '-windows$'))
-
 concourse_deployment_name=$(sibling_subsys_depl_var concourse /deployment_name)
+concourse_version=$(sibling_subsys_depl_var concourse /concourse_version)
 if ! bosh deployments --column=name | grep -qE "\\b${concourse_deployment_name}\\b"; then
+    set +x
     echo "WARNING: missing BOSH Deployment '$concourse_deployment_name' for" \
         "exporting the 'concourse/$concourse_version' BOSH Release. Skipping."
 else
+    non_windows_jobs=($(bosh inspect-release "concourse/$concourse_version" \
+                | sed -e '/^$/,$d; /^ /d' \
+                | awk '{print $1}' | cut -d/ -f1 | grep -v -- '-windows$'))
     bosh -d "$concourse_deployment_name" \
         export-release \
         "${non_windows_jobs[@]/#/--job=}" \
