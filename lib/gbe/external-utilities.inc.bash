@@ -16,13 +16,37 @@ function assert_utilities() {
     done
 }
 
+BBL_VERSION=3.2.6
+BBL_ACCEPTED_VERSIONS='^3\.2\..*'
+TERRAFORM_VERSION=0.9.11
+TERRAFORM_ACCEPTED_VERSIONS='^v0\.9\..*'
+BOSH_CLI_VERSION=2.0.45
+BOSH_CLI_ACCEPTED_VERSIONS='^2\.0\..*'
+SPRUCE_VERSION=1.18.0
+SPRUCE_ACCEPTED_VERSIONS='^1\.18\..*'
+CREDHUB_CLI_VERSION=1.5.3
+CREDHUB_CLI_ACCEPTED_VERSIONS='^1\.5\.3'
+DNSCONTROL_VERSION=0.2.3
+DNSCONTROL_ACCEPTED_VERSIONS='^0\.2\..*'
+CF_CLI_VERSION=6.33.1
+CF_CLI_ACCEPTED_VERSIONS='^6\.33\..*'
+
+readonly \
+    BBL_VERSION         BBL_ACCEPTED_VERSIONS \
+    TERRAFORM_VERSION   TERRAFORM_ACCEPTED_VERSIONS \
+    BOSH_CLI_VERSION    BOSH_CLI_ACCEPTED_VERSIONS \
+    SPRUCE_VERSION      SPRUCE_ACCEPTED_VERSIONS \
+    CREDHUB_CLI_VERSION CREDHUB_CLI_ACCEPTED_VERSIONS \
+    DNSCONTROL_VERSION  DNSCONTROL_ACCEPTED_VERSIONS \
+    CF_CLI_VERSION      CF_CLI_ACCEPTED_VERSIONS
+
 function setup_bbl() {
-    local bbl_version=$1
+    local bbl_version=${1:-$BBL_VERSION}
 
     if which bbl > /dev/null 2>&1; then
         local existing_bbl_version
         existing_bbl_version=$(bbl --version | head -n 1 | cut -d' ' -f2)
-        if [[ $existing_bbl_version =~ ^3\.2\. ]]; then
+        if [[ $existing_bbl_version =~ $BBL_ACCEPTED_VERSIONS ]]; then
             return 0
         fi
     fi
@@ -35,14 +59,14 @@ function setup_bbl() {
     assert_utilities curl "to install bosh-bootloader"
 
     local bbl_repo=https://github.com/cloudfoundry/bosh-bootloader
-    local linux_bin=bbl-${bbl_version}_linux_x86-64
-    local darwin_bin=bbl-${bbl_version}_osx
+    local linux_bin=bbl-v${bbl_version}_linux_x86-64
+    local darwin_bin=bbl-v${bbl_version}_osx
 
-    echo -e "\n${BLUE}Installing ${BOLD}bosh-bootloader CLI$RESET $bbl_version as: $bbl_bin\n"
+    echo -e "\n${BLUE}Installing ${BOLD}bosh-bootloader CLI$RESET v$bbl_version as: $bbl_bin\n"
     local url
     case $(platform) in
-        darwin) url=$bbl_repo/releases/download/$bbl_version/$darwin_bin;;
-        linux)  url=$bbl_repo/releases/download/$bbl_version/$linux_bin;;
+        darwin) url=$bbl_repo/releases/download/v$bbl_version/$darwin_bin;;
+        linux)  url=$bbl_repo/releases/download/v$bbl_version/$linux_bin;;
     esac
 
     curl -sL -o "$bbl_bin" "$url"
@@ -50,12 +74,12 @@ function setup_bbl() {
 }
 
 function setup_terraform() {
-    local tf_version=$1
+    local tf_version=${1:-$TERRAFORM_VERSION}
 
     if which terraform > /dev/null 2>&1; then
         local existing_tf_version
         existing_tf_version=$(terraform --version | head -n 1 | cut -d' ' -f2)
-        if [[ $existing_tf_version =~ ^v0\.9\. ]]; then
+        if [[ $existing_tf_version =~ $TERRAFORM_ACCEPTED_VERSIONS ]]; then
             return 0
         fi
     fi
@@ -86,12 +110,12 @@ function setup_terraform() {
 }
 
 function setup_bosh_cli() {
-    local bosh_cli_version=$1
+    local bosh_cli_version=${1:-$BOSH_CLI_VERSION}
 
     if which bosh > /dev/null 2>&1; then
         local existing_bosh_cli_version
         existing_bosh_cli_version=$(bosh --version | head -n 1 | cut -d' ' -f2 | cut -d- -f1)
-        if [[ $existing_bosh_cli_version =~ ^2\.0\. ]]; then
+        if [[ $existing_bosh_cli_version =~ $BOSH_CLI_ACCEPTED_VERSIONS ]]; then
             return 0
         fi
     fi
@@ -110,12 +134,12 @@ function setup_bosh_cli() {
 }
 
 function setup_credhub_cli() {
-   local credhub_cli_version=$1
+   local credhub_cli_version=${1:-$CREDHUB_CLI_VERSION}
 
     if which credhub > /dev/null 2>&1; then
         local existing_credhub_cli_version
         existing_credhub_cli_version=$(credhub --version | head -n 1 | cut -d: -f2 | tr -d ' ')
-        if [[ $existing_credhub_cli_version =~ ^1\.5\.3 ]]; then
+        if [[ $existing_credhub_cli_version =~ $CREDHUB_CLI_ACCEPTED_VERSIONS ]]; then
             return 0
         fi
     fi
@@ -146,12 +170,12 @@ function setup_credhub_cli() {
 }
 
 function setup_dnscontrol() {
-    local dnscontrol_version=$1
+    local dnscontrol_version=${1:-$DNSCONTROL_VERSION}
 
     if which dnscontrol > /dev/null 2>&1; then
         local existing_dnscontrol_version
         existing_dnscontrol_version=$(dnscontrol version | head -n 1 | cut -d' ' -f2 | cut -d- -f1)
-        if [[ $existing_dnscontrol_version =~ ^0\.2\. ]]; then
+        if [[ $existing_dnscontrol_version =~ $DNSCONTROL_ACCEPTED_VERSIONS ]]; then
             return 0
         fi
     fi
@@ -173,12 +197,12 @@ function setup_dnscontrol() {
 }
 
 function setup_cf_cli() {
-    local cf_cli_version=$1
+    local cf_cli_version=${1:-$CF_CLI_VERSION}
 
     if which cf > /dev/null 2>&1; then
         local existing_cf_cli_version
         existing_cf_cli_version=$(cf --version | head -n 1 | cut -d' ' -f3 | cut -d+ -f1)
-        if [[ $existing_cf_cli_version =~ ^6\.33\. ]]; then
+        if [[ $existing_cf_cli_version =~ $CF_CLI_ACCEPTED_VERSIONS ]]; then
             return 0
         fi
     fi

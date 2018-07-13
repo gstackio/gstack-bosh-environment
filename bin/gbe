@@ -666,11 +666,11 @@ function external_ip() {
 }
 
 function gbe_up() {
-    setup_bbl v3.2.6
-    setup_terraform 0.9.11
-    setup_bosh_cli 2.0.45
-    setup_dnscontrol 0.2.3
-    setup_cf_cli 6.33.1
+    setup_bbl
+    setup_terraform
+    setup_bosh_cli
+    setup_dnscontrol
+    setup_cf_cli
 
     assert_utilities ruby "to render ERB templates locally"
 
@@ -805,7 +805,7 @@ function delete_env() {
 GBE_ENVIRONMENT=${GBE_ENVIRONMENT:-ddbox-env}
 
 function load_env_flavor_hooks() {
-    setup_bosh_cli 2.0.45 >&2
+    setup_bosh_cli >&2
 
     local gbe_env_flavor
     gbe_env_flavor=$(spec_var --required /infra_vars/iaas "$BASE_DIR/$GBE_ENVIRONMENT")
@@ -816,16 +816,16 @@ load_env_flavor_hooks
 
 case $1 in
     env)        env_exports ;;
-    bbl)        setup_bbl v3.2.6 ;;
-    terraform)  setup_terraform 0.9.11 ;;
-    bosh)       setup_bosh_cli 2.0.45 ;;
-    dnscontrol) setup_dnscontrol 0.2.3 ;;
+    bbl)        setup_bbl ;;
+    terraform)  setup_terraform ;;
+    bosh)       setup_bosh_cli ;;
+    dnscontrol) setup_dnscontrol ;;
     credhub)
-        setup_credhub_cli 1.5.3
+        setup_credhub_cli
         ensure_reachability
         credhub_login
         ;;
-    cf)         setup_cf_cli 6.33.1 ;;
+    cf)         setup_cf_cli ;;
     gcp)
         shift
         if [[ $# -ne 2 ]]; then
