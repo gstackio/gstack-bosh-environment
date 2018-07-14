@@ -1,24 +1,25 @@
 ---
 subsys:
-  name: ~
+  name: ~ # must conform to this pattern: '*-env'
   type: bosh-environment
 
 input_resources:
   - name: bosh-deployment
     type: git
     uri: https://github.com/cloudfoundry/bosh-deployment.git
-    version: dc7fa0a # v264.1 (as of Nov 17th, 2017)
+    version: v1.0.0 # BOSH v266.4 (as of June 22nd, 2018)
   - name: prometheus-boshrelease
     type: git
     uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
-    version: v20.0.0
+    version: v23.0.0
 
 
 infra_vars:
-  iaas: gcp
-  region: ~
-  zone: ~
-  project_id: ~
+  alias: ~      # the Bosh CLI alias
+  iaas: gcp     # a BBL IaaS / the GBE environment flavor
+  region: ~     # e.g. 'us-west2'
+  zone: ~       # e.g. 'us-west2-b', must be consistent with the above 'region'
+  project_id: ~ # e.g. 'my-sample-project-191923'
 
 dns:
   zone: prototyp.it
@@ -37,7 +38,6 @@ operations_files:
     - external-ip-not-recommended
     - uaa
     - credhub
-    - local-dns
   20.prometheus-boshrelease:
     - manifests/operators/bosh/add-bosh-exporter-uaa-clients
   30.local:
@@ -47,14 +47,15 @@ operations_files:
     # - custom-bosh-version
     - disable-resurrector
     - scale-vm-and-disk
+    - enable-index-based-dns-aliases
 
 
 deployment_vars:
   director_name: easyfoundry-director
 
   gcp_machine_type: n1-standard-8 # 8 CPUs, 30 GB RAM
-  # gcp_machine_type: n1-standard-16 # 16 CPUs, 60 GB RAM
-  disk_size: 100_000 # i.e. 100MB
+  # gcp_machine_type: n1-highmem-8 # 8 CPUs, 52 GB RAM
+  disk_size: 200_000 # i.e. 200MB
 
 
   ## When the release is available on the `bosh-compiled-release-tarballs` S3
@@ -67,13 +68,13 @@ deployment_vars:
   ## When the release is not available yet on the `bosh-compiled-release-tarballs`
   ## S3 bucket, use the 'custom-bosh-version' operation file instead, with these
   ## settings:
-  # bosh_version: "264.3.0"
+  # bosh_version: "266.4.0"
   # bosh_sha1: "dc0accf852839e16f17c4a88a8dc1213c79564b9"
 
   ## When the release is not available yet on the `bosh-compiled-release-tarballs`
   ## S3 bucket, and you have a compiled release in your cache:
-  # bosh_precompiled_version: "264.4.0"
-  # bosh_precompiled_url: file://../../compiled-releases/bosh-264.4.0-ubuntu-trusty-3468.11-20171204-211303-173868826-20171204211307.tgz
+  # bosh_precompiled_version: "266.4.0"
+  # bosh_precompiled_url: file://../../.cache/compiled-releases/bosh-266.4.0-ubuntu-trusty-3586.24-20180622-211303-173868826-20171204211307.tgz
   # bosh_precompiled_sha1: "12f50c6d196a80d1a31eedb34ba1a1acd6904b56"
 
   stemcell_name: bosh-google-kvm-ubuntu-trusty-go_agent

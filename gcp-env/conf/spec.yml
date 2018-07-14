@@ -55,7 +55,7 @@ deployment_vars:
   director_name: easyfoundry-director
 
   gcp_machine_type: n1-highmem-8 # 8 CPUs, 52 GB RAM
-  disk_size: 100_000 # i.e. 100MB
+  disk_size: 200_000 # i.e. 200MB
 
 
   ## When the release is available on the `bosh-compiled-release-tarballs` S3
