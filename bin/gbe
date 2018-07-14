@@ -794,10 +794,31 @@ function converge_deployment() {
 
     set -e
 
+    UPSTREAM_RESOURCES=()
     fetch_input_resources ${offline:+"--offline"}
-    local subsys_state_dir subsys_type
+
+    local subsys_state_dir
     subsys_state_dir=$(state_dir)
     mkdir -p "$subsys_state_dir"
+
+    local upstream_subsys
+    upstream_subsys=$(spec_var /subsys/upstream)
+    if [[ -n $upstream_subsys && ${#UPSTREAM_RESOURCES[@]} -ge 1 ]]; then
+        assert_utilities spruce "to create the merged subsys spec file"
+
+        local upstream_dir upstream_spec overriding_spec
+        upstream_dir=$(expand_resource_dir "$upstream_subsys")
+        upstream_spec=$upstream_dir/conf/spec.yml
+        overriding_spec=$SUBSYS_DIR/conf/spec.yml
+        SPEC_FILE=$subsys_state_dir/merged-spec.yml
+        spruce merge --prune ".subsys.upstream" \
+            "$upstream_spec" "$overriding_spec" > "$SPEC_FILE"
+
+        # Fetch any new resources from the merged spec
+        fetch_input_resources ${offline:+"--offline"}
+    fi
+
+    local subsys_type
     subsys_type=$(spec_var --required /subsys/type)
     "read_${subsys_type}_spec"
 
@@ -811,7 +832,7 @@ function converge_deployment() {
     if [[ -n $manifest_only || -n $offline ]]; then
         bosh_rw_invoke interpolate > /dev/null # generate credentails if necessary
         echo -e "\nBOSH deployment manifest is rendered (and credentials" \
-            "generated) in '${subsys_state_dir/#$PWD/.}' directory.\n"
+            "generated) in '${subsys_state_dir/#$PWD\//}' directory.\n"
         return
     fi
 
@@ -872,6 +893,7 @@ function gbe_up() {
     setup_bbl
     setup_terraform
     setup_bosh_cli
+    setup_spruce
     setup_dnscontrol
     setup_cf_cli
 
@@ -1037,6 +1059,7 @@ case $1 in
     bbl)        setup_bbl ;;
     terraform)  setup_terraform ;;
     bosh)       setup_bosh_cli ;;
+    spruce)     setup_spruce ;;
     dnscontrol) setup_dnscontrol ;;
     credhub)
         setup_credhub_cli

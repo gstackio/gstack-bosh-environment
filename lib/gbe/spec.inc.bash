@@ -3,6 +3,29 @@ function bbl_invoke() {
     bbl --state-dir "$(state_dir "$GBE_ENVIRONMENT")" "$@"
 }
 
+# Synopsis:
+#   spec_var [--required] <path> [<subsys_dir>]
+#
+# --required
+#   When specified, any missing value returns an error. Otherwise, missing
+#   values are silently ignored and considered to be like an empty string.
+#
+# <path>
+#   The YAML path of the spec var to fetch
+#
+# <subsys_dir> (optional)
+#   A specific subsys directory where to find the spec.yml to consider.
+#   If not specified, the $SPEC_FILE is considered, and if not defined, the
+#   $SUBSYS_DIR is taken into consideration.
+#
+# External variables:
+#   SUBSYS_DIR
+#       The default subsys directory to use.
+#   SPEC_FILE
+#       The exact spec.yml file to operate on. This has a higher precedence
+#       compared to $SUBSYS_DIR.
+#       Defaults to '<subsys_dir>/conf/spec.yml'.
+#
 function spec_var() {
     local required
     if [[ $1 == --required ]]; then
@@ -11,10 +34,18 @@ function spec_var() {
     fi
 
     local path=$1
-    local subsys_dir=${2:-$SUBSYS_DIR}
+    local subsys_dir=$2
 
-    if [[ -z $subsys_dir ]]; then
-        echo "${RED}ERROR:$RESET cannot fetch '$path' spec var: missing 'SUBSYS_DIR' variable. Aborting." >&2
+    local spec_file
+    if [[ -n $subsys_dir ]]; then
+        spec_file=$subsys_dir/conf/spec.yml
+    elif [[ -n $SPEC_FILE ]]; then
+        spec_file=$SPEC_FILE
+    elif [[ -n $SUBSYS_DIR ]]; then
+        spec_file=$SUBSYS_DIR/conf/spec.yml
+    else
+        echo "${RED}ERROR:$RESET cannot fetch '$path' spec var: missing" \
+            "'SUBSYS_DIR' or 'SPEC_FILE' variable. Aborting." >&2
         return 1
     fi
 
@@ -22,13 +53,13 @@ function spec_var() {
     if [[ -n $initial_errexit ]]; then set +e; fi
 
     local return_status=0
-    command=(bosh int --path "$path" "$subsys_dir/conf/spec.yml")
+    command=(bosh int --path "$path" "$spec_file")
     if [[ -n $required ]]; then
         "${command[@]}"
         return_status=$?
         if [[ $return_status -ne 0 ]]; then
             echo "${RED}ERROR:$RESET cannot find the required '$path' spec variable" \
-                "in '$(basename "$subsys_dir")/conf/spec.yml' file. Aborting." >&2
+                "in '${spec_file/#$BASE_DIR\//}' file. Aborting." >&2
         fi
     else
         "${command[@]}" 2> /dev/null
@@ -51,15 +82,21 @@ function assert_subsys() {
 }
 
 function fetch_input_resources() {
-    local rsc_count rsc_idx rsc_path rsc_type
+    local rsc_count rsc_idx rsc_path rsc_val rsc_type
     rsc_count=$(spec_var /input_resources | awk '/^-/{print $1}' \
                     | wc -l | tr -d ' ')
     rsc_idx=0
     while [[ $rsc_idx -lt $rsc_count ]]; do
         rsc_path=/input_resources/$rsc_idx
+        rsc_val=$(spec_var "$rsc_path")
+        if [[ $rsc_val == \(\(*\)\) ]]; then
+            # Ignore spruce directives like ((merge)) or ((replace))
+            rsc_idx=$(($rsc_idx + 1))
+            continue
+        fi
         rsc_type=$(spec_var --required "$rsc_path/type")
         case $rsc_type in
-            git|local-dir)
+            git|local-dir|subsys-upstream)
                 fetch_${rsc_type}_resource $rsc_path "$@"
                 ;;
             *)
@@ -68,6 +105,19 @@ function fetch_input_resources() {
         esac
         rsc_idx=$(($rsc_idx + 1))
     done
+}
+
+UPSTREAM_RESOURCES=()
+
+function fetch_subsys-upstream_resource() {
+    local rsc_path=$1; shift
+
+    fetch_git_resource "$rsc_path" "$@"
+
+    local rsc_name
+    rsc_name=$(spec_var --required "$rsc_path/name")
+
+    UPSTREAM_RESOURCES+=("$rsc_name")
 }
 
 function fetch_git_resource() {
@@ -122,7 +172,21 @@ function expand_resource_dir() {
     if [[ $rsc == . || $rsc == local ]]; then
         dir=$SUBSYS_DIR${subdir:+/$subdir}
     else
+        # local is_upstream=no
+        # for upstream in "${UPSTREAM_RESOURCES[@]}"; do
+        #     if [[ $rsc == $upstream ]]; then
+        #         is_upstream=yes
+        #         break
+        #     fi
+        # done
         dir=$BASE_DIR/.cache/resources/$rsc
+        # if [[ $is_upstream == yes ]]; then
+        #     rsc_file=$file
+
+        #     rsc=$(awk -F/ '{print $1}' <<< "$rsc_file")
+        #     file=$(awk -F/ '{OFS="/"; $1=""; print substr($0,2)}' <<< "$rsc_file")
+        #     dir=$dir/.cache/resources/$rsc
+        # fi
     fi
     echo "$dir${file:+/$file}"
 }
@@ -132,7 +196,7 @@ function populate_operations_arguments() {
 
     local key rsc op_dir op_file
     for key in $(spec_var /operations_files | awk -F: '/^[^- #].*:/{print $1}'); do
-        rsc=$(sed -e 's/^[[:digit:]]\{1,\}\.//' <<< "$key")
+        rsc=$(sed -e 's/^[[:digit:]]\{1,\}[.-]//' <<< "$key")
         op_dir=$(expand_resource_dir "$rsc" features)
         for op_file in $(spec_var --required "/operations_files/$key" | sed -e 's/^- //'); do
             OPERATIONS_ARGUMENTS+=(-o "$op_dir/${op_file}.yml")
@@ -146,7 +210,7 @@ function populate_vars_files_arguments() {
 
     local key rsc vars_file_dir files_count file_idx vars_file
     for key in $(spec_var /variables_files | awk -F: '/^[^- #].*:/{print $1}'); do
-        rsc=$(sed -e 's/^[[:digit:]]\{1,\}\.//' <<< "$key")
+        rsc=$(sed -e 's/^[[:digit:]]\{1,\}[.-]//' <<< "$key")
         vars_file_dir=$(expand_resource_dir "$rsc" conf)
 
         files_count=$(spec_var "/variables_files/$key" | awk '/^-/{print $1}' \

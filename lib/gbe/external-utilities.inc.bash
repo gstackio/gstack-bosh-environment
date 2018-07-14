@@ -22,7 +22,7 @@ TERRAFORM_VERSION=0.9.11
 TERRAFORM_ACCEPTED_VERSIONS='^v0\.9\..*'
 BOSH_CLI_VERSION=5.3.1
 BOSH_CLI_ACCEPTED_VERSIONS='^5\.3\..*'
-SPRUCE_VERSION=1.18.0
+SPRUCE_VERSION=1.18.2
 SPRUCE_ACCEPTED_VERSIONS='^1\.18\..*'
 CREDHUB_CLI_VERSION=1.5.3
 CREDHUB_CLI_ACCEPTED_VERSIONS='^1\.5\.3'
@@ -140,6 +140,30 @@ function setup_bosh_cli() {
     curl -sL "https://s3.amazonaws.com/bosh-cli-artifacts/bosh-cli-${bosh_cli_version}-$(platform)-amd64" \
         -o "$bosh_cli_bin"
     chmod +x "$bosh_cli_bin"
+}
+
+function setup_spruce() {
+    local spruce_version=${1:-$SPRUCE_VERSION}
+
+    if which spruce > /dev/null 2>&1; then
+        local existing_spruce_version
+        existing_spruce_version=$(spruce --version | head -n 1 | cut -d' ' -f4)
+        if [[ $existing_spruce_version =~ $SPRUCE_ACCEPTED_VERSIONS ]]; then
+            return 0
+        fi
+    fi
+
+    local spruce_bin=$BASE_DIR/bin/spruce
+    if [[ -f $spruce_bin ]]; then
+        return 0
+    fi
+
+    assert_utilities curl "to install the Spruce CLI"
+
+    echo -e "${BLUE}Installing ${BOLD}Bosh CLI$RESET v$spruce_version as: $spruce_bin"
+    curl -sL "https://github.com/geofffranks/spruce/releases/download/v${spruce_version}/spruce-$(platform)-amd64" \
+        -o "$spruce_bin"
+    chmod +x "$spruce_bin"
 }
 
 function setup_credhub_cli() {
