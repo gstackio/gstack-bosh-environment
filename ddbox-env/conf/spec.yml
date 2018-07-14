@@ -28,7 +28,7 @@ main_deployment_file: bosh-deployment/bosh.yml
 operations_files:
   10.bosh-deployment:
     - virtualbox/cpi
-    # - virtualbox/remote
+    - virtualbox/remote
     - bosh-lite
     - bosh-lite-runc
     - bosh-lite-grootfs
@@ -70,7 +70,6 @@ deployment_vars:
   internal_ip: "192.168.50.6"
   internal_gw: "192.168.50.1"
   internal_cidr: 192.168.50.0/24
-  outbound_network_name: NatNetwork
 
   bosh_precompiled_version: "266.4.0"
   bosh_precompiled_url: https://s3.amazonaws.com/bosh-compiled-release-tarballs/bosh-266.4.0-ubuntu-trusty-3586.24-20180621-165809-30266228-20180621165813.tgz?versionId=inkSsUYxrlYaflh19kcwA7kYkF3eAHLh

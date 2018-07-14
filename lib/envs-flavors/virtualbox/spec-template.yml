@@ -27,7 +27,35 @@ main_deployment_file: bosh-deployment/bosh.yml
 operations_files:
   10.bosh-deployment:
     - virtualbox/cpi
-    - virtualbox/outbound-network
+
+    # The 'outbound-network' option below enables a 'NAT' network to be
+    # defined in order for the Vitrualbox environment to expose TCP ports to
+    # the outside Internet world. Indeed 'vip' networks are not supported by
+    # the VirtualBox CPI.
+    #
+    # For a concrete example of a 'NAT' network that the Virtualbox CPI uses
+    # to expose TCP ports, see the 'enable-vbox-port-forwarding' ops file.
+    #
+    # The limitation with 'outbound-network' is that when Virtualbox is run by
+    # a non-root user (which is recommended for security reasons), then ports
+    # below the 1024 threshold cannot be exposed, which is inconvenient for
+    # usual HTTP(S) ports like 80 and 443.
+    #
+    # This 'outbound-network' requires the 'outbound_network_name' variable to
+    # be set to 'NatNetwork' below. Other values wouldn't let you expose
+    # ports, which is the main value here.
+    #
+    # - virtualbox/outbound-network
+
+    # The 'remote' option is essential for driving a distant Virtualbox
+    # environment.
+    #
+    # Requires 'vbox_host', 'vbox_username' and 'vbox_ssh.private_key' to be
+    # set below or in the 'private.yml' file with restricted permissions. See
+    # example below.
+    #
+    - virtualbox/remote
+
     - bosh-lite
     - bosh-lite-runc
     - jumpbox-user
@@ -38,6 +66,7 @@ operations_files:
   20.prometheus-boshrelease:
     - manifests/operators/bosh/add-bosh-exporter-uaa-clients
   30.local:
+    # - enable-vbox-port-forwarding # disabled in favor of a more consistent setup based on iptables
     - custom-stemcell-version
     - custom-bosh-version-precompiled
     # - custom-bosh-version
@@ -50,17 +79,17 @@ deployment_vars:
 
   disk_size: 200_000 # i.e. 200MB
 
-  external_ip: ~
-  vbox_host: ~
-  vbox_username: ~
-  vbox_ssh:
-    private_key: ~
+  external_ip: ~   # must be specified here
+  vbox_host: ~     # must be specified here
+  vbox_username: ~ # must be specified here
+  # vbox_ssh:
+  #   private_key: ~ # specified in 'secrets.yml' and to be commened out here
   routable_network_cidr: 10.244.0.0/16
 
   internal_ip: "192.168.50.6"
   internal_gw: "192.168.50.1"
   internal_cidr: 192.168.50.0/24
-  outbound_network_name: NatNetwork
+  # outbound_network_name: NatNetwork # Related to 'virtualbox/outbound-network' above
 
   bosh_precompiled_version: "266.4.0"
   bosh_precompiled_url: https://s3.amazonaws.com/bosh-compiled-release-tarballs/bosh-266.4.0-ubuntu-trusty-3586.24-20180621-165809-30266228-20180621165813.tgz?versionId=inkSsUYxrlYaflh19kcwA7kYkF3eAHLh
