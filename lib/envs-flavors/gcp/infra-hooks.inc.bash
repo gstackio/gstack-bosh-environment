@@ -65,6 +65,11 @@ function ensure_reachability_hook() {
     ensure_tunnel
 }
 
+function cease_reachability_hook() {
+    stop_tunnel
+    unset BOSH_ALL_PROXY
+}
+
 function env_exports_hook() {
     echo "export BOSH_ALL_PROXY=socks5://127.0.0.1:$TUNNEL_PORT"
 }

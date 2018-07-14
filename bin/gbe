@@ -771,8 +771,7 @@ function delete_env() {
     if which credhub > /dev/null; then
         credhub logout
     fi
-    stop_tunnel
-    unset BOSH_ALL_PROXY
+    cease_reachability_hook
 
 
     if [[ ! -e $subsys_state_dir/depl-creds.yml ]]; then
