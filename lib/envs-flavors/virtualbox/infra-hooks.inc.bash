@@ -81,39 +81,52 @@ function setup_firewall_hook() {
     vm_cid=$(jq -r .current_vm_cid "$(state_dir "$GBE_ENVIRONMENT")/env-infra-state.json")
     nic_num=$($vboxmanage showvminfo "$vm_cid" | sed -ne 's/^NIC \([0-9]\{1,\}\):.* Attachment: NAT,.*/\1/p')
 
+    function locate_nat_rule() {
+        local chain=$1
+        local uuid=$2
+
+        ssh_jumpbox sudo iptables --line-numbers -t nat -nvL "$chain" \
+            | grep -F "$uuid" | awk '{print $1}'
+    }
+    function set_nat_rule() {
+        local chain=$1; shift
+        local default_rule_index=$1; shift
+        local uuid_comment=$1; shift
+
+        local rule_index action
+        if rule_index=$(locate_nat_rule "$chain" "$uuid_comment"); then
+            action="-R"
+        else
+            rule_index=$default_rule_index
+            action="-I"
+        fi
+        ssh_jumpbox sudo iptables -t nat "$action" "$chain" "$rule_index" \
+            "$@" \
+            -m comment --comment "$uuid_comment"
+    }
+
     if [[ -z $nic_num ]]; then
         # Nothing to do when no NIC is attached to any NAT connection
 
         # FIXME: we now have some kludge shim here
-        local external_ip traefik_ip default_network
+        local external_ip web_router_ip internal_net_cidr rule_index
         external_ip=$(external_ip)
-        traefik_ip=10.244.0.34 # 10.244.0.143
-        default_network=10.244.0.0/20
-        if ! ssh_jumpbox sudo iptables -t nat -nvL | grep -qF gbe[f55fc128-6cec-4f38-9303-2e45b0010c76]; then
-            ssh_jumpbox sudo iptables -t nat -I PREROUTING 2 \
-                -i w+ -p tcp -d "$external_ip" --dport 80 \
-                -j DNAT --to-dest "$traefik_ip" \
-                -m comment --comment "gbe[f55fc128-6cec-4f38-9303-2e45b0010c76]"
-        fi
-        if ! ssh_jumpbox sudo iptables -t nat -nvL | grep -qF gbe[f55fc128-6cec-4f38-9303-2e45b0010c77]; then
-            ssh_jumpbox sudo iptables -t nat -I PREROUTING 3 \
-                -i w+ -p tcp -d "$external_ip" --dport 443 \
-                -j DNAT --to-dest "$traefik_ip" \
-                -m comment --comment "gbe[f55fc128-6cec-4f38-9303-2e45b0010c77]"
+        web_router_ip=$(env_depl_var --required web_router_ip)
+        internal_net_cidr=$(env_depl_var --required routable_network_cidr)
 
-        fi
-        if ! ssh_jumpbox sudo iptables -t nat -nvL | grep -qF gbe[f55fc128-6cec-4f38-9303-2e45b0010c78]; then
-            ssh_jumpbox sudo iptables -t nat -I POSTROUTING 1 \
-                -o w+ -p tcp -s "$default_network" -d "$traefik_ip" --dport 80 \
-                -j MASQUERADE \
-                -m comment --comment "gbe[f55fc128-6cec-4f38-9303-2e45b0010c78]"
-        fi
-        if ! ssh_jumpbox sudo iptables -t nat -nvL | grep -qF gbe[f55fc128-6cec-4f38-9303-2e45b0010c79]; then
-            ssh_jumpbox sudo iptables -t nat -I POSTROUTING 2 \
-                -o w+ -p tcp -s "$default_network" -d "$traefik_ip" --dport 443 \
-                -j MASQUERADE \
-                -m comment --comment "gbe[f55fc128-6cec-4f38-9303-2e45b0010c79]"
-        fi
+        set_nat_rule PREROUTING 2 "gbe[f55fc128-6cec-4f38-9303-2e45b0010c76]" \
+            -i w+ -p tcp -d "$external_ip" --dport 80 \
+            -j DNAT --to-dest "$web_router_ip"
+        set_nat_rule PREROUTING 3 "gbe[f55fc128-6cec-4f38-9303-2e45b0010c77]" \
+            -i w+ -p tcp -d "$external_ip" --dport 443 \
+            -j DNAT --to-dest "$web_router_ip"
+
+        set_nat_rule POSTROUTING 1 "gbe[f55fc128-6cec-4f38-9303-2e45b0010c78]" \
+            -o w+ -p tcp -s "$internal_net_cidr" -d "$web_router_ip" --dport 80 \
+            -j MASQUERADE
+        set_nat_rule POSTROUTING 2 "gbe[f55fc128-6cec-4f38-9303-2e45b0010c79]" \
+            -o w+ -p tcp -s "$internal_net_cidr" -d "$web_router_ip" --dport 443 \
+            -j MASQUERADE
 
         return
     fi

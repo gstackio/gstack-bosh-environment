@@ -57,6 +57,8 @@ deployment_vars:
   # gcp_machine_type: n1-highmem-8 # 8 CPUs, 52 GB RAM
   disk_size: 200_000 # i.e. 200MB
 
+  # web_router_ip: "10.244.0.34" # classical Gorouter reverse-proxy
+  web_router_ip: "10.244.0.43" # Træfik reverse-proxy for Let's Encrypt support
 
   ## When the release is available on the `bosh-compiled-release-tarballs` S3
   ## bucket, use the 'custom-bosh-version-precompiled' operation file with these

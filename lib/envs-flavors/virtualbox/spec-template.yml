@@ -103,6 +103,9 @@ deployment_vars:
   routable_network_cidr: 10.244.0.0/16 # CIDR range of internal addresses that
                                        # should be accessible from the gbe CLI
 
+  # web_router_ip: "10.244.0.34" # classical Gorouter reverse-proxy
+  web_router_ip: "10.244.0.43" # Træfik reverse-proxy for Let's Encrypt support
+
   internal_ip: "192.168.50.6"
   internal_gw: "192.168.50.1"
   internal_cidr: 192.168.50.0/24
