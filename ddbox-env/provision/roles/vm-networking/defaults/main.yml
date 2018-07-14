@@ -1,3 +1,5 @@
 ---
 
 external_interface: eno1
+
+vm_networking_expected_state: present # or 'absent'

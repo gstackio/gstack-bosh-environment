@@ -1,100 +1,159 @@
 ---
 
-- name: VM networking | ingress (non HTTP-proxied) traffic is DNAT-ed to destination
+- name: VM networking | the 'gstack-lb' chain is created
+  when: vm_networking_expected_state == 'present'
+  become: true
+  command: iptables --table nat --new-chain gstack-lb
+  register: vm_networking_create_chain
+  failed_when: vm_networking_create_chain.rc > 1
+  changed_when: vm_networking_create_chain.rc == 0
+  tags: [ vm-networking, vm-networking-gstack-lb ]
+
+- name: VM networking | the 'gstack-lb' chain is deleted
+  when: vm_networking_expected_state == 'absent'
+  become: true
+  command: iptables --table nat --delete-chain gstack-lb
+  register: vm_networking_delete_chain
+  failed_when: vm_networking_delete_chain.rc > 1
+  changed_when: vm_networking_delete_chain.rc == 0
+  tags: [ vm-networking, vm-networking-gstack-lb ]
+
+
+
+- name: VM networking | ingress traffic from the Internet is flowed through the 'gstack-lb' chain
   become: yes
   iptables:
     table: nat
     chain: PREROUTING
+    action: insert
+    goto: gstack-lb
+    comment: "have ingress traffic go through the 'gstack-lb' chain"
+  tags: [ vm-networking, vm-networking-gstack-lb ]
+
+- name: VM networking | egress traffic from localhost is flowed through the 'gstack-lb' chain
+  become: yes
+  iptables:
+    table: nat
+    chain: OUTPUT
+    action: insert
+    goto: gstack-lb
+    comment: "have egress traffic from localhost go through the 'gstack-lb' chain"
+  tags: [ vm-networking, vm-networking-gstack-lb ]
+
+- name: VM networking | traffic to GBE deployments ports is DNAT-ed to destination
+  become: yes
+  iptables:
+    table: nat
+    chain: gstack-lb
     protocol: tcp
     destination: "{{ hostvars[inventory_hostname]['ansible_' + external_interface].ipv4.address }}"
     destination_port: "{{ rule.ingress_port }}"
     jump: DNAT
-    to_destination: "{{ rule.dest_ip }}"
-    comment: "DNAT ingress {{ rule.name }} traffic to {{ rule.dest_name }}"
+    to_destination: "192.168.50.6"
+    comment: "DNAT ingress {{ rule.name }} traffic to GBE VM"
   with_items:
     - name: Traefik HTTP
       ingress_port: 80
-      dest_name: GBE VM
-      dest_ip: 192.168.50.6
     - name: Traefik HTTPS
       ingress_port: 443
-      dest_name: GBE VM
-      dest_ip: 192.168.50.6
     - name: CF SSH
       ingress_port: 2222
-      dest_name: GBE VM
-      dest_ip: 192.168.50.6
     - name: Concourse HTTP
       ingress_port: 8080
-      dest_name: GBE VM
-      dest_ip: 192.168.50.6
     - name: CF-MySQL
       ingress_port: 3306
-      dest_name: GBE VM
-      dest_ip: 192.168.50.6
     - name: SHIELD HTTPS
       ingress_port: 10443
-      dest_name: GBE VM
-      dest_ip: 192.168.50.6
+    - name: SHIELD v7 HTTPS
+      ingress_port: 20443
     - name: Grafana HTTP
       ingress_port: 3000
-      dest_name: GBE VM
-      dest_ip: 192.168.50.6
     - name: Prometheus HTTP
       ingress_port: 9090
-      dest_name: GBE VM
-      dest_ip: 192.168.50.6
     - name: Alertmanager HTTP
       ingress_port: 9093
-      dest_name: GBE VM
-      dest_ip: 192.168.50.6
   loop_control: { loop_var: rule }
-  tags: [ vm-networking ]
+  tags: [ vm-networking, vm-networking-gstack-lb ]
 
-- name: VM networking | DNAT-ed ingress traffic is SNAT-ed from host
-  when: no
+- name: VM networking | DNAT-ed egress traffic from private networks is SNAT-ed from LB
   become: yes
   iptables:
     table: nat
+    action: insert
     chain: POSTROUTING
     protocol: tcp
+    source: 192.168.0.0/16
     destination: 192.168.50.6
     destination_port: "{{ rule.ingress_port }}"
     jump: SNAT
     to_source: 192.168.50.1
-    comment: "SNAT ingress {{ rule.name }} traffic to {{ rule.dest_name }}"
+    comment: "SNAT from LB the ingress {{ rule.name }} traffic from private networks to GBE VM"
   with_items:
     - name: HTTP
       ingress_port: 80
-      dest_name: GBE VM
     - name: HTTPS
       ingress_port: 443
-      dest_name: GBE VM
     - name: CF SSH
       ingress_port: 2222
-      dest_name: GBE VM
     - name: Concourse HTTP
       ingress_port: 8080
-      dest_name: GBE VM
     - name: CF-MySQL
       ingress_port: 3306
-      dest_name: GBE VM
     - name: SHIELD HTTPS
       ingress_port: 10443
-      dest_name: GBE VM
+    - name: SHIELD v7 HTTPS
+      ingress_port: 20443
     - name: Grafana HTTP
       ingress_port: 3000
-      dest_name: GBE VM
     - name: Prometheus HTTP
       ingress_port: 9090
-      dest_name: GBE VM
     - name: Alertmanager HTTP
       ingress_port: 9093
-      dest_name: GBE VM
   loop_control: { loop_var: rule }
-  tags: [ vm-networking ]
+  tags: [ vm-networking, vm-networking-gstack-lb ]
 
-- name: VM networking | egress traffic from any private IP network is masqueraded
+
+- name: VM networking | DNAT-ed traffic from private networks is SNAT-ed
+# - name: VM networking | DNAT-ed traffic from private networks is masqueraded
+  when: no
+  become: yes
+  iptables:
+    action: insert
+    table: nat
+    chain: POSTROUTING
+    out_interface: vboxnet+
+    source: "{{ source }}"
+    destination: 192.168.50.6
+    # jump: MASQUERADE
+    # comment: "MASQUERADE the DNAT-ed traffic originating from private net {{ source }}"
+    jump: SNAT
+    to_source: 192.168.50.1
+    comment: "SNAT the DNAT-ed traffic from private net {{ source }}"
+  with_items:
+    - 10.0.0.0/8
+    - 172.16.0.0/12
+    - 192.168.0.0/16
+  loop_control: { loop_var: source }
+  tags: [ vm-networking, vm-networking-postrouting ]
+
+
+- name: VM networking | normal traffic to private networks is accepted
+  become: yes
+  iptables:
+    action: insert
+    table: nat
+    chain: POSTROUTING
+    out_interface: vboxnet+
+    source: "{{ source }}"
+    jump: ACCEPT
+    comment: "ACCEPT normal traffic to vboxnets"
+  with_items:
+    - "192.168.50.1"
+    - "!192.168.0.0/16"
+  loop_control: { loop_var: source }
+  tags: [ vm-networking, vm-networking-gstack-lb ]
+
+- name: VM networking | egress traffic from any private networks is masqueraded
   become: yes
   iptables:
     table: nat
@@ -102,13 +161,13 @@
     out_interface: "{{ external_interface }}"
     source: "{{ source }}"
     jump: MASQUERADE
-    comment: "Masquerade egress traffic from private IP net {{ source }}"
+    comment: "Masquerade egress traffic from private net {{ source }}"
   with_items:
     - 10.0.0.0/8
     - 172.16.0.0/12
     - 192.168.0.0/16
   loop_control: { loop_var: source }
-  tags: [ vm-networking ]
+  tags: [ vm-networking, vm-networking-postrouting ]
 
 
 
@@ -160,9 +219,9 @@
   apt:
     name: iptables-persistent
     state: present
-  tags: [ vm-networking ]
+  tags: [ vm-networking, vm-networking-persist ]
 
 - name: VM networking | iptables are persisted
   become: yes
   shell: iptables-save > /etc/iptables/rules.v4
-  tags: [ vm-networking ]
+  tags: [ vm-networking, vm-networking-persist ]
