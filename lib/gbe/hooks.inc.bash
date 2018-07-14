@@ -11,7 +11,7 @@ function run_hook_once() {
         return
     fi
 
-    local initial_errexit=$(echo "$-" | sed -e 's/[^e]//g')
+    local initial_errexit=$(tr -Cd e <<< "$-")
     if [[ -n $initial_errexit ]]; then set +e; fi
     run_hook "$script" "$@"
     local status=$?

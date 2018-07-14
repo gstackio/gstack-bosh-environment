@@ -24,7 +24,7 @@ function each_used_release() {
 
         for release in $(jq -nr "$depl_info_json | .release_s"); do
 
-            base_filename=$(echo "$release" | tr / -)-$(echo "$stemcell" | tr / -)
+            base_filename=$(tr / - <<< "$release")-$(tr / - <<< "$stemcell")
 
             "$cmd" "$depl_name" "$release" "$stemcell" "$base_filename" "$@"
         done
@@ -68,9 +68,10 @@ function upload_compiled_releases() {
     echo -e "\n${BLUE}Uploading all ${BOLD}compiled releases$RESET found in cache to the BOSH server.\n"
     pushd "$BASE_DIR/.cache/compiled-releases"
         for compiled_release in $(find ${subsys:-.} -name '*.tgz' | sed -e 's`^./``'); do
-            local release=$(echo "$compiled_release" | sed -e 's/^\([a-z-]*\)-\([0-9.]\{1,\}\)-.*$/\1\/\2/')
-            local release_name=$(echo "$release" | cut -d/ -f1)
-            local release_version=$(echo "$release" | cut -d/ -f2)
+            local release release_name release_version
+            release=$(sed -e 's/^\([a-z-]*\)-\([0-9.]\{1,\}\)-.*$/\1\/\2/' <<< "$compiled_release")
+            release_name=$(cut -d/ -f1 <<< "$release")
+            release_version=$(cut -d/ -f2 <<< "$release")
             echo -e "\n${BLUE}Uploading compiled release $BOLD$compiled_release$RESET\n"
             bosh -n upload-release --name="$release_name" --version="$release_version" "$compiled_release"
         done
@@ -83,11 +84,13 @@ function echo_stale_release_files() {
     local stemcell=$1; shift
     local base_filename=$1; shift
 
-    local release_name=$(echo "$release" | cut -d/ -f1)
+    local release_name latest_file
+    release_name=$(cut -d/ -f1 <<< "$release")
+    latest_file=$(find . -type f -name "${base_filename}*.tgz" \
+        | sort | tail -n 1)
 
-    find . -type f -name "${release_name}*.tgz" \
-        | sed -e 's`^\./``' \
-        | grep -v "^$base_filename"
+    find . -type f -name "${release_name}*.tgz" \! -name "$latest_file" \
+        | sed -e 's`^\./``'
 }
 
 function cleanup_compiled_releases() {

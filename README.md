@@ -92,7 +92,7 @@ git clone https://github.com/gstackio/gstack-bosh-environment.git
 
 cd gstack-bosh-environment/
 
-source /dev/stdin <<<"$(./bin/gbe env)" # sorry if that's clumsy, we couldn't get it easier unfortunately
+source /dev/stdin <<< "$(./bin/gbe env)" # sorry if that's clumsy, we couldn't get it easier unfortunately
 ```
 
 

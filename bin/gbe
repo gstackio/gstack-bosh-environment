@@ -51,7 +51,7 @@ function env_usage() {
     local b=$BOLD
     local u=$UNDERLINE
     local rst=$RESET
-    local bash_usage="source /dev/stdin <<<\"\$($0 env)\""
+    local bash_usage="source /dev/stdin <<< \"\$($0 env)\""
     local zsh_usage="source <\"\$(./bin/$SCRIPT_NAME env)\""
     echo
     local shell_name=$(basename "$SHELL" | tr '[:upper:]' '[:lower:]')
@@ -146,9 +146,8 @@ function setup_gcp() {
     echo -e "${BLUE}Setting ${BOLD}GCP credentials$RESET" \
         "for service account '$service_account_name' and project '$project_id'"
 
-    local had_dash_e
-    had_dash_e=$(echo $- | tr -Cd e)
-    set -e
+    local initial_errexit=$(tr -Cd e <<< "$-")
+    if [[ -z $initial_errexit ]]; then set -e; fi
     gcloud iam service-accounts create "$service_account_name"
     gcloud iam service-accounts keys create \
         --iam-account="${service_account_name}@${project_id}.iam.gserviceaccount.com" \
@@ -157,9 +156,7 @@ function setup_gcp() {
     gcloud projects add-iam-policy-binding "$project_id" \
         --member="serviceAccount:${service_account_name}@${project_id}.iam.gserviceaccount.com" \
         --role='roles/editor'
-    if [[ -z $had_dash_e ]]; then
-        set +e
-    fi
+    if [[ -z $initial_errexit ]]; then set +e; fi
 
     local temp_file=$(mktemp)
     sed -e "s/^  project_id:.*$/project_id: $project_id/" "$BASE_DIR/$GBE_ENVIRONMENT/conf/spec.yml" > "$temp_file"
@@ -445,8 +442,8 @@ function add_routes() {
     network_cidr=$(spec_var --required /deployment_vars/routable_network_cidr "$BASE_DIR/$GBE_ENVIRONMENT")
     platform=$(platform)
     case $platform in
-        darwin) netstat_pattern=$(sed -E -e 's`(\.0)+(/[0-9]+)?$`\2`' <<<"$network_cidr") ;;
-        linux)  netstat_pattern=$(sed -r -e 's`/[0-9]+$``' <<<"$network_cidr") ;;
+        darwin) netstat_pattern=$(sed -E -e 's`(\.0)+(/[0-9]+)?$`\2`' <<< "$network_cidr") ;;
+        linux)  netstat_pattern=$(sed -r -e 's`/[0-9]+$``' <<< "$network_cidr") ;;
     esac
     if netstat -nr | awk '{print $1}' | grep -qE "^${netstat_pattern//./\\.}\$"; then
         return
@@ -549,13 +546,13 @@ function each_deployment() {
     depl_by_deps=()
     for subsys_dir in "${subsys_dirs[@]}"; do
         deploy_after=$(spec_var /subsys/deploy_after "$subsys_dir")
-        depl_by_deps+=("${deploy_after:--} $(basename "$subsys_dir")")
+        depl_by_deps+=("${deploy_after:-"-"} $(basename "$subsys_dir")")
     done
 
     local deployments
     old_IFS=$IFS
     IFS=$'\n'
-    deployments=($(sort $reverse_arg -s -k 1,2 <<<"${depl_by_deps[*]}" | cut -d' ' -f2-))
+    deployments=($(sort $reverse_arg -s -k 1,2 <<< "${depl_by_deps[*]}" | cut -d' ' -f2-))
     IFS=$old_IFS
 
     local depl_name
@@ -789,7 +786,7 @@ function delete_env() {
     else
         echo -e "\n${BLUE}Removing ${BOLD}SSH key$RESET from SSH Agent\n"
         ssh-keygen -y -f "$subsys_state_dir/jumpbox.key" > "$subsys_state_dir/jumpbox.key.pub"
-        if ssh-add -L | grep -qF "$(cat "$subsys_state_dir/jumpbox.key.pub")"; then
+        if ssh-add -L | grep -qF "$( < "$subsys_state_dir/jumpbox.key.pub" )"; then
             ssh-add -d "$subsys_state_dir/jumpbox.key.pub"
         fi
         rm -vf "$subsys_state_dir/jumpbox.key" "$subsys_state_dir/jumpbox.key.pub"

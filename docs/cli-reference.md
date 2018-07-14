@@ -56,7 +56,7 @@ with `gbe up -h`.
 
 - `gbe env`: prints the envrionment variables that are necessary to use the
   `gbe` CLI. With Bash, this is usually used with the
-  `source /dev/stdin <<<"$(./bin/gbe env)"` combo (which is mainly a
+  `source /dev/stdin <<< "$(./bin/gbe env)"` combo (which is mainly a
   workaround to circumvent a Bash bug). Note that these must be reloaded after
   creating the infrastructure with `gbe up`.
 

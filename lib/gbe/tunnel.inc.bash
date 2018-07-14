@@ -93,7 +93,7 @@ function open_tunnel() {
 function start_tunnel() {
     local pid_file=$(state_dir "$GBE_ENVIRONMENT")/ssh-tunnel.pid
     if has_tunnel; then
-        echo -e "\n${BLUE}SSH tunnel is ${BOLD}already running$RESET on PID '$(cat "$pid_file")'" \
+        echo -e "\n${BLUE}SSH tunnel is ${BOLD}already running$RESET on PID '$( < "$pid_file" )'" \
              "(more info with ${UNDERLINE}lsof -i :$local_port$RESET)\n"
         return 1
     fi

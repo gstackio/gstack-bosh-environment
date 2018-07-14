@@ -7,12 +7,12 @@
   `bosh-environment`subsystem and its related `bosh-config`s subsystems for
   the cloud config and runtime config.
 
-- `source /dev/stdin <<<"$(./bin/gbe env)"` to get the `gbe` CLI added to your
+- `source /dev/stdin <<< "$(./bin/gbe env)"` to get the `gbe` CLI added to your
   shell `$PATH`.
 
 - `gbe up` to converge the infrastructure.
 
-- `source /dev/stdin <<<"$(./bin/gbe env)"` to load the new environment
+- `source /dev/stdin <<< "$(./bin/gbe env)"` to load the new environment
   variables, that show up now that the BOSH environment is created.
 
 - `gbe converge all`: to converge all `bosh-deployment` subsystems. Be careful
