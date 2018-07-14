@@ -438,7 +438,7 @@ function ensure_reachability() {
 }
 
 function add_routes() {
-    local network_cidr platform netstat_pattern
+    local network_cidr platform netstat_pattern sudo_cmd
     network_cidr=$(spec_var --required /deployment_vars/routable_network_cidr "$BASE_DIR/$GBE_ENVIRONMENT")
     platform=$(platform)
     case $platform in
@@ -449,10 +449,10 @@ function add_routes() {
         return
     fi
     echo -e "\n${BLUE}Adding ${BOLD}route$RESET to reach the BOSH director and deployed nodes\n"
-    echo -e "${MAGENTA}Note: this might ask for your ${UNDERLINE}local$NOUNDERLINE ${BOLD}sudo password$RESET:"
+    sudo_cmd=(sudo -p "[${MAGENTA}${UNDERLINE}local$NOUNDERLINE ${BOLD}sudo$RESET (on %h)] password for %u: ")
     case $platform in
-        darwin) sudo route add -net "$network_cidr"    $(internal_ip) ;;
-        linux)  sudo route add -net "$network_cidr" gw $(internal_ip) ;;
+        darwin) "${sudo_cmd[@]}" route add -net "$network_cidr"    $(internal_ip) ;;
+        linux)  "${sudo_cmd[@]}" route add -net "$network_cidr" gw $(internal_ip) ;;
     esac
 }
 
