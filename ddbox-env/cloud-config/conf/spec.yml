@@ -19,7 +19,7 @@ main_config_file: cf-deployment/iaas-support/bosh-lite/cloud-config.yml
 operations_files:
   # 10.traefik-boshrelease:
   #   - deployment/cloud-config/cf-integration
-  local:
+  20.local:
     - additional-disk-sizes
     - cf-mysql-support
     - concourse-support

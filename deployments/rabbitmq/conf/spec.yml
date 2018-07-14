@@ -19,7 +19,7 @@ main_deployment_file: rabbitmq-boshrelease/manifests/cf-rabbitmq-template.yml
 
 
 operations_files:
-  local:
+  10.local:
     - rename-deployment
     - rename-network
     - set-versions

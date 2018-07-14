@@ -71,4 +71,4 @@ deployment_vars:
   stemcell_sha1: 9428c4e94559eefe76026051d8065514732c383c
 
 
-imported_vars: {}
+imported_vars: []

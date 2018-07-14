@@ -24,7 +24,7 @@ input_resources:
 main_deployment_file: dingo-postgresql-release-bosh2/manifests/dingo-postgresql.yml
 
 operations_files:
-  local:
+  10.local:
     - rename-deployment
     - rename-network
     - pin-versions

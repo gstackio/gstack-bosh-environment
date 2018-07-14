@@ -18,7 +18,7 @@ operations_files:
     # - deployment/operations/disable-default-tls-certificate
     # - deployment/operations/enable-lets-encrypt # broken now that TLS-SNI has been shut down
     - deployment/operations/enable-web-backend
-  local:
+  20.local:
     - set-versions
     - activate-debug
     - inject-variables
