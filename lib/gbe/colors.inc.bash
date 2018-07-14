@@ -4,6 +4,7 @@ RED=$(tput setaf 1)
 GREEN=$(tput setaf 2)
 BLUE=$(tput setaf 4)
 MAGENTA=$(tput setaf 5)
+CYAN=$(tput setaf 6)
 NORMAL=$(tput setaf 9)
 
 UNDERLINE=$(tput smul)

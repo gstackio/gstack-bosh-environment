@@ -40,7 +40,20 @@ function export_release_to_cache() {
     local base_filename=$1; shift
 
     if [[ -n $(find . -name "${base_filename}-*.tgz") ]]; then
-        echo -e "\n${RED}Existing release$RESET $BOLD$BLUE$release$RESET" \
+        echo -e "\n${CYAN}Existing release$RESET $BOLD$BLUE$release$RESET" \
+            "for stemcell $BOLD$GREEN$stemcell$RESET. Skipping.\n"
+        return
+    fi
+
+    exportable_packages_count=$(
+            bosh --json inspect-release "$release" \
+                | jq '.Tables[1].Rows
+                        | map(select(.compiled_for == "'"$stemcell"'"
+                                    or (.compiled_for == "(source)"
+                                        and .blobstore_id != "")))
+                        | length')
+    if [[ $exportable_packages_count -eq 0 ]]; then
+        echo -e "\n${RED}No exportable package in release$RESET $BOLD$BLUE$release$RESET" \
             "for stemcell $BOLD$GREEN$stemcell$RESET. Skipping.\n"
         return
     fi
