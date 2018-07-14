@@ -76,18 +76,32 @@ operations_files:
     - scale-vm-size
     - enable-index-based-dns-aliases
 
+variables_files:
+  10.local:
+    - file: secrets
+      example:
+        vbox_ssh:
+          private_key: |
+            -----BEGIN RSA PRIVATE KEY-----
+            ...
+            -----END RSA PRIVATE KEY-----
+
 
 deployment_vars:
   director_name: easyfoundry-director
 
   disk_size: 200_000 # i.e. 200MB
 
-  external_ip: ~   # must be specified here
-  vbox_host: ~     # must be specified here
-  vbox_username: ~ # must be specified here
-  # vbox_ssh:
-  #   private_key: ~ # specified in 'secrets.yml' and to be commened out here
-  routable_network_cidr: 10.244.0.0/16
+  external_ip: ~ # The public IP of your distant box, for DNS to target to
+
+  vbox_host: ~     # SSH host to connect to in order to run 'vboxmanage' commands.
+                   # Related to 'virtualbox/remote' above.
+                   # When left unspecified, 'vboxmanage' is run locally.
+  vbox_username: ~ # SSH username that will run the 'vboxmanage' commands.
+                   # Only required when 'vbox_host' is specified.
+
+  routable_network_cidr: 10.244.0.0/16 # CIDR range of internal addresses that
+                                       # should be accessible from the gbe CLI
 
   internal_ip: "192.168.50.6"
   internal_gw: "192.168.50.1"

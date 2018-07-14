@@ -34,6 +34,22 @@ operations_files:
     - fix-sanity-test-vm
     # - fix-cf-containers-broker-job
 
+variables_files:
+  local:
+    - file: secrets
+      example:
+        # Broker
+        # clusterdata backups
+        backups_clusterdata_bucket_name: ~
+        backups_clusterdata_region: ~
+        backups_clusterdata_aws_access_key_id: ~
+        backups_clusterdata_aws_secret_access_key: ~
+        # database_storage backups
+        backups_database_storage_bucket_name: ~
+        backups_database_storage_region: ~
+        backups_database_storage_aws_access_key_id: ~
+        backups_database_storage_aws_secret_access_key: ~
+
 
 deployment_vars:
   deployment_name: easyfoundry-postgres
@@ -48,18 +64,6 @@ deployment_vars:
 
   cell_max_containers: 5 # (typically 20 max for 14GB RAM VMs in production)
   cell_disk_type: 5GB
-
-  # Broker
-  # clusterdata backups
-  backups_clusterdata_bucket_name: ~
-  backups_clusterdata_region: ~
-  backups_clusterdata_aws_access_key_id: ~
-  backups_clusterdata_aws_secret_access_key: ~
-  # database_storage backups
-  backups_database_storage_bucket_name: ~
-  backups_database_storage_region: ~
-  backups_database_storage_aws_access_key_id: ~
-  backups_database_storage_aws_secret_access_key: ~
 
 
   # Versions

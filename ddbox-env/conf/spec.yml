@@ -52,7 +52,13 @@ operations_files:
 
 variables_files:
   10.local:
-    - secrets
+    - file: secrets
+      example:
+        vbox_ssh:
+          private_key: |
+            -----BEGIN RSA PRIVATE KEY-----
+            ...
+            -----END RSA PRIVATE KEY-----
 
 
 deployment_vars:
@@ -60,11 +66,10 @@ deployment_vars:
 
   disk_size: 200_000 # i.e. 200MB
 
-  external_ip: ~   # must be specified here
-  vbox_host: ~     # must be specified here
-  vbox_username: ~ # must be specified here
-  # vbox_ssh:
-  #   private_key: ~ # specified in 'secrets.yml' and to be commened out here
+  external_ip: ~
+  vbox_host: ~
+  vbox_username: ~
+
   routable_network_cidr: 10.244.0.0/16
 
   internal_ip: "192.168.50.6"

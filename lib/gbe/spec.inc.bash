@@ -144,16 +144,22 @@ function populate_vars_files_arguments() {
     VARS_FILES_ARGUMENTS=()
     local secrets_files=()
 
-    local key rsc vars_file_dir vars_file
+    local key rsc vars_file_dir files_count file_idx vars_file
     for key in $(spec_var /variables_files | awk -F: '/^[^- #].*:/{print $1}'); do
         rsc=$(sed -e 's/^[[:digit:]]\{1,\}\.//' <<< "$key")
         vars_file_dir=$(expand_resource_dir "$rsc" conf)
-        for vars_file in $(spec_var "/variables_files/$key" | sed -e 's/^- //'); do
+
+        files_count=$(spec_var "/variables_files/$key" | awk '/^-/{print $1}' \
+                            | wc -l | tr -d ' ')
+        file_idx=0
+        while [[ $file_idx -lt $files_count ]]; do
+            vars_file=$(spec_var "/variables_files/$key/$file_idx/file")
             if [[ $vars_file == *secrets* ]]; then
                 secrets_files+=("$vars_file_dir/${vars_file}.yml")
             else
                 VARS_FILES_ARGUMENTS+=(-l "$vars_file_dir/${vars_file}.yml")
             fi
+            file_idx=$(($file_idx + 1))
         done
     done
 
