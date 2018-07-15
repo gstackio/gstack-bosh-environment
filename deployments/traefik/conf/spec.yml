@@ -7,41 +7,62 @@ input_resources:
   - name: traefik-boshrelease
     type: git
     uri: https://github.com/gstackio/traefik-boshrelease.git
-    version: master
+    version: 3f1a2de # master after version 1.2.0
 
 
 main_deployment_file: traefik-boshrelease/deployment/traefik-deployment.yml
 
 operations_files:
   10.traefik-boshrelease:
+    - deployment/operations/rename-deployment
+    - deployment/operations/rename-network
     - deployment/operations/cf-integration
-    # - deployment/operations/disable-default-tls-certificate
-    # - deployment/operations/enable-lets-encrypt # broken now that TLS-SNI has been shut down
+    - deployment/operations/enable-lets-encrypt
     - deployment/operations/enable-web-backend
+    # - deployment/operations/enable-web-backend-tls # to disable when using the cf-integration above
+    - deployment/operations/static-ip
+    # - deployment/operations/latest-release
   20.local:
-    - set-versions
-    - activate-debug
-    - inject-variables
+    - pin-stemcell
+    - scale-disk
+    # - activate-debug
 
 
 deployment_vars:
   deployment_name: easyfoundry-traefik
 
+
+  # User-facing settings
+
   traefik_domain: easyfoundry.prototyp.it
+  web_backend_hostname: traefik.easyfoundry.prototyp.it
 
   acme_certs_email: acme-certs@gstack.io
   acme_staging: true
 
-  web_backend_hostname: traefik.easyfoundry.prototyp.it
   web_backend_username: gstack
-  web_backend_md5_htpasswd: $apr1$exP13HG4$eJjE8uEIVmmS8o1mKCfL5.
+
+  # static_ip: ~      # imported below
+
+
+  # Versions
 
   # stemcell_name:    # imported below
   # stemcell_version: # imported below
   # stemcell_sha1:    # imported below
 
 
+  # Reference declarations
+
+  network_name: default
+
+
 imported_vars:
+  - subsys: base-env
+    imports:
+      - name: static_ip
+        from: depl-vars
+        path: /web_router_ip
   - subsys: cf
     imports:
       - name: stemcell_name

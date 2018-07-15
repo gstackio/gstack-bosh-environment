@@ -31,13 +31,3 @@ if [[ $create_release == true ]]; then
         bosh upload-release
     popd
 fi
-
-# # This is no more required in v1.1.0 (historically required for v1.0.0)
-# htpasswd_file=$BASE_DIR/state/traefik/htpasswd.txt
-# if [ ! -f "$htpasswd_file" ]; then
-#     echo -n "# " > "$htpasswd_file"
-#     chmod 600 "$htpasswd_file"
-#     openssl rand -base64 24 \
-#         | tee -a "$htpasswd_file" \
-#         | htpasswd -ni gstack >> "$htpasswd_file"
-# fi
