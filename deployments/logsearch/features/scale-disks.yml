@@ -6,11 +6,11 @@
 
 - path: /instance_groups/name=cluster_monitor/persistent_disk_type
   type: replace
-  value: 20GB
+  value: 10GB
 
 - path: /instance_groups/name=elasticsearch_data/persistent_disk_type
   type: replace
-  value: 20GB
+  value: 10GB
 
 - path: /instance_groups/name=kibana/persistent_disk_type
   type: replace
