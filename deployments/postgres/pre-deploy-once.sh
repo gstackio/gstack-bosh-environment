@@ -9,7 +9,7 @@ function spec_var() {
 
 set -ex
 
-create_release=false
+create_release=true
 dev_release_name=dingo-postgresql
 
 if [[ $create_release == true ]]; then

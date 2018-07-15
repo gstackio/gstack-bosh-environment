@@ -9,7 +9,7 @@ function spec_var() {
 
 set -ex
 
-developing=true
+developing=false
 dev_release_name=dingo-postgresql
 base_version=0.10.2
 

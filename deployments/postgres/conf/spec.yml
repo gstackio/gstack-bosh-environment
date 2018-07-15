@@ -5,23 +5,14 @@ subsys:
   deploy_after: cf
 
 input_resources:
-  - name: dingo-postgresql-release-bosh2
+  - name: dingo-postgresql-release
     type: git
-    uri: https://github.com/dingotiles/dingo-postgresql-release.git
+    uri: https://github.com/gstackio/dingo-postgresql-release.git
     # version: bd0f88f # on the 'links-and-cloud-config' branch (version 0.10.3-rc.38), as of April 19th, 2017
     version: links-and-cloud-config # ongoing work on the 'links-and-cloud-config' branch (version 0.10.3-rc.38), as of June 23rd, 2018
 
-  # # The problem with version 0.10.2 below is that is is late compared to
-  # # master or the the 'links-and-cloud-config' branch, and that it does not
-  # # support BOSH v2.0
-  # - name: dingo-postgresql-release
-  #   type: git
-  #   uri: https://github.com/dingotiles/dingo-postgresql-release.git
-  #   version: v0.10.2
-  #   # main_deployment_file: dingo-postgresql-release/templates/deployment.yml
 
-
-main_deployment_file: dingo-postgresql-release-bosh2/manifests/dingo-postgresql.yml
+main_deployment_file: dingo-postgresql-release/manifests/dingo-postgresql.yml
 
 operations_files:
   10.local:
