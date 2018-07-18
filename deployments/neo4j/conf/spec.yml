@@ -1,0 +1,33 @@
+---
+subsys:
+  name: neo4j
+  type: bosh-deployment
+
+input_resources:
+  - name: neo4j-on-cloud-foundry
+    type: git
+    uri: https://github.com/neo4j-contrib/neo4j-on-cloud-foundry.git
+    version: master
+
+
+main_deployment_file: neo4j-on-cloud-foundry/manifests/neo4j-bosh-lite.yml
+
+
+operations_files:
+  10.local:
+    - rename-deployment
+    # - set-disk-size
+
+
+deployment_vars:
+  deployment_name: easyfoundry-neo4j
+
+
+  # Versions
+
+  stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+  stemcell_version: "3586.24"
+  stemcell_sha1: 32c1e09391d509d24026e55555df07a166f8b8eb
+
+
+imported_vars: {}
