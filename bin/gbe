@@ -294,8 +294,8 @@ function update_usage() {
     echo
     echo "Updates the cloud config or the runtime config in BOSH director."
     echo
-    echo "    -n"
-    echo "        Don't ask for user input"
+    echo "    -y"
+    echo "        Run unattended. Don't ask for user input."
     echo
     echo "See also:"
     echo "  ${ul}https://bosh.io/docs/cloud-config.html$noul"
