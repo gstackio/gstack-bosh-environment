@@ -370,8 +370,8 @@ function delete_usage() {
     local noul=$NOUNDERLINE
     local rst=$RESET
     echo "Usage:"
-    echo "  $ul$SCRIPT_NAME$noul  ${ul}delete$noul  [-y]  <subsys-name>..."
-    echo "  $ul$SCRIPT_NAME$noul  ${ul}delete$noul  all"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}delete$noul  [-y] [-f]  <subsys-name>..."
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}delete$noul  all [-f]"
     echo "  $ul$SCRIPT_NAME$noul  ${ul}delete$noul  list"
     echo
     echo "    <subsys-name>   The name of a subsys to delete."
@@ -387,6 +387,10 @@ function delete_usage() {
     echo
     echo "    -y"
     echo "        Run unattended. Don't ask for user input. NOT RECOMMENDED."
+    echo
+    echo "    -f"
+    echo "        Ignore errors. SHOULD BE USED WITH CAUTION, as a last resort"
+    echo "        only."
     echo
 }
 
@@ -631,6 +635,9 @@ function converge_deployment() {
 function delete_deployment() {
     local subsys_name=$1; shift
 
+    local ignore_errors
+    if [[ $@ == *--force* ]]; then ignore_errors=yes; fi
+
     echo -e "\n${BLUE}Deleting the $BOLD'$subsys_name'$RESET subsystem.\n"
 
     SUBSYS_DIR=$BASE_DIR/deployments/$subsys_name
@@ -638,7 +645,9 @@ function delete_deployment() {
 
     assert_subsys bosh-deployment
 
-    set -e
+    if [[ -z $ignore_errors ]]; then
+        set -e
+    fi
 
     run_hook "$SUBSYS_DIR/pre-delete.sh"
 
@@ -966,6 +975,7 @@ case $1 in
     delete)
         shift
         non_interactive=
+        ignore_errors=
         while [[ -n $1 ]]; do
             case $1 in
                 ""|-h)
@@ -973,6 +983,8 @@ case $1 in
                     break ;;
                 -y)
                     non_interactive=yes ;;
+                -f)
+                    ignore_errors=yes ;;
                 list)
                     list_deployments --reverse
                     break ;;
@@ -980,14 +992,14 @@ case $1 in
                     shift
                     ensure_reachability
                     list_deployments --reverse
-                    each_deployment --reverse delete_deployment -n "$@"
+                    each_deployment --reverse delete_deployment -n ${ignore_errors:+"--force"} "$@"
                     break ;;
                 *)
                     if ! assert_subsys_name "$1"; then
                         delete_usage; exit 2
                     fi
                     ensure_reachability
-                    delete_deployment "$1" ${non_interactive:+"-n"} ;;
+                    delete_deployment "$1" ${non_interactive:+"-n"} ${ignore_errors:+"--force"} ;;
             esac
             shift
         done
