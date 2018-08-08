@@ -3,4 +3,5 @@
 # Plumbery
 
 prefix_dir: /usr/local
-resources_dir: "{{ ansible_env.HOME }}"
+prefix_dir_must_become: yes
+resources_dir: "{{ ansible_env.HOME }}/resources"

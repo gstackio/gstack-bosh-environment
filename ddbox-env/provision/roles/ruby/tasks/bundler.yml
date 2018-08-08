@@ -1,0 +1,11 @@
+---
+
+- name: Ruby | bundler is installed
+  shell: |
+    set -e
+    source {{ prefix_dir }}/share/chruby/chruby.sh
+    source {{ prefix_dir }}/share/chruby/auto.sh
+    chruby {{ ruby_version }}
+    gem install bundler -v {{ bundler_version }}
+  args:
+    executable: /bin/bash

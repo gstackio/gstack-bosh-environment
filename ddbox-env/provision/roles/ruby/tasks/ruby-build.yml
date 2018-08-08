@@ -1,0 +1,22 @@
+---
+
+- name: Ruby | ruby-build support packages are installed
+  become: yes
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    state: present
+  with_items: [ libssl-dev, libreadline-dev, zlib1g-dev ]
+
+- name: Ruby | the ruby-build git repo is cloned
+  git:
+    repo: https://github.com/rbenv/ruby-build.git
+    version: "{{ ruby_build_version }}"
+    dest: "{{ ansible_env.HOME }}/.rbenv/plugins/ruby-build"
+
+- name: Ruby | ruby-build is installed
+  become: "{{ prefix_dir_must_become }}"
+  shell: PREFIX={{ prefix_dir }} ./install.sh
+  args:
+    chdir: "{{ ansible_env.HOME }}/.rbenv/plugins/ruby-build"
+    creates: "{{ prefix_dir }}/bin/ruby-build"

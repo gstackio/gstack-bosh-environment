@@ -1,0 +1,13 @@
+---
+
+- import_tasks: chruby.yml
+  tags: [ ruby, chruby ]
+
+- import_tasks: ruby-build.yml
+  tags: [ ruby, ruby-build ]
+
+- import_tasks: ruby.yml
+  tags: [ ruby ]
+
+- import_tasks: bundler.yml
+  tags: [ ruby, bundler ]

@@ -1,0 +1,17 @@
+---
+
+- name: Ruby | version {{ ruby_version }} binaries are built with ruby-build
+  shell: './ruby-build "{{ ruby_version }}" --install-dir "{{ ansible_env.HOME }}/.rubies/{{ ruby_version }}"'
+  args:
+    chdir: "{{ prefix_dir }}/bin"
+    creates: "{{ ansible_env.HOME }}/.rubies/{{ ruby_version }}/bin/ruby"
+
+- name: Ruby | system gems are updated
+  shell: |
+    set -e
+    source {{ prefix_dir }}/share/chruby/chruby.sh
+    source {{ prefix_dir }}/share/chruby/auto.sh
+    chruby {{ ruby_version }}
+    gem update --system
+  args:
+    executable: /bin/bash

@@ -2,10 +2,23 @@
 
 - hosts: dedibox
   roles:
+    - directories
     - virtualbox
     - vm-networking
+    - ruby # for building dingo-postgresql-release
 
   tasks:
+    - name: Libraries | packages are installed
+      become: true
+      apt:
+        name: "{{ package }}"
+        update_cache: yes
+        state: present
+      with_items:
+        - libcurl4-openssl-dev # for building dingo-postgresql-release
+      loop_control: { loop_var: package }
+      tags: [ libraries ]
+
     - name: Utilities | packages are installed
       become: true
       apt:

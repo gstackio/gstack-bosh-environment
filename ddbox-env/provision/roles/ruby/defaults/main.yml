@@ -1,0 +1,14 @@
+---
+
+# For available ruby-build versions, see: <https://github.com/rbenv/ruby-build/releases>
+#
+# ruby_build_version: 5297dbc4b05b53fe0a0ebd533a6bf09d50cd88c3 # Sun Feb 28 13:01:03 2016 +0900
+# ruby_build_version: e2adf3d5fc327dcb887136cc5101674a78c0507e # version 20170112
+ruby_build_version: f50343c81f3a926a3054954d00343a444c778103 # v20180618
+
+chruby_version: "0.3.9"
+chruby_sha256: 7220a96e355b8a613929881c091ca85ec809153988d7d691299e0a16806b42fd
+
+ruby_version: "2.5.1"
+
+bundler_version: "1.16.3"

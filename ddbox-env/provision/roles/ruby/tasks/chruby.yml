@@ -1,0 +1,33 @@
+---
+
+- name: Ruby | chruby package archive is downloaded
+  get_url:
+    url: https://github.com/postmodern/chruby/archive/v{{ chruby_version }}.tar.gz
+    dest: "{{ resources_dir }}/chruby-{{ chruby_version }}.tar.gz"
+    checksum: sha256:{{ chruby_sha256 }}
+    mode: 0644
+
+- name: Ruby | chruby is unarchived
+  unarchive:
+    copy: no
+    # remote_src: yes # will replace 'copy: no' as of Ansible 2.2
+    src: "{{ resources_dir }}/chruby-{{ chruby_version }}.tar.gz"
+    dest: "{{ resources_dir }}"
+
+- name: Ruby | chruby is installed
+  become: "{{ prefix_dir_must_become }}"
+  make:
+    chdir: "{{ resources_dir }}/chruby-{{ chruby_version }}"
+    target: install
+    params:
+      PREFIX: "{{ prefix_dir }}"
+
+- name: Ruby | chruby is set up in bash config file
+  blockinfile:
+    dest: "{{ ansible_env.HOME }}/.bashrc"
+    insertafter: EOF
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - chruby"
+    block: |
+      source {{ prefix_dir }}/share/chruby/chruby.sh
+      source {{ prefix_dir }}/share/chruby/auto.sh
+    state: present
