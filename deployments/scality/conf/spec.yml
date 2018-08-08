@@ -2,7 +2,6 @@
 subsys:
   name: scality
   type: bosh-deployment
-  deploy_after: shield
 
 input_resources:
   - name: docker-boshrelease
