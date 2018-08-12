@@ -1,0 +1,22 @@
+---
+
+- path: /networks/-
+  type: replace
+  value:
+    name: ((redis_network))
+    subnets:
+      - az: z1
+        range: 10.244.82.0/24 # '82' because of `echo -n R | hexdump -d`
+        gateway: 10.244.82.1
+        cloud_properties: { name: random }
+        static: [ 10.244.82.2 - 10.244.82.60 ]
+      - az: z2
+        range: 10.244.83.0/24
+        gateway: 10.244.83.1
+        cloud_properties: { name: random }
+        static: [ 10.244.83.2 - 10.244.83.60 ]
+      - az: z3
+        range: 10.244.84.0/24
+        gateway: 10.244.84.1
+        cloud_properties: { name: random }
+        static: [ 10.244.84.2 - 10.244.84.60 ]

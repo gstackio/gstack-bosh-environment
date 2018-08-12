@@ -28,6 +28,7 @@ operations_files:
     - prometheus-support
     - cassandra-support
     - logsearch-support
+    - redis-support
 
 
 config_vars: {}
@@ -82,3 +83,8 @@ imported_vars:
       - name: cassandra_network
         from: depl-vars
         path: /network_name
+  - subsys: redis
+    imports:
+      - name: redis_network
+        from: depl-vars
+        path: /default_network
