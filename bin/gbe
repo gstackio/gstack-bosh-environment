@@ -443,7 +443,10 @@ function ensure_reachability() {
 
 function add_routes() {
     local network_cidr platform netstat_pattern sudo_cmd
-    network_cidr=$(spec_var --required /deployment_vars/routable_network_cidr "$BASE_DIR/$GBE_ENVIRONMENT")
+    network_cidr=$(spec_var /deployment_vars/routable_network_cidr "$BASE_DIR/$GBE_ENVIRONMENT" | sed -e 's/^null$//')
+    if [[ -z $network_cidr ]]; then
+        return
+    fi
     platform=$(platform)
     case $platform in
         darwin) netstat_pattern=$(sed -E -e 's`(\.0)+(/[0-9]+)?$`\2`' <<< "$network_cidr") ;;
