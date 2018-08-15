@@ -689,6 +689,10 @@ function gbe_up() {
     ssh-keyscan -t ecdsa "$(jumpbox_ip)" 2> /dev/null \
         >> ~/.ssh/known_hosts
 
+    # This workaround avoids the "Too many authentication failures for
+    # jumpbox" error when ensuring reachability below.
+    ssh-add -D
+
     ensure_reachability
     setup_firewall
 
