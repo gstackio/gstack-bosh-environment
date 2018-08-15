@@ -328,7 +328,7 @@ function get_subsys_dir_from_subsys_name() {
     local subsys_dir
     if [[ $subsys_name == base-env ]]; then
         subsys_dir=$BASE_DIR/$GBE_ENVIRONMENT
-    elif [[ $subsys_name == dns ]]; then
+    elif [[ $subsys_name == *-env || $subsys_name == dns ]]; then
         subsys_dir=$BASE_DIR/$subsys_name
     elif [[ $subsys_name == cloud-config || $subsys_name == runtime-config ]]; then
         subsys_dir=$BASE_DIR/$GBE_ENVIRONMENT/$subsys_name
