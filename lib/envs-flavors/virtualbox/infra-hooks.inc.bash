@@ -153,30 +153,33 @@ function setup_firewall_hook() {
     if [[ -z $nic_num ]]; then
         # Nothing to do when no NIC is attached to any NAT connection
 
+        echo -e "\n${BLUE}Fixing ${BOLD}routing$RESET from internal instances to external IP endpoints\n"
+
         # FIXME: we now have some kludge shim here
         local external_ip web_router_ip internal_net_cidr rule_index
         external_ip=$(external_ip)
-        web_router_ip=$(env_depl_var --required web_router_ip)
-        internal_net_cidr=$(env_depl_var --required routable_network_cidr)
+        web_router_ip=$(env_depl_var web_router_ip | sed -e 's/^null$//')
+        if [[ -n $web_router_ip ]]; then
+            internal_net_cidr=$(env_depl_var --required routable_network_cidr)
 
-        set_nat_rule PREROUTING 2 "gbe[f55fc128-6cec-4f38-9303-2e45b0010c76]" \
-            -i w+ -p tcp -d "$external_ip" --dport 80 \
-            -j DNAT --to-dest "$web_router_ip"
-        set_nat_rule PREROUTING 3 "gbe[f55fc128-6cec-4f38-9303-2e45b0010c77]" \
-            -i w+ -p tcp -d "$external_ip" --dport 443 \
-            -j DNAT --to-dest "$web_router_ip"
+            set_nat_rule PREROUTING 2 "gbe[f55fc128-6cec-4f38-9303-2e45b0010c76]" \
+                -i w+ -p tcp -d "$external_ip" --dport 80 \
+                -j DNAT --to-dest "$web_router_ip"
+            set_nat_rule PREROUTING 3 "gbe[f55fc128-6cec-4f38-9303-2e45b0010c77]" \
+                -i w+ -p tcp -d "$external_ip" --dport 443 \
+                -j DNAT --to-dest "$web_router_ip"
 
-        set_nat_rule POSTROUTING 1 "gbe[f55fc128-6cec-4f38-9303-2e45b0010c78]" \
-            -o w+ -p tcp -s "$internal_net_cidr" -d "$web_router_ip" --dport 80 \
-            -j MASQUERADE
-        set_nat_rule POSTROUTING 2 "gbe[f55fc128-6cec-4f38-9303-2e45b0010c79]" \
-            -o w+ -p tcp -s "$internal_net_cidr" -d "$web_router_ip" --dport 443 \
-            -j MASQUERADE
-
+            set_nat_rule POSTROUTING 1 "gbe[f55fc128-6cec-4f38-9303-2e45b0010c78]" \
+                -o w+ -p tcp -s "$internal_net_cidr" -d "$web_router_ip" --dport 80 \
+                -j MASQUERADE
+            set_nat_rule POSTROUTING 2 "gbe[f55fc128-6cec-4f38-9303-2e45b0010c79]" \
+                -o w+ -p tcp -s "$internal_net_cidr" -d "$web_router_ip" --dport 443 \
+                -j MASQUERADE
+        fi
         return
     fi
 
-    echo -e "\n${BLUE}Updating ${BOLD}forwarded ports$RESET in Virtualbox.\n"
+    echo -e "\n${BLUE}Updating ${BOLD}forwarded ports$RESET in Virtualbox\n"
 
     $vboxmanage showvminfo "$vm_cid" \
         | grep -E "^NIC ${nic_num} Rule\\([[:digit:]]+\\):.* name = tcp-pf-rule-[[:digit:]]+," \
