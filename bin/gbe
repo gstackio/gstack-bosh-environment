@@ -696,7 +696,9 @@ function gbe_up() {
     ensure_reachability
     setup_firewall
 
-    alias_env
+    if [[ -n $(spec_var /deployment_vars/director_name | sed -e 's/^null$//') ]]; then
+        alias_env
+    fi
 }
 
 function alias_env() {
