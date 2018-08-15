@@ -11,6 +11,27 @@ function env_depl_var() {
     spec_var ${required:+--required} "/deployment_vars/$depl_var_name" "$BASE_DIR/$GBE_ENVIRONMENT"
 }
 
+function yaml_upsert_file_content() {
+    local dst_yaml_file=$1
+    local dst_yaml_path=$2
+    local src_value_file=$3
+
+    local tmp_file
+    tmp_file=$(mktemp)
+    if [[ ! -e $dst_yaml_file || ! -s $dst_yaml_file ]]; then
+        # non existing or empty file: we need it to be an empty YAML hash
+        echo '--- {}' >> "$dst_yaml_file"
+    fi
+    bosh int --var-file var_value="$src_value_file" \
+        --ops-file /dev/stdin \
+        "$dst_yaml_file" \
+        <<< "--- [ { path: '${dst_yaml_path}', value: ((var_value)), type: replace } ]" \
+        > "$tmp_file"
+
+    cp "$tmp_file" "$dst_yaml_file"
+    rm -f "$tmp_file"
+}
+
 function internal_ip_hook() {
     env_depl_var --required internal_ip
 }
@@ -30,6 +51,29 @@ function pre_create_env_hook() {
         # ansible-playbook -i inventory.cfg --ask-become provision.yml
         echo skipped
     popd
+
+    local vbox_host
+    vbox_host=$(env_depl_var vbox_host | sed -e 's/^null$//')
+    if [[ -n $vbox_host ]]; then
+        echo -e "\n${BLUE}Setting up ${BOLD}ssh key$RESET to access the distant Virtualbox host\n"
+
+        assert_utilities ssh-copy-id "to grant the ssh key on the distant Virtualbox host"
+
+        local vbox_username
+        vbox_username=$(env_depl_var --required vbox_username)
+
+        local ssh_key_base_filename=$SUBSYS_DIR/conf/id_rsa
+        if [ ! -f "$ssh_key_base_filename" ]; then
+            ssh-keygen -b 4096 -N '' -C "boshinit@$(spec_var /subsys/name "$BASE_DIR/$GBE_ENVIRONMENT")" \
+                -f "$ssh_key_base_filename"
+            chmod 600 "$ssh_key_base_filename"
+        fi
+        local secrets_file=$SUBSYS_DIR/conf/secrets.yml
+        yaml_upsert_file_content "$secrets_file" "/vbox_ssh?/private_key" \
+            "$ssh_key_base_filename"
+        chmod 600 "$secrets_file"
+        ssh-copy-id -i "${ssh_key_base_filename}.pub" "$vbox_username@$vbox_host"
+    fi
 }
 
 function extern_infra_vars_hook() {
@@ -165,7 +209,26 @@ function pre_delete_env_hook() {
 }
 
 function post_delete_env_hook() {
-    :
+    local vbox_host
+    vbox_host=$(env_depl_var vbox_host | sed -e 's/^null$//')
+
+    function sed_escape() {
+        sed -e 's/[]\/$*.^[]/\\&/g'
+    }
+
+    if [[ -n $vbox_host ]]; then
+        echo -e "\n${BLUE}Revoking ${BOLD}ssh key$RESET used to access the distant Virtualbox host\n"
+
+        local ssh_key_base_filename=$SUBSYS_DIR/conf/id_rsa
+        local vbox_username
+        vbox_username=$(env_depl_var --required vbox_username)
+
+        ssh_public_key_pattern=$(awk '{print $2}' "${ssh_key_base_filename}.pub" \
+            | sed_escape)
+
+        ssh "$vbox_username@$vbox_host" \
+            "sed -i.bak '/$ssh_public_key_pattern/d' ~/.ssh/authorized_keys"
+    fi
 }
 
 # Local Variables:

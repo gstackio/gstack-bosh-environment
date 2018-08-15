@@ -254,11 +254,11 @@ function merge_yaml_value_in_vars_file() {
     fi
     # Merge $var_value YAML node at the root level of the destination YAML
     # file (as designated by $dst_yaml_file) at key $dst_var_name
-    echo "--- [ { path: '/${dst_var_name}?', value: ((var_value)), type: replace } ]" \
-        | bosh_int_with_value "$src_var_value" \
-               --ops-file /dev/stdin \
-               "$dst_yaml_file" \
-           > "$tmp_file"
+    bosh_int_with_value "$src_var_value" \
+        --ops-file /dev/stdin \
+        "$dst_yaml_file" \
+        <<< "--- [ { path: '/${dst_var_name}?', value: ((var_value)), type: replace } ]" \
+        > "$tmp_file"
 
     cp "$tmp_file" "$dst_yaml_file"
     rm -f "$tmp_file"

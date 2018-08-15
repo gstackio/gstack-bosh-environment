@@ -771,6 +771,9 @@ function delete_env() {
     "read_${subsys_type}_spec"
 
 
+    pre_delete_env_hook
+
+
     infra_bosh_ro_invoke interpolate > "$subsys_state_dir/depl-manifest.yml"
     [[ -x $(which humanize-manifest) ]] && \
         humanize-manifest "$subsys_state_dir/depl-manifest.yml" \
