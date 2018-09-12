@@ -1,0 +1,81 @@
+---
+subsys:
+  name: ddbox-standalone-garden-env
+  type: bosh-environment
+
+input_resources:
+  - name: bosh-deployment
+    type: git
+    uri: https://github.com/cloudfoundry/bosh-deployment.git
+    version: v1.0.0 # BOSH v266.4 (as of June 22nd, 2018)
+
+
+infra_vars:
+  alias: vbox # the Bosh CLI alias
+  iaas: virtualbox # the GBE environment flavor
+
+dns:
+  zone: prototyp.it
+  subdomain: easyfoundry
+
+
+main_deployment_file: bosh-deployment/bosh.yml
+
+operations_files:
+  10.bosh-deployment:
+    - virtualbox/cpi
+    - virtualbox/remote
+    - bosh-lite
+    - bosh-lite-runc
+    - bosh-lite-grootfs
+    - jumpbox-user
+  30.local:
+    - keep-bosh-agent
+    - custom-stemcell-version
+    - set-disk-size
+    - scale-vm-size
+    - retain-garden-only
+
+variables_files:
+  10.local:
+    - file: secrets
+      example:
+        vbox_ssh:
+          private_key: |
+            -----BEGIN RSA PRIVATE KEY-----
+            ...
+            -----END RSA PRIVATE KEY-----
+
+
+deployment_vars:
+  disk_size: 100_000 # i.e. 100MB
+
+  external_ip: ~
+  vbox_host: ~
+  vbox_username: ~
+
+  external_ip: "62.210.146.202"
+  vbox_host: "62.210.146.202"
+  vbox_username: benjamin
+
+  routable_network_cidr: 10.244.0.0/16
+
+  # web_router_ip: "10.244.0.34" # classical Gorouter reverse-proxy
+  web_router_ip: "10.244.0.43" # Træfik reverse-proxy for Let's Encrypt support
+
+  internal_ip: "192.168.50.7"
+  internal_gw: "192.168.50.1"
+  internal_cidr: 192.168.50.0/24
+
+  stemcell_name: bosh-vsphere-esxi-ubuntu-trusty-go_agent
+  stemcell_version: "3586.24"
+  stemcell_sha1: 9428c4e94559eefe76026051d8065514732c383c
+
+
+imported_vars:
+  - subsys: ddbox-standalone-bosh-env
+    imports:
+
+      - name: blobstore_ip
+        from: depl-vars
+        path: /internal_ip

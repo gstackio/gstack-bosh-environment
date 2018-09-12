@@ -1,0 +1,99 @@
+---
+
+- path: /name
+  type: replace
+  value: easyfoundry-bosh
+
+
+- path: /releases/name=bosh-warden-cpi
+  type: remove
+
+- path: /releases/name=garden-runc
+  type: remove
+
+- path: /releases/name=grootfs
+  type: remove
+
+- path: /instance_groups/name=bosh/jobs/name=nats
+  type: remove
+
+- path: /instance_groups/name=bosh/jobs/name=warden_cpi
+  type: remove
+
+- path: /instance_groups/name=bosh/jobs/name=garden
+  type: remove
+
+- path: /instance_groups/name=bosh/jobs/name=grootfs
+  type: remove
+
+
+- path: /instance_groups/name=bosh/properties/warden_cpi
+  type: remove
+# FIXME: submit fix in bosh-lite-runc.yml ops file for this leftover from
+# main bosh-lite.yml ops file
+- path: /instance_groups/name=bosh/properties/garden
+  type: remove
+
+
+# Adapt NATS config, since NATS server is in Garden deployment
+- path: /instance_groups/name=bosh/properties/nats/address
+  type: replace
+  value: ((garden_backend_ip))
+- path: /instance_groups/name=bosh/properties/nats/user
+  type: remove
+- path: /instance_groups/name=bosh/properties/nats/password
+  type: remove
+- path: /instance_groups/name=bosh/properties/nats/tls/server
+  type: remove
+
+- path: /instance_groups/name=bosh/properties/agent/mbus
+  type: replace
+  value: nats://nats:((nats_password))@((garden_backend_ip)):4222
+
+
+- path: /variables/name=nats_password
+  type: remove
+
+- path: /variables/name=nats_ca
+  type: remove
+
+- path: /variables/name=nats_server_tls
+  type: remove
+
+- path: /variables/name=nats_clients_director_tls
+  type: remove
+
+- path: /variables/name=nats_clients_health_monitor_tls
+  type: remove
+
+
+- path: /variables/name=blobstore_ca
+  type: remove
+
+- path: /variables/name=blobstore_server_tls
+  type: remove
+
+
+# Add the Shadow CPI release
+
+- path: /releases/name=bosh-shadow-cpi?
+  type: replace
+  value:
+    name: bosh-shadow-cpi
+    url: file:///Users/benjamin/workspace/bosh/cpis/bosh-shadow-cpi-release/tmp/shadow-cpi-release-0+dev.8.tgz
+
+- path: /instance_groups/name=bosh/jobs/name=shadow-cpi?
+  type: replace
+  value:
+    name: shadow-cpi
+    release: bosh-shadow-cpi
+    properties:
+      ssh:
+        remote-host: ((garden_backend_ip))
+        remote-user: jumpbox
+        private-key: ((garden_jumpbox_ssh_private_key))
+      remote-cpi-binary: /var/vcap/jobs/warden_cpi/bin/cpi
+
+- path: /instance_groups/name=bosh/properties/director/cpi_job
+  type: replace
+  value: shadow-cpi

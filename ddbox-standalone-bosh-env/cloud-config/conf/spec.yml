@@ -1,0 +1,90 @@
+---
+subsys:
+  name: cloud-config
+  type: bosh-config
+
+input_resources:
+  - name: cf-deployment
+    type: git
+    uri: https://github.com/cloudfoundry/cf-deployment.git
+    version: v1.40.0
+  - name: traefik-boshrelease
+    type: git
+    uri: https://github.com/gstackio/traefik-boshrelease.git
+    version: v1.2.0
+
+
+main_config_file: cf-deployment/iaas-support/bosh-lite/cloud-config.yml
+
+operations_files:
+  10.traefik-boshrelease:
+    - deployment/cloud-config/cf-integration
+  20.local:
+    - additional-disk-sizes
+    - cf-mysql-support
+    - concourse-support
+    - shield-v8-support
+    - shield-v7-support
+    - prometheus-support
+    - cassandra-support
+    - logsearch-support
+    - redis-support
+
+
+config_vars: {}
+
+
+imported_vars:
+  - subsys: mysql
+    imports:
+      - name: mysql_network
+        from: depl-vars
+        path: /network_name
+      - name: mysql_vm_extension
+        from: depl-vars
+        path: /mysql_vm_extension
+  - subsys: concourse
+    imports:
+      - name: concourse_network
+        from: depl-vars
+        path: /network_name
+      - name: concourse_vm_extension
+        from: depl-vars
+        path: /web_network_vm_extension
+  - subsys: shield-v8
+    imports:
+      - name: shield_v8_port
+        from: depl-vars
+        path: /shield_port
+      - name: shield_v8_network
+        from: depl-vars
+        path: /network_name
+      - name: shield_v8_vm_extension
+        from: depl-vars
+        path: /shield_vm_extension
+  - subsys: shield-v7
+    imports:
+      - name: shield_v7_port
+        from: depl-vars
+        path: /shield_port
+      - name: shield_v7_network
+        from: depl-vars
+        path: /network_name
+      - name: shield_v7_vm_extension
+        from: depl-vars
+        path: /shield_vm_extension
+  - subsys: prometheus
+    imports:
+      - name: prometheus_vm_extension
+        from: depl-vars
+        path: /prometheus_vm_extension
+  - subsys: cassandra
+    imports:
+      - name: cassandra_network
+        from: depl-vars
+        path: /network_name
+  - subsys: redis
+    imports:
+      - name: redis_network
+        from: depl-vars
+        path: /default_network

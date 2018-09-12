@@ -1,0 +1,144 @@
+---
+subsys:
+  name: ddbox-standalone-bosh-env
+  type: bosh-environment
+  deploy_after: ddbox-standalone-garden-env
+
+input_resources:
+  - name: bosh-deployment
+    type: git
+    uri: https://github.com/cloudfoundry/bosh-deployment.git
+    version: v1.0.0 # BOSH v266.4 (as of June 22nd, 2018)
+  - name: prometheus-boshrelease
+    type: git
+    uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
+    version: v23.0.0
+
+
+infra_vars:
+  alias: vbox # the Bosh CLI alias
+  iaas: virtualbox # the GBE environment flavor
+
+dns:
+  zone: prototyp.it
+  subdomain: easyfoundry
+
+
+main_deployment_file: bosh-deployment/bosh.yml
+
+operations_files:
+  10.bosh-deployment:
+    - virtualbox/cpi
+    - virtualbox/remote
+    - bosh-lite
+    - bosh-lite-runc
+    - bosh-lite-grootfs
+    - experimental/blobstore-https
+    - experimental/blobstore-https-bosh-lite
+    - jumpbox-user
+    - uaa
+    - credhub
+  20.prometheus-boshrelease:
+    - manifests/operators/bosh/add-bosh-exporter-uaa-clients
+  30.local:
+    - keep-bosh-agent
+    - custom-stemcell-version
+    - custom-bosh-version-precompiled
+    - disable-resurrector
+    - set-disk-size
+    - scale-vm-size
+    - enable-index-based-dns-aliases
+    - remove-garden
+
+variables_files:
+  10.local:
+    - file: secrets
+      example:
+        vbox_ssh:
+          private_key: |
+            -----BEGIN RSA PRIVATE KEY-----
+            ...
+            -----END RSA PRIVATE KEY-----
+
+
+deployment_vars:
+  director_name: easyfoundry-director
+
+  disk_size: 100_000 # i.e. 100MB
+
+  external_ip: ~
+  vbox_host: ~
+  vbox_username: ~
+
+  external_ip: "62.210.146.202"
+  vbox_host: "62.210.146.202"
+  vbox_username: benjamin
+
+  internal_ip: "192.168.50.5"
+  internal_gw: "192.168.50.1"
+  internal_cidr: 192.168.50.0/24
+
+
+  # Versions
+
+  bosh_precompiled_version: "266.4.0"
+  bosh_precompiled_url: https://s3.amazonaws.com/bosh-compiled-release-tarballs/bosh-266.4.0-ubuntu-trusty-3586.24-20180621-165809-30266228-20180621165813.tgz?versionId=inkSsUYxrlYaflh19kcwA7kYkF3eAHLh
+  bosh_precompiled_sha1: 79ba3bdc160faff121e56ee5fd5f618ea48023ce
+
+  stemcell_name: bosh-vsphere-esxi-ubuntu-trusty-go_agent
+  stemcell_version: "3586.24"
+  stemcell_sha1: 9428c4e94559eefe76026051d8065514732c383c
+
+
+imported_vars:
+  - subsys: ddbox-standalone-garden-env
+    imports:
+
+      # For 'remove-garden.yml' ops file
+      - name: garden_backend_ip
+        from: depl-vars
+        path: /internal_ip
+
+      - name: garden_jumpbox_ssh_private_key
+        from: depl-creds
+        path: /jumpbox_ssh/private_key
+
+
+      - name: nats_password
+        from: depl-creds
+        path: /nats_password
+
+      - name: nats_ca
+        from: depl-creds
+        path: /nats_ca
+
+      - name: nats_server_tls
+        from: depl-creds
+        path: /nats_server_tls
+
+      - name: nats_clients_director_tls
+        from: depl-creds
+        path: /nats_clients_director_tls
+
+      - name: nats_clients_health_monitor_tls
+        from: depl-creds
+        path: /nats_clients_health_monitor_tls
+
+
+      # Blobstore is deployed here but its credentials are generated in Garden
+      # deployment because it also needs them and is deployed first
+      - name: blobstore_director_password
+        from: depl-creds
+        path: /blobstore_director_password
+
+      - name: blobstore_agent_password
+        from: depl-creds
+        path: /blobstore_agent_password
+
+      - name: blobstore_ca
+        from: depl-creds
+        path: /blobstore_ca
+
+      - name: blobstore_server_tls
+        from: depl-creds
+        path: /blobstore_server_tls

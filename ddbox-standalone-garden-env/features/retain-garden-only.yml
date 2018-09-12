@@ -1,0 +1,114 @@
+---
+
+- path: /name
+  type: replace
+  value: easyfoundry-garden
+
+
+# Only keep Virtualbox CPI, BPM, Garden-runC, and GrootFS releases
+
+  # - path: /releases/name=bosh
+  #   type: remove
+
+
+# Only keep Garden, Groot, Warden CPI and NATS jobs
+
+- path: /instance_groups/name=bosh/jobs/name=postgres-9.4
+  type: remove
+
+- path: /instance_groups/name=bosh/jobs/name=blobstore
+  type: remove
+
+- path: /instance_groups/name=bosh/jobs/name=director
+  type: remove
+
+- path: /instance_groups/name=bosh/jobs/name=health_monitor
+  type: remove
+
+
+- path: /instance_groups/name=bosh/properties/blobstore
+  type: remove
+- path: /instance_groups/name=bosh/properties/compiled_package_cache
+  type: remove
+- path: /instance_groups/name=bosh/properties/director
+  type: remove
+- path: /instance_groups/name=bosh/properties/hm
+  type: remove
+- path: /instance_groups/name=bosh/properties/postgres
+  type: remove
+# Garden and Groot jobs are not configured on the instance group level, but
+# rather at the job level, which implies all properties at any other levels
+# are ignored.
+# FIXME: submit fix in bosh-lite-runc.yml ops file for this leftover from
+# main bosh-lite.yml ops file
+- path: /instance_groups/name=bosh/properties/garden
+  type: remove
+
+# The BPM job need some empty hash of properties otherwise the BOSH ERB
+# Renderer script fails with a "no implicit conversion of nil into Hash"
+# TypeError.
+- path: /instance_groups/name=bosh/jobs/name=bpm/properties?
+  type: replace
+  value: {}
+
+
+- path: /instance_groups/name=bosh/properties/agent/env/bosh/blobstores/0/options/endpoint
+  type: replace
+  value: http://((blobstore_ip)):25250
+- path: /instance_groups/name=bosh/properties/warden_cpi/agent/blobstore/options/endpoint
+  type: replace
+  value: http://((blobstore_ip)):25250
+
+
+- path: /variables/name=admin_password
+  type: remove
+
+- path: /variables/name=hm_password
+  type: remove
+
+- path: /variables/name=postgres_password
+  type: remove
+
+- path: /variables/name=director_ssl
+  type: remove
+
+# We generate these credentials here for deployment order purpose
+# - path: /variables/name=blobstore_director_password
+#   type: remove
+# - path: /variables/name=blobstore_agent_password
+#   type: remove
+# - path: /variables/name=blobstore_ca
+#   type: remove
+# - path: /variables/name=blobstore_server_tls
+#   type: remove
+- path: /variables/name=blobstore_server_tls/options/alternative_names/0
+  type: replace
+  value: ((blobstore_ip))
+
+
+# - type: replace
+#   path: /variables/name=nats_server_tls/options/alternative_names?/-
+#   value: ((internal_ip))
+
+# - type: replace
+#   path: /variables/name=blobstore_server_tls/options/alternative_names/-
+#   value: ((internal_ip))
+
+
+# And open the Garden backend socket to any remote IP.
+#
+# This Garden backend is not protected by any kind of password or encryption,
+# so this port should never be exposed to the Internet.
+- path: /instance_groups/name=bosh/jobs/name=garden/properties?/garden/listen_address
+  type: replace
+  value: 0.0.0.0:7777 # maybe use ((garden_backend_ip)) here
+
+
+# Finally, rename the instance group
+- path: /instance_groups/name=bosh/name
+  type: replace
+  value: garden
+
+
+# FIXME: 'gbe_up()' calls the 'alias_env()' function fails at calling
+# 'env_exports()' and at aliasing the environment.

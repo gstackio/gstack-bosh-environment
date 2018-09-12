@@ -1,0 +1,22 @@
+---
+
+# This ops file keeps the BOSH Agent up. Otherwise, standard BOSH-Lite
+# manifests have it stopped/killed after 5 minutes.
+#
+# Keeping the BOSH Agent up, means the TCP sockets 127.0.0.1:2825 (bosh-agent
+# protocol) and 0.0.0.0:6868 (nats message bus) are kept listening.
+#
+# Here, as port 6868 is not exposed to the outside Internet world in the
+# 'ddbox-env' context, we can keep those ports open.
+#
+# This should improve how successive 'bosh create-env' perform. Indeed, when
+# the agent is stopped, all subsequent 'bosh create-env' can't assess the
+# state of the VM. So, they just assume the VM is in some random junk state,
+# delete it, and re-create it.
+#
+# Instead, when 'bosh create-env' can assess the VM state, it might VM
+# converge it towards its desired state nicely, which is the expected feature
+# in the first place.
+
+- path: /instance_groups/name=bosh/jobs/name=disable_agent
+  type: remove

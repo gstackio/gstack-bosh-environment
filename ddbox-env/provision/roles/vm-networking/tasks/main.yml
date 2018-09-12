@@ -49,8 +49,8 @@
     destination: "{{ hostvars[inventory_hostname]['ansible_' + external_interface].ipv4.address }}"
     destination_port: "{{ rule.ingress_port }}"
     jump: DNAT
-    to_destination: "192.168.50.6"
-    comment: "DNAT ingress {{ rule.name }} traffic to GBE VM"
+    to_destination: "{{ garden_vm_ip }}"
+    comment: "DNAT ingress {{ rule.name }} traffic to Garden VM"
   with_items:
     - name: Traefik HTTP
       ingress_port: 80
@@ -83,11 +83,11 @@
     chain: POSTROUTING
     protocol: tcp
     source: 192.168.0.0/16
-    destination: 192.168.50.6
+    destination: "{{ garden_vm_ip }}"
     destination_port: "{{ rule.ingress_port }}"
     jump: SNAT
     to_source: 192.168.50.1
-    comment: "SNAT from LB the ingress {{ rule.name }} traffic from private networks to GBE VM"
+    comment: "SNAT from LB the ingress {{ rule.name }} traffic from private networks to Garden VM"
   with_items:
     - name: HTTP
       ingress_port: 80
@@ -123,7 +123,7 @@
     chain: POSTROUTING
     out_interface: vboxnet+
     source: "{{ source }}"
-    destination: 192.168.50.6
+    destination: "{{ garden_vm_ip }}"
     # jump: MASQUERADE
     # comment: "MASQUERADE the DNAT-ed traffic originating from private net {{ source }}"
     jump: SNAT
@@ -197,7 +197,7 @@
     - desc: Gstack Bosh Environment VM
       filename: gbe-vm
       network: 10.244.0.0/16
-      gateway: "192.168.50.6"
+      gateway: "{{ garden_vm_ip }}"
       interface: vboxnet0
   loop_control: { loop_var: route }
   tags: [ vm-networking ]

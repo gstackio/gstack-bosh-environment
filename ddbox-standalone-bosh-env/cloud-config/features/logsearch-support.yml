@@ -1,0 +1,23 @@
+---
+
+- path: /vm_types/name=c3.large?
+  type: replace
+  value:
+    name: c3.large
+
+- path: /vm_types/name=m3.large?
+  type: replace
+  value:
+    name: m3.large
+
+- path: /vm_types/name=m3.medium?
+  type: replace
+  value:
+    name: m3.medium
+
+
+- path: /disk_types/name=2GB?
+  type: replace
+  value:
+    name: 2GB
+    disk_size: 2048

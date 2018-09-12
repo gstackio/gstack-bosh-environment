@@ -1,0 +1,15 @@
+---
+
+# Note: we should use ((shield_v8_internal_hostanme)) here instead of
+# the plain value 'shield-v8.easyfoundry.internal', but operations
+# files don't get variables replaced in 'path' properties as of
+# current osh CLI workflow.
+- path: /addons/name=bosh-dns/jobs/name=bosh-dns/properties/aliases/shield-v8.easyfoundry.internal?
+  type: replace
+  value:
+    - '*.shield.((shield_v8_network)).((shield_v8_deployment_name)).bosh'
+
+- path: /addons/name=bosh-dns-windows/jobs/name=bosh-dns-windows/properties/aliases/shield-v8.easyfoundry.internal?
+  type: replace
+  value:
+    - '*.shield.((shield_v8_network)).((shield_v8_deployment_name)).bosh'

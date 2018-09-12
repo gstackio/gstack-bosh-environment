@@ -1,0 +1,7 @@
+---
+- type: replace
+  path: /resource_pools/name=vms/cloud_properties?
+  value:
+    cpus: 7
+    memory: 24000
+    ephemeral_disk: 32_768 # in 512-bytes blocks: 32_768 gives a 16GB disk
