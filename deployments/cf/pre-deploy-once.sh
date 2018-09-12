@@ -9,7 +9,7 @@ function rt_cfg_var() {
 bosh_dns_version=$(rt_cfg_var /bosh_dns_version)
 bosh_dns_sha1=$(rt_cfg_var /bosh_dns_sha1)
 
-set -ex
+set -eo pipefail -x
 
 # When the 'bosh-dns' compiled release has been uploaded (with 'gbe import'),
 # we only have the 'bosh-dns' job for Linux. As the runtime config also

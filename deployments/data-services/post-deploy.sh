@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -ex
+set -eo pipefail -x
 
 # Notice: sanity test needs the data services to be registered with
 # Cloud Foundry first. Here 'post-deploy-once.sh' is guaranteed to run

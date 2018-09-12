@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-set -ex
+set -eo pipefail -x
 
 bosh run-errand smoke_tests

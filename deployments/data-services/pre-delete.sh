@@ -7,8 +7,12 @@ function spec_var() {
     bosh int "$SUBSYS_DIR/conf/spec.yml" --path "$path"
 }
 
-set -ex
+set -e
 
-if bosh deployments | grep -qE "\\b$(spec_var /deployment_vars/deployment_name)\\b"; then
+deployment_name=$(spec_var /deployment_vars/deployment_name)
+
+set -x
+
+if bosh deployments | grep -qE "\\b${deployment_name}\\b"; then
     bosh run-errand broker-deregistrar
 fi
