@@ -856,7 +856,7 @@ case $1 in
         jumpbox_ip | cat ;;
     bosh-installation)
         assert_utilities jq "to display the BOSH installation path"
-        installation_id=$(jq -r .installation_id state/ddbox-env/env-infra-state.json)
+        installation_id=$(jq -r .installation_id "state/$GBE_ENVIRONMENT/env-infra-state.json")
         echo "$HOME/.bosh/installations/$installation_id"
         ;;
     down)
