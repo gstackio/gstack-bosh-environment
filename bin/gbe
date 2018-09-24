@@ -38,8 +38,7 @@ function fatal() {
 
 function platform() {
     local system
-    # shellcheck disable=SC2018,SC2019
-    system=$(uname -s | tr A-Z a-z)
+    system=$(uname -s | tr '[:upper:]' '[:lower:]')
     if [[ $system == darwin || $system == linux ]]; then
         echo "$system"
     else
@@ -447,19 +446,42 @@ function add_routes() {
     if [[ -z $network_cidr ]]; then
         return
     fi
-    platform=$(platform)
+
+    local vbox_host ssh_cmd sudo_host_type
+    vbox_host=$(env_depl_var vbox_host | sed -e 's/^null$//')
+    if [[ -n $vbox_host ]]; then
+        local vbox_username
+        vbox_username=$(env_depl_var --required vbox_username)
+        ssh_cmd=(ssh -t "${vbox_username}@${vbox_host}")
+        sudo_host_type=remote
+    else
+        sudo_host_type=local
+    fi
+
+    function sed_cmd() {
+        case $(platform) in
+            darwin) sed -E "$@" ;;
+            linux)  sed -r "$@" ;;
+        esac
+    }
+
+    platform=$("${ssh_cmd[@]}" uname -s | tr '[:upper:]' '[:lower:]' | tr -d '\r\n')
     case $platform in
-        darwin) netstat_pattern=$(sed -E -e 's`(\.0)+(/[0-9]+)?$`\2`' <<< "$network_cidr") ;;
-        linux)  netstat_pattern=$(sed -r -e 's`/[0-9]+$``' <<< "$network_cidr") ;;
+        darwin) netstat_pattern=$(sed_cmd -e 's`(\.0)+(/[0-9]+)?$`\2`' <<< "$network_cidr") ;;
+        linux)  netstat_pattern=$(sed_cmd -e 's`/[0-9]+$``' <<< "$network_cidr") ;;
     esac
-    if netstat -nr | awk '{print $1}' | grep -qE "^${netstat_pattern//./\\.}\$"; then
+    if "${ssh_cmd[@]}" netstat -nr | awk '{print $1}' | grep -qE "^${netstat_pattern//./\\.}\$"; then
         return
     fi
+
     echo -e "\n${BLUE}Adding ${BOLD}route$RESET to reach the BOSH director and deployed nodes\n"
-    sudo_cmd=(sudo -p "[${MAGENTA}${UNDERLINE}local$NOUNDERLINE ${BOLD}sudo$RESET (on %h)] password for %u: ")
+    sudo_cmd=(sudo --prompt="'[${MAGENTA}${UNDERLINE}${sudo_host_type}${NOUNDERLINE} ${BOLD}sudo$RESET (on %h)] password for %u: '")
     case $platform in
-        darwin) "${sudo_cmd[@]}" route add -net "$network_cidr"    $(internal_ip) ;;
-        linux)  "${sudo_cmd[@]}" route add -net "$network_cidr" gw $(internal_ip) ;;
+        darwin) "${ssh_cmd[@]}" "${sudo_cmd[@]}" route add -net "$network_cidr"    "$(internal_ip)" ;;
+        linux)  "${ssh_cmd[@]}" "${sudo_cmd[@]}" route add -net "$network_cidr" gw "$(internal_ip)" ;;
+        *)
+            echo "ERROR: cannot set routes on unsupported platform '$platform'" >&2
+            exit 1 ;;
     esac
 }
 
