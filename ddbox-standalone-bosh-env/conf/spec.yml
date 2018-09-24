@@ -49,6 +49,8 @@ operations_files:
     - scale-vm-size
     - enable-index-based-dns-aliases
     - remove-garden
+    - uaa-bosh-lite
+    - credhub-bosh-lite
 
 variables_files:
   10.local:

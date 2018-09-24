@@ -1,0 +1,11 @@
+---
+
+# The default UAA -Xmx Max Heap Size of 768MB is a bit big for a small BOSH-
+# Lite deployment. We can get some memory back, lowering this value.
+#
+# Plus, we set the initial heap size to the same value, which is recommended
+# for performance in production.
+
+- path: /instance_groups/name=bosh/jobs/name=uaa/properties/uaa/catalina_opts?
+  type: replace
+  value: "-Xms384m -Xmx384m -XX:MaxMetaspaceSize=256m"

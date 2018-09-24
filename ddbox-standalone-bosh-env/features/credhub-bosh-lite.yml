@@ -1,0 +1,9 @@
+---
+
+# The default CredHub 'max_heap_size' of 1024MB os OK in a big production
+# environment. Here it is quite big for a small BOSH-Lite deployment. We can
+# get some memory back, lowering this value.
+
+- path: /instance_groups/name=bosh/jobs/name=credhub/properties/credhub/max_heap_size?
+  type: replace
+  value: 384
