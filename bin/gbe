@@ -776,6 +776,7 @@ function delete_env() {
     pre_delete_env_hook
 
 
+    restrict_permissions "$subsys_state_dir/depl-creds.yml"
     infra_bosh_ro_invoke interpolate > "$subsys_state_dir/depl-manifest.yml"
     [[ -x $(which humanize-manifest) ]] && \
         humanize-manifest "$subsys_state_dir/depl-manifest.yml" \
@@ -789,12 +790,12 @@ function delete_env() {
     cease_reachability_hook
 
 
-    if [[ ! -e $subsys_state_dir/depl-creds.yml ]]; then
-        echo -e "\n${BLUE}Skipping ${BOLD}bosh delete-env$RESET, as the 'state/$GBE_ENVIRONMENT/depl-creds.yml' file is absent\n"
+    if [[ ! -e $subsys_state_dir/env-infra-state.json ]]; then
+        echo -e "\n${BLUE}Skipping ${BOLD}bosh delete-env$RESET, as the 'state/$GBE_ENVIRONMENT/env-infra-state.json' file is absent\n"
     else
         echo -e "\n${BLUE}Running ${BOLD}bosh delete-env$RESET to destroy the BOSH environment\n"
         infra_bosh_rw_invoke delete-env
-        rm -vf "$subsys_state_dir/depl-creds.yml"
+        # rm -vf "$subsys_state_dir/depl-creds.yml"
     fi
 
     rm -f "$BASE_DIR"/state/*/{pre,post}-deploy-hook.yml
