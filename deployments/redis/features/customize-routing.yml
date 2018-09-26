@@ -1,6 +1,6 @@
 ---
 
-# Remove old-fashioned way of customizing route
+# Remove old BOSH v1 way of providing job properties
 
 - path: /instance_groups/name=cf-redis-broker/properties/route_registrar?
   type: remove
@@ -28,14 +28,6 @@
 
 
 # Align broker config
-
-- path: /instance_groups/name=broker-registrar?/properties/broker/host
-  type: replace
-  value: ((redis_domain))
-
-- path: /instance_groups/name=broker-deregistrar?/properties/broker/host
-  type: replace
-  value: ((redis_domain))
 
 - path: /properties/broker/host
   type: replace

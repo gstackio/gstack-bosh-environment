@@ -6,5 +6,5 @@
 - path: /instance_groups/name=dedicated-node/jobs/name=syslog_forwarder
   type: remove
 
-- path: /releases/name=syslog-migration
+- path: /releases/name=syslog
   type: remove

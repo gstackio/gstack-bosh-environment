@@ -10,6 +10,14 @@
     url: https://bosh.io/d/github.com/pivotal-cf/cf-redis-release?v=((redis_release_version))
     sha1: ((redis_release_sha1))
 
+- path: /releases/name=bpm?
+  type: replace
+  value:
+    name: bpm
+    version: ((bpm_version))
+    url: https://bosh.io/d/github.com/cloudfoundry-incubator/bpm-release?v=((bpm_version))
+    sha1: ((bpm_sha1))
+
 - path: /releases/name=routing?
   type: replace
   value:

@@ -8,8 +8,7 @@ input_resources:
   - name: redis-boshrelease
     type: git
     uri: https://github.com/pivotal-cf/cf-redis-release.git
-    version: v431.0.0 # latest provided by bosh.io as of 26 Sep 2017
-    # version: v434.0.2 # released May 9th, 2018, but not published on bosh.io, unfortunately
+    version: v434.0.22
 
 
 main_deployment_file: redis-boshrelease/manifest/deployment.yml
@@ -17,12 +16,12 @@ main_deployment_file: redis-boshrelease/manifest/deployment.yml
 
 operations_files:
   10.local:
-    - set-versions
+    - pin-versions
     - customize-routing
     - remove-director-uuid
     - add-missing-broker-password-var
-    - remove-syslog-migration
-    - disambiguate-errand-names
+    - remove-syslog-forwarder
+    - keep-dedicated-vm-plan
 
 
 deployment_vars:
@@ -38,8 +37,11 @@ deployment_vars:
 
   # Versions
 
-  redis_release_version: "431.0.0"
-  redis_release_sha1: 183f6d154ff6a752bd9cdb634a84a02c34eef68a
+  redis_release_version: "434.0.22"
+  redis_release_sha1: 68150f534f23826b4985ed87a8b236e58a2e9f16
+
+  bpm_version: "0.6.0"
+  bpm_sha1: 4f0f239abdc801d71de9063625aa56e3c42634b5
 
   # stemcell_name:    # imported below
   # stemcell_version: # imported below
