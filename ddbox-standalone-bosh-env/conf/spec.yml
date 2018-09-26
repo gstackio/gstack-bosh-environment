@@ -76,7 +76,7 @@ deployment_vars:
   vbox_host: "62.210.146.202"
   vbox_username: benjamin
 
-  internal_ip: "192.168.50.5"
+  internal_ip: "192.168.50.6"
   internal_gw: "192.168.50.1"
   internal_cidr: 192.168.50.0/24
 
