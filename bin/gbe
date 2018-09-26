@@ -716,7 +716,7 @@ function gbe_up() {
 
     # This workaround avoids the "Too many authentication failures for
     # jumpbox" error when ensuring reachability below.
-    ssh-add -D
+    ssh-add -D || true # might fail when no authentication agent is running
 
     ensure_reachability
     setup_firewall
