@@ -7,7 +7,7 @@ input_resources:
   - name: traefik-boshrelease
     type: git
     uri: https://github.com/gstackio/traefik-boshrelease.git
-    version: 3f1a2de # master after version 1.2.0
+    version: 9b8c5ca # master after version 1.2.0
 
 
 main_deployment_file: traefik-boshrelease/deployment/traefik-deployment.yml
