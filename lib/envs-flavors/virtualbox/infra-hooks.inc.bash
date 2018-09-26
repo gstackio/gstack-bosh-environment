@@ -52,6 +52,9 @@ function pre_create_env_hook() {
         echo skipped
     popd
 
+    local secrets_file=$SUBSYS_DIR/conf/secrets.yml
+    restrict_permissions "$secrets_file"
+
     local vbox_host
     vbox_host=$(env_depl_var vbox_host | sed -e 's/^null$//')
     if [[ -n $vbox_host ]]; then
@@ -68,10 +71,8 @@ function pre_create_env_hook() {
                 -f "$ssh_key_base_filename"
             chmod 600 "$ssh_key_base_filename"
         fi
-        local secrets_file=$SUBSYS_DIR/conf/secrets.yml
         yaml_upsert_file_content "$secrets_file" "/vbox_ssh?/private_key" \
             "$ssh_key_base_filename"
-        chmod 600 "$secrets_file"
         ssh-copy-id -i "${ssh_key_base_filename}.pub" "$vbox_username@$vbox_host"
     fi
 }
@@ -118,7 +119,7 @@ function setup_firewall_hook() {
     if [[ -n $vbox_host ]]; then
         local vbox_username
         vbox_username=$(env_depl_var --required vbox_username)
-        vboxmanage="ssh $vbox_username@$vbox_host vboxmanage"
+        vboxmanage="ssh ${vbox_username}@${vbox_host} vboxmanage"
     fi
 
     local vm_cid nic_num
