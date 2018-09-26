@@ -868,13 +868,18 @@ case $1 in
     cf)         setup_cf_cli ;;
     gcp)
         shift
-        if [[ $# -ne 2 ]]; then
-            gcp_usage
-            exit 2
+        if [[ $1 == "-h" ]]; then
+            gcp_usage; exit 0
+        elif [[ $# -ne 2 ]]; then
+            gcp_usage; exit 2
         fi
         setup_gcp "$@"
         ;;
     up)
+        shift
+        if [[ $1 == "-h" ]]; then
+            up_usage; exit 0
+        fi
         gbe_up ;;
     alias)
         alias_env ;;
@@ -887,6 +892,9 @@ case $1 in
         ;;
     down)
         shift
+        if [[ $1 == "-h" ]]; then
+            down_usage; exit 0
+        fi
         delete_env "$@"
         ;;
     firewall)   setup_firewall ;;
@@ -897,7 +905,8 @@ case $1 in
             stop)   stop_tunnel   ;;
             status) tunnel_status ;;
             logs)   tunnel_logs   ;;
-            *)      tunnel_usage  ;;
+            -h)     tunnel_usage; exit 0 ;;
+            *)      tunnel_usage; exit 2 ;;
         esac
         ;;
     routes)
@@ -908,7 +917,8 @@ case $1 in
         case $verb in
             preview)    preview_dns_config ;;
             push)       push_dns_config ;;
-            *)          dns_usage ;;
+            -h)         dns_usage; exit 0 ;;
+            *)          dns_usage; exit 2 ;;
         esac
         ;;
     ssh)
@@ -930,9 +940,8 @@ case $1 in
                     ensure_reachability
                     update_config runtime ${non_interactive:+"-n"}
                     ;;
-                *)
-                    update_usage
-                    break ;;
+                -h) update_usage; exit 0 ;;
+                *)  update_usage; exit 2 ;;
             esac
             shift
         done
@@ -948,9 +957,7 @@ case $1 in
             offline=
             while [[ -n $1 ]]; do
                 case $1 in
-                    -h)
-                        converge_usage
-                        break ;;
+                    -h)         converge_usage; exit 0 ;;
                     -y)         non_interactive=yes ;;
                     --manifest) manifest_only=yes ;;
                     --dry-run)  dry_run=yes ;;
@@ -993,11 +1000,8 @@ case $1 in
         non_interactive=
         while [[ -n $1 ]]; do
             case $1 in
-                -h)
-                    recreate_usage
-                    break ;;
-                -y)
-                    non_interactive=yes ;;
+                -h) recreate_usage; exit 0 ;;
+                -y) non_interactive=yes ;;
                 all)
                     ensure_reachability
                     list_deployments
@@ -1018,13 +1022,9 @@ case $1 in
         ignore_errors=
         while [[ -n $1 ]]; do
             case $1 in
-                ""|-h)
-                    delete_usage
-                    break ;;
-                -y)
-                    non_interactive=yes ;;
-                -f)
-                    ignore_errors=yes ;;
+                -h) delete_usage; exit 0 ;;
+                -y) non_interactive=yes ;;
+                -f) ignore_errors=yes ;;
                 list)
                     list_deployments --reverse
                     break ;;
@@ -1047,8 +1047,7 @@ case $1 in
     export)
         shift
         case $1 in
-            -h)
-                export_usage ;;
+            -h) export_usage; exit 0 ;;
             *)
                 ensure_reachability
                 export_releases "$@" ;;
@@ -1057,8 +1056,7 @@ case $1 in
     import)
         shift
         case $1 in
-            -h)
-                import_usage ;;
+            -h) import_usage; exit 0 ;;
             *)
                 ensure_reachability
                 upload_compiled_releases "$@" ;;
@@ -1067,8 +1065,8 @@ case $1 in
     cleanup)
         shift
         cleanup_compiled_releases "$@";;
-    *)
-        usage; exit 2 ;;
+    -h) usage; exit 0 ;;
+    *)  usage; exit 2 ;;
 esac
 
 # Local Variables:
