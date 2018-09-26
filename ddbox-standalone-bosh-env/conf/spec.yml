@@ -87,14 +87,24 @@ deployment_vars:
   bosh_precompiled_url: https://s3.amazonaws.com/bosh-compiled-release-tarballs/bosh-266.4.0-ubuntu-trusty-3586.24-20180621-165809-30266228-20180621165813.tgz?versionId=inkSsUYxrlYaflh19kcwA7kYkF3eAHLh
   bosh_precompiled_sha1: 79ba3bdc160faff121e56ee5fd5f618ea48023ce
 
-  stemcell_name: bosh-vsphere-esxi-ubuntu-trusty-go_agent
-  stemcell_version: "3586.24"
-  stemcell_sha1: 9428c4e94559eefe76026051d8065514732c383c
+  # stemcell_name:    # imported below
+  # stemcell_version: # imported below
+  # stemcell_sha1:    # imported below
 
 
 imported_vars:
   - subsys: ddbox-standalone-garden-env
     imports:
+
+      - name: stemcell_name
+        from: depl-vars
+        path: /stemcell_name
+      - name: stemcell_version
+        from: depl-vars
+        path: /stemcell_version
+      - name: stemcell_sha1
+        from: depl-vars
+        path: /stemcell_sha1
 
       # For 'remove-garden.yml' ops file
       - name: garden_backend_ip
