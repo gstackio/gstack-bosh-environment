@@ -116,8 +116,8 @@ deployment_vars:
   bosh_precompiled_sha1: 79ba3bdc160faff121e56ee5fd5f618ea48023ce
 
   stemcell_name: bosh-vsphere-esxi-ubuntu-trusty-go_agent
-  stemcell_version: "3586.24"
-  stemcell_sha1: 9428c4e94559eefe76026051d8065514732c383c
+  stemcell_version: "3586.43"
+  stemcell_sha1: 9a79aa8c443597a2cb6f4bdeef020f01e558a044
 
 
 imported_vars: []

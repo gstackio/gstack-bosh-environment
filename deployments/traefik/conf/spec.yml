@@ -48,8 +48,8 @@ deployment_vars:
   # Versions
 
   stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
-  stemcell_version: "3586.24"
-  stemcell_sha1: 32c1e09391d509d24026e55555df07a166f8b8eb
+  stemcell_version: "3586.43"
+  stemcell_sha1: 46cff63ad21e8d8e763e2acedd746bc4ac95aa27
   # stemcell_name:    # imported below
   # stemcell_version: # imported below
   # stemcell_sha1:    # imported below

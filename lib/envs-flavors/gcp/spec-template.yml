@@ -80,8 +80,8 @@ deployment_vars:
   # bosh_precompiled_sha1: "12f50c6d196a80d1a31eedb34ba1a1acd6904b56"
 
   stemcell_name: bosh-google-kvm-ubuntu-trusty-go_agent
-  stemcell_version: "3586.24"
-  stemcell_sha1: 7333cc0d2042cd7b167a7d57c03f38562cd4e01c # this is a Google KVM Light stemcell, actually
+  stemcell_version: "3586.43"
+  stemcell_sha1: 7932531371f336a2a5608f64cc257190930df1d7 # this is a Google KVM Light stemcell, actually
 
 
 imported_vars: []
