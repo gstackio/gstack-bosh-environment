@@ -8,10 +8,6 @@
 
 - path: /variables/name=shield-tls/options/alternative_names/-
   type: replace
-  value: <%= shield.instance.address %>
-
-- path: /variables/name=shield-tls/options/alternative_names/-
-  type: replace
   value: "*.shield.((network_name)).((deployment_name)).bosh"
 
 - path: /variables/name=shield-tls/options/alternative_names/-

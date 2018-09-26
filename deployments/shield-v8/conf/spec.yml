@@ -8,7 +8,7 @@ input_resources:
   - name: shield-boshrelease-v8
     type: git
     uri: https://github.com/starkandwayne/shield-boshrelease.git
-    version: v8.0.10
+    version: v8.0.16
 
 
 main_deployment_file: shield-boshrelease-v8/manifests/shield.yml
@@ -16,7 +16,7 @@ main_deployment_file: shield-boshrelease-v8/manifests/shield.yml
 operations_files:
   10.local:
     - inject-variables
-    - set-versions
+    - pin-versions
     # - routing # TLS routing doesn't support self-signed certificates yet
     - expose-ports
     - scale-disks
@@ -35,8 +35,8 @@ deployment_vars:
 
   # Versions
 
-  shield_version: "8.0.10"
-  shield_sha1: 6b91a9a14a9e4f055a58acdb1b99e5920abdf16f
+  shield_version: "8.0.16"
+  shield_sha1: 8a0ececa11e995834824bb3c8cba1c5301b09a03
 
   # routing_version:  # imported below
   # routing_sha1:     # imported below
