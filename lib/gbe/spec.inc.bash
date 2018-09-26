@@ -209,7 +209,13 @@ function bosh_int_with_value() {
     else
         # Note: we use the --var form here, because we feed it
         # with a plain value, and not with structured YAML data.
-        bosh int --var var_value="$var_value" "$@"
+        if [[ $var_value =~ ^[0-9.]+$ ]]; then
+            # For values that can be interpreted as numeric, we are safe when
+            # quoting it so that 'bosh int' makes a string of it
+            bosh int --var "var_value='${var_value}'" "$@"
+        else
+            bosh int --var "var_value=${var_value}" "$@"
+        fi
     fi
 }
 
