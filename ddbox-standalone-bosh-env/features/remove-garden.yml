@@ -80,7 +80,9 @@
   type: replace
   value:
     name: bosh-shadow-cpi
-    url: file:///Users/benjamin/workspace/bosh/cpis/bosh-shadow-cpi-release/tmp/shadow-cpi-release-0+dev.8.tgz
+    version: "1.0.0"
+    url: https://github.com/gstackio/bosh-shadow-cpi-release/releases/download/v1.0.0/shadow-cpi-release-1.0.0.tgz
+    sha1: 816ab4d472b8ce3e4e6167ed3c5e5691ef7bafbb
 
 - path: /instance_groups/name=bosh/jobs/name=shadow-cpi?
   type: replace
