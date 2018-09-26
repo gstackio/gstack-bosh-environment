@@ -61,7 +61,7 @@ deployment_vars:
 
 
 imported_vars:
-  - subsys: base-env
+  - subsys: ddbox-standalone-garden-env # instead of generic 'base-env', to be fixed
     imports:
       - name: static_ip
         from: depl-vars
