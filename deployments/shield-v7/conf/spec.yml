@@ -10,7 +10,7 @@ input_resources:
     # uri: https://github.com/starkandwayne/shield-boshrelease.git
     # uri: https://github.com/orange-cloudfoundry/shield-boshrelease.git
     uri: https://github.com/gstackio/gk-shield-boshrelease.git
-    version: v7.0.4
+    version: v7.0.5
 
 
 main_deployment_file: gk-shield-boshrelease-v7/manifests/shield.yml
@@ -36,8 +36,8 @@ deployment_vars:
 
   # Versions
 
-  shield_version: "7.0.4"
-  shield_sha1: 6dd6acb2da7d5c451b53bca15d0ec5a8e767fa3c
+  shield_version: "7.0.5"
+  shield_sha1: 73b00d982a262923209cde0812b8f4d87c4cf642
 
   # stemcell_name:    # imported below
   # stemcell_version: # imported below
