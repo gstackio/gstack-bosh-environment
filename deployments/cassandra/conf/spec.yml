@@ -8,7 +8,7 @@ input_resources:
   - name: cassandra-deployment
     type: git
     uri: https://github.com/orange-cloudfoundry/cassandra-deployment.git
-    version: v8 # as of June 22st, 2018
+    version: 0100038 # v8 with improvements, as of Sept 28th, 2018
 
 
 main_deployment_file: cassandra-deployment/cassandra.yml
