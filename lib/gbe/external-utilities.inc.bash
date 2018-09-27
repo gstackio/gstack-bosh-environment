@@ -43,8 +43,8 @@ readonly \
 function setup_bbl() {
     local bbl_version=${1:-$BBL_VERSION}
 
+    local existing_bbl_version
     if which bbl > /dev/null 2>&1; then
-        local existing_bbl_version
         existing_bbl_version=$(bbl --version | head -n 1 | cut -d' ' -f2)
         if [[ $existing_bbl_version =~ $BBL_ACCEPTED_VERSIONS ]]; then
             return 0
@@ -53,7 +53,10 @@ function setup_bbl() {
 
     local bbl_bin=$BASE_DIR/bin/bbl
     if [[ -f $bbl_bin ]]; then
-        return 0
+        existing_bbl_version=$("$bbl_bin" --version | head -n 1 | cut -d' ' -f2)
+        if [[ $existing_bbl_version =~ $BBL_ACCEPTED_VERSIONS ]]; then
+            return 0
+        fi
     fi
 
     assert_utilities curl "to install bosh-bootloader"
@@ -76,8 +79,8 @@ function setup_bbl() {
 function setup_terraform() {
     local tf_version=${1:-$TERRAFORM_VERSION}
 
+    local existing_tf_version
     if which terraform > /dev/null 2>&1; then
-        local existing_tf_version
         existing_tf_version=$(terraform --version | head -n 1 | cut -d' ' -f2)
         if [[ $existing_tf_version =~ $TERRAFORM_ACCEPTED_VERSIONS ]]; then
             return 0
@@ -86,7 +89,10 @@ function setup_terraform() {
 
     local tf_bin=$BASE_DIR/bin/terraform
     if [[ -f $tf_bin ]]; then
-        return 0
+        existing_tf_version=$("$tf_bin" --version | head -n 1 | cut -d' ' -f2)
+        if [[ $existing_tf_version =~ $TERRAFORM_ACCEPTED_VERSIONS ]]; then
+            return 0
+        fi
     fi
 
     assert_utilities curl unzip "to install terraform"
@@ -112,8 +118,8 @@ function setup_terraform() {
 function setup_bosh_cli() {
     local bosh_cli_version=${1:-$BOSH_CLI_VERSION}
 
+    local existing_bosh_cli_version
     if which bosh > /dev/null 2>&1; then
-        local existing_bosh_cli_version
         existing_bosh_cli_version=$(bosh --version | head -n 1 | cut -d' ' -f2 | cut -d- -f1)
         if [[ $existing_bosh_cli_version =~ $BOSH_CLI_ACCEPTED_VERSIONS ]]; then
             return 0
@@ -122,7 +128,10 @@ function setup_bosh_cli() {
 
     local bosh_cli_bin=$BASE_DIR/bin/bosh
     if [[ -f $bosh_cli_bin ]]; then
-        return 0
+        existing_bosh_cli_version=$("$bosh_cli_bin" --version | head -n 1 | cut -d' ' -f2 | cut -d- -f1)
+        if [[ $existing_bosh_cli_version =~ $BOSH_CLI_ACCEPTED_VERSIONS ]]; then
+            return 0
+        fi
     fi
 
     assert_utilities curl "to install the Bosh CLI"
@@ -136,8 +145,8 @@ function setup_bosh_cli() {
 function setup_credhub_cli() {
    local credhub_cli_version=${1:-$CREDHUB_CLI_VERSION}
 
+    local existing_credhub_cli_version
     if which credhub > /dev/null 2>&1; then
-        local existing_credhub_cli_version
         existing_credhub_cli_version=$(credhub --version | head -n 1 | cut -d: -f2 | tr -d ' ')
         if [[ $existing_credhub_cli_version =~ $CREDHUB_CLI_ACCEPTED_VERSIONS ]]; then
             return 0
@@ -146,7 +155,10 @@ function setup_credhub_cli() {
 
     local credhub_cli_bin=$BASE_DIR/bin/credhub
     if [[ -f $credhub_cli_bin ]]; then
-        return 0
+        existing_credhub_cli_version=$("$credhub_cli_bin" --version | head -n 1 | cut -d: -f2 | tr -d ' ')
+        if [[ $existing_credhub_cli_version =~ $CREDHUB_CLI_ACCEPTED_VERSIONS ]]; then
+            return 0
+        fi
     fi
 
     assert_utilities curl tar "to install the CredHub CLI"
@@ -172,8 +184,8 @@ function setup_credhub_cli() {
 function setup_dnscontrol() {
     local dnscontrol_version=${1:-$DNSCONTROL_VERSION}
 
+    local existing_dnscontrol_version
     if which dnscontrol > /dev/null 2>&1; then
-        local existing_dnscontrol_version
         existing_dnscontrol_version=$(dnscontrol version | head -n 1 | cut -d' ' -f2 | cut -d- -f1)
         if [[ $existing_dnscontrol_version =~ $DNSCONTROL_ACCEPTED_VERSIONS ]]; then
             return 0
@@ -182,7 +194,10 @@ function setup_dnscontrol() {
 
     local dnscontrol_bin=$BASE_DIR/bin/dnscontrol
     if [[ -f $dnscontrol_bin ]]; then
-        return 0
+        existing_dnscontrol_version=$("$dnscontrol_bin" version | head -n 1 | cut -d' ' -f2 | cut -d- -f1)
+        if [[ $existing_dnscontrol_version =~ $DNSCONTROL_ACCEPTED_VERSIONS ]]; then
+            return 0
+        fi
     fi
 
     assert_utilities curl "to install the DNSControl CLI"
@@ -199,8 +214,8 @@ function setup_dnscontrol() {
 function setup_cf_cli() {
     local cf_cli_version=${1:-$CF_CLI_VERSION}
 
+    local existing_cf_cli_version
     if which cf > /dev/null 2>&1; then
-        local existing_cf_cli_version
         existing_cf_cli_version=$(cf --version | head -n 1 | cut -d' ' -f3 | cut -d+ -f1)
         if [[ $existing_cf_cli_version =~ $CF_CLI_ACCEPTED_VERSIONS ]]; then
             return 0
@@ -209,7 +224,10 @@ function setup_cf_cli() {
 
     local cf_cli_bin=$BASE_DIR/bin/cf
     if [[ -f $cf_cli_bin ]]; then
-        return 0
+        existing_cf_cli_version=$("$cf_cli_bin" --version | head -n 1 | cut -d' ' -f3 | cut -d+ -f1)
+        if [[ $existing_cf_cli_version =~ $CF_CLI_ACCEPTED_VERSIONS ]]; then
+            return 0
+        fi
     fi
 
     assert_utilities curl tar "to install the Cloud Foundry CLI"
