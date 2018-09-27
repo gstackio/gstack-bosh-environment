@@ -70,6 +70,11 @@ deployment_vars:
 
   docker_version: "30.1.0"
   docker_sha1: bcc2e859836415c37b5a668eff5d17761e5321b5
+
+  # This newer version of the Docker BOSH Release produces the following
+  # error:
+  #   Error: Job 'cf-containers-broker' not found in Template table
+  #
   # docker_version: "32.0.0"
   # docker_sha1: 75a3e4f85f8d1a59b58c6b34cf568f72397b5680
 
