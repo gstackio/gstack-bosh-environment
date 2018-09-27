@@ -21,6 +21,25 @@ function sibling_subsys_depl_var() {
     bosh int "$SUBSYS_DIR/../$subsys/conf/spec.yml" --path "/deployment_vars${path}"
 }
 
+function export_release() {
+    local depl_name=$1; shift
+    local release=$1; shift
+    local stemcell=$1; shift
+
+    local base_filename
+    base_filename=$(tr / - <<< "$release")-$(tr / - <<< "$stemcell")
+
+    local cache_dir=$BASE_DIR/.cache/compiled-releases
+
+    if [[ -n $(find "$cache_dir" -name "${base_filename}-*.tgz") ]]; then
+        return
+    fi
+    bosh -d "$depl_name" \
+        export-release "$release" "$stemcell" \
+        --dir="$cache_dir" \
+        "$@"
+}
+
 deployment_name=$(spec_var /deployment_vars/deployment_name)
 bosh_dns_version=$(runtime_config_var /bosh_dns_version)
 node_exporter_version=$(runtime_config_var /node_exporter_version)
@@ -31,15 +50,11 @@ set -x
 
 mkdir -p "$BASE_DIR/.cache/compiled-releases"
 
-bosh -d "$deployment_name" \
-    export-release \
-    --job=bosh-dns \
-    --dir="$BASE_DIR/.cache/compiled-releases" \
-    "bosh-dns/$bosh_dns_version" "ubuntu-trusty/$stemcell_version"
+export_release "$deployment_name" \
+    "bosh-dns/$bosh_dns_version" "ubuntu-trusty/$stemcell_version" \
+    --job=bosh-dns
 
-bosh -d "$deployment_name" \
-    export-release \
-    --dir="$BASE_DIR/.cache/compiled-releases" \
+export_release "$deployment_name" \
     "node-exporter/$node_exporter_version" "ubuntu-trusty/$stemcell_version"
 
 gbe delete -y "$subsys_name"
@@ -56,9 +71,7 @@ else
     non_windows_jobs=($(bosh inspect-release "concourse/$concourse_version" \
                 | sed -e '/^$/,$d; /^ /d' \
                 | awk '{print $1}' | cut -d/ -f1 | grep -v -- '-windows$'))
-    bosh -d "$concourse_deployment_name" \
-        export-release \
-        "${non_windows_jobs[@]/#/--job=}" \
-        --dir="$BASE_DIR/.cache/compiled-releases" \
-        "concourse/$concourse_version" "ubuntu-trusty/$stemcell_version"
+    export_release "$concourse_deployment_name" \
+        "concourse/$concourse_version" "ubuntu-trusty/$stemcell_version" \
+        "${non_windows_jobs[@]/#/--job=}"
 fi
