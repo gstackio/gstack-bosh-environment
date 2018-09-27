@@ -19,7 +19,6 @@ input_resources:
     version: v3.4.0
 
 
-# main_deployment_file: docker-boshrelease/manifests/containers/example.yml
 main_deployment_file: cf-containers-broker-boshrelease/manifests/docker-broker.yml
 
 
