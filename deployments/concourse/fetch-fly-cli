@@ -15,5 +15,6 @@ platform=$(uname -s | tr '[:upper:]' '[:lower:]')
 
 set -x
 
-curl -L "https://$concourse_domain/api/v1/cli?arch=amd64&platform=$platform" \
+curl -fsSL -k "https://$concourse_domain/api/v1/cli?arch=amd64&platform=$platform" \
     -o "$BASE_DIR/bin/fly"
+chmod +x "$BASE_DIR/bin/fly"
