@@ -167,11 +167,11 @@
 - path: /instance_groups/name=web/update?/canary_watch_time
   type: replace
   # With UAA, and CreHub starting after it, the startup may be slower
-  value: 20000-90000
+  value: 10000-150000
 
 - path: /instance_groups/name=web/update?/update_watch_time
   type: replace
-  value: 20000-90000
+  value: 10000-150000
 
 
 - path: /instance_groups/name=db/jobs/name=postgres/properties/databases/databases/-
