@@ -41,8 +41,8 @@ deployment_vars:
 
   # Because of tight memory constraints, we scale Cassandra in to 1 node and
   # we scale its heap_size/newsize down to 2G/512M.
-  max_heap_size: 2G
-  heap_newsize: 512M # must still be set in pair with 'max_heap_size'
+  max_heap_size: 1G
+  heap_newsize: 256M # must still be set in pair with 'max_heap_size'
   seed_instances: 1
   non_seed_instances: 0
   bosh_to_cassandra_topology_mapping:
