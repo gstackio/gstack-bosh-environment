@@ -22,13 +22,14 @@ deployment_vars:
   # User-facing settings
 
   s3server_endpoint_hostname: s3server.easyfoundry.internal
+  s3server_tcp_port: 443
 
 
   # To enter the container:
   #
   # $ bosh -d easyfoundry-scality ssh s3server
   # $ sudo -i
-  # # /var/vcap/packages/docker/bin/docker -H 127.0.0.1:4243 exec -it s3server bash
+  # # /var/vcap/packages/docker/bin/docker -H :4243 exec -it s3server bash
   # # more config.json
 
 

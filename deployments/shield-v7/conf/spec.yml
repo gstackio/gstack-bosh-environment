@@ -5,10 +5,8 @@ subsys:
   deploy_after: cf
 
 input_resources:
-  - name: gk-shield-boshrelease-v7
+  - name: gk-shield-boshrelease
     type: git
-    # uri: https://github.com/starkandwayne/shield-boshrelease.git
-    # uri: https://github.com/orange-cloudfoundry/shield-boshrelease.git
     uri: https://github.com/gstackio/gk-shield-boshrelease.git
     version: v7.0.5
 
@@ -20,8 +18,9 @@ operations_files:
     - inject-variables
     - set-versions
     - expose-ports
-    - shield-config
     - scale-disks
+    - shield-config
+    - scality-store
 
 
 deployment_vars:
@@ -79,3 +78,9 @@ imported_vars:
       - name: cf_deployment_name
         from: depl-vars
         path: /deployment_name
+
+  - subsys: scality
+    imports:
+      - name: scality_secret_access_key
+        from: depl-creds
+        path: /custom_account_secret_key

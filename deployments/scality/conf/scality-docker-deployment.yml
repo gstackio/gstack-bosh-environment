@@ -18,7 +18,7 @@ instance_groups:
                 - /var/vcap/store/s3server/data:/usr/src/app/localData
                 - /var/vcap/store/s3server/metadata:/usr/src/app/localMetadata
               bind_ports:
-                - "8000:8000"
+                - ((s3server_tcp_port)):8000
               env_vars:
                 # See config vars usage in:
                 # <https://github.com/scality/cloudserver/blob/BETA7.2.0/docker-entrypoint.sh>
