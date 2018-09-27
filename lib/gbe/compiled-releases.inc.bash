@@ -67,7 +67,6 @@ function export_release_to_cache() {
 function export_releases() {
     local subsys=$1
     assert_utilities jq "to export compiled releases"
-    # mkdir -p "$BASE_DIR/.cache/compiled-releases${subsys:+/$subsys}"
     each_used_release "$subsys" export_release_to_cache
 }
 
