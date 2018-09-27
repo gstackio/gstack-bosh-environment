@@ -1,8 +1,9 @@
 ---
-name: ((scality_deployment_name))
+name: ((deployment_name))
 
 instance_groups:
-  - name: scality
+  - name: s3server
+    mograted_from: [ { name: scality } ]
     instances: 1
     azs: [ z1 ]
     jobs:
@@ -11,31 +12,55 @@ instance_groups:
         properties:
           containers:
             - name: s3server
-              image: scality/s3server:6018536a
+              image: scality/s3server:6018536a # tagged 'RC7.2.0-rc4' 'BETA7.2.0'
+              store_dir: /var/vcap/store/s3server
+              volumes:
+                - /var/vcap/store/s3server/data:/usr/src/app/localData
+                - /var/vcap/store/s3server/metadata:/usr/src/app/localMetadata
               bind_ports:
                 - "8000:8000"
               env_vars:
+                # See config vars usage in:
+                # <https://github.com/scality/cloudserver/blob/BETA7.2.0/docker-entrypoint.sh>
                 - SCALITY_ACCESS_KEY_ID=CustomAccountAccessKey
                 - SCALITY_SECRET_ACCESS_KEY=((custom_account_secret_key))
-                - LOG_LEVEL=debug
-                - SSL=TRUE
-                - ENDPOINT=scality.easyfoundry.internal
+                - LOG_LEVEL=debug # can be 'info', 'debug', or 'trace'
+                - SSL=true
+                - ENDPOINT=((s3server_endpoint_hostname))
                 - LISTEN_ADDR=0.0.0.0
+
+                # When only starting the stateless Zenko CloudServer, you can
+                # configure the data and metadata servers to use.
+                #
+                # See: https://s3-server.readthedocs.io/en/latest/DOCKER.html#data-host-and-metadata-host
+                #
                 # - DATA_HOST=s3server-data
                 # - METADATA_HOST=s3server-metadata
+
+                # Use these variables to connect to the redis cache server on
+                # another host:port than localhost:6379.
+                #
+                # See: https://s3-server.readthedocs.io/en/latest/DOCKER.html#redis-host
+                #
                 # - REDIS_HOST=redis-cache-server.example.com
                 # - REDIS_PORT=6379
       - name: docker
         release: docker
-    persistent_disk: 65536
+        # properties:
+        #   tcp_address: 0.0.0.0
+        #   tls_cacert: "((docker-tls.ca))"
+        #   tls_cert: "((docker-tls.certificate))"
+        #   tls_key: "((docker-tls.private_key))"
+    persistent_disk_type: 10GB
     vm_type: default
     stemcell: trusty
     networks:
-      - name: ((scality_network))
+      - name: ((network_name))
 
 variables:
   - name: custom_account_secret_key
     type: password
+
   - name: docker-ca
     type: certificate
     options:

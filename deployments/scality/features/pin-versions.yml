@@ -1,17 +1,14 @@
 ---
 
-- path: /name
-  type: replace
-  value: ((deployment_name))
-
-
 # Stemcell and Releases versions
 
-- path: /releases/name=docker?
+- path: /releases/name=docker
   type: replace
   value:
     name: docker
     version: ((docker_version))
+    url: https://bosh.io/d/github.com/cf-platform-eng/docker-boshrelease?v=((docker_version))
+    sha1: ((docker_sha1))
 
 
 - path: /stemcells/alias=trusty/version

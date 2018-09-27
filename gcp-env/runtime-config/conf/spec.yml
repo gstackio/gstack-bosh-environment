@@ -17,7 +17,7 @@ input_resources:
 main_config_file: bosh-deployment/runtime-configs/dns.yml
 
 operations_files:
-  20.local:
+  10.local:
     - cf-use-bosh-dns
     - prometheus-support
     - shield-v8-support
@@ -85,6 +85,9 @@ imported_vars:
       - name: scality_network
         from: depl-vars
         path: /network_name
+      - name: scality_hostname
+        from: depl-vars
+        path: /s3server_endpoint_hostname
   - subsys: rabbitmq
     imports:
       - name: rabbitmq_deployment_name

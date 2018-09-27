@@ -3,33 +3,53 @@ subsys:
   name: scality
   type: bosh-deployment
 
-input_resources:
-  - name: docker-boshrelease
-    type: git
-    uri: https://github.com/cloudfoundry-community/docker-boshrelease.git
-    version: v31.0.0
+input_resources: []
 
 
-main_deployment_file: docker-boshrelease/manifests/containers/example.yml
+# main_deployment_file: docker-boshrelease/manifests/containers/example.yml
+main_deployment_file: ./conf/scality-docker-deployment.yml
 
 
 operations_files:
-  10.docker-boshrelease: []
-  20.local:
-    - set-versions
+  10.local:
+    - pin-versions
 
 
 deployment_vars:
   deployment_name: easyfoundry-scality
 
 
+  # User-facing settings
+
+  s3server_endpoint_hostname: s3server.easyfoundry.internal
+
+
+  # To enter the container:
+  #
+  # $ bosh -d easyfoundry-scality ssh s3server
+  # $ sudo -i
+  # # /var/vcap/packages/docker/bin/docker -H 127.0.0.1:4243 exec -it s3server bash
+  # # more config.json
+
+
   # Versions
 
-  docker_version: "31.0.0"
-  docker_sha1: "5d7e9052297b26ad4337b4d539ba702cccb20080"
+  docker_version: "31.0.1"
+  docker_sha1: d7fba11988621d8a8b57c2d298067e7d85e26148
 
-  routing_version: "0.168.0"
-  routing_sha1: "885321f95b530c4a5b8515c72155229cba26c449"
+  # These newer version of the Docker BOSH Release do not work
+  #
+  # # /var/vcap/packages/docker/bin/docker -H 127.0.0.1:4243 start s3server ; /var/vcap/packages/docker/bin/docker -H 127.0.0.1:4243 logs -f s3server
+  # Error response from daemon: OCI runtime create failed: container with id exists: c407cb957344a3e1fe0d6857e3b6ee5e70e0a489a06a43d2048b9e65b256f36d: unknown
+  # Error: failed to start containers: s3server
+  #
+  # docker_version: "31.1.0"
+  # docker_sha1: 5bd41b3ddb7005e90af09a93a7d3ea1649216260
+  # docker_version: "32.0.0"
+  # docker_sha1: 75a3e4f85f8d1a59b58c6b34cf568f72397b5680
+
+  # routing_version:  # imported below
+  # routing_sha1:     # imported below
 
   # stemcell_name:    # imported below
   # stemcell_version: # imported below
@@ -53,3 +73,10 @@ imported_vars:
       - name: stemcell_sha1
         from: depl-vars
         path: /stemcell_sha1
+
+      - name: routing_version
+        from: depl-vars
+        path: /routing_version
+      - name: routing_sha1
+        from: depl-vars
+        path: /routing_sha1

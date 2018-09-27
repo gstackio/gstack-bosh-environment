@@ -85,6 +85,9 @@ imported_vars:
       - name: scality_network
         from: depl-vars
         path: /network_name
+      - name: scality_hostname
+        from: depl-vars
+        path: /s3server_endpoint_hostname
   - subsys: rabbitmq
     imports:
       - name: rabbitmq_deployment_name
