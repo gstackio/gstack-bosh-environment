@@ -23,18 +23,18 @@ operations_files:
 
     # CF monitoring
     - manifests/operators/monitor-cf
-    - manifests/operators/monitor-nats
-    - manifests/operators/monitor-mysql
+    # - manifests/operators/monitor-nats # TODO
+    # - manifests/operators/monitor-mysql # TODO
 
     # CF Services monitoring
-    - manifests/operators/monitor-p-rabbitmq
-    - manifests/operators/monitor-p-redis
-    - manifests/operators/monitor-rabbitmq
-    - manifests/operators/monitor-redis
-    - manifests/operators/monitor-shield
-    # - manifests/operators/monitor-mongodb
+    # - manifests/operators/monitor-p-rabbitmq # TODO
+    # - manifests/operators/monitor-p-redis # TODO
+    # - manifests/operators/monitor-rabbitmq # TODO
+    # - manifests/operators/monitor-redis # TODO
+    # - manifests/operators/monitor-shield # TODO
+    # - manifests/operators/monitor-mongodb # TODO
 
-    - manifests/operators/monitor-concourse
+    # - manifests/operators/monitor-concourse # TODO
 
     # CF integration
     - manifests/operators/enable-cf-route-registrar
