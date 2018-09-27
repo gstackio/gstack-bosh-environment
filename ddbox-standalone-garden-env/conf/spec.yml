@@ -48,7 +48,7 @@ variables_files:
 
 
 deployment_vars:
-  disk_size: 100_000 # i.e. 100MB
+  disk_size: 220_000 # i.e. 220GB
 
   external_ip: ~
   vbox_host: ~
