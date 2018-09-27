@@ -15,8 +15,8 @@ function each_used_release() {
         deployments=$(spec_var --required /deployment_vars/deployment_name "$BASE_DIR/deployments/$subsys")
     fi
 
-    mkdir -p "$BASE_DIR/.cache/compiled-releases${subsys:+/$subsys}"
-    pushd "$BASE_DIR/.cache/compiled-releases${subsys:+/$subsys}"
+    mkdir -p "$BASE_DIR/.cache/compiled-releases"
+    pushd "$BASE_DIR/.cache/compiled-releases"
 
     for depl_name in $deployments; do
 
@@ -61,15 +61,13 @@ function export_release_to_cache() {
     echo -e "\n${BLUE}Exporting release $BOLD$release$RESET" \
         "compiled on stemcell $GREEN$BOLD$stemcell$RESET\n"
 
-    pushd "$BASE_DIR/.cache/compiled-releases"
-        bosh -d "$depl_name" export-release "$release" "$stemcell"
-    popd
+    bosh -d "$depl_name" export-release "$release" "$stemcell"
 }
 
 function export_releases() {
     local subsys=$1
     assert_utilities jq "to export compiled releases"
-    mkdir -p "$BASE_DIR/.cache/compiled-releases${subsys:+/$subsys}"
+    # mkdir -p "$BASE_DIR/.cache/compiled-releases${subsys:+/$subsys}"
     each_used_release "$subsys" export_release_to_cache
 }
 
