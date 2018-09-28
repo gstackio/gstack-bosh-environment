@@ -9,7 +9,8 @@ input_resources:
     type: git
     uri: https://github.com/gstackio/dingo-postgresql-release.git
     # version: bd0f88f # on the 'links-and-cloud-config' branch (version 0.10.3-rc.38), as of April 19th, 2017
-    version: links-and-cloud-config # ongoing work on the 'links-and-cloud-config' branch (version 0.10.3-rc.38), as of June 23rd, 2018
+    # version: links-and-cloud-config # ongoing work on the 'links-and-cloud-config' branch (version 0.10.3-rc.38), as of June 23rd, 2018
+    version: 002d11a # master as of 2018-08-08
 
 
 main_deployment_file: dingo-postgresql-release/manifests/dingo-postgresql.yml
