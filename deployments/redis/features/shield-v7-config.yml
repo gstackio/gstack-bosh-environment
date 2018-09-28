@@ -1,0 +1,55 @@
+---
+
+- path: /releases/name=shield?
+  type: replace
+  value:
+    name: shield
+    version: ((shield_version))
+    url: https://github.com/gstackio/gk-shield-boshrelease/releases/download/v((shield_version))/shield-((shield_version)).tgz
+    sha1: ((shield_sha1))
+
+- path: /instance_groups/name=cf-redis-broker/jobs/name=shield-agent?
+  type: replace
+  value:
+    name: shield-agent
+    release: shield
+    consumes: &shield_daemon_link
+      shield-daemon: { from: shield-daemon, deployment: ((shield_deployment_name)) }
+    properties:
+      autoprovision: true
+      targets:
+        redis-broker:
+          name: (deployment)/(name)-(index)
+          plugin: redis-broker
+          config:
+            redis_type: broker
+      jobs:
+        redis-broker_hourly2fs:
+          name: (deployment)/(name)-(index)
+          schedule: hourly-15
+          target: (deployment)/(name)-(index)
+          store: scality-main
+          retention: week
+
+
+- path: /instance_groups/name=dedicated-node/jobs/name=shield-agent?
+  type: replace
+  value:
+    name: shield-agent
+    release: shield
+    consumes: *shield_daemon_link
+    properties:
+      autoprovision: true
+      targets:
+        redis-dedicated:
+          name: (deployment)/(name)-(index)
+          plugin: redis-broker
+          config:
+            redis_type: dedicated
+      jobs:
+        redis-dedicated_hourly2fs:
+          name: (deployment)/(name)-(index)
+          schedule: hourly-45
+          target: (deployment)/(name)-(index)
+          store: scality-main
+          retention: week

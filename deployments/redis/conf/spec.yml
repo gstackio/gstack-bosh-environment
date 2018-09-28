@@ -22,6 +22,7 @@ operations_files:
     - add-missing-broker-password-var
     - remove-syslog-forwarder
     - keep-dedicated-vm-plan
+    - shield-v7-config
 
 
 deployment_vars:
@@ -42,6 +43,9 @@ deployment_vars:
 
   bpm_version: "0.6.0"
   bpm_sha1: 4f0f239abdc801d71de9063625aa56e3c42634b5
+
+  shield_version: "7.0.5"
+  shield_sha1: 73b00d982a262923209cde0812b8f4d87c4cf642
 
   # stemcell_name:    # imported below
   # stemcell_version: # imported below
@@ -117,3 +121,9 @@ imported_vars:
       - name: apps_domain
         from: depl-vars
         path: /app_domains/0/name
+
+  - subsys: shield-v7
+    imports:
+      - name: shield_deployment_name
+        from: depl-vars
+        path: /deployment_name

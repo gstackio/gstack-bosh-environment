@@ -11,8 +11,10 @@
 - path: /instance_groups/name=shield/jobs/name=shield-agent/properties/schedules
   type: replace
   value:
-    hourly: hourly at 45
+    hourly-00: hourly at 00
+    hourly-15: hourly at 15
     hourly-30: hourly at 30
+    hourly-45: hourly at 45
     daily: daily 4am
     weekly: sundays 6am
     monthly: 1st sunday at 8am
