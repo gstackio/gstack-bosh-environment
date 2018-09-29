@@ -70,7 +70,7 @@ deployment_vars:
   # routing_version:  # imported below
   # routing_sha1:     # imported below
 
-  # stemcell_name:    # imported below
+  # stemcell_os:      # imported below
   # stemcell_version: # imported below
   # stemcell_sha1:    # imported below
 
@@ -101,9 +101,9 @@ imported_vars:
         from: depl-vars
         path: /routing_sha1
 
-      - name: stemcell_name
+      - name: stemcell_os
         from: depl-vars
-        path: /stemcell_name
+        path: /stemcell_os
       - name: stemcell_version
         from: depl-vars
         path: /stemcell_version

@@ -47,7 +47,7 @@ deployment_vars:
   shield_version: "7.0.5"
   shield_sha1: 73b00d982a262923209cde0812b8f4d87c4cf642
 
-  # stemcell_name:    # imported below
+  # stemcell_os:      # imported below
   # stemcell_version: # imported below
   # stemcell_sha1:    # imported below
 
@@ -87,9 +87,9 @@ imported_vars:
         from: depl-vars
         path: /routing_sha1
 
-      - name: stemcell_name
+      - name: stemcell_os
         from: depl-vars
-        path: /stemcell_name
+        path: /stemcell_os
       - name: stemcell_version
         from: depl-vars
         path: /stemcell_version

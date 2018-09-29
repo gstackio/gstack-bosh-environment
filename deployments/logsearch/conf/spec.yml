@@ -47,7 +47,7 @@ deployment_vars:
   logsearch_for_cloudfoundry_version: "207.0.0"
   logsearch_for_cloudfoundry_sha1: e6f740707042d29a1ac09a7481cf72b805b1469d
 
-  # stemcell_name:    # imported below
+  # stemcell_os:      # imported below
   # stemcell_version: # imported below
   # stemcell_sha1:    # imported below
 
@@ -63,9 +63,9 @@ imported_vars:
 
       # Versions
 
-      - name: stemcell_name
+      - name: stemcell_os
         from: depl-vars
-        path: /stemcell_name
+        path: /stemcell_os
       - name: stemcell_version
         from: depl-vars
         path: /stemcell_version

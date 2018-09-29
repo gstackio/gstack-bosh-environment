@@ -34,7 +34,7 @@ deployment_vars:
   minio_version: 2018-06-08T03-49-38Z
   minio_sha1: 3a5ae84f8b2be9ee640d545c489633e36c0674dd
 
-  # stemcell_name:    # imported below
+  # stemcell_os:      # imported below
   # stemcell_version: # imported below
   # stemcell_sha1:    # imported below
 
@@ -45,9 +45,9 @@ imported_vars:
 
       # Versions
 
-      - name: stemcell_name
+      - name: stemcell_os
         from: depl-vars
-        path: /stemcell_name
+        path: /stemcell_os
       - name: stemcell_version
         from: depl-vars
         path: /stemcell_version

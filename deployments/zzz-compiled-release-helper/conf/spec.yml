@@ -24,7 +24,7 @@ deployment_vars:
   # node_exporter_version: # imported below
   # node_exporter_sha1:    # imported below
 
-  # stemcell_name:    # imported below
+  # stemcell_os:      # imported below
   # stemcell_version: # imported below
   # stemcell_sha1:    # imported below
 
@@ -49,9 +49,9 @@ imported_vars:
 
   - subsys: cf
     imports:
-      - name: stemcell_name
+      - name: stemcell_os
         from: depl-vars
-        path: /stemcell_name
+        path: /stemcell_os
       - name: stemcell_version
         from: depl-vars
         path: /stemcell_version
