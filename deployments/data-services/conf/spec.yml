@@ -51,8 +51,23 @@ deployment_vars:
   cf_containers_broker_version: "1.0.3"
   cf_containers_broker_sha1: 11001a58965ce4243bd18f0e4301cdbbe949a2d9
 
-  docker_version: "32.0.0"
-  docker_sha1: 75a3e4f85f8d1a59b58c6b34cf568f72397b5680
+  docker_version: "31.0.1"
+  docker_sha1: d7fba11988621d8a8b57c2d298067e7d85e26148
+
+  # NOTICE: Docker release v31.1.0 & v32.0.0 are no more compatible with
+  #         stemcells versions above 3586.24
+  #
+  # # /var/vcap/packages/docker/bin/docker \
+  #       -H :4243 --tls --tlscacert /var/vcap/jobs/docker/config/docker.cacert \
+  #       --tlscert /var/vcap/jobs/docker/config/docker.cert --tlskey /var/vcap/jobs/docker/config/docker.key \
+  #       run frodenas/mysql:5.6
+  # /var/vcap/packages/docker/bin/docker: Error response from daemon: cgroups: cannot found cgroup mount destination: unknown.
+  # ERRO[0001] error waiting for container: context canceled
+  #
+  # docker_version: "31.1.0"
+  # docker_sha1: 5bd41b3ddb7005e90af09a93a7d3ea1649216260
+  # docker_version: "32.0.0"
+  # docker_sha1: 75a3e4f85f8d1a59b58c6b34cf568f72397b5680
 
   bpm_version: "0.6.0"
   bpm_sha1: 4f0f239abdc801d71de9063625aa56e3c42634b5
