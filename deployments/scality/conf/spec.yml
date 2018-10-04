@@ -59,6 +59,8 @@ deployment_vars:
 
   # Reference declarations
 
+  custom_account_access_key_id: CustomAccountAccessKey
+
   network_name: default # injected in cloud-config and runtime-config
 
 

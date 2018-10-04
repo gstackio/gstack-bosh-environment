@@ -22,8 +22,8 @@ instance_groups:
               env_vars:
                 # See config vars usage in:
                 # <https://github.com/scality/cloudserver/blob/BETA7.2.0/docker-entrypoint.sh>
-                - SCALITY_ACCESS_KEY_ID=CustomAccountAccessKey
-                - SCALITY_SECRET_ACCESS_KEY=((custom_account_secret_key))
+                - SCALITY_ACCESS_KEY_ID=((custom_account_access_key_id))
+                - SCALITY_SECRET_ACCESS_KEY=((custom_account_secret_access_key))
                 - LOG_LEVEL=debug # can be 'info', 'debug', or 'trace'
                 - SSL=true
                 - ENDPOINT=((s3server_endpoint_hostname))
@@ -58,7 +58,7 @@ instance_groups:
       - name: ((network_name))
 
 variables:
-  - name: custom_account_secret_key
+  - name: custom_account_secret_access_key
     type: password
 
   - name: docker-ca

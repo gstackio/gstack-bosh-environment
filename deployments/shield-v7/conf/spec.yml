@@ -49,6 +49,8 @@ deployment_vars:
 
   # Reference declarations
 
+  bucket_name: shield-backups
+
   network_name: shield-v7-network # injected in cloud-config
   shield_vm_extension: shield-v7-loadbalancer # injected in cloud-config
   shield_internal_hostname: shield-v7.easyfoundry.internal # injected in runtime-config
@@ -81,6 +83,9 @@ imported_vars:
 
   - subsys: scality
     imports:
+      - name: scality_access_key_id
+        from: depl-vars
+        path: /custom_account_access_key_id
       - name: scality_secret_access_key
         from: depl-creds
-        path: /custom_account_secret_key
+        path: /custom_account_secret_access_key

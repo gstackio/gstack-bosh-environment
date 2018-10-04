@@ -8,7 +8,38 @@
     config:
       scality_host: s3server.easyfoundry.internal
       skip_ssl_validation: true
-      access_key_id: CustomAccountAccessKey
+      access_key_id: ((scality_access_key_id))
       secret_access_key: ((scality_secret_access_key))
-      bucket: shield-backups
+      bucket: ((bucket_name))
       prefix: /main
+
+
+# Bucket creation
+
+- path: /releases/name=s3cmd?
+  type: replace
+  value:
+    name: s3cmd
+    version: 1.0.0
+    url: https://github.com/gstackio/s3cmd-boshrelease/releases/download/v1.0.0/s3cmd-boshrelease-1.0.0.tgz
+    sha1: 80993d85e34f6821efd3084e6c9b862936493503
+
+- path: /instance_groups/name=shield/jobs/name=create-buckets?
+  type: replace
+  value:
+    name: create-buckets
+    release: s3cmd
+    properties: &buckets_properties
+      buckets: [ ((bucket_name)) ]
+      s3:
+        host_base: s3server.easyfoundry.internal
+        skip_ssl_validation: true
+        access_key_id: ((scality_access_key_id))
+        secret_access_key: ((scality_secret_access_key))
+
+- path: /instance_groups/name=shield/jobs/name=remove-buckets?
+  type: replace
+  value:
+    name: remove-buckets
+    release: s3cmd
+    properties: *buckets_properties
