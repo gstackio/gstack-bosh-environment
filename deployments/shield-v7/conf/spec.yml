@@ -105,6 +105,9 @@ imported_vars:
       - name: minio_sha1
         from: depl-vars
         path: /minio_sha1
+      - name: minio_deployment_name
+        from: depl-vars
+        path: /deployment_name
       - name: minio_access_key_id
         from: depl-vars
         path: /minio_server_accesskey

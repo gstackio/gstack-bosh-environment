@@ -30,7 +30,9 @@
   value:
     name: mc
     release: minio
+    consumes:
+      minio: { from: minio-link, deployment: ((minio_deployment_name)) }
     properties:
       script: |
-        set -e
-        mc mb myminio/((bucket_name))
+        set -eo pipefail
+        mc mb --ignore-existing myminio/((bucket_name))
