@@ -16,7 +16,7 @@ main_deployment_file: minio-boshrelease/manifests/manifest-dist-example.yaml
 operations_files:
   10.local:
     - rename-deployment
-    - set-versions
+    - pin-versions
     - use-generated-password
     - scale-vms-and-disks
     - randomize-az-placement
