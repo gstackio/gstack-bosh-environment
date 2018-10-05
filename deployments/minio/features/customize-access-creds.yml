@@ -1,5 +1,9 @@
 ---
 
+- path: /instance_groups/name=minio/jobs/name=minio-server/properties/credential/accesskey
+  type: replace
+  value: ((minio_server_accesskey))
+
 - path: /instance_groups/name=minio/jobs/name=minio-server/properties/credential/secretkey
   type: replace
   value: ((minio_server_secretkey))

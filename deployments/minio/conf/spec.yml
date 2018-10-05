@@ -17,13 +17,21 @@ operations_files:
   10.local:
     - rename-deployment
     - pin-versions
-    - use-generated-password
+    - customize-access-creds
     - scale-vms-and-disks
     - randomize-az-placement
 
 
 deployment_vars:
   deployment_name: easyfoundry-minio
+
+
+  # User-facing settings
+
+  minio_server_accesskey: minio
+
+
+  # Scaling
 
   minio_instances: 4 # a minimum or 4 is required when using erasure coding (the default)
   persistent_disk_type: 2GB
