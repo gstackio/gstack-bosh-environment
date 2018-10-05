@@ -1,6 +1,6 @@
 ---
 
-- path: /instance_groups/name=shield/jobs/name=shield-agent/properties/stores?/scality
+- path: /instance_groups/name=shield/jobs/name=shield-agent/properties/stores?/scality-main
   type: replace
   value:
     name: scality-main
@@ -12,6 +12,28 @@
       secret_access_key: ((scality_secret_access_key))
       bucket: ((bucket_name))
       prefix: /main
+
+- path: /instance_groups/name=shield/jobs/name=shield-agent/properties/stores?/scality-shield
+  type: replace
+  value:
+    name: scality-shield
+    plugin: scality
+    config:
+      scality_host: ((scality_hostname))
+      skip_ssl_validation: true
+      access_key_id: ((scality_access_key_id))
+      secret_access_key: ((scality_secret_access_key))
+      bucket: ((bucket_name))
+      prefix: /shield
+
+- path: /instance_groups/name=shield/jobs/name=shield-agent/properties/jobs?/shield-hourly2scality
+  type: replace
+  value:
+    name: (deployment)/(name)-(index)-hourly2scality
+    schedule: hourly-00
+    target: (deployment)/(name)-(index)-db
+    store: scality-shield
+    retention: week
 
 
 # Bucket creation

@@ -1,5 +1,21 @@
 ---
 
+# Default target for SHIELD PostgreSQL database
+
+- path: /instance_groups/name=shield/jobs/name=shield-agent/properties/targets?/shield-postgres-db
+  type: replace
+  value:
+    name: (deployment)/(name)-(index)-db
+    plugin: postgres
+    config:
+      pg_user: shieldadmin
+      pg_password: ((db-password))
+      pg_host: "127.0.0.1"
+      pg_database: shielddb
+
+
+# Default store (for tests only)
+
 - path: /instance_groups/name=shield/jobs/name=shield-agent/properties/stores?/test-fs-store
   type: replace
   value:
@@ -7,6 +23,9 @@
     plugin: fs
     config:
       base_dir: /var/vcap/store/shield-backups
+
+
+# Default schedules
 
 - path: /instance_groups/name=shield/jobs/name=shield-agent/properties/schedules
   type: replace
@@ -18,6 +37,9 @@
     daily: daily 4am
     weekly: sundays 6am
     monthly: 1st sunday at 8am
+
+
+# Default retentions
 
 - path: /instance_groups/name=shield/jobs/name=shield-agent/properties/retention-policies
   type: replace

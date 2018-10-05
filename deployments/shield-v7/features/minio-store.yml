@@ -1,18 +1,41 @@
 ---
 
-- path: /instance_groups/name=shield/jobs/name=shield-agent/properties/stores?/minio
+- path: /instance_groups/name=shield/jobs/name=shield-agent/properties/stores?/minio-main
   type: replace
   value:
     name: minio-main
     plugin: s3
     config:
       s3_host: ((minio_hostname))
-      s3_port: 9000
+      s3_port: "9000" # string required
       skip_ssl_validation: true
       access_key_id: ((minio_access_key_id))
       secret_access_key: ((minio_secret_access_key))
       bucket: ((bucket_name))
       prefix: /main
+
+- path: /instance_groups/name=shield/jobs/name=shield-agent/properties/stores?/minio-shield
+  type: replace
+  value:
+    name: minio-shield
+    plugin: s3
+    config:
+      s3_host: ((minio_hostname))
+      s3_port: "9000" # string required
+      skip_ssl_validation: true
+      access_key_id: ((minio_access_key_id))
+      secret_access_key: ((minio_secret_access_key))
+      bucket: ((bucket_name))
+      prefix: /shield
+
+- path: /instance_groups/name=shield/jobs/name=shield-agent/properties/jobs?/shield-hourly2minio
+  type: replace
+  value:
+    name: (deployment)/(name)-(index)-hourly2minio
+    schedule: hourly-30
+    target: (deployment)/(name)-(index)-db
+    store: minio-shield
+    retention: week
 
 
 # Bucket creation
