@@ -16,6 +16,7 @@ main_deployment_file: minio-boshrelease/manifests/manifest-dist-example.yaml
 operations_files:
   10.local:
     - rename-deployment
+    - rename-network
     - pin-versions
     - customize-access-creds
     - scale-vms-and-disks
@@ -28,6 +29,7 @@ deployment_vars:
 
   # User-facing settings
 
+  minio_internal_hostname: minio.easyfoundry.internal
   minio_server_accesskey: minio
 
 
@@ -47,6 +49,11 @@ deployment_vars:
   # stemcell_sha1:    # imported below
 
 
+  # Reference declarations
+
+  network_name: default # injected in runtime config
+
+
 imported_vars:
   - subsys: cf
     imports:
@@ -62,3 +69,13 @@ imported_vars:
       - name: stemcell_sha1
         from: depl-vars
         path: /stemcell_sha1
+
+  # Plumbery
+
+  # - subsys: minio
+  #   imports:
+  #     # This "auto-import" is a workaround trick to have variables that use
+  #     # other deployment variables in their values.
+  #     - name: dns_alias
+  #       from: depl-vars
+  #       value: "minio.((network_name)).((deployment_name)).bosh"

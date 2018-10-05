@@ -1,0 +1,16 @@
+---
+
+- path: /instance_groups/name=minio/networks/name=default
+  type: replace
+  value:
+    name: ((network_name))
+
+- path: /instance_groups/name=tests/networks/name=default
+  type: replace
+  value:
+    name: ((network_name))
+
+- path: /instance_groups/name=bucket-seeding/networks/name=default
+  type: replace
+  value:
+    name: ((network_name))

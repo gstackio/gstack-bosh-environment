@@ -1,6 +1,6 @@
 ---
 
-- path: /addons/name=bosh-dns/jobs/name=bosh-dns/properties/aliases/s3server.easyfoundry.internal?
+- path: /addons/name=bosh-dns/jobs/name=bosh-dns/properties/aliases/s3server.easyfoundry.internal? # ((scality_hostname)) should be used here
   type: replace
   value:
     - '*.s3server.((scality_network)).((scality_deployment_name)).bosh'

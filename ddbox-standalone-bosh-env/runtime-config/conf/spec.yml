@@ -25,6 +25,7 @@ operations_files:
     - cassandra-support
     - scality-support
     - rabbitmq-support
+    - minio-support
 
 
 config_vars:
@@ -96,3 +97,14 @@ imported_vars:
       - name: rabbitmq_network
         from: depl-vars
         path: /network_name
+  - subsys: minio
+    imports:
+      - name: minio_deployment_name
+        from: depl-vars
+        path: /deployment_name
+      - name: minio_network
+        from: depl-vars
+        path: /network_name
+      - name: minio_hostname
+        from: depl-vars
+        path: /minio_internal_hostname

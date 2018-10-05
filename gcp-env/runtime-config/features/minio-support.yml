@@ -1,0 +1,23 @@
+---
+
+- path: /addons/name=bosh-dns/jobs/name=bosh-dns/properties/aliases/minio.easyfoundry.internal? # ((minio_hostname)) should be used here
+  type: replace
+  value:
+    - '*.minio.((minio_network)).((minio_deployment_name)).bosh'
+
+- path: /addons/name=bosh-dns-windows/jobs/name=bosh-dns-windows/properties/aliases/minio.easyfoundry.internal? # ((minio_hostname)) should be used here
+  type: replace
+  value:
+    - '*.minio.((minio_network)).((minio_deployment_name)).bosh'
+
+
+
+# - path: /addons/name=bosh-dns/jobs/name=bosh-dns/properties/aliases/minio.default.easyfoundry-minio.bosh? # hardcoded "minio.((minio_network)).((minio_deployment_name)).bosh"
+#   type: replace
+#   value:
+#     - '*.minio.((minio_network)).((minio_deployment_name)).bosh'
+
+# - path: /addons/name=bosh-dns-windows/jobs/name=bosh-dns-windows/properties/aliases/minio.default.easyfoundry-minio.bosh? # hardcoded "minio.((minio_network)).((minio_deployment_name)).bosh"
+#   type: replace
+#   value:
+#     - '*.minio.((minio_network)).((minio_deployment_name)).bosh'
