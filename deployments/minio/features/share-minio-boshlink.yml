@@ -1,0 +1,5 @@
+---
+
+- path: /instance_groups/name=minio/jobs/name=minio-server/provides/minio-server/shared?
+  type: replace
+  value: true

@@ -21,6 +21,7 @@ operations_files:
     - customize-access-creds
     - scale-vms-and-disks
     - randomize-az-placement
+    - share-minio-boshlink
     - remove-default-bucket-seeding # should come last
 
 
