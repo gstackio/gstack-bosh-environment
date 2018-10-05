@@ -1,0 +1,36 @@
+---
+
+- path: /instance_groups/name=shield/jobs/name=shield-agent/properties/stores?/minio
+  type: replace
+  value:
+    name: minio-main
+    plugin: s3
+    config:
+      s3_host: ((minio_hostname))
+      s3_port: 9000
+      skip_ssl_validation: true
+      access_key_id: ((minio_access_key_id))
+      secret_access_key: ((minio_secret_access_key))
+      bucket: ((bucket_name))
+      prefix: /main
+
+
+# Bucket creation
+
+- path: /releases/name=minio?
+  type: replace
+  value:
+    name: minio
+    version: ((minio_version))
+    url: https://bosh.io/d/github.com/minio/minio-boshrelease?v=((minio_version))
+    sha1: ((minio_sha1))
+
+- path: /instance_groups/name=shield/jobs/name=mc?
+  type: replace
+  value:
+    name: mc
+    release: minio
+    properties:
+      script: |
+        set -e
+        mc mb myminio/((bucket_name))

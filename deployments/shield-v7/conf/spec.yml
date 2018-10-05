@@ -21,6 +21,7 @@ operations_files:
     - scale-disks
     - shield-config
     - scality-store
+    - minio-store
 
 
 deployment_vars:
@@ -37,6 +38,9 @@ deployment_vars:
 
   shield_version: "7.0.5"
   shield_sha1: 73b00d982a262923209cde0812b8f4d87c4cf642
+
+  # minio_version:    # imported below
+  # minio_sha1:       # imported below
 
   # stemcell_os:      # imported below
   # stemcell_version: # imported below
@@ -89,3 +93,24 @@ imported_vars:
       - name: scality_secret_access_key
         from: depl-creds
         path: /custom_account_secret_access_key
+      - name: scality_hostname
+        from: depl-vars
+        path: /s3server_endpoint_hostname
+
+  - subsys: minio
+    imports:
+      - name: minio_version
+        from: depl-vars
+        path: /minio_version
+      - name: minio_sha1
+        from: depl-vars
+        path: /minio_sha1
+      - name: minio_access_key_id
+        from: depl-vars
+        path: /minio_server_accesskey
+      - name: minio_secret_access_key
+        from: depl-creds
+        path: /minio_server_secretkey
+      - name: minio_hostname
+        from: depl-vars
+        path: /minio_internal_hostname

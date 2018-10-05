@@ -6,7 +6,7 @@
     name: scality-main
     plugin: scality
     config:
-      scality_host: s3server.easyfoundry.internal
+      scality_host: ((scality_hostname))
       skip_ssl_validation: true
       access_key_id: ((scality_access_key_id))
       secret_access_key: ((scality_secret_access_key))
