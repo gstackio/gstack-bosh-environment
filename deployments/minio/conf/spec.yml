@@ -19,6 +19,7 @@ operations_files:
     - rename-network
     - pin-versions
     - customize-access-creds
+    - enable-tls
     - scale-vms-and-disks
     - randomize-az-placement
     - share-minio-boshlink
@@ -74,10 +75,10 @@ imported_vars:
 
   # Plumbery
 
-  # - subsys: minio
-  #   imports:
-  #     # This "auto-import" is a workaround trick to have variables that use
-  #     # other deployment variables in their values.
-  #     - name: dns_alias
-  #       from: depl-vars
-  #       value: "minio.((network_name)).((deployment_name)).bosh"
+  - subsys: minio
+    imports:
+      # This "auto-import" is a workaround trick to have variables that use
+      # other deployment variables in their values.
+      - name: dns_alias
+        from: depl-vars
+        value: "minio.((network_name)).((deployment_name)).bosh"

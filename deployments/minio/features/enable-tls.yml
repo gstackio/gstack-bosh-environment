@@ -1,0 +1,43 @@
+---
+
+- path: /instance_groups/name=minio/jobs/name=minio-server/properties/server_cert?
+  type: replace
+  value: ((minio-tls.certificate))
+
+- path: /instance_groups/name=minio/jobs/name=minio-server/properties/server_key?
+  type: replace
+  value: ((minio-tls.private_key))
+
+- path: /instance_groups/name=minio/jobs/name=minio-server/properties/ca_cert?
+  type: replace
+  value: ((minio-tls.ca))
+
+- path: /instance_groups/name=minio/jobs/name=minio-server/properties/dns_alias?
+  type: replace
+  value: ((dns_alias))
+
+- path: /instance_groups/name=minio/jobs/name=minio-server/properties/port?
+  type: replace
+  value: 443
+
+
+
+- path: /variables/name=minio-ca?
+  type: replace
+  value:
+    name: minio-ca
+    type: certificate
+    options:
+      is_ca: true
+      common_name: Minio_CA
+
+- path: /variables/name=minio-tls?
+  type: replace
+  value:
+    name: minio-tls
+    type: certificate
+    options:
+      ca: minio-ca
+      common_name: ((dns_alias))
+      alternative_names:
+        - "*.((dns_alias))"
