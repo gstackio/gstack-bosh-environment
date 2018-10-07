@@ -1,0 +1,13 @@
+---
+
+- path: /instance_groups/name=docker/jobs/name=cf-containers-broker/properties/services/name=mysql56/name
+  type: replace
+  value: mysql56-dev
+
+- path: /instance_groups/name=docker/jobs/name=cf-containers-broker/properties/services/name=postgresql96/name
+  type: replace
+  value: postgresql96-dev
+
+- path: /instance_groups/name=docker/jobs/name=cf-containers-broker/properties/services/name=redis32/name
+  type: replace
+  value: redis32-dev

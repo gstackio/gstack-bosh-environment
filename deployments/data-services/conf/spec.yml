@@ -34,6 +34,7 @@ operations_files:
     - set-versions
     - scale-disks
     - inject-variables # must be after 'use-cf-admin-user-link'
+    - customize-services
     - fix-errands-vms-names # must be last
 
 
