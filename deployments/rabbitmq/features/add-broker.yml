@@ -8,6 +8,12 @@
     url: https://bosh.io/d/github.com/pivotal-cf/cf-rabbitmq-multitenant-broker-release?v=((rabbitmq_broker_version))
     sha1: ((rabbitmq_broker_sha1))
 
+- path: /releases/name=cf-rabbitmq-smoke-tests?
+  type: replace
+  value:
+    name: cf-rabbitmq-smoke-tests
+    version: ((rabbitmq_smoke_tests_version))
+
 - path: /releases/name=cf-cli?
   type: replace
   value:
@@ -26,7 +32,7 @@
         release: cf-rabbitmq-multitenant-broker
         properties:
           cf:
-            domain: ((bosh-domain))
+            domain: ((system-domain))
           rabbitmq-broker:
             route: ((rabbitmq-broker-hostname))
             cc_endpoint: http://api.((cf_system_domain))
@@ -47,7 +53,7 @@
                 policy_name: "operator_set_policy"
                 policy_definition: "{\"ha-mode\":\"exactly\",\"ha-params\":2,\"ha-sync-mode\":\"automatic\"}"
                 policy_priority: 50
-              management_domain: ((rabbitmq-management-hostname)).((bosh-domain))
+              management_domain: ((rabbitmq-management-hostname)).((system-domain))
               management:
                 username: ((rabbitmq-management-username))
               administrator:
@@ -64,7 +70,7 @@
                 port: 4567
                 registration_interval: 20s
                 uris:
-                  - ((rabbitmq-broker-hostname)).((bosh-domain))
+                  - ((rabbitmq-broker-hostname)).((system-domain))
     vm_type: default
     stemcell: trusty
     azs:
@@ -72,33 +78,26 @@
     networks:
       - name: ((network_name))
  
-- path: /instance_groups/name=smoke-tests-vm?
+- path: /instance_groups/name=rmq-broker?/jobs/name=smoke-tests
   type: replace
   value:
-    name: smoke-tests-vm
-    jobs:
-    - name: smoke-tests
-      release: cf-rabbitmq-multitenant-broker
-      properties:
-        cf:
-          api_url: https://api.((cf_system_domain))
-          domain: ((cf_system_domain))
-          admin_username: ((cf-admin-username))
-          admin_password: ((cf-admin-password))
-        broker:
-          name: ((product-name))
-        smoke_tests:
-          org: system
-    - name: cf-cli-6-linux
-      release: cf-cli
-    instances: 1
-    lifecycle: errand
-    vm_type: default
-    stemcell: trusty
-    azs:
-      - z1
-    networks:
-      - name: ((network_name))
+    name: smoke-tests
+    release: cf-rabbitmq-smoke-tests
+    properties:
+      cf:
+        api_url: https://api.((cf_system_domain))
+        domain: ((cf_system_domain))
+        admin_username: ((cf-admin-username))
+        admin_password: ((cf-admin-password))
+      broker:
+        name: ((product-name))
+      smoke_tests:
+        org: system
+- path: /instance_groups/name=rmq-broker?/jobs/name=cf-cli-6-linux
+  type: replace
+  value:
+    name: cf-cli-6-linux
+    release: cf-cli
 
 - path: /releases/name=broker-registrar?
   type: replace
@@ -108,57 +107,39 @@
     url: https://bosh.io/d/github.com/cloudfoundry-community/broker-registrar-boshrelease?v=((broker_registrar_version))
     sha1: ((broker_registrar_sha1))
 
-- path: /instance_groups/name=broker-registrar-vm?
+- path: /instance_groups/name=rmq-broker?/jobs/name=broker-registrar
   type: replace
   value:
-    name: broker-registrar-vm
-    instances: 1
-    azs: [ z1 ]
-    lifecycle: errand
-    jobs:
-      - name: broker-registrar
-        release: broker-registrar
-        consumes: &consumed_links
-          servicebroker:
-            # Note: the rabbitmq broker doesn't provide this link yet, so we revert
-            # back to manual linking
-            instances:
-              # This is dummy BOSH DNS alias. In fact we don't need it to
-              # resolve to any IP address since only the 'external_host' is
-              # actually used by the 'broker-registrar' job, and not this
-              # instance address.
-              - 0.rmq-broker.((network_name)).((deployment_name)).bosh
-            properties:
-              external_host: ((rabbitmq-broker-hostname)).((bosh-domain))
-              port: 4567
-              ssl_enabled: false
-              name: rabbitmq-broker
-              username: ((multitenant-rabbitmq-broker-username))
-              password: ((multitenant-rabbitmq-broker-password))
-          cf-admin-user:
-            from: cf-admin-user
-            deployment: ((cf_deployment_name))
-        properties: &additional_properties
-          cf:
-            skip_ssl_validation: ((cf_skip_ssl_validation)) # not provided by the 'cf-admin-user' link
-    stemcell: trusty
-    vm_type: minimal
-    networks:
-      - name: ((network_name))
+    name: broker-registrar
+    release: broker-registrar
+    consumes: &consumed_links
+      servicebroker:
+        # Note: the rabbitmq broker doesn't provide this link yet, so we revert
+        # back to manual linking
+        instances:
+          # This is dummy BOSH DNS alias. In fact we don't need it to
+          # resolve to any IP address since only the 'external_host' is
+          # actually used by the 'broker-registrar' job, and not this
+          # instance address.
+          - 0.rmq-broker.((network_name)).((deployment_name)).bosh
+        properties:
+          external_host: ((rabbitmq-broker-hostname)).((system-domain))
+          port: 4567
+          ssl_enabled: false
+          name: rabbitmq-broker
+          username: ((multitenant-rabbitmq-broker-username))
+          password: ((multitenant-rabbitmq-broker-password))
+      cf-admin-user:
+        from: cf-admin-user
+        deployment: ((cf_deployment_name))
+    properties: &additional_properties
+      cf:
+        skip_ssl_validation: ((cf_skip_ssl_validation)) # not provided by the 'cf-admin-user' link
 
-- path: /instance_groups/name=broker-deregistrar-vm?
+- path: /instance_groups/name=rmq-broker?/jobs/name=broker-deregistrar
   type: replace
   value:
-    name: broker-deregistrar-vm
-    instances: 1
-    azs: [ z1 ]
-    lifecycle: errand
-    jobs:
-      - name: broker-deregistrar
-        release: broker-registrar
-        consumes: *consumed_links
-        properties: *additional_properties
-    stemcell: trusty
-    vm_type: minimal
-    networks:
-      - name: ((network_name))
+    name: broker-deregistrar
+    release: broker-registrar
+    consumes: *consumed_links
+    properties: *additional_properties

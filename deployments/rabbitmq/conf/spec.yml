@@ -8,18 +8,24 @@ input_resources:
   - name: rabbitmq-boshrelease
     type: git
     uri: https://github.com/pivotal-cf/cf-rabbitmq-release.git
-    version: v247.0.0
-  # - name: rabbitmq-broker-boshrelease
-  #   type: git
-  #   uri: https://github.com/pivotal-cf/cf-rabbitmq-multitenant-broker-release.git
-  #   version: v29.0.0
+    version: v252.0.0
+  - name: rabbitmq-broker-boshrelease
+    type: git
+    uri: https://github.com/pivotal-cf/cf-rabbitmq-multitenant-broker-release.git
+    version: v37.0.0
+  - name: rabbitmq-smoke-tests-boshrelease
+    type: git
+    uri: https://github.com/pivotal-cf/cf-rabbitmq-smoke-tests-release.git
+    version: v13.0.0
 
 
 main_deployment_file: rabbitmq-boshrelease/manifests/cf-rabbitmq-template.yml
 
 
 operations_files:
-  10.local:
+  10.rabbitmq-broker-boshrelease:
+    - manifests/enable-tls
+  20.local:
     - rename-deployment
     - rename-network
     - set-versions
@@ -27,6 +33,7 @@ operations_files:
     - scale-for-bosh-lite
     - customize-routing
     - add-broker
+    - tweak-tls
 
 
 deployment_vars:
@@ -37,7 +44,7 @@ deployment_vars:
 
   rabbitmq-management-hostname: rabbitmq
   rabbitmq-broker-hostname: rabbitmq-broker
-  bosh-domain: easyfoundry.prototyp.it
+  system-domain: easyfoundry.prototyp.it
 
   product-name: rabbitmq # as displayed in 'cf marketplace'
 
@@ -45,7 +52,7 @@ deployment_vars:
   # Customizations
 
   persistent_disk_type: 1GB
-  disk_alarm_threshold: 100_000_000 # 100MB # in Bosh-Lite, we can'no't use the default "{mem_relative,0.4}" or the Pivotal-recommended "{mem_relative,1.5}"
+  disk_alarm_threshold: 100_000_000 # 100MB # in Bosh-Lite, we can't use the default "{mem_relative,0.4}" or the Pivotal-recommended "{mem_relative,1.5}"
   cluster-partition-handling-strategy: autoheal # Recommended for BOSH-Lite instead of the default 'pause_minority'
   rabbitmq_instances: 2
   haproxy-instances: 1
@@ -55,14 +62,16 @@ deployment_vars:
 
   rabbitmq_version: "3.7"
 
-  rabbitmq_release_version: "247.0.0"
-  rabbitmq_release_sha1: 21276f0a96bde9c778e7f5816f12836a5fd62dbe
+  rabbitmq_release_version: "252.0.0"
+  rabbitmq_release_sha1: 289c258f329535c469ce9b5596f2b5737c837a36
 
-  rabbitmq_broker_version: "29.0.0"
-  rabbitmq_broker_sha1: f489880faeb4f4fbc357e63b69ba2494448aef48
+  rabbitmq_broker_version: "37.0.0"
+  rabbitmq_broker_sha1: 146049116e60593af959d1c738a139b59e8480a7
 
-  cf_cli_release_version: "1.5.0"
-  cf_cli_release_sha1: 6749a07026e335f7744f013c9707911fb72170b5
+  rabbitmq_smoke_tests_version: "13.0.0"
+
+  cf_cli_release_version: "1.8.0"
+  cf_cli_release_sha1: 15d0718bc82ff9394efd2c9798873a39bf7eba06
 
   broker_registrar_version: "3.4.0"
   broker_registrar_sha1: d44d9af8fd06ecf6d50004c9bfd5516a6e482201

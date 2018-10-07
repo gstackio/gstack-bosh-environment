@@ -1,0 +1,32 @@
+---
+
+- path: /instance_groups/name=rmq/jobs/name=rabbitmq-server/properties/rabbitmq-server/ssl?/cacert
+  type: replace
+  value: ((tls_certificate.ca))
+
+
+- path: /variables/name=tls_certificate/options/ca
+  type: replace
+  value: rabbitmq_ca
+
+- path: /variables/name=tls_certificate/options/common_name
+  type: replace
+  value: ((rabbitmq-management-hostname)).((system-domain))
+
+- path: /variables/name=tls_certificate/options/alternative_names
+  type: replace
+  value:
+    - ((rabbitmq-broker-hostname)).((system-domain))
+    - rabbitmq.easyfoundry.internal
+    - "*.rmq.((network_name)).((deployment_name)).bosh"
+    - "*.rmq-broker.((network_name)).((deployment_name)).bosh"
+
+
+- path: /variables/name=tls_certificate:before
+  type: replace
+  value:
+    name: rabbitmq_ca
+    type: certificate
+    options:
+      is_ca: true
+      common_name: rabbitmq_ca
