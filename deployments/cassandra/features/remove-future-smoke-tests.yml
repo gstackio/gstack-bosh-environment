@@ -1,0 +1,4 @@
+---
+
+- path: /instance_groups/name=smoke-tests
+  type: remove
