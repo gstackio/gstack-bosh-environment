@@ -16,10 +16,10 @@ input_resources:
   - name: rabbitmq-smoke-tests-boshrelease
     type: git
     uri: https://github.com/pivotal-cf/cf-rabbitmq-smoke-tests-release.git
-    version: v19.0.0
+    version: fix-service-unbinding-on-early-exists # v19.0.0 with fix
 
 
-developing: false
+developing: true
 
 
 main_deployment_file: rabbitmq-boshrelease/manifests/cf-rabbitmq-template.yml
@@ -72,7 +72,8 @@ deployment_vars:
   rabbitmq_broker_version: "37.0.0"
   rabbitmq_broker_sha1: 146049116e60593af959d1c738a139b59e8480a7
 
-  rabbitmq_smoke_tests_version: "19.0.0"
+  # rabbitmq_smoke_tests_version: "19.0.0"
+  rabbitmq_smoke_tests_version: latest
 
   cf_cli_release_version: "1.8.0"
   cf_cli_release_sha1: 15d0718bc82ff9394efd2c9798873a39bf7eba06

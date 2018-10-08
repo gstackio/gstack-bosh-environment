@@ -1,13 +1,32 @@
 #!/usr/bin/env bash
 
-set -o pipefail
+set -eo pipefail
+
+function main() {
+    # Due to an "sslv3 alert handshake failure", smoke tests are currently broken
+    # for the RabbitMQ subsystem.
+    #
+    # See: https://github.com/pivotal-cf/cf-rabbitmq-smoke-tests-release/issues/3
+    # See also: https://github.com/pivotal-cf/cf-rabbitmq-smoke-tests-release/pull/4
+    #
+    # run_errand_with_retry_for_debugging "smoke-tests"
+    exit $?
+}
+
+function spec_var() {
+    local path=$1
+    bosh int "$SUBSYS_DIR/conf/spec.yml" --path "$path"
+}
 
 function run_errand_with_retry_for_debugging() {
     local errand_name=$1
     local errand_vm_name=$2
 
-    set -x
-    bosh run-errand "${errand_name}" --when-changed
+    local developing
+    developing=$((spec_var /developing || true) | grep -F true)
+
+    set +e -x
+    bosh run-errand "${errand_name}" --when-changed ${developing:+"--keep-alive"}
     error=$?
     set +x -e
 
@@ -37,11 +56,4 @@ function run_errand_with_retry_for_debugging() {
     return ${error}
 }
 
-# Due to an "sslv3 alert handshake failure", smoke tests are currently broken
-# for the RabbitMQ subsystem.
-#
-# See: https://github.com/pivotal-cf/cf-rabbitmq-smoke-tests-release/issues/3
-# See also: https://github.com/pivotal-cf/cf-rabbitmq-smoke-tests-release/pull/4
-#
-# run_errand_with_retry_for_debugging "smoke-tests"
-# exit $?
+main "$@"
