@@ -2,4 +2,4 @@
 
 set -ex
 
-bosh run-errand smoke-tests
+# bosh run-errand smoke-tests
