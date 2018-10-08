@@ -19,6 +19,9 @@ input_resources:
     version: v13.0.0
 
 
+developing: false
+
+
 main_deployment_file: rabbitmq-boshrelease/manifests/cf-rabbitmq-template.yml
 
 

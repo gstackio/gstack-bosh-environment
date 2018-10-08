@@ -1,5 +1,28 @@
 ---
 
+# RabbitMQ service broker tweaks
+
+# This option is actually unused, but we set it anyway to be in line with the
+# job spec documentation.
+- path: /instance_groups/name=rmq-broker/jobs/name=rabbitmq-broker/properties/rabbitmq-broker/rabbitmq/ssl?
+  type: replace
+  value: true
+
+
+
+# RabbitMQ smoke tests tweaks
+
+# This must be set to true because the 'rabbitmq-server.ssl.enabled' option,
+# when set to 'true' will have the RabbitMQ cluster not accept non-TLS
+# connections.
+- path: /instance_groups/name=rmq-broker/jobs/name=smoke-tests/properties/tls_support?
+  type: replace
+  value: true
+
+
+
+# Certificates tweaks
+
 - path: /instance_groups/name=rmq/jobs/name=rabbitmq-server/properties/rabbitmq-server/ssl?/cacert
   type: replace
   value: ((tls_certificate.ca))
@@ -19,7 +42,7 @@
     - ((rabbitmq-broker-hostname)).((system-domain))
     - rabbitmq.easyfoundry.internal
     - "*.rmq.((network_name)).((deployment_name)).bosh"
-    - "*.rmq-broker.((network_name)).((deployment_name)).bosh"
+    - "*.haproxy.((network_name)).((deployment_name)).bosh"
 
 
 - path: /variables/name=tls_certificate:before

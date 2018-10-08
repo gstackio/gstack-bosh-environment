@@ -1,0 +1,8 @@
+[
+  {
+    "destination": "10.244.0.0/20",
+    "protocol": "tcp",
+    "ports": "5671,5672,1883,8883,61613,61614,15672,15674",
+    "description": "Allow traffic to RabbitMQ"
+  }
+]
