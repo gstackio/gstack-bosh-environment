@@ -32,6 +32,7 @@ function cf_login() {
 function cleanup() {
     cf target -o service-sandbox -s cassandra-smoke-tests
     cf delete cassandra-example-app -r -f
+    cf delete-service cassandra-instance -f
     cf delete-space cassandra-smoke-tests -o service-sandbox -f
     cf delete-org service-sandbox -f
     cf logout
