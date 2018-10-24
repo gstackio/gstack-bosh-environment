@@ -22,7 +22,8 @@ operations_files:
     - operations/use-bpm
   20.local:
     - inject-variables
-    - set-versions
+    - pin-stemcell
+    - pin-versions
     - randomize-az-placement
     - routing
     - shield-integration
