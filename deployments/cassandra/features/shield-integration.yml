@@ -13,16 +13,16 @@
 
 # Tweak example SHIELD job settings
 
-- path: /instance_groups/name=cassandra-seeds/jobs/name=shield-agent/properties/jobs/example-sys-ks_hourly2fs
+- path: /instance_groups/name=cassandra-seeds/jobs/name=shield-agent/properties/jobs/example-usr-ks_hourly2fs
   type: remove
 
-- path: /instance_groups/name=cassandra-seeds/jobs/name=shield-agent/properties/jobs/sys-ks_hourly2fs?
+- path: /instance_groups/name=cassandra-seeds/jobs/name=shield-agent/properties/jobs/usr-ks_hourly2fs?
   type: replace
   value: &shield_cassandra_job
-    name: (deployment)/(name)-(index)/system-keyspace
+    name: (deployment)/(name)-(index)/user-keyspaces
     schedule: hourly-30
-    target: (deployment)/(name)-(index)/system-keyspace
-    store: test-fs-store
+    target: (deployment)/(name)-(index)/user-keyspaces
+    store: minio-main
     retention: week
 
 - path: /instance_groups/name=cassandra-seeds/jobs/name=shield-agent/properties/stores
@@ -30,10 +30,10 @@
 
 
 
-- path: /instance_groups/name=cassandra-servers/jobs/name=shield-agent/properties/jobs/example-sys-ks_hourly2fs
+- path: /instance_groups/name=cassandra-servers/jobs/name=shield-agent/properties/jobs/example-usr-ks_hourly2fs
   type: remove
 
-- path: /instance_groups/name=cassandra-servers/jobs/name=shield-agent/properties/jobs/sys-ks_hourly2fs?
+- path: /instance_groups/name=cassandra-servers/jobs/name=shield-agent/properties/jobs/usr-ks_hourly2fs?
   type: replace
   value: *shield_cassandra_job
 

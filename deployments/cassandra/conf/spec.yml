@@ -8,7 +8,7 @@ input_resources:
   - name: cassandra-deployment
     type: git
     uri: https://github.com/orange-cloudfoundry/cassandra-deployment.git
-    version: "0100038" # v8 with improvements, as of Sept 28th, 2018
+    version: "f9ae7bc" # v8 with improvements, as of Oct 24th, 2018
 
 
 main_deployment_file: cassandra-deployment/cassandra.yml
@@ -19,6 +19,7 @@ operations_files:
     - operations/bosh-lite
     - operations/cf-service-broker
     - operations/shield-v7-agent
+    - operations/shield-v7-purge-archives
     - operations/use-bpm
   20.local:
     - inject-variables
