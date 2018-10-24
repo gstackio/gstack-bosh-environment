@@ -11,7 +11,7 @@ set -ex
 
 developing=false
 dev_release_name=shield
-base_version=7.0.5
+base_version=7.0.7
 
 if [[ $developing == true ]]; then
     rsc_name=$(spec_var /input_resources/0/name)

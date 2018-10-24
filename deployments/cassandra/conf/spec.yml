@@ -65,8 +65,8 @@ deployment_vars:
   broker_registrar_version: "3.4.0"
   broker_registrar_sha1: d44d9af8fd06ecf6d50004c9bfd5516a6e482201
 
-  shield_version: "7.0.5"
-  shield_sha1: 73b00d982a262923209cde0812b8f4d87c4cf642
+  # shield_version:   # imported below
+  # shield_sha1:      # imported below
 
   # routing_version:  # imported below
   # routing_sha1:     # imported below
@@ -131,3 +131,11 @@ imported_vars:
       - name: shield_deployment_name
         from: depl-vars
         path: /deployment_name
+
+      - name: shield_version
+        from: depl-vars
+        path: /shield_version
+
+      - name: shield_sha1
+        from: depl-vars
+        path: /shield_sha1
