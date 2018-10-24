@@ -70,11 +70,11 @@ deployment_vars:
   # docker_version: "32.0.0"
   # docker_sha1: 75a3e4f85f8d1a59b58c6b34cf568f72397b5680
 
-  bpm_version: "0.6.0"
-  bpm_sha1: 4f0f239abdc801d71de9063625aa56e3c42634b5
-
   broker_registrar_version: "3.4.0"
   broker_registrar_sha1: d44d9af8fd06ecf6d50004c9bfd5516a6e482201
+
+  # bpm_version:      # imported below
+  # bpm_sha1:         # imported below
 
   # routing_version:  # imported below
   # routing_sha1:     # imported below
@@ -97,6 +97,13 @@ deployment_vars:
 imported_vars:
   - subsys: cf
     imports:
+
+      - name: bpm_version
+        from: depl-vars
+        path: /bpm_version
+      - name: bpm_sha1
+        from: depl-vars
+        path: /bpm_sha1
 
       - name: routing_version
         from: depl-vars

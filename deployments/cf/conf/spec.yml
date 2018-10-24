@@ -99,6 +99,9 @@ deployment_vars:
 
   # Reference declarations
 
+  bpm_version: "0.6.0"
+  bpm_sha1: 4f0f239abdc801d71de9063625aa56e3c42634b5
+
   routing_version: "0.179.0"
   routing_sha1: 203061d0438ed76f25573080f9d1f73f06de5851
 

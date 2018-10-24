@@ -41,8 +41,8 @@ deployment_vars:
   redis_release_version: "434.0.22"
   redis_release_sha1: 68150f534f23826b4985ed87a8b236e58a2e9f16
 
-  bpm_version: "0.6.0"
-  bpm_sha1: 4f0f239abdc801d71de9063625aa56e3c42634b5
+  # bpm_version:      # imported below
+  # bpm_sha1:         # imported below
 
   # shield_version:   # imported below
   # shield_sha1:      # imported below
@@ -79,6 +79,13 @@ deployment_vars:
 imported_vars:
   - subsys: cf
     imports:
+
+      - name: bpm_version
+        from: depl-vars
+        path: /bpm_version
+      - name: bpm_sha1
+        from: depl-vars
+        path: /bpm_sha1
 
       - name: routing_version
         from: depl-vars
