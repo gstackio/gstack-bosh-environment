@@ -8,7 +8,7 @@ input_resources:
   - name: gk-shield-boshrelease
     type: git
     uri: https://github.com/gstackio/gk-shield-boshrelease.git
-    version: v7.0.7
+    version: v7.0.8
 
 
 main_deployment_file: gk-shield-boshrelease/manifests/shield.yml
@@ -36,8 +36,8 @@ deployment_vars:
 
   # Versions
 
-  shield_version: "7.0.7"
-  shield_sha1: fe662b4e99257133c505afe157d423492c5b5d1e
+  shield_version: "7.0.8"
+  shield_sha1: 4c6556f502ac84a95b5d25459b1764e245241b60
 
   # minio_version:    # imported below
   # minio_sha1:       # imported below
