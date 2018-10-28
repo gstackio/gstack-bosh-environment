@@ -58,7 +58,6 @@ operations_files:
     - virtualbox/remote
 
     - bosh-lite
-    - bosh-lite-runc
     - jumpbox-user
     - external-ip-not-recommended
     - uaa

@@ -31,8 +31,6 @@ operations_files:
     - virtualbox/cpi
     - virtualbox/remote
     - bosh-lite
-    - bosh-lite-runc
-    - bosh-lite-grootfs
     - experimental/blobstore-https
     - experimental/blobstore-https-bosh-lite
     - jumpbox-user

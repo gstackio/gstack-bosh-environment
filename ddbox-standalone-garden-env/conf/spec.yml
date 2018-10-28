@@ -26,8 +26,6 @@ operations_files:
     - virtualbox/cpi
     - virtualbox/remote
     - bosh-lite
-    - bosh-lite-runc
-    - bosh-lite-grootfs
     - jumpbox-user
   30.local:
     - keep-bosh-agent

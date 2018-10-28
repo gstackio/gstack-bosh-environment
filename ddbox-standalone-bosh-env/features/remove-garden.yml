@@ -11,9 +11,6 @@
 - path: /releases/name=garden-runc
   type: remove
 
-- path: /releases/name=grootfs
-  type: remove
-
 - path: /instance_groups/name=bosh/jobs/name=nats
   type: remove
 
@@ -23,15 +20,8 @@
 - path: /instance_groups/name=bosh/jobs/name=garden
   type: remove
 
-- path: /instance_groups/name=bosh/jobs/name=grootfs
-  type: remove
-
 
 - path: /instance_groups/name=bosh/properties/warden_cpi
-  type: remove
-# FIXME: submit fix in bosh-lite-runc.yml ops file for this leftover from
-# main bosh-lite.yml ops file
-- path: /instance_groups/name=bosh/properties/garden
   type: remove
 
 

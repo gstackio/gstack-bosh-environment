@@ -36,13 +36,6 @@
   type: remove
 - path: /instance_groups/name=bosh/properties/postgres
   type: remove
-# Garden and Groot jobs are not configured on the instance group level, but
-# rather at the job level, which implies all properties at any other levels
-# are ignored.
-# FIXME: submit fix in bosh-lite-runc.yml ops file for this leftover from
-# main bosh-lite.yml ops file
-- path: /instance_groups/name=bosh/properties/garden
-  type: remove
 
 # The BPM job need some empty hash of properties otherwise the BOSH ERB
 # Renderer script fails with a "no implicit conversion of nil into Hash"

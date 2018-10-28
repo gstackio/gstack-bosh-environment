@@ -33,7 +33,6 @@ operations_files:
     - gcp/cpi
     - gcp/bosh-lite-vm-type
     - bosh-lite
-    - bosh-lite-runc
     - jumpbox-user
     - external-ip-not-recommended
     - uaa
