@@ -7,7 +7,7 @@ input_resources:
   - name: bosh-deployment
     type: git
     uri: https://github.com/cloudfoundry/bosh-deployment.git
-    version: v1.0.0 # BOSH v266.4 (as of June 22nd, 2018)
+    version: "28deae6" # BOSH v268.2.0 (as of Oct 26nd, 2018)
   - name: prometheus-boshrelease
     type: git
     uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
@@ -111,13 +111,16 @@ deployment_vars:
   internal_cidr: 192.168.50.0/24
   # outbound_network_name: NatNetwork # Related to 'virtualbox/outbound-network' above
 
-  bosh_precompiled_version: "266.4.0"
-  bosh_precompiled_url: https://s3.amazonaws.com/bosh-compiled-release-tarballs/bosh-266.4.0-ubuntu-trusty-3586.24-20180621-165809-30266228-20180621165813.tgz?versionId=inkSsUYxrlYaflh19kcwA7kYkF3eAHLh
-  bosh_precompiled_sha1: 79ba3bdc160faff121e56ee5fd5f618ea48023ce
 
-  stemcell_name: bosh-vsphere-esxi-ubuntu-trusty-go_agent
-  stemcell_version: "3586.43"
-  stemcell_sha1: 9a79aa8c443597a2cb6f4bdeef020f01e558a044
+  # Versions
+
+  bosh_precompiled_version: "268.2.0"
+  bosh_precompiled_url: https://s3.amazonaws.com/bosh-compiled-release-tarballs/bosh-268.2.0-ubuntu-xenial-97.28-20181024-210824-586102372-20181024210828.tgz
+  bosh_precompiled_sha1: 3107ba41a109561cf181862ac59aa1e82ab0b286
+
+  stemcell_name: bosh-vsphere-esxi-ubuntu-xenial-go_agent
+  stemcell_version: "97.28"
+  stemcell_sha1: 6fca8124ae7455bd95ebb074ddb0436bf1832fb1
 
 
 imported_vars: []

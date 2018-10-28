@@ -7,7 +7,7 @@ input_resources:
   - name: bosh-deployment
     type: git
     uri: https://github.com/cloudfoundry/bosh-deployment.git
-    version: v1.0.0 # BOSH v266.4 (as of June 22nd, 2018)
+    version: "28deae6" # BOSH v268.2.0 (as of Oct 26nd, 2018)
   - name: prometheus-boshrelease
     type: git
     uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
@@ -63,25 +63,25 @@ deployment_vars:
   ## When the release is available on the `bosh-compiled-release-tarballs` S3
   ## bucket, use the 'custom-bosh-version-precompiled' operation file with these
   ## settings:
-  bosh_precompiled_version: "266.4.0"
-  bosh_precompiled_url: https://s3.amazonaws.com/bosh-compiled-release-tarballs/bosh-266.4.0-ubuntu-trusty-3586.24-20180621-165809-30266228-20180621165813.tgz?versionId=inkSsUYxrlYaflh19kcwA7kYkF3eAHLh
-  bosh_precompiled_sha1: 79ba3bdc160faff121e56ee5fd5f618ea48023ce
+  bosh_precompiled_version: "268.2.0"
+  bosh_precompiled_url: https://s3.amazonaws.com/bosh-compiled-release-tarballs/bosh-268.2.0-ubuntu-xenial-97.28-20181024-210824-586102372-20181024210828.tgz
+  bosh_precompiled_sha1: 3107ba41a109561cf181862ac59aa1e82ab0b286
 
   ## When the release is not available yet on the `bosh-compiled-release-tarballs`
   ## S3 bucket, use the 'custom-bosh-version' operation file instead, with these
   ## settings:
-  # bosh_version: "266.4.0"
-  # bosh_sha1: "dc0accf852839e16f17c4a88a8dc1213c79564b9"
+  # bosh_version: "268.2.0"
+  # bosh_sha1: 5b18a671401f5bc001b216b74e7d03307cfbbe7a
 
   ## When the release is not available yet on the `bosh-compiled-release-tarballs`
   ## S3 bucket, and you have a compiled release in your cache:
-  # bosh_precompiled_version: "266.4.0"
-  # bosh_precompiled_url: file://../../.cache/compiled-releases/bosh-266.4.0-ubuntu-trusty-3586.24-20180622-211303-173868826-20171204211307.tgz
-  # bosh_precompiled_sha1: "12f50c6d196a80d1a31eedb34ba1a1acd6904b56"
+  # bosh_precompiled_version: "268.2.0"
+  # bosh_precompiled_url: file://../../.cache/compiled-releases/bosh-268.2.0-ubuntu-xenial-97.28-20181028-211303-173868826-20171204211307.tgz
+  # bosh_precompiled_sha1: 12f50c6d196a80d1a31eedb34ba1a1acd6904b56
 
-  stemcell_name: bosh-google-kvm-ubuntu-trusty-go_agent
-  stemcell_version: "3586.43"
-  stemcell_sha1: 7932531371f336a2a5608f64cc257190930df1d7 # this is a Google KVM Light stemcell, actually
+  stemcell_name: bosh-google-kvm-ubuntu-xenial-go_agent
+  stemcell_version: "97.28"
+  stemcell_sha1: 2c6641a8e294bef27cd0c643e51c74ba636d2540 # this is a Google KVM Light stemcell, actually
 
 
 imported_vars: []
