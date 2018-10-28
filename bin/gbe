@@ -222,7 +222,7 @@ function up_usage() {
     local ul=$UNDERLINE
     local noul=$NOUNDERLINE
     echo "Usage:"
-    echo "  $ul$SCRIPT_NAME$noul  ${ul}up$noul"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}up$noul  [--recreate]"
     echo
     echo "Creates or converges the BOSH environment VM with 'bosh create-env'."
     echo
@@ -236,6 +236,10 @@ function up_usage() {
     echo "Any previously trusted SSH key (from the '~/.ssh/known_hosts') is replaced"
     echo "before the tunnel is started, in case it has changed, to avoid connection"
     echo "issues or hassle."
+    echo
+    echo "    --recreate"
+    echo "        Recreate the BOSH environment base VM, even if there is no change"
+    echo "        in its deployment manifest."
     echo
 }
 
@@ -710,7 +714,7 @@ function gbe_up() {
     assert_utilities ruby "to render ERB templates locally"
 
     SUBSYS_DIR=$BASE_DIR/$GBE_ENVIRONMENT
-    create_env
+    create_env "$@"
 
     if [[ -f ~/.ssh/known_hosts ]]; then
         ssh-keygen -f ~/.ssh/known_hosts -R "$(jumpbox_ip)"
@@ -779,7 +783,7 @@ function create_env() {
         export BOSH_LOG_LEVEL=DEBUG
         export BOSH_LOG_PATH=$env_state_dir/bosh-create-env.log
     fi
-    infra_bosh_rw_invoke create-env
+    infra_bosh_rw_invoke create-env "$@"
 
 
     post_create_env_hook
@@ -883,10 +887,17 @@ case $1 in
         ;;
     up)
         shift
-        if [[ $1 == "-h" ]]; then
-            up_usage; exit 0
-        fi
-        gbe_up ;;
+        do_recreate=
+        while [[ -n $1 ]]; do
+            case $1 in
+                -h)         up_usage; exit 0 ;;
+                --recreate) do_recreate=yes ;;
+                *)          up_usage; exit 2 ;;
+            esac
+            shift
+        done
+        gbe_up ${do_recreate:+"--recreate"}
+        ;;
     alias)
         alias_env ;;
     ip)
