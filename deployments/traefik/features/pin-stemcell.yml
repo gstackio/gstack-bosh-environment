@@ -1,6 +1,8 @@
 ---
 
-# Stemcell version
+- path: /stemcells/alias=default/os
+  type: replace
+  value: ((stemcell_os))
 
 - path: /stemcells/alias=default/version
   type: replace

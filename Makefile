@@ -1,9 +1,19 @@
 
 VERB?=converge
 
-all: concourse prometheus logsearch shield-v8 cassandra data-services mysql neo4j postgres rabbitmq redis
+all: cloud-config runtime-config concourse prometheus logsearch shield-v8 cassandra data-services mysql neo4j postgres rabbitmq redis
 
-all-in-order: traefik cf concourse prometheus logsearch minio scality shield-v7 shield-v8 cassandra data-services mysql neo4j postgres rabbitmq redis
+all-depls-in-order: traefik cf concourse prometheus logsearch minio scality shield-v7 shield-v8 cassandra data-services mysql neo4j postgres rabbitmq redis
+
+
+
+cloud-config:
+	gbe update -y $@
+
+runtime-config:
+	gbe update -y $@
+
+
 
 traefik:
 	gbe $(VERB) -y $@
