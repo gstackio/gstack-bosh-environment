@@ -8,7 +8,7 @@ input_resources:
   - name: cf-deployment
     type: git
     uri: https://github.com/cloudfoundry/cf-deployment.git
-    version: v1.40.0
+    version: v5.4.0
   - name: prometheus-boshrelease
     type: git
     uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
@@ -20,48 +20,70 @@ main_deployment_file: cf-deployment/cf-deployment.yml
 operations_files:
   10.cf-deployment:
     - operations/use-compiled-releases
-    - operations/secure-rep-admin-api
     - operations/bosh-lite
-    - operations/rename-deployment
-    - operations/rename-network
-    - operations/override-app-domains
-
+    # operations/stop-skipping-tls-validation # to be enabled when using produciton certs
+    - operations/rename-network-and-deployment
+    - operations/enable-service-discovery
+    - operations/override-app-domains # must appear after 'enable-service-discovery'
     - operations/backup-and-restore/enable-backup-restore
+    - operations/bits-service/use-bits-service
 
-    # - operations/experimental/bits-service
-    # - operations/experimental/bits-service-local
+    - operations/use-pxc
+    # - operations/migrate-cf-mysql-to-pxc
+    # - operations/use-pxc-for-nfs-volume-service
 
-    # - operations/experimental/disable-consul
-    # - operations/experimental/disable-consul-bosh-lite
-
-    # - operations/experimental/routing-integrity
-    # - operations/experimental/enable-prefer-declarative-healthchecks
-
-    # - operations/experimental/use-bosh-dns-rename-network-and-deployment
-
-    - operations/experimental/use-silk-release # This is Silk v1, whereas cf-networking v2 comes with Silk v2
-    # - operations/experimental/use-cf-networking-2
-    # - operations/experimental/use-bosh-dns-for-containers-with-networking-2
-    # - operations/experimental/enable-iptables-logger-with-networking-2
-
-    # - operations/experimental/perm-service
-
-    - operations/experimental/enable-service-discovery
-
-    # - operations/experimental/secure-service-credentials
-    # - operations/experimental/enable-backup-restore-credhub
-
-    # - operations/experimental/rootless-containers
-
-    # - operations/experimental/enable-mysql-tls.yml
+    # - operations/use-external-blobstore
 
     # - operations/enable-nfs-volume-service
+    # - operations/experimental/enable-nfs-volume-service-credhub
     # - operations/enable-nfs-ldap
-    # - operations/experimental/enable-nfs-broker-backup
+    # - operations/backup-and-restore/enable-backup-restore-nfs-broker
 
-    # - operations/experimental/use-pxc
-    # - operations/experimental/migrate-cf-mysql-to-pxc
+
+    # # Add 'cc_deployment_updater' job to 'scheduler' vm, which enables zero
+    # # downtime app deployments.
+    # - operations/experimental/add-deployment-updater
+
+    # # Add the cflinuxfs3 stack and buildpacks.
+    # - operations/experimental/add-cflinuxfs3
+
+    # # Enables container proxy on the Diego Cell 'rep' and configures gorouter
+    # # to opt into TLS-enabled connections to the backend.
+    # - operations/experimental/enable-routing-integrity
+
+    # # Improve routability in the face of cell presence loss
+    # - operations/experimental/enable-suspect-actual-lrp-generation
+
+    # # Enable rootless garden-runc containers.
+    # - operations/experimental/rootless-containers
+
+    # # Configure Garden to create OCI compatible images.
+    # - operations/experimental/enable-oci-phase-1
+
+    # # Configure Cloud Controller to use Log Cache instead of Traffic
+    # # Controller for app container metrics.
+    # - operations/experimental/use-logcache-for-cloud-controller-app-stats
+
+    # # Enables TLS on the database job, and secures all client database
+    # # connections.
+    # - operations/experimental/enable-mysql-tls
+
+    # - operations/experimental/perm-service # Requires 'enable-mysql-tls'
+    # # - operations/experimental/perm-service-with-tcp-routing
     # - operations/experimental/perm-service-with-pxc-release
+
+
+    # Add the Prometheus node exporter and Loggregator Prom Scraper to addons.
+    # This puts infrastructure metrics into Loggregator's metric stream.
+    # - operations/experimental/infrastructure-metrics
+
+    # Configures the default 'vm_strategy' to be 'create-swap-delete'.
+    # - operations/experimental/use-create-swap-delete-vm-strategy
+
+    # Allows traffic from app containers to internal networks. Required to
+    # allow applications to communicate with the running CredHub in non-
+    # assisted mode.
+    # - operations/experimental/enable-traffic-to-internal-networks.
 
   20.prometheus-boshrelease:
     - manifests/operators/cf/add-prometheus-uaa-clients
@@ -72,9 +94,10 @@ operations_files:
     - set-routing-version
     - expose-admin-user-as-link
     - cassandra-support
-    - database-mysql-bosh-lite
+    - database-pxc-bosh-lite
     - scale-disks
     - tls-from-gorouters-to-backends
+    - missing-network-renames
 
 
 deployment_vars:
@@ -86,6 +109,11 @@ deployment_vars:
   system_domain: sys.easyfoundry.prototyp.it
   app_domains:
     - name: &apps_domain apps.easyfoundry.prototyp.it
+    # NOTE: the 'apps.internal' domain below is normally brought by
+    # 'operations/enable-service-discovery', but is actually overridden by
+    # 'operations/override-app-domains'.
+    - name: apps.internal
+      internal: true
   smoke_test_app_domain: *apps_domain
 
 
@@ -99,17 +127,17 @@ deployment_vars:
 
   # Reference declarations
 
-  bpm_version: "0.6.0"
-  bpm_sha1: 4f0f239abdc801d71de9063625aa56e3c42634b5
+  bpm_version: "0.13.0"
+  bpm_sha1: 4b6ebfdaa467c04855528172b099e565d679e0f5
 
-  routing_version: "0.179.0"
-  routing_sha1: 203061d0438ed76f25573080f9d1f73f06de5851
+  routing_version: "0.182.0"
+  routing_sha1: 6e341a527a0dd2c920b54dea82156ae9bc0b29eb
 
-  cf_mysql_version: "36.14.0"
-  cf_mysql_sha1: 383f70fd4d776bf91d9043d8fd9ad79516cc8478
+  cf_mysql_version: "36.15.0"
+  cf_mysql_sha1: 0764d9d6aae7cefd10019437ed83e7715e614633
 
-  uaa_version: "59"
-  uaa_sha1: 6aa5cd78892f4ea09070c0cf5155aa7a12c17d13
+  uaa_version: "63.0"
+  uaa_sha1: 1ad8813665e94d2a3defda3304083af57c151541
 
   network_name: default # injected in cloud-config
 

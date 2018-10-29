@@ -1,9 +1,5 @@
 ---
 
-- path: /instance_groups/name=consul/persistent_disk_type
-  type: replace
-  value: 100MB
-
 - path: /instance_groups/name=database/persistent_disk_type
   type: replace
   value: 10GB

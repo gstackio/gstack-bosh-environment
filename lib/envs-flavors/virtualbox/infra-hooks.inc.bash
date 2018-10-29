@@ -162,18 +162,24 @@ function setup_firewall_hook() {
         if [[ -n $web_router_ip ]]; then
             internal_net_cidr=$(env_depl_var --required routable_network_cidr)
 
-            set_nat_rule PREROUTING 2 "gbe[f55fc128-6cec-4f38-9303-2e45b0010c76]" \
+            set_nat_rule PREROUTING 2 "gbe[f55fc128-6cec-4f38-9303-2e45b0010c71]" \
                 -i w+ -p tcp -d "$external_ip" --dport 80 \
                 -j DNAT --to-dest "$web_router_ip"
-            set_nat_rule PREROUTING 3 "gbe[f55fc128-6cec-4f38-9303-2e45b0010c77]" \
+            set_nat_rule PREROUTING 3 "gbe[f55fc128-6cec-4f38-9303-2e45b0010c72]" \
                 -i w+ -p tcp -d "$external_ip" --dport 443 \
                 -j DNAT --to-dest "$web_router_ip"
+            set_nat_rule PREROUTING 4 "gbe[f55fc128-6cec-4f38-9303-2e45b0010c73]" \
+                -i w+ -p tcp -d "$external_ip" --dport 2222 \
+                -j DNAT --to-dest "$web_router_ip"
 
-            set_nat_rule POSTROUTING 1 "gbe[f55fc128-6cec-4f38-9303-2e45b0010c78]" \
+            set_nat_rule POSTROUTING 1 "gbe[f55fc128-6cec-4f38-9303-2e45b0010c81]" \
                 -o w+ -p tcp -s "$internal_net_cidr" -d "$web_router_ip" --dport 80 \
                 -j MASQUERADE
-            set_nat_rule POSTROUTING 2 "gbe[f55fc128-6cec-4f38-9303-2e45b0010c79]" \
+            set_nat_rule POSTROUTING 2 "gbe[f55fc128-6cec-4f38-9303-2e45b0010c82]" \
                 -o w+ -p tcp -s "$internal_net_cidr" -d "$web_router_ip" --dport 443 \
+                -j MASQUERADE
+            set_nat_rule POSTROUTING 3 "gbe[f55fc128-6cec-4f38-9303-2e45b0010c83]" \
+                -o w+ -p tcp -s "$internal_net_cidr" -d "$web_router_ip" --dport 2222 \
                 -j MASQUERADE
         fi
         return
