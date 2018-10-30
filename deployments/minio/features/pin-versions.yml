@@ -7,7 +7,3 @@
     version: ((minio_version))
     url: https://bosh.io/d/github.com/minio/minio-boshrelease?v=((minio_version))
     sha1: ((minio_sha1))
-
-- path: /stemcells/alias=default/version
-  type: replace
-  value: ((stemcell_version))

@@ -1,11 +1,7 @@
 ---
 
-- path: /name
-  type: replace
-  value: ((deployment_name))
 
-
-# Stemcell and Releases versions
+# Releases versions
 
 - path: /releases/name=logsearch
   type: replace
@@ -24,8 +20,3 @@
     # url: https://bosh.io/d/github.com/cloudfoundry-community/logsearch-for-cloudfoundry?v=((logsearch_for_cloudfoundry_version))
     url: https://github.com/cloudfoundry-community/logsearch-for-cloudfoundry/releases/download/v((logsearch_for_cloudfoundry_version))/logsearch-for-cloudfoundry-((logsearch_for_cloudfoundry_version)).tgz
     sha1: ((logsearch_for_cloudfoundry_sha1))
-
-
-- path: /stemcells/alias=default/version
-  type: replace
-  value: ((stemcell_version))

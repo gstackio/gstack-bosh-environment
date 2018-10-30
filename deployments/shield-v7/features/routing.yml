@@ -1,0 +1,34 @@
+---
+
+- path: /releases/name=routing?
+  type: replace
+  value:
+    name: routing
+    version: ((routing_version))
+    url: https://bosh.io/d/github.com/cloudfoundry-incubator/cf-routing-release?v=((routing_version))
+    sha1: ((routing_sha1))
+
+- type: replace
+  path: /instance_groups/name=shield/jobs/name=route_registrar?
+  value:
+    name: route_registrar
+    release: routing
+    consumes:
+      nats:
+        from: nats
+        deployment: ((cf_deployment_name))
+    properties:
+      route_registrar:
+        routes:
+        - name: ((deployment_name))
+          tls_port: ((shield_port))
+          server_cert_domain_san: ((shield_domain))
+          registration_interval: 20s
+          uris: [ ((shield_domain)) ]
+
+
+# Add missing alternative name for SHIELD node IP address in TLS certificate
+
+- path: /variables/name=shield-tls/options/alternative_names/-
+  type: replace
+  value: <%= shield.instance.address %>

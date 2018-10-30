@@ -1,6 +1,6 @@
 ---
 
-# Stemcell and Releases versions
+# Releases versions
 
 - path: /releases/name=shield
   type: replace
@@ -10,8 +10,3 @@
     # url: https://github.com/starkandwayne/shield-boshrelease/releases/download/v((shield_version))/shield-((shield_version)).tgz
     url: https://github.com/gstackio/gk-shield-boshrelease/releases/download/v((shield_version))/shield-((shield_version)).tgz
     sha1: ((shield_sha1))
-
-
-- path: /stemcells/alias=default/version
-  type: replace
-  value: ((stemcell_version))

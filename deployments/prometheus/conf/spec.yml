@@ -44,6 +44,8 @@ operations_files:
     # If migration from Prometheus v1 is required
     # - manifests/operators/migrations/migrate_from_prometheus_1
   20.local:
+    - rename-deployment
+    - pin-stemcell
     - set-versions
     # - expose-ports
     - customize-routing

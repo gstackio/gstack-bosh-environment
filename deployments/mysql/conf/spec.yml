@@ -21,6 +21,7 @@ operations_files:
     - operations/register-proxy-route
   20.local:
     - rename-deployment
+    - pin-stemcell
     - set-versions
     - customize-service
     - scale-disks

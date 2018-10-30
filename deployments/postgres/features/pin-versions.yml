@@ -33,11 +33,3 @@
 #     version: ((cf_containers_broker_version))
 #     url: https://github.com/cloudfoundry-community/cf-containers-broker-boshrelease/releases/download/v((cf_containers_broker_version))/cf-containers-broker-((cf_containers_broker_version)).tgz
 #     sha1: ((cf_containers_broker_sha1))
-
-
-
-# Pin Stemcell version
-
-- path: /stemcells/alias=default/version
-  type: replace
-  value: ((stemcell_version))

@@ -1,0 +1,13 @@
+---
+
+- path: /name
+  type: replace
+  value: ((deployment_name))
+
+- path: /instance_groups/name=shield/networks/name=default/name
+  type: replace
+  value: ((network_name))
+
+- path: /variables/name=shield-tls/options/alternative_names/1
+  type: replace
+  value: "*.shield.((network_name)).((deployment_name)).bosh"

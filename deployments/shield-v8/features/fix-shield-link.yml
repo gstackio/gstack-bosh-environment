@@ -1,0 +1,11 @@
+---
+
+# Workaround for SHIELD core not exposing the correct IP in its 'shield' link
+- path: /instance_groups/name=shield/jobs/name=shield-agent/consumes/shield?
+  type: replace
+  value:
+    instances:
+      - address: ((shield_internal_hostname)) # 10.244.204.61
+    properties:
+      domain: ((shield_internal_hostname)) # 10.244.204.61
+      port: ((shield_port))

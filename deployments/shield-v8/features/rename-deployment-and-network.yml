@@ -1,0 +1,18 @@
+---
+
+- path: /name
+  type: replace
+  value: ((deployment_name))
+
+- path: /instance_groups/name=shield/networks/name=default
+  type: replace
+  value:
+    name: ((network_name))
+
+- path: /variables/name=shield-tls/options/alternative_names/-
+  type: replace
+  value: "*.shield.((network_name)).((deployment_name)).bosh"
+
+- path: /variables/name=vault-tls/options/alternative_names/-
+  type: replace
+  value: "*.vault.((network_name)).((deployment_name)).bosh"

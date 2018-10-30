@@ -1,0 +1,7 @@
+---
+
+- path: /releases/name=cf-rabbitmq?
+  type: replace
+  value:
+    name: cf-rabbitmq
+    version: latest

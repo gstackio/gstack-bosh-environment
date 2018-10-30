@@ -1,0 +1,9 @@
+---
+
+- path: /instance_groups/name=shield/jobs/name=core/properties/domain
+  type: replace
+  value: ((shield_domain))
+
+- path: /variables/name=shield-tls/options/alternative_names/-
+  type: replace
+  value: ((shield_domain))

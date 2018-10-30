@@ -1,11 +1,7 @@
 ---
 
-- path: /name
-  type: replace
-  value: ((deployment_name))
 
-
-# Stemcell and Releases versions
+# Releases versions
 
 - path: /releases/name=docker
   type: replace
@@ -46,8 +42,3 @@
     version: ((bpm_version))
     url: https://bosh.io/d/github.com/cloudfoundry-incubator/bpm-release?v=((bpm_version))
     sha1: ((bpm_sha1))
-
-
-- path: /stemcells/alias=trusty/version
-  type: replace
-  value: ((stemcell_version))

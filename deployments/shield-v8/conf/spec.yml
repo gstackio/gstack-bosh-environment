@@ -15,10 +15,16 @@ main_deployment_file: shield-boshrelease-v8/manifests/shield.yml
 
 operations_files:
   10.local:
-    - inject-variables
+    - remove-static-ip # must appear before renaming network
+    - rename-deployment-and-network
+    - pin-stemcell
     - pin-versions
+    - set-domain-name
+    - set-tls-port
     # - routing # TLS routing doesn't support self-signed certificates yet
     - expose-ports
+    - set-gui-color
+    - fix-shield-link
     - scale-disks
 
 

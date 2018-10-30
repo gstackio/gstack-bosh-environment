@@ -1,0 +1,5 @@
+---
+
+- path: /instance_groups/name=shield/jobs/name=core/properties/core?/color
+  type: replace
+  value: ((shield_color))

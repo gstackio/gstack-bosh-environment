@@ -31,6 +31,7 @@ operations_files:
   20.local:
     - rename-deployment
     - rename-network
+    - pin-stemcell
     - set-versions
     - fix-missing-variables
     - scale-for-bosh-lite

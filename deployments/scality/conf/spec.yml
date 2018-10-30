@@ -12,6 +12,9 @@ main_deployment_file: ./conf/scality-docker-deployment.yml
 
 operations_files:
   10.local:
+    - rename-deployment
+    - rename-network
+    - pin-stemcell
     - pin-versions
 
 

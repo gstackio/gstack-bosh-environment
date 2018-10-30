@@ -1,5 +1,9 @@
 ---
 
+- path: /stemcells/alias=trusty/os
+  type: replace
+  value: ((stemcell_os))
+
 - path: /stemcells/alias=trusty/version
   type: replace
   value: ((stemcell_version))

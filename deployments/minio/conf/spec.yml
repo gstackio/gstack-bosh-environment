@@ -17,6 +17,7 @@ operations_files:
   10.local:
     - rename-deployment
     - rename-network
+    - pin-stemcell
     - pin-versions
     - customize-access-creds
     - enable-tls

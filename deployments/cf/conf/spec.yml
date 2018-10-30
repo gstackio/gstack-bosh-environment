@@ -89,14 +89,14 @@ operations_files:
     - manifests/operators/cf/add-prometheus-uaa-clients
     - manifests/operators/cf/add-grafana-uaa-clients
   30.local:
-    - set-stemcell-version
+    - pin-stemcell
     # - set-mysql-version
     - set-routing-version
     - expose-admin-user-as-link
     - cassandra-support
     - database-pxc-bosh-lite
     - scale-disks
-    - tls-from-gorouters-to-backends
+    # - tls-from-gorouters-to-backends
     - missing-network-renames
 
 

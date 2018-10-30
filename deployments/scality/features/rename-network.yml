@@ -1,0 +1,5 @@
+---
+
+- path: /instance_groups/name=s3server/networks/name=default/name
+  type: replace
+  value: ((network_name))

@@ -19,6 +19,7 @@ operations_files:
   10.local:
     - rename-deployment
     - rename-network
+    - pin-stemcell
     - pin-versions
     - scale-disks
     - add-broker-registrar

@@ -18,7 +18,7 @@ operations_files:
     - cluster/operations/worker-ephemeral-disk
     - cluster/operations/static-web
   20.local:
-    - pin-stemcell-version
+    - pin-stemcell
     - set-log-level
     - basic-auth-with-vars       # replaces 'cluster/operations/basic-auth'
     # We still have an issue with this encryption key and the bosh v2.0.45 CLI
@@ -61,6 +61,8 @@ deployment_vars:
 
   # routing_version:  # imported below
   # routing_sha1:     # imported below
+  routing_version: "0.179.0"
+  routing_sha1: 203061d0438ed76f25573080f9d1f73f06de5851
 
   # stemcell_os:      # imported below
   # stemcell_version: # imported below
@@ -103,12 +105,12 @@ imported_vars:
         from: depl-vars
         path: /stemcell_sha1
 
-      - name: routing_version
-        from: depl-vars
-        path: /routing_version
-      - name: routing_sha1
-        from: depl-vars
-        path: /routing_sha1
+      # - name: routing_version
+      #   from: depl-vars
+      #   path: /routing_version
+      # - name: routing_sha1
+      #   from: depl-vars
+      #   path: /routing_sha1
 
       - name: uaa_version
         from: depl-vars

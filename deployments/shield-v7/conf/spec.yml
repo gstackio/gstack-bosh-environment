@@ -15,8 +15,12 @@ main_deployment_file: gk-shield-boshrelease/manifests/shield.yml
 
 operations_files:
   10.local:
-    - inject-variables
+    - rename-deployment-and-network
+    - pin-stemcell
     - set-versions
+    - set-domain-name
+    - set-tls-port
+    # - routing
     - expose-ports
     - scale-disks
     - shield-config

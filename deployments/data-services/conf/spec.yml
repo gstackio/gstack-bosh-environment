@@ -31,6 +31,8 @@ operations_files:
   15.broker-registrar-boshrelease:
     - manifests/operators/cf-admin-user
   20.local:
+    - rename-deployment
+    - pin-stemcell
     - set-versions
     - scale-disks
     - inject-variables # must be after 'use-cf-admin-user-link'

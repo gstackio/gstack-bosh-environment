@@ -1,5 +1,5 @@
 ---
-name: ((deployment_name))
+name: scality
 
 instance_groups:
   - name: s3server
@@ -53,9 +53,9 @@ instance_groups:
         #   tls_key: "((docker-tls.private_key))"
     persistent_disk_type: 10GB
     vm_type: default
-    stemcell: trusty
+    stemcell: default
     networks:
-      - name: ((network_name))
+      - name: default
 
 variables:
   - name: custom_account_secret_access_key
@@ -88,6 +88,6 @@ releases:
     version: latest
 
 stemcells:
-  - alias: trusty
-    os: ubuntu-trusty
+  - alias: default
+    os: ubuntu-xenial
     version: latest

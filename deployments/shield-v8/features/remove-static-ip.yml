@@ -1,0 +1,7 @@
+---
+
+- path: /instance_groups/name=shield/networks/name=default/static_ips
+  type: remove
+
+- path: /variables/name=shield-tls/options/alternative_names/1
+  type: remove # remove reference to ((static_ip))
