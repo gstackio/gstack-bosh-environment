@@ -11,7 +11,7 @@ input_resources:
   # - name: node-exporter-boshrelease
   #   type: git
   #   uri: https://github.com/bosh-prometheus/node-exporter-boshrelease.git
-  #   version: v3.0.1
+  #   version: v4.0.1
 
 
 main_config_file: bosh-deployment/runtime-configs/dns.yml
@@ -35,8 +35,8 @@ config_vars:
   bosh_dns_version: "1.10.0"
   bosh_dns_sha1: d1aadbda5d60c44dec4a429cda872cf64f6d8d0b
 
-  node_exporter_version: "3.0.1"
-  node_exporter_sha1: 9eef05f8290e093d3ddab66596cdff7b64f2021b
+  node_exporter_version: "4.0.1"
+  node_exporter_sha1: ade04174f6eaf14173f204cc46a629fe6cd07c63
 
 
 imported_vars:

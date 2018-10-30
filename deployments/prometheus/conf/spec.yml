@@ -8,7 +8,7 @@ input_resources:
   - name: prometheus-boshrelease
     type: git
     uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
-    version: v23.0.0
+    version: v23.3.0
 
 
 main_deployment_file: prometheus-boshrelease/manifests/prometheus.yml
@@ -68,8 +68,8 @@ deployment_vars:
 
   # Versions
 
-  prometheus_version: "23.0.0"
-  prometheus_sha1: 39618a294031af235c45035aa1d282fe9acf53c0
+  prometheus_version: "23.3.0"
+  prometheus_sha1: 2d6894e4ace6df18fac2f52502977f9774380418
 
   # postgres_version: # imported below
   # postgres_sha1:    # imported below
