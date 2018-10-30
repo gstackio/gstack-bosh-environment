@@ -4,27 +4,42 @@ subsys:
   type: bosh-deployment
 
 input_resources:
-  - name: minio-boshrelease
+  # - name: minio-boshrelease
+  #   type: git
+  #   uri: https://github.com/minio/minio-boshrelease.git
+  #   version: 2d6621d # '2018-10-25T01-27-03Z' release, as of Oct 25th, 2018
+  - name: gk-minio-boshrelease
     type: git
-    uri: https://github.com/minio/minio-boshrelease.git
-    version: b7fb0f8 # '2018-06-08T03-49-38Z' release, as of June 18th, 2018
+    uri: https://github.com/gstackio/minio-boshrelease.git
+    version: vRELEASE.2018-10-30T19-11-26Z # in 'gk-master' as of Oct 30th, 2018
 
 
-main_deployment_file: minio-boshrelease/manifests/manifest-dist-example.yaml
+main_deployment_file: minio-boshrelease/manifests/manifest-dist-example.yml
 
 
 operations_files:
   10.local:
-    - rename-deployment
-    - rename-network
+    - rename-deployment-and-network
     - pin-stemcell
     - pin-versions
     - customize-access-creds
-    - enable-tls
+    - enable-tls # depends on 'rename-deployment-and-network'
+    - custom-dns-alias # depends on 'enable-tls'
     - scale-vms-and-disks
     - randomize-az-placement
     - share-minio-boshlink
-    - remove-default-bucket-seeding # should come last
+    - adjust-startup-timeouts
+
+    # This should come after standard ops files, as those assume that the
+    # 'bucket-seeding' instance group is present.
+    #
+    - remove-default-bucket-seeding
+
+    # When developing the Minio BOSH Release, you can enable this ops file
+    # that will create and upload a new version of the release every time you
+    # converge th 'minio' subsys.
+    #
+    # - develop-minio-release # this must come after 'pin-versions'
 
 
 deployment_vars:
@@ -33,7 +48,7 @@ deployment_vars:
 
   # User-facing settings
 
-  minio_internal_hostname: minio.easyfoundry.internal
+  minio_internal_hostname: minio.easyfoundry.internal # to be renamed 'minio_dns_alias'
   minio_server_accesskey: minio
 
 
@@ -45,8 +60,8 @@ deployment_vars:
 
   # Versions
 
-  minio_version: 2018-06-08T03-49-38Z
-  minio_sha1: 3a5ae84f8b2be9ee640d545c489633e36c0674dd
+  minio_version: RELEASE.2018-10-30T19-11-26Z # version '2018-06-08T03-49-38Z' with fixes
+  minio_sha1: 3aee16c6774910ab55c685566fe0b67387393412
 
   # stemcell_os:      # imported below
   # stemcell_version: # imported below
@@ -73,13 +88,3 @@ imported_vars:
       - name: stemcell_sha1
         from: depl-vars
         path: /stemcell_sha1
-
-  # Plumbery
-
-  - subsys: minio
-    imports:
-      # This "auto-import" is a workaround trick to have variables that use
-      # other deployment variables in their values.
-      - name: dns_alias
-        from: depl-vars
-        value: "minio.((network_name)).((deployment_name)).bosh"

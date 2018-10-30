@@ -1,0 +1,8 @@
+---
+
+- path: /releases/name=minio?
+  type: replace
+  value:
+    name: minio
+    version: create
+    url: file://((BASE_DIR))/.cache/resources/gk-minio-boshrelease

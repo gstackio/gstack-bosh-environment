@@ -12,13 +12,15 @@
   type: replace
   value: ((minio-tls.ca))
 
-- path: /instance_groups/name=minio/jobs/name=minio-server/properties/dns_alias?
-  type: replace
-  value: ((dns_alias))
-
 - path: /instance_groups/name=minio/jobs/name=minio-server/properties/port?
   type: replace
   value: 443
+
+
+
+- path: /features?/use_dns_addresses
+  type: replace
+  value: true
 
 
 
@@ -38,6 +40,6 @@
     type: certificate
     options:
       ca: minio-ca
-      common_name: ((dns_alias))
+      common_name: minio.((network_name)).((deployment_name)).bosh
       alternative_names:
-        - "*.((dns_alias))"
+        - "*.minio.((network_name)).((deployment_name)).bosh"

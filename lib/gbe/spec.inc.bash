@@ -417,6 +417,7 @@ function bosh_ro_invoke() {
     bosh "$verb" "$MAIN_DEPLOYMENT_FILE" \
         "${OPERATIONS_ARGUMENTS[@]}" \
         "${VARS_FILES_ARGUMENTS[@]}" \
+        --var "BASE_DIR=${BASE_DIR}" \
         --vars-file <(imported_vars) \
         --vars-file <(spec_var /deployment_vars) \
         "$@"

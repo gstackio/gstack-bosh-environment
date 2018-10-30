@@ -1,0 +1,13 @@
+---
+
+# Here we adopt a longer timout of 45 seconds instead of the default 30
+# seconds, otherwise we face spurious startup errors because our addons (bosh-
+# dns and node-exporter) seem to slow down the jobs startup.
+
+- path: /update/canary_watch_time
+  type: replace
+  value: 3000-45000
+
+- path: /update/update_watch_time
+  type: replace
+  value: 3000-45000

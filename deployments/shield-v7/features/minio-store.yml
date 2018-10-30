@@ -43,7 +43,8 @@
   value:
     name: minio
     version: ((minio_version))
-    url: https://bosh.io/d/github.com/minio/minio-boshrelease?v=((minio_version))
+    # url: https://bosh.io/d/github.com/minio/minio-boshrelease?v=((minio_version))
+    url: https://github.com/gstackio/minio-boshrelease/releases/download/v((minio_version))/minio-((minio_version)).tgz
     sha1: ((minio_sha1))
 
 - path: /instance_groups/name=shield/jobs/name=mc?
@@ -55,5 +56,5 @@
       minio: { from: minio-link, deployment: ((minio_deployment_name)) }
     properties:
       script: |
-        set -eo pipefail
-        mc mb --ignore-existing myminio/((bucket_name))
+        set -eo pipefail -x
+        mc --config-folder /var/vcap/jobs/mc/config mb --ignore-existing myminio/((bucket_name))

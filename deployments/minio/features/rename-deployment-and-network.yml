@@ -1,5 +1,11 @@
 ---
 
+- path: /name
+  type: replace
+  value: ((deployment_name))
+
+
+
 - path: /instance_groups/name=minio/networks/name=default
   type: replace
   value:

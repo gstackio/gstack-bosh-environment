@@ -1,0 +1,20 @@
+---
+
+# Here we face a chicken-and-egg problem, because the 'ctl' script of the
+# 'minio-server' job is creating the DNS alias _and_ using it for Minio
+# servers to join one another.
+#
+# So, creating an alias in the runtime-config should be favord over setting
+# the 'dns_alias' property below (at least until this is fixed in the Minio
+# BOSH Release). Both ways are producing the exact same result anyway.
+#
+# - path: /instance_groups/name=minio/jobs/name=minio-server/properties/dns_alias?
+#   type: replace
+#   value: ((minio_internal_hostname))
+
+
+# Even considering the above remark about the 'dns_alias' property, adding the
+# DNS alias as a TLS alternative name (below) is still perfectly appropriate.
+- path: /variables/name=minio-tls/options/alternative_names/-
+  type: replace
+  value: ((minio_internal_hostname))
