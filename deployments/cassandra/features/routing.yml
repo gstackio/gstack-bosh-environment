@@ -24,3 +24,14 @@
           port: 8080
           registration_interval: 20s
           uris: [ ((cassandra_domain)) ]
+
+# NOTE: Routing release v0.180.0 and above require BPM to be colocated with
+# the 'route_registrar' job.
+#
+# See: https://github.com/cloudfoundry/routing-release/releases/tag/0.180.0
+#
+- path: /instance_groups/name=cassandra-brokers/jobs/name=bpm?
+  type: replace
+  value:
+    name: bpm
+    release: bpm

@@ -8,7 +8,7 @@ input_resources:
   - name: cassandra-deployment
     type: git
     uri: https://github.com/orange-cloudfoundry/cassandra-deployment.git
-    version: "f9ae7bc" # v8 with improvements, as of Oct 24th, 2018
+    version: "d798cd6" # v8 with improvements, as of Oct 31st, 2018
 
 
 main_deployment_file: cassandra-deployment/cassandra.yml
@@ -25,6 +25,7 @@ operations_files:
     - inject-variables
     - pin-stemcell
     - pin-versions
+    - adjust-startup-timeouts
     - randomize-az-placement
     - routing
     - shield-integration
@@ -76,6 +77,13 @@ deployment_vars:
   # stemcell_version: # imported below
   # stemcell_sha1:    # imported below
 
+  # NOTICE: Xenial stemcells don't ship with any 'python' interpreter, so we
+  # must revert back to a Trusty stemcell.
+  stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+  stemcell_os: ubuntu-trusty
+  stemcell_version: "3586.52"
+  stemcell_sha1: 07a7dad0968b61e10daa613de23465de4af7a02f
+
 
   # Reference declarations
 
@@ -100,15 +108,15 @@ imported_vars:
         from: depl-vars
         path: /routing_sha1
 
-      - name: stemcell_os
-        from: depl-vars
-        path: /stemcell_os
-      - name: stemcell_version
-        from: depl-vars
-        path: /stemcell_version
-      - name: stemcell_sha1
-        from: depl-vars
-        path: /stemcell_sha1
+      # - name: stemcell_os
+      #   from: depl-vars
+      #   path: /stemcell_os
+      # - name: stemcell_version
+      #   from: depl-vars
+      #   path: /stemcell_version
+      # - name: stemcell_sha1
+      #   from: depl-vars
+      #   path: /stemcell_sha1
 
       - name: cf_deployment_name
         from: depl-vars
