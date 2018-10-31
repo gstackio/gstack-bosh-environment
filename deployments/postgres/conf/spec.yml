@@ -86,6 +86,9 @@ deployment_vars:
   broker_registrar_version: "3.4.0"
   broker_registrar_sha1: d44d9af8fd06ecf6d50004c9bfd5516a6e482201
 
+  # bpm_version:  # imported below
+  # bpm_sha1:     # imported below
+
   # routing_version:  # imported below
   # routing_sha1:     # imported below
 
@@ -117,6 +120,13 @@ imported_vars:
       # - name: stemcell_sha1
       #   from: depl-vars
       #   path: /stemcell_sha1
+
+      - name: bpm_version
+        from: depl-vars
+        path: /bpm_version
+      - name: bpm_sha1
+        from: depl-vars
+        path: /bpm_sha1
 
       - name: routing_version
         from: depl-vars
