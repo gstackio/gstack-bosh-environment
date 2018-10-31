@@ -1,6 +1,12 @@
 ---
 
-# Workaround for SHIELD core not exposing the correct IP in its 'shield' link
+# Workaround for SHIELD core not exposing the correct IP in its 'shield' link.
+#
+# This is also due to the ddbox networking topology, that is still not able to
+# route traffic from internal networks through the load balancer public IP and
+# then back to internal networks without some specific iptables rules on the
+# Garden VM.
+#
 - path: /instance_groups/name=shield/jobs/name=shield-agent/consumes/shield?
   type: replace
   value:
