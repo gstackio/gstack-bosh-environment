@@ -43,3 +43,22 @@
     version: ((routing_version))
     url: https://bosh.io/d/github.com/cloudfoundry-incubator/cf-routing-release?v=((routing_version))
     sha1: ((routing_sha1))
+
+# NOTE: Routing release v0.180.0 and above require BPM to be colocated with
+# the 'route_registrar' job.
+#
+# See: https://github.com/cloudfoundry/routing-release/releases/tag/0.180.0
+#
+- path: /instance_groups/name=nginx/jobs/name=bpm?
+  type: replace
+  value:
+    name: bpm
+    release: bpm
+
+- path: /releases/name=bpm?
+  type: replace
+  value:
+    name: bpm
+    version: ((bpm_version))
+    url: https://bosh.io/d/github.com/cloudfoundry-incubator/bpm-release?v=((bpm_version))
+    sha1: ((bpm_sha1))

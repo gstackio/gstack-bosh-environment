@@ -69,10 +69,13 @@ deployment_vars:
   # Versions
 
   prometheus_version: "23.3.0"
-  prometheus_sha1: 2d6894e4ace6df18fac2f52502977f9774380418
+  prometheus_sha1: e60092e845d05e8b0c4643d9b10009fe946be877
 
   # postgres_version: # imported below
   # postgres_sha1:    # imported below
+
+  # bpm_version:  # imported below
+  # bpm_sha1:     # imported below
 
   # routing_version:  # imported below
   # routing_sha1:     # imported below
@@ -106,6 +109,13 @@ imported_vars:
     imports:
 
       # Versions
+
+      - name: bpm_version
+        from: depl-vars
+        path: /bpm_version
+      - name: bpm_sha1
+        from: depl-vars
+        path: /bpm_sha1
 
       - name: routing_version
         from: depl-vars
