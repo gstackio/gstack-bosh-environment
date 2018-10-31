@@ -37,6 +37,7 @@ deployment_vars:
 
   system_domain: logsearch.easyfoundry.prototyp.it
 
+  elasticsearch_data_nodes: 2
   elasticsearch_heap_size: 500M
   logstash_heap_size: 500M
 
