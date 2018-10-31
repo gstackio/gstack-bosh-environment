@@ -8,7 +8,8 @@ input_resources:
   - name: cf-mysql-deployment
     type: git
     uri: https://github.com/cloudfoundry/cf-mysql-deployment.git
-    version: v36.14.0
+    # version: "6ffe5ec" # v36.15.0 with improvements, as of Oct 25th, 2018
+    version: v36.15.0
 
 
 main_deployment_file: cf-mysql-deployment/cf-mysql-deployment.yml
@@ -43,6 +44,11 @@ deployment_vars:
   # cf_mysql_version: # imported below
   # cf_mysql_sha1:    # imported below
 
+  # routing_version:  # imported below
+  # routing_sha1:     # imported below
+  routing_version: "0.179.0"
+  routing_sha1: 203061d0438ed76f25573080f9d1f73f06de5851
+
   # stemcell_os:      # imported below
   # stemcell_version: # imported below
   # stemcell_sha1:    # imported below
@@ -64,12 +70,12 @@ imported_vars:
         from: depl-vars
         path: /cf_mysql_sha1
 
-      - name: routing_version
-        from: depl-vars
-        path: /routing_version
-      - name: routing_sha1
-        from: depl-vars
-        path: /routing_sha1
+      # - name: routing_version
+      #   from: depl-vars
+      #   path: /routing_version
+      # - name: routing_sha1
+      #   from: depl-vars
+      #   path: /routing_sha1
 
       - name: stemcell_os
         from: depl-vars
