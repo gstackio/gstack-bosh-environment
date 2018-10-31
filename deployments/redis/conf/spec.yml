@@ -8,7 +8,8 @@ input_resources:
   - name: redis-boshrelease
     type: git
     uri: https://github.com/pivotal-cf/cf-redis-release.git
-    version: 465a969 # i.e. v434.0.22 with improvement to deployment manifest
+    # version: 465a969 # i.e. v434.0.22 with improvement to deployment manifest
+    version: v434.0.25
 
 
 main_deployment_file: redis-boshrelease/manifest/deployment.yml
@@ -39,8 +40,8 @@ deployment_vars:
 
   # Versions
 
-  redis_release_version: "434.0.22"
-  redis_release_sha1: 68150f534f23826b4985ed87a8b236e58a2e9f16
+  redis_release_version: "434.0.25"
+  redis_release_sha1: fe1c0e2471a92d8a871de2d6419bb62c7ff62bce
 
   # bpm_version:      # imported below
   # bpm_sha1:         # imported below
