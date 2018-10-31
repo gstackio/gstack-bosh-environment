@@ -16,7 +16,7 @@ input_resources:
   - name: rabbitmq-smoke-tests-boshrelease
     type: git
     uri: https://github.com/pivotal-cf/cf-rabbitmq-smoke-tests-release.git
-    version: v13.0.0
+    version: v19.0.0
 
 
 developing: false
@@ -72,7 +72,7 @@ deployment_vars:
   rabbitmq_broker_version: "37.0.0"
   rabbitmq_broker_sha1: 146049116e60593af959d1c738a139b59e8480a7
 
-  rabbitmq_smoke_tests_version: "13.0.0"
+  rabbitmq_smoke_tests_version: "19.0.0"
 
   cf_cli_release_version: "1.8.0"
   cf_cli_release_sha1: 15d0718bc82ff9394efd2c9798873a39bf7eba06
@@ -80,12 +80,19 @@ deployment_vars:
   broker_registrar_version: "3.4.0"
   broker_registrar_sha1: d44d9af8fd06ecf6d50004c9bfd5516a6e482201
 
+  # bpm_version:  # imported below
+  # bpm_sha1:     # imported below
+
   # routing_version:  # imported below
   # routing_sha1:     # imported below
 
   # stemcell_os:      # imported below
   # stemcell_version: # imported below
   # stemcell_sha1:    # imported below
+  stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+  stemcell_os: ubuntu-trusty
+  stemcell_version: "3586.36"
+  stemcell_sha1: 69163bcf21ae6d5ffeb92f099644d295b289b63e
 
 
   # Reference declarations
@@ -107,6 +114,13 @@ imported_vars:
   - subsys: cf
     imports:
 
+      - name: bpm_version
+        from: depl-vars
+        path: /bpm_version
+      - name: bpm_sha1
+        from: depl-vars
+        path: /bpm_sha1
+
       - name: routing_version
         from: depl-vars
         path: /routing_version
@@ -114,15 +128,15 @@ imported_vars:
         from: depl-vars
         path: /routing_sha1
 
-      - name: stemcell_os
-        from: depl-vars
-        path: /stemcell_os
-      - name: stemcell_version
-        from: depl-vars
-        path: /stemcell_version
-      - name: stemcell_sha1
-        from: depl-vars
-        path: /stemcell_sha1
+      # - name: stemcell_os
+      #   from: depl-vars
+      #   path: /stemcell_os
+      # - name: stemcell_version
+      #   from: depl-vars
+      #   path: /stemcell_version
+      # - name: stemcell_sha1
+      #   from: depl-vars
+      #   path: /stemcell_sha1
 
       # CF routing plumbing
 

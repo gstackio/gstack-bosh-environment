@@ -3,3 +3,14 @@
 - type: replace
   path: /instance_groups/name=haproxy/jobs/name=route_registrar/consumes/nats/deployment
   value: ((routing_deployment_name))
+
+# NOTE: Routing release v0.180.0 and above require BPM to be colocated with
+# the 'route_registrar' job.
+#
+# See: https://github.com/cloudfoundry/routing-release/releases/tag/0.180.0
+#
+- path: /instance_groups/name=haproxy/jobs/name=bpm?
+  type: replace
+  value:
+    name: bpm
+    release: bpm

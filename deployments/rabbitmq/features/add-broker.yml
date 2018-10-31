@@ -71,6 +71,13 @@
                 registration_interval: 20s
                 uris:
                   - ((rabbitmq-broker-hostname)).((system-domain))
+      # NOTE: Routing release v0.180.0 and above require BPM to be colocated with
+      # the 'route_registrar' job.
+      #
+      # See: https://github.com/cloudfoundry/routing-release/releases/tag/0.180.0
+      #
+      - name: bpm
+        release: bpm
     vm_type: default
     stemcell: trusty
     azs:
