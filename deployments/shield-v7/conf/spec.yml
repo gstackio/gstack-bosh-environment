@@ -46,6 +46,12 @@ deployment_vars:
   # minio_version:    # imported below
   # minio_sha1:       # imported below
 
+  # bpm_version:      # imported below
+  # bpm_sha1:         # imported below
+
+  # routing_version:  # imported below
+  # routing_sha1:     # imported below
+
   # stemcell_os:      # imported below
   # stemcell_version: # imported below
   # stemcell_sha1:    # imported below
@@ -67,6 +73,13 @@ deployment_vars:
 imported_vars:
   - subsys: cf
     imports:
+
+      - name: bpm_version
+        from: depl-vars
+        path: /bpm_version
+      - name: bpm_sha1
+        from: depl-vars
+        path: /bpm_sha1
 
       - name: routing_version
         from: depl-vars
