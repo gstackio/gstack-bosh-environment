@@ -2,6 +2,7 @@
 subsys:
   name: traefik
   type: bosh-deployment
+  depends_on: []
 
 input_resources:
   - name: traefik-boshrelease

@@ -2,7 +2,7 @@
 subsys:
   name: cf
   type: bosh-deployment
-  # deploy_after: traefik
+  depends_on: [ traefik ]
 
 input_resources:
   - name: cf-deployment

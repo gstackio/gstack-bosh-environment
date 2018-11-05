@@ -2,7 +2,7 @@
 subsys:
   name: redis
   type: bosh-deployment
-  deploy_after: cf
+  depends_on: [ shield-v7, cf ]
 
 input_resources:
   - name: redis-boshrelease

@@ -2,6 +2,7 @@
 subsys:
   name: neo4j
   type: bosh-deployment
+  depends_on: []
 
 input_resources:
   - name: neo4j-on-cloud-foundry

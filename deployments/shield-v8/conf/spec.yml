@@ -2,7 +2,7 @@
 subsys:
   name: shield-v8
   type: bosh-deployment
-  deploy_after: cf
+  depends_on: [ cf ]
 
 input_resources:
   - name: shield-boshrelease-v8

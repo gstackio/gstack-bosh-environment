@@ -19,7 +19,7 @@ traefik:
 	gbe $(VERB) -y $@
 
 concourse-manifest:
-	gbe converge -y --manifest concourse
+	gbe converge --manifest concourse
 
 cf: traefik concourse-manifest
 	gbe $(VERB) -y $@

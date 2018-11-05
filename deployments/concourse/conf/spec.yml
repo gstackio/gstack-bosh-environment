@@ -2,6 +2,7 @@
 subsys:
   name: concourse
   type: bosh-deployment
+  depends_on: [ cf ]
 
 input_resources:
   - name: concourse-deployment

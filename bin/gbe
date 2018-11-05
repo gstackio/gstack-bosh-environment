@@ -563,13 +563,69 @@ function print_deployment_name() {
     echo "  - $depl_name"
 }
 
-function each_deployment() {
-    local reverse_arg cmd
-    if [[ x$1 == x-r || x$1 == x--reverse ]]; then
-        reverse_arg=$1; shift
-    fi
-    cmd=$1; shift
+function max_of() {
+    local a=$1 b=$2
+    echo $(( $a > $b ? $a : $b ))
+}
 
+function dependency_type() {
+    local for_subsys_dir=$1
+    local subsys_name=$2
+    local base_path=$3
+
+    local vars_count var_idx var_path import_from dep_level
+
+    dep_level=0
+    vars_count=$(spec_var "${base_path}" "${for_subsys_dir}" \
+                        | awk '/^-/{print $1}' | wc -l | tr -d " ")
+    var_idx=0
+    while [[ ${var_idx} -lt ${vars_count} ]]; do
+        var_path="${base_path}/${var_idx}"
+        import_from=$(spec_var --required "${var_path}/from" "$for_subsys_dir")
+        case $import_from in
+            depl-vars|conf-vars)
+                dep_level=$(max_of 0 "${dep_level}") ;;
+            depl-manifest|depl-creds)
+                dep_level=$(max_of 1 "${dep_level}") ;;
+            bbl-vars)
+                dep_level=$(max_of 2 "${dep_level}") ;;
+            *)
+                echo "${RED}ERROR:${RESET} unsupported var import type: '${import_from}'." \
+                    "Expected 'bbl-vars', 'depl-vars', 'conf-vars', 'depl-manifest'," \
+                    "or 'depl-creds'. Aborting." >&2
+                return 1 ;;
+        esac
+
+        var_idx=$(($var_idx + 1))
+    done
+
+    if [[ $dep_level -ge 2 ]]; then
+        echo "${subsys_name}"
+    elif [[ $dep_level -eq 1 ]]; then
+        echo "${subsys_name}-manifest"
+    fi
+}
+
+function generate_dependencies() {
+    local for_subsys_dir=$1
+
+    local subsys_count idx subsys_path subsys_name
+    subsys_count=$(spec_var /imported_vars "$for_subsys_dir" \
+                    | awk '/^-/{print $1}' | wc -l | tr -d ' ')
+    idx=0
+    while [[ $idx -lt $subsys_count ]]; do
+        subsys_path=/imported_vars/$idx
+        idx=$(($idx + 1))
+        subsys_name=$(spec_var --required "$subsys_path/subsys" "$for_subsys_dir")
+        if [[ $subsys_name == *-env ]]; then
+            # Let's assume that environments are properly converged
+            continue
+        fi
+        dependency_type "$for_subsys_dir" "$subsys_name" "$subsys_path/imports"
+    done
+}
+
+function generate_makefile() {
     local old_IFS subsys_dirs
     old_IFS=$IFS
     IFS=$'\n'
@@ -578,23 +634,135 @@ function each_deployment() {
             -print))
     IFS=$old_IFS
 
-    local subsys_dir deploy_after depl_by_deps
-    depl_by_deps=()
+    subsys_basenames=()
     for subsys_dir in "${subsys_dirs[@]}"; do
-        deploy_after=$(spec_var /subsys/deploy_after "$subsys_dir")
-        depl_by_deps+=("${deploy_after:-"-"} $(basename "$subsys_dir")")
+        subsys_basenames+=($(basename "$subsys_dir"))
     done
 
-    local deployments
+    echo -e "\nVERB?=converge\n"
+    echo -e "all: ${GBE_ENVIRONMENT} cloud-config runtime-config ${subsys_basenames[*]}\n"
+
+    echo -e "${GBE_ENVIRONMENT}:"
+    echo -e "\tgbe up\n"
+
+    local cfg_type
+    for cfg_type in cloud runtime; do
+        echo -e "${cfg_type}-config:"
+        echo -e "\tgbe update -y \$@\n"
+    done
+
+    local subsys_dir subsys_basename subsys_name \
+            auto_deps declarated_deps merged_deps dedup_deps dep
+    for subsys_dir in "${subsys_dirs[@]}"; do
+        subsys_basename=$(basename "$subsys_dir")
+        subsys_name=$(spec_var --required /subsys/name "$subsys_dir")
+        if [[ $subsys_basename != $subsys_name ]]; then
+            echo "${RED}ERROR:${RESET} subsys name mismatch." \
+                "Expected 'subsys.name: $subsys_basename' YAML node" \
+                "in '$subsys_basename/conf/spec.yml' file," \
+                "but found '$subsys_name'. Aborting." >&2
+            return 1
+        fi
+
+        auto_deps=$(generate_dependencies "$subsys_dir")
+        declarated_deps=$(spec_var /subsys/depends_on "$subsys_dir" \
+                | sed -ne 's/^- //p')
+
+        merged_deps=$(sort --merge <(sort <<< $auto_deps) <(sort <<< $declarated_deps))
+
+        dedup_deps="${merged_deps//$'\n'/ }"
+        for dep in ${declarated_deps}; do
+            dedup_deps=$(sed -e "s/${dep} ${dep}-manifest/${dep}/" <<< $dedup_deps)
+        done
+
+        if [[ -n $GBE_DEBUG_LEVEL ]]; then
+            echo "subsys: '$subsys_basename'" >&2
+            echo "auto_deps: [ ${auto_deps//$'\n'/ } ]" >&2
+            echo "merged_deps: [ ${merged_deps//$'\n'/ } ]" >&2
+        fi
+
+        echo -e "${subsys_basename}-manifest: ${auto_deps//$'\n'/ }"
+        echo -e "\tgbe converge --manifest \$@\n"
+
+        echo -e "${subsys_basename}: ${dedup_deps}"
+        echo -e "\tgbe \$(VERB) -y \$@\n"
+    done
+}
+
+function generate_depl_order_makefile() {
+    local old_IFS subsys_dirs
     old_IFS=$IFS
     IFS=$'\n'
-    deployments=($(sort $reverse_arg -s -k 1,2 <<< "${depl_by_deps[*]}" | cut -d' ' -f2-))
+    subsys_dirs=($(find "$BASE_DIR/deployments" -mindepth 1 -maxdepth 1 \
+            -type d \! -name 'zzz-*' \
+            -print))
     IFS=$old_IFS
 
-    local depl_name
-    for depl_name in "${deployments[@]}"; do
-        "$cmd" "$depl_name" "$@"
+    subsys_basenames=()
+    for subsys_dir in "${subsys_dirs[@]}"; do
+        subsys_basenames+=($(basename "$subsys_dir"))
     done
+
+    echo -e "all: ${subsys_basenames[*]}\n"
+
+    local subsys_dir subsys_basename subsys_name \
+            auto_deps declarated_deps merged_deps dedup_deps dep
+    for subsys_dir in "${subsys_dirs[@]}"; do
+        subsys_basename=$(basename "$subsys_dir")
+        subsys_name=$(spec_var --required /subsys/name "$subsys_dir")
+        if [[ $subsys_basename != $subsys_name ]]; then
+            echo "${RED}ERROR:${RESET} subsys name mismatch." \
+                "Expected 'subsys.name: $subsys_basename' YAML node" \
+                "in '$subsys_basename/conf/spec.yml' file," \
+                "but found '$subsys_name'. Aborting." >&2
+            return 1
+        fi
+
+        auto_deps=$(generate_dependencies "$subsys_dir")
+        declarated_deps=$(spec_var /subsys/depends_on "$subsys_dir" \
+                | sed -ne 's/^- //p')
+
+        merged_deps=$(sort --merge <(sort <<< $auto_deps) <(sort <<< $declarated_deps))
+
+        dedup_deps="${merged_deps//$'\n'/ }"
+        for dep in ${declarated_deps}; do
+            dedup_deps=$(sed -e "s/${dep} ${dep}-manifest/${dep}/" <<< $dedup_deps)
+        done
+
+        echo -e "${subsys_basename}-manifest: ${auto_deps//$'\n'/ }"
+        echo -e "\t\$@ --manifest\n"
+
+        echo -e "${subsys_basename}: ${dedup_deps}"
+        echo -e "\t\$@\n"
+    done
+}
+
+function each_deployment() {
+    local reverse_arg cmd
+    if [[ x$1 == x-r || x$1 == x--reverse ]]; then
+        reverse_arg=$1; shift
+    fi
+    cmd=$1; shift
+
+    local makefile
+    makefile=$(state_dir "$GBE_ENVIRONMENT")/ordering.makefile
+    generate_depl_order_makefile > $makefile
+
+
+    local old_IFS=$IFS
+    IFS=$'\n'
+        local deployments
+        deployments=$(make -f "${makefile}" -n all | cat -n | sed -e 's/^ *//')
+        if [[ -n $reverse_arg ]]; then
+            deployments=$(grep -v ' --manifest$' <<< ${deployments})
+        fi
+        deployments=($(sort -n $reverse_arg -s -k 1,2 <<< ${deployments} | cut -d $'\t' -f2-))
+
+        local depl_spec
+        for depl_spec in "${deployments[@]}"; do
+            "${cmd}" ${depl_spec} "$@"
+        done
+    IFS=$old_IFS
 }
 
 function assert_subsys_name() {
@@ -941,6 +1109,9 @@ case $1 in
     ssh)
         shift
         ssh_jumpbox "$@"
+        ;;
+    makefile)
+        generate_makefile > $(state_dir "$GBE_ENVIRONMENT")/Makefile
         ;;
     update)
         shift

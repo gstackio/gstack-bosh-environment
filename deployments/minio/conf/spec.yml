@@ -2,6 +2,7 @@
 subsys:
   name: minio
   type: bosh-deployment
+  depends_on: []
 
 input_resources:
   # - name: minio-boshrelease

@@ -2,7 +2,7 @@
 subsys:
   name: rabbitmq
   type: bosh-deployment
-  deploy_after: cf
+  depends_on: [ cf ]
 
 input_resources:
   - name: rabbitmq-boshrelease

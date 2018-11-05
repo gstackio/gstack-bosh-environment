@@ -378,7 +378,8 @@ function imports_from() {
                 ;;
             *)
                 echo "${RED}ERROR:$RESET unsupported var import type: '$import_from'." \
-                    "Expected 'depl-vars', 'depl-manifest', or 'depl-creds'. Aborting." >&2
+                    "Expected 'bbl-vars', 'depl-vars', 'conf-vars', 'depl-manifest'," \
+                    "or 'depl-creds'. Aborting." >&2
                 return 1 ;;
         esac
 

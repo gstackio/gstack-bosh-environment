@@ -2,7 +2,7 @@
 subsys:
   name: ddbox-standalone-bosh-env
   type: bosh-environment
-  deploy_after: ddbox-standalone-garden-env
+  depends_on: [ ddbox-standalone-garden-env ]
 
 input_resources:
   - name: bosh-deployment

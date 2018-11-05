@@ -2,7 +2,7 @@
 subsys:
   name: postgres
   type: bosh-deployment
-  deploy_after: cf
+  depends_on: [ cf ]
 
 input_resources:
   - name: dingo-postgresql-release
