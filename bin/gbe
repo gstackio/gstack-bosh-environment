@@ -634,7 +634,7 @@ function generate_makefile() {
             -print))
     IFS=$old_IFS
 
-    subsys_basenames=()
+    local subsys_dir subsys_basenames
     for subsys_dir in "${subsys_dirs[@]}"; do
         subsys_basenames+=($(basename "$subsys_dir"))
     done
@@ -651,7 +651,7 @@ function generate_makefile() {
         echo -e "\tgbe update -y \$@\n"
     done
 
-    local subsys_dir subsys_basename subsys_name \
+    local subsys_basename subsys_name \
             auto_deps declarated_deps merged_deps dedup_deps dep
     for subsys_dir in "${subsys_dirs[@]}"; do
         subsys_basename=$(basename "$subsys_dir")
@@ -675,12 +675,6 @@ function generate_makefile() {
             dedup_deps=$(sed -e "s/${dep} ${dep}-manifest/${dep}/" <<< $dedup_deps)
         done
 
-        if [[ -n $GBE_DEBUG_LEVEL ]]; then
-            echo "subsys: '$subsys_basename'" >&2
-            echo "auto_deps: [ ${auto_deps//$'\n'/ } ]" >&2
-            echo "merged_deps: [ ${merged_deps//$'\n'/ } ]" >&2
-        fi
-
         echo -e "${subsys_basename}-manifest: ${auto_deps//$'\n'/ }"
         echo -e "\tgbe converge --manifest \$@\n"
 
@@ -698,14 +692,14 @@ function generate_depl_order_makefile() {
             -print))
     IFS=$old_IFS
 
-    subsys_basenames=()
+    local subsys_dir subsys_basenames
     for subsys_dir in "${subsys_dirs[@]}"; do
         subsys_basenames+=($(basename "$subsys_dir"))
     done
 
     echo -e "all: ${subsys_basenames[*]}\n"
 
-    local subsys_dir subsys_basename subsys_name \
+    local subsys_basename subsys_name \
             auto_deps declarated_deps merged_deps dedup_deps dep
     for subsys_dir in "${subsys_dirs[@]}"; do
         subsys_basename=$(basename "$subsys_dir")
@@ -744,10 +738,11 @@ function each_deployment() {
     fi
     cmd=$1; shift
 
+    assert_utilities make "to compute subsys ordering given their dependencies"
+
     local makefile
     makefile=$(state_dir "$GBE_ENVIRONMENT")/ordering.makefile
     generate_depl_order_makefile > $makefile
-
 
     local old_IFS=$IFS
     IFS=$'\n'
