@@ -911,6 +911,8 @@ function create_env() {
 
     set -e
 
+    echo -e "\n${BLUE}Converging$RESET the '${BOLD}${GBE_ENVIRONMENT}${RESET}' environment\n"
+
     echo -e "\n${BLUE}Fetching ${BOLD}input resources$RESET\n"
 
     fetch_input_resources
@@ -959,6 +961,8 @@ function delete_env() {
     assert_subsys bosh-environment
 
     set -e
+
+    echo -e "\n${BLUE}Deleting$RESET the '${BOLD}${GBE_ENVIRONMENT}${RESET}' environment\n"
 
     echo -e "\n${BLUE}Fetching ${BOLD}input resources$RESET\n"
 
