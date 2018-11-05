@@ -1,11 +1,30 @@
 
 VERB?=converge
 
-all: cloud-config runtime-config concourse prometheus logsearch shield-v8 cassandra data-services mysql neo4j postgres rabbitmq redis
+all: configs concourse prometheus logsearch shield-v8 cassandra data-services mysql neo4j postgres rabbitmq redis
 
 all-depls-in-order: traefik cf concourse prometheus logsearch minio scality shield-v7 shield-v8 cassandra data-services mysql neo4j postgres rabbitmq redis
 
+all-with-infra: base-env import-all configs all-depls-in-order
 
+
+
+base-env: ddbox-standalone-bosh-env
+
+ddbox-standalone-garden-env:
+	GBE_ENVIRONMENT=$@ gbe up
+
+ddbox-standalone-bosh-env: ddbox-standalone-garden-env
+	GBE_ENVIRONMENT=$@ gbe up
+
+
+
+import-all: base-env
+	gbe import
+
+
+
+configs: cloud-config runtime-config
 
 cloud-config:
 	gbe update -y $@
@@ -29,7 +48,7 @@ concourse: cf
 
 
 
-prometheus: cf
+prometheus: base-env cf
 	gbe $(VERB) -y $@
 
 logsearch: cf
