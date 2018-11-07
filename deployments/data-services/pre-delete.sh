@@ -14,5 +14,5 @@ deployment_name=$(spec_var /deployment_vars/deployment_name)
 set -x
 
 if bosh deployments | grep -qE "\\b${deployment_name}\\b"; then
-    bosh run-errand broker-deregistrar
+    bosh run-errand broker-deregistrar || true
 fi

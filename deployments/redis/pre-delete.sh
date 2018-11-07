@@ -10,5 +10,5 @@ function spec_var() {
 set -ex
 
 if bosh deployments | grep -qE "\\b$(spec_var /deployment_vars/deployment_name)\\b"; then
-    bosh run-errand broker-deregistrar
+    bosh run-errand broker-deregistrar || true
 fi
