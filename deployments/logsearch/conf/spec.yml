@@ -8,7 +8,7 @@ input_resources:
   - name: logsearch-boshrelease
     type: git
     uri: https://github.com/cloudfoundry-community/logsearch-boshrelease.git
-    version: v209.0.0
+    version: "73bd28b" # v209.0.1 with improved deployment manifests, as of Oct 31st, 2018
 
 
 # main_deployment_file: ./conf/logsearch-deployment.yml
@@ -16,8 +16,8 @@ main_deployment_file: logsearch-boshrelease/deployment/logsearch-deployment.yml
 
 operations_files:
   10.logsearch-boshrelease:
-    - deployment/operations/scale-to-one-az
     - deployment/operations/cerebro
+    - deployment/operations/cloudfoundry
   20.local:
     - rename-deployment
     - pin-stemcell
@@ -26,29 +26,28 @@ operations_files:
     - cf-integration
     - bosh-lite-support
     - scale-disks
-    - fix-errands-vms-names # must be last
 
 
 deployment_vars:
   deployment_name: easyfoundry-logsearch
 
 
-  # User-facing settings
+  # Scaling
 
-  system_domain: logsearch.easyfoundry.prototyp.it
-
+  elasticsearch_master_nodes: 1
   elasticsearch_data_nodes: 2
+  ingestor_nodes: 1
   elasticsearch_heap_size: 500M
   logstash_heap_size: 500M
 
 
   # Versions
 
-  logsearch_version: "209.0.0"
-  logsearch_sha1: 76433fb23850e7237951312315e27da0bdf10f5e
+  logsearch_version: "209.0.1"
+  logsearch_sha1: 038b039dc30d71a4c3ed4570035867797538edef
 
-  logsearch_for_cloudfoundry_version: "207.0.0"
-  logsearch_for_cloudfoundry_sha1: e6f740707042d29a1ac09a7481cf72b805b1469d
+  logsearch_for_cloudfoundry_version: "207.0.1"
+  logsearch_for_cloudfoundry_sha1: 599d238be5281f5a2ef903936b9ef868611baab1
 
   # stemcell_os:      # imported below
   # stemcell_version: # imported below
@@ -90,3 +89,7 @@ imported_vars:
       - name: uaa_admin_client_secret
         from: depl-creds
         path: /uaa_admin_client_secret
+
+      - name: system_domain
+        from: depl-vars
+        path: /system_domain

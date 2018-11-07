@@ -1,19 +1,14 @@
 ---
 
-- path: /vm_types/name=c3.large?
+- path: /vm_types/name=large?
   type: replace
   value:
-    name: c3.large
+    name: large
 
-- path: /vm_types/name=m3.large?
+- path: /vm_types/name=medium?
   type: replace
   value:
-    name: m3.large
-
-- path: /vm_types/name=m3.medium?
-  type: replace
-  value:
-    name: m3.medium
+    name: medium
 
 
 - path: /disk_types/name=2GB?

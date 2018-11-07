@@ -2,11 +2,11 @@
 
 # deployment/logsearch-deployment.yml
 
-- path: /instance_groups/name=smoke-tests/jobs/name=smoke-tests/consumes/cloud_controller/deployment
+- path: /instance_groups/name=maintenance/jobs/name=smoke-tests/consumes/cloud_controller/deployment
   type: replace
   value: ((cf_deployment_name))
 
-- path: /instance_groups/name=create-uaa-client/jobs/name=create-uaa-client/consumes/cloud_controller/deployment
+- path: /instance_groups/name=maintenance/jobs/name=create-uaa-client/consumes/cloud_controller/deployment
   type: replace
   value: ((cf_deployment_name))
 

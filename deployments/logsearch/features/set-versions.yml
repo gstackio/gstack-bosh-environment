@@ -1,6 +1,5 @@
 ---
 
-
 # Releases versions
 
 - path: /releases/name=logsearch
@@ -8,8 +7,8 @@
   value:
     name: logsearch
     version: ((logsearch_version))
-    # url: https://bosh.io/d/github.com/cloudfoundry-community/logsearch-boshrelease?v=((logsearch_version))
-    url: https://github.com/cloudfoundry-community/logsearch-boshrelease/releases/download/v((logsearch_version))/logsearch-((logsearch_version)).tgz
+    url: https://bosh.io/d/github.com/cloudfoundry-community/logsearch-boshrelease?v=((logsearch_version))
+    # url: https://github.com/cloudfoundry-community/logsearch-boshrelease/releases/download/v((logsearch_version))/logsearch-((logsearch_version)).tgz
     sha1: ((logsearch_sha1))
 
 - path: /releases/name=logsearch-for-cloudfoundry
@@ -17,6 +16,6 @@
   value:
     name: logsearch-for-cloudfoundry
     version: ((logsearch_for_cloudfoundry_version))
-    # url: https://bosh.io/d/github.com/cloudfoundry-community/logsearch-for-cloudfoundry?v=((logsearch_for_cloudfoundry_version))
-    url: https://github.com/cloudfoundry-community/logsearch-for-cloudfoundry/releases/download/v((logsearch_for_cloudfoundry_version))/logsearch-for-cloudfoundry-((logsearch_for_cloudfoundry_version)).tgz
+    url: https://bosh.io/d/github.com/cloudfoundry-community/logsearch-for-cloudfoundry?v=((logsearch_for_cloudfoundry_version))
+    # url: https://github.com/cloudfoundry-community/logsearch-for-cloudfoundry/releases/download/v((logsearch_for_cloudfoundry_version))/logsearch-for-cloudfoundry-((logsearch_for_cloudfoundry_version)).tgz
     sha1: ((logsearch_for_cloudfoundry_sha1))

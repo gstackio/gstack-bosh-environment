@@ -1,5 +1,13 @@
 ---
 
+- path: /instance_groups/name=elasticsearch_master/instances
+  type: replace
+  value: ((elasticsearch_master_nodes))
+
 - path: /instance_groups/name=elasticsearch_data/instances
   type: replace
   value: ((elasticsearch_data_nodes))
+
+- path: /instance_groups/name=ingestor/instances
+  type: replace
+  value: ((ingestor_nodes))
