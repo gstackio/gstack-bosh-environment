@@ -1,0 +1,19 @@
+---
+
+# Releases versions
+
+- path: /releases/name=kong-ce?
+  type: replace
+  value:
+    name: kong-ce
+    version: ((kong_release_version))
+    url: https://github.com/gstackio/kong-ce-boshrelease/releases/download/v((kong_release_version))/kong-ce-((kong_release_version)).tgz
+    sha1: ((kong_release_sha1))
+
+- path: /releases/name=postgres
+  type: replace
+  value:
+    name: postgres
+    version: ((postgres_version))
+    url: https://bosh.io/d/github.com/cloudfoundry/postgres-release?v=((postgres_version))
+    sha1: ((postgres_sha1))

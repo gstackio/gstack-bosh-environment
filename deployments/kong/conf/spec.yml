@@ -1,0 +1,73 @@
+---
+subsys:
+  name: kong
+  type: bosh-deployment
+
+input_resources:
+  - name: kong-ce-boshrelease
+    type: git
+    uri: https://github.com/gstackio/kong-ce-boshrelease.git
+    version: "d5719ed" # v1.0.0 with manifest fixes
+
+
+main_deployment_file: kong-ce-boshrelease/manifests/kong.yml
+
+
+operations_files:
+  20.local:
+    - rename-deployment-and-network
+    - pin-stemcell
+    - pin-versions
+
+variables_files: {}
+
+
+deployment_vars:
+  deployment_name: easyfoundry-kong
+
+
+  # Versions
+
+  kong_release_version: "1.0.0"
+  kong_release_sha1: f829807866f70361b7593747bf079eeb8dd6f775
+
+  # postgres_version: # imported below
+  # postgres_sha1:    # imported below
+
+  # stemcell_os:      # imported below
+  # stemcell_version: # imported below
+  stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+  stemcell_os: ubuntu-trusty
+  stemcell_version: "3586.52"
+  stemcell_sha1: 07a7dad0968b61e10daa613de23465de4af7a02f
+
+
+  # Reference declarations
+
+  network_name: kong-network # injected in cloud-config
+
+
+imported_vars:
+  - subsys: cf
+    imports: []
+
+      # Versions
+
+      # - name: stemcell_os
+      #   from: depl-vars
+      #   path: /stemcell_os
+      # - name: stemcell_version
+      #   from: depl-vars
+      #   path: /stemcell_version
+
+  - subsys: concourse
+    imports:
+
+      # Versions
+
+      - name: postgres_version
+        from: depl-vars
+        path: /postgres_version
+      - name: postgres_sha1
+        from: depl-vars
+        path: /postgres_sha1

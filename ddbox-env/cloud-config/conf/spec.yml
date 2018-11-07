@@ -28,6 +28,7 @@ operations_files:
     - prometheus-support
     - cassandra-support
     - logsearch-support
+    - kong-support
     - redis-support
 
 
@@ -81,6 +82,11 @@ imported_vars:
   - subsys: cassandra
     imports:
       - name: cassandra_network
+        from: depl-vars
+        path: /network_name
+  - subsys: kong
+    imports:
+      - name: kong_network
         from: depl-vars
         path: /network_name
   - subsys: redis

@@ -1,0 +1,12 @@
+---
+
+- path: /networks/-
+  type: replace
+  value:
+    name: ((kong_network))
+    subnets:
+      - azs: [ z1, z2, z3 ]
+        range: 10.244.75.0/24 # '75' because of `echo -n K | hexdump -d`
+        gateway: 10.244.75.1
+        cloud_properties: { name: random }
+        static: [ 10.244.75.2 - 10.244.75.32 ]
