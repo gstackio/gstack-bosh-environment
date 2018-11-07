@@ -1,5 +1,10 @@
 ---
 
+# We only kee this as an example for a default security group implementation.
+#
+# Now the new convention is for other subsystems should register their own
+# security groups in CF by themselves, as part of their convergence process.
+
 - path: /instance_groups/name=api/jobs/name=cloud_controller_ng/properties/cc/security_group_definitions/name=cassandra?
   type: replace
   value:

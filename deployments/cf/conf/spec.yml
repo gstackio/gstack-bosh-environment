@@ -93,7 +93,7 @@ operations_files:
     # - set-mysql-version
     - set-routing-version
     - expose-admin-user-as-link
-    - cassandra-support
+    # - cassandra-support # only kept as an example ASG
     - database-pxc-bosh-lite
     - log-cache-bosh-lite
     - scale-disks
