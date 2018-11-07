@@ -17,7 +17,7 @@
       - name: ((deployment_name))-broker
         port: 12350
         registration_interval: 20s
-        uris: [ ((redis_domain)) ]
+        uris: [ ((broker_hostname)).((system_domain)) ]
         tags:
           component: redis-broker
           env: production
@@ -31,4 +31,4 @@
 
 - path: /properties/broker/host
   type: replace
-  value: ((redis_domain))
+  value: ((broker_hostname)).((system_domain))

@@ -33,7 +33,7 @@ deployment_vars:
 
   # User-facing settings
 
-  redis_domain: redis.easyfoundry.prototyp.it
+  broker_hostname: redis # the hostname to use, under Cloud Foundry ((system_domain))
   dedicated_node_count: 2
   default_persistent_disk_type: 1GB # some disk_type from your cloud-config
 
