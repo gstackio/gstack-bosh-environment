@@ -43,19 +43,22 @@ function export_release() {
 deployment_name=$(spec_var /deployment_vars/deployment_name)
 bosh_dns_version=$(runtime_config_var /bosh_dns_version)
 node_exporter_version=$(runtime_config_var /node_exporter_version)
-stemcell_version=$(sibling_subsys_depl_var cf /stemcell_version)
 subsys_name=$(spec_var /subsys/name)
 
 set -x
 
 mkdir -p "$BASE_DIR/.cache/compiled-releases"
 
-export_release "$deployment_name" \
-    "bosh-dns/$bosh_dns_version" "ubuntu-trusty/$stemcell_version" \
-    --job=bosh-dns
+used_stemcells=$(bosh stemcells --column version --column os \
+                 | awk '/\*/{gsub(/\*$/, "", $1); print $2 "/" $1}')
+for stemcell_os_version in $used_stemcells; do
+    export_release "$deployment_name" \
+        "bosh-dns/$bosh_dns_version" "$stemcell_os_version" \
+        --job=bosh-dns
 
-export_release "$deployment_name" \
-    "node-exporter/$node_exporter_version" "ubuntu-trusty/$stemcell_version"
+    export_release "$deployment_name" \
+        "node-exporter/$node_exporter_version" "$stemcell_os_version"
+done
 
 gbe delete -y "$subsys_name"
 
@@ -63,6 +66,8 @@ gbe delete -y "$subsys_name"
 
 concourse_deployment_name=$(sibling_subsys_depl_var concourse /deployment_name)
 concourse_version=$(sibling_subsys_depl_var concourse /concourse_version)
+stemcell_os=$(sibling_subsys_depl_var cf /stemcell_os)
+stemcell_version=$(sibling_subsys_depl_var cf /stemcell_version)
 if ! bosh deployments --column=name | grep -qE "\\b${concourse_deployment_name}\\b"; then
     set +x
     echo "WARNING: missing BOSH Deployment '$concourse_deployment_name' for" \
@@ -72,6 +77,6 @@ else
                 | sed -e '/^$/,$d; /^ /d' \
                 | awk '{print $1}' | cut -d/ -f1 | grep -v -- '-windows$'))
     export_release "$concourse_deployment_name" \
-        "concourse/$concourse_version" "ubuntu-trusty/$stemcell_version" \
+        "concourse/$concourse_version" "$stemcell_os/$stemcell_version" \
         "${non_windows_jobs[@]/#/--job=}"
 fi

@@ -1,6 +1,21 @@
 ---
 name: ((deployment_name))
 
+releases:
+  - name: &bosh_dns_release bosh-dns
+    sha1: ((bosh_dns_sha1))
+    url: https://bosh.io/d/github.com/cloudfoundry/bosh-dns-release?v=((bosh_dns_version))
+    version: ((bosh_dns_version))
+  - name: node-exporter
+    version: ((node_exporter_version))
+    url: https://bosh.io/d/github.com/cloudfoundry-community/node-exporter-boshrelease?v=((node_exporter_version))
+    sha1: ((node_exporter_sha1))
+
+stemcells:
+  - alias: &default_stemcell default
+    os: ((stemcell_os))
+    version: ((stemcell_version))
+
 instance_groups:
   - name: release-compiler-dummy
     instances: 1
@@ -11,7 +26,7 @@ instance_groups:
       #     api:
       #       server: { tls: ((/dns_api_server_tls)) }
       #       client: { tls: ((/dns_api_client_tls)) }
-    stemcell: *trusty_stemcell
+    stemcell: *default_stemcell
     vm_type: default
     azs: [ z1 ]
     networks:
@@ -47,18 +62,3 @@ update:
 #       ca: *dns_api_tls_ca_path
 #       common_name: api.bosh-dns
 #       extended_key_usage: [ client_auth ]
-
-releases:
-  - name: &bosh_dns_release bosh-dns
-    sha1: ((bosh_dns_sha1))
-    url: https://bosh.io/d/github.com/cloudfoundry/bosh-dns-release?v=((bosh_dns_version))
-    version: ((bosh_dns_version))
-  - name: node-exporter
-    version: ((node_exporter_version))
-    url: https://bosh.io/d/github.com/cloudfoundry-community/node-exporter-boshrelease?v=((node_exporter_version))
-    sha1: ((node_exporter_sha1))
-
-stemcells:
-  - alias: &trusty_stemcell trusty
-    os: ubuntu-trusty
-    version: ((stemcell_version))
