@@ -2,29 +2,40 @@
 
 set -o pipefail
 
-set -x
-bosh run-errand smoke-tests --when-changed
-error=$?
-set +x -e
+function run_errand_with_retry_for_debugging() {
+    local errand_name=$1
+    local errand_vm_name=$2
 
-if [[ $error -eq 0 ]]; then
-    exit 0
-fi
+    set -x
+    bosh run-errand "${errand_name}" --when-changed
+    error=$?
+    set +x -e
 
-# When there's an error, we restart the smoke tests, collecting logs and
-# keeping the VM arround for debugging purpose.
+    if [[ ${error} -eq 0 ]]; then
+        return 0
+    fi
 
-logs_dir="${BASE_DIR}/logs/$(basename "${SUBSYS_DIR}")/smoke-tests"
-mkdir -p "${logs_dir}"
+    # When there's an error, we restart the smoke tests, collecting logs and
+    # keeping the VM arround for debugging purpose.
 
-set +e -x
-time bosh run-errand smoke-tests --keep-alive --download-logs --logs-dir="${logs_dir}"
-error=$?
-set +x -e
+    logs_dir="${BASE_DIR}/logs/$(basename "${SUBSYS_DIR}")/${errand_name}"
+    mkdir -p "${logs_dir}"
 
-if [[ $error -eq 0 ]]; then
-    # Whenever the second try succeeds, we delete the collected logs and the
-    # smoke-tests VM.
-    rm -r "${logs_dir}"
-    bosh --non-interactive stop --hard smoke-tests
-fi
+    set +e -x
+    time bosh run-errand "${errand_name}" --keep-alive --download-logs --logs-dir="${logs_dir}"
+    error=$?
+    set +x -e
+
+    if [[ ${error} -eq 0 ]]; then
+        # Whenever the second try succeeds, we delete the collected logs and
+        # any dedicated errand VM.
+        rm -r "${logs_dir}"
+        if [[ -n ${errand_vm_name} ]]; then
+            bosh --non-interactive stop --hard "${errand_vm_name}"
+        fi
+    fi
+    return ${error}
+}
+
+run_errand_with_retry_for_debugging "smoke-tests" "smoke-tests-vm"
+exit $?
