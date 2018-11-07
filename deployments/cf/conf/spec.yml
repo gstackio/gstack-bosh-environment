@@ -95,6 +95,7 @@ operations_files:
     - expose-admin-user-as-link
     - cassandra-support
     - database-pxc-bosh-lite
+    - log-cache-bosh-lite
     - scale-disks
     # - tls-from-gorouters-to-backends
     - missing-network-renames
@@ -115,6 +116,14 @@ deployment_vars:
     - name: apps.internal
       internal: true
   smoke_test_app_domain: *apps_domain
+
+
+  # Tweaks
+
+  # This setting depends on the total RAM size allocated to the Garden VM.
+  # Example: 2% of the total 25GB RAM means 500MB max.
+  # See also: the 'scale-vm-size.yml' ops file for the Garden VM.
+  log_cache_memory_limit_percent: 2
 
 
   # Versions
