@@ -831,7 +831,7 @@ function converge_deployment() {
 function delete_deployment() {
     local subsys_name=$1; shift
 
-    local ignore_errors
+    local ignore_errors=no
     if [[ $@ == *--force* ]]; then ignore_errors=yes; fi
 
     echo -e "\n${BLUE}Deleting the $BOLD'$subsys_name'$RESET subsystem.\n"
@@ -841,11 +841,12 @@ function delete_deployment() {
 
     assert_subsys bosh-deployment
 
-    if [[ -z $ignore_errors ]]; then
-        set -e
-    fi
-
     run_hook "$SUBSYS_DIR/pre-delete.sh"
+    local hook_error=$?
+
+    if [[ $ignore_errors == no && $hook_error -ne 0 ]]; then
+        return $hook_error
+    fi
 
     bosh delete-deployment "$@"
 
