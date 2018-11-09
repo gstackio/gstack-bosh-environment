@@ -668,11 +668,11 @@ function generate_makefile() {
         declarated_deps=$(spec_var /subsys/depends_on "$subsys_dir" \
                 | sed -ne 's/^- //p')
 
-        merged_deps=$(sort --merge <(sort <<< $auto_deps) <(sort <<< $declarated_deps))
+        merged_deps=$(sort --merge <(sort <<< "$auto_deps") <(sort <<< "$declarated_deps"))
 
         dedup_deps="${merged_deps//$'\n'/ }"
         for dep in ${declarated_deps}; do
-            dedup_deps=$(sed -e "s/${dep} ${dep}-manifest/${dep}/" <<< $dedup_deps)
+            dedup_deps=$(sed -e "s/${dep} ${dep}-manifest/${dep}/" <<< "$dedup_deps")
         done
 
         echo -e "${subsys_basename}-manifest: ${auto_deps//$'\n'/ }"
@@ -716,11 +716,11 @@ function generate_depl_order_makefile() {
         declarated_deps=$(spec_var /subsys/depends_on "$subsys_dir" \
                 | sed -ne 's/^- //p')
 
-        merged_deps=$(sort --merge <(sort <<< $auto_deps) <(sort <<< $declarated_deps))
+        merged_deps=$(sort --merge <(sort <<< "$auto_deps") <(sort <<< "$declarated_deps"))
 
         dedup_deps="${merged_deps//$'\n'/ }"
         for dep in ${declarated_deps}; do
-            dedup_deps=$(sed -e "s/${dep} ${dep}-manifest/${dep}/" <<< $dedup_deps)
+            dedup_deps=$(sed -e "s/${dep} ${dep}-manifest/${dep}/" <<< "$dedup_deps")
         done
 
         echo -e "${subsys_basename}-manifest: ${auto_deps//$'\n'/ }"
@@ -749,9 +749,9 @@ function each_deployment() {
         local deployments
         deployments=$(make -f "${makefile}" -n all | cat -n | sed -e 's/^ *//')
         if [[ -n $reverse_arg ]]; then
-            deployments=$(grep -v ' --manifest$' <<< ${deployments})
+            deployments=$(grep -v ' --manifest$' <<< "${deployments}")
         fi
-        deployments=($(sort -n $reverse_arg -s -k 1,2 <<< ${deployments} | cut -d $'\t' -f2-))
+        deployments=($(sort -n $reverse_arg -s -k 1,2 <<< "${deployments}" | cut -d $'\t' -f2-))
 
         local depl_spec
         for depl_spec in "${deployments[@]}"; do
