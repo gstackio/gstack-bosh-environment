@@ -48,7 +48,7 @@ concourse: cf
 
 
 
-prometheus: base-env cf
+prometheus: cf # base-env
 	gbe $(VERB) -y $@
 
 logsearch: cf
