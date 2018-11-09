@@ -118,8 +118,8 @@ deployment_vars:
   bosh_precompiled_sha1: 3107ba41a109561cf181862ac59aa1e82ab0b286
 
   stemcell_name: bosh-vsphere-esxi-ubuntu-xenial-go_agent
-  stemcell_version: "97.28"
-  stemcell_sha1: 6fca8124ae7455bd95ebb074ddb0436bf1832fb1
+  stemcell_version: "97.32"
+  stemcell_sha1: 3c20d09bb8b6334aac85834582d0bc28cf1bc15e
 
 
 imported_vars: []
