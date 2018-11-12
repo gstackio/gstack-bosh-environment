@@ -2,11 +2,13 @@
 
 - path: /instance_groups/name=web/jobs/name=atc/properties/external_url
   type: replace
-  value: https://((concourse_domain))
+  value: https://((external_host))
 
 - path: /instance_groups/name=web/jobs/name=atc/properties/tls_bind_port?
   type: replace
-  value: 4443
+  # Note: we force this value here (which is the default) in order to be sure
+  # that we use the same value below when registering our route.
+  value: &atc_tls_bind_port 4443
 
 
 - path: /instance_groups/name=web/jobs/name=atc/properties/x_frame_options?
@@ -25,8 +27,8 @@
     url: https://bosh.io/d/github.com/cloudfoundry-incubator/cf-routing-release?v=((routing_version))
     sha1: ((routing_sha1))
 
-- type: replace
-  path: /instance_groups/name=web/jobs/name=route_registrar?
+- path: /instance_groups/name=web/jobs/name=route_registrar?
+  type: replace
   value:
     name: route_registrar
     release: routing
@@ -37,12 +39,12 @@
     properties:
       route_registrar:
         routes:
-          - name: ((deployment_name))_https
-            tls_port: 4443
-            server_cert_domain_san: ((concourse_domain))
+          - name: ((deployment_name))_atc_https
+            tls_port: *atc_tls_bind_port
+            server_cert_domain_san: ((external_host))
             registration_interval: 20s
             uris:
-              - ((concourse_domain))
+              - ((external_host))
 
 # NOTE: Routing release v0.180.0 and above require BPM to be colocated with
 # the 'route_registrar' job.

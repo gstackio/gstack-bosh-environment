@@ -10,11 +10,11 @@ function spec_var() {
 
 set -e
 
-concourse_domain=$(spec_var /deployment_vars/concourse_domain)
+external_host=$(spec_var /deployment_vars/external_host)
 platform=$(uname -s | tr '[:upper:]' '[:lower:]')
 
 set -x
 
-curl -fsSL -k "https://$concourse_domain/api/v1/cli?arch=amd64&platform=$platform" \
+curl -fsSL -k "https://${external_host}/api/v1/cli?arch=amd64&platform=${platform}" \
     -o "$BASE_DIR/bin/fly"
 chmod +x "$BASE_DIR/bin/fly"

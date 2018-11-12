@@ -8,26 +8,39 @@ input_resources:
   - name: concourse-deployment
     type: git
     uri: https://github.com/concourse/concourse-deployment.git
-    version: v3.14.1
+    version: v4.2.1
 
 
 main_deployment_file: concourse-deployment/cluster/concourse.yml
 
 operations_files:
-  10.concourse-deployment:
+  10.local:
+    - reorder-instance-groups # must appear first, before anything is modified in instance group 'db'
+  20.concourse-deployment:
     - cluster/operations/web-network-extension
     - cluster/operations/worker-ephemeral-disk
     - cluster/operations/static-web
-  20.local:
+    - cluster/operations/encryption
+    - cluster/operations/tls
+    - cluster/operations/tls-vars
+  30.local:
     - pin-stemcell
     - set-log-level
-    - basic-auth-with-vars       # replaces 'cluster/operations/basic-auth'
-    # We still have an issue with this encryption key and the bosh v2.0.45 CLI
-    - atc-db-encryption-with-var # replaces 'cluster/operations/encryption'
-    # - use-http-not-recommended
-    - tls-with-vars-and-external-ca # replaces 'cluster/operations/tls' and 'cluster/operations/tls-vars'
+    - basic-auth-with-vars  # replaces 'cluster/operations/basic-auth'
+    - encryption-vars       # augments 'cluster/operations/encryption'
+    - tls-external-ca       # tweaks 'cluster/operations/tls-vars'
     - credhub-integration-with-uaa-and-db-tls
-    - routing # requires 'cluster/operations/static-web'
+    - routing               # requires 'cluster/operations/static-web'
+    # - expose-uaa-externally
+
+
+variables_files:
+  10.concourse-deployment:
+    # Note: most version values defined here by the 'versions.yml' file are
+    # actually overridden below by deployment variables. This mainly because
+    # currently, the variables defined in such a variables file cannot be
+    # imported by other subsystems.
+    - file: versions
 
 
 deployment_vars:
@@ -36,39 +49,43 @@ deployment_vars:
 
   # User-facing settings
 
-  concourse_domain: ci.easyfoundry.prototyp.it
+  external_host: ci.easyfoundry.prototyp.it
   atc_basic_auth_username: admin
+  # uaa_external_host: uaa.ci.easyfoundry.prototyp.it # only when 'expose-uaa-externally.yml' is enabled
 
 
   # Versions
 
-  concourse_version: "3.14.1"
-  concourse_sha1: 6be91b70ecc7ce233d2aff5d03ed28c8eab3d132
+  # concourse_version: "4.2.1" # now defined in the 'versions.yml' file
+  # concourse_sha1: 470a6fdd7cb82fc723d7d78930c7d261ca4a6cb4
 
-  garden_runc_version: "1.14.0"
-  garden_runc_sha1: be5e6d6a263be1437d99dc5e818deeb8ab2a03a4
+  garden_runc_version: "1.16.7"
+  garden_runc_sha1: c5d6bedc7aec670cda0f9808de67fe2feeb4d583
 
-  postgres_version: "28"
-  postgres_sha1: c1fcec62cb9d2e95e3b191e3c91d238e2b9d23fa
+  postgres_version: "30"
+  postgres_sha1: a798999d29b9f5aa12035cff907b26674b491200
 
-  credhub_version: "1.9.3"
-  credhub_sha1: 648658efdef2ff18a69914d958bcd7ebfa88027a
+  # os_conf_version:          # imported below
+  # os_conf_sha1:             # imported below
 
-  os_conf_version: "20"
-  os_conf_sha1: 42b1295896c1fbcd36b55bfdedfe86782b2c9fba
+  # bosh_dns_aliases_version: # imported below
+  # bosh_dns_aliases_sha1:    # imported below
 
-  # uaa_version:  # imported below
-  # uaa_sha1:     # imported below
+  # credhub_version:          # imported below
+  # credhub_sha1:             # imported below
 
-  # bpm_version:  # imported below
-  # bpm_sha1:     # imported below
+  # uaa_version:              # imported below
+  # uaa_sha1:                 # imported below
 
-  # routing_version:  # imported below
-  # routing_sha1:     # imported below
+  # bpm_version:              # imported below
+  # bpm_sha1:                 # imported below
 
-  # stemcell_os:      # imported below
-  # stemcell_version: # imported below
-  # stemcell_sha1:    # imported below
+  # routing_version:          # imported below
+  # routing_sha1:             # imported below
+
+  # stemcell_os:              # imported below
+  # stemcell_version:         # imported below
+  # stemcell_sha1:            # imported below
 
 
   # Scaling properties
@@ -121,6 +138,13 @@ imported_vars:
         from: depl-vars
         path: /routing_sha1
 
+      - name: credhub_version
+        from: depl-vars
+        path: /credhub_version
+      - name: credhub_sha1
+        from: depl-vars
+        path: /credhub_sha1
+
       - name: uaa_version
         from: depl-vars
         path: /uaa_version
@@ -128,6 +152,24 @@ imported_vars:
         from: depl-vars
         path: /uaa_sha1
 
+      - name: os_conf_version
+        from: depl-vars
+        path: /os_conf_version
+      - name: os_conf_sha1
+        from: depl-vars
+        path: /os_conf_sha1
+
+      - name: bosh_dns_aliases_version
+        from: depl-vars
+        path: /bosh_dns_aliases_version
+      - name: bosh_dns_aliases_sha1
+        from: depl-vars
+        path: /bosh_dns_aliases_sha1
+
       - name: cf_deployment_name
         from: depl-vars
         path: /deployment_name
+
+      - name: concourse-external-ca
+        from: depl-creds
+        path: /router_tls_backends_ca

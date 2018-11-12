@@ -1,0 +1,32 @@
+---
+
+- path: /instance_groups/name=uaa/jobs?/name=uaa/properties/uaa/ssl/port
+  type: replace
+  value: &uaa_tls_bind_port 8443
+
+- path: /instance_groups/name=uaa/jobs?/name=uaa/properties/uaa/url
+  type: replace
+  value: https://((uaa_external_host))
+
+- path: /instance_groups/name=uaa/jobs/name=route_registrar?
+  type: replace
+  value:
+    name: route_registrar
+    release: routing
+    consumes:
+      nats:
+        from: nats
+        deployment: ((cf_deployment_name))
+    properties:
+      route_registrar:
+        routes:
+          - name: ((deployment_name))_uaa_https
+            tls_port: *uaa_tls_bind_port
+            server_cert_domain_san: ((uaa_external_host))
+            registration_interval: 20s
+            uris:
+              - ((uaa_external_host))
+
+- path: /variables/name=uaa-tls/options/alternative_names/-
+  type: replace
+  value: ((uaa_external_host))

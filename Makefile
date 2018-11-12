@@ -37,10 +37,7 @@ runtime-config:
 traefik:
 	gbe $(VERB) -y $@
 
-concourse-manifest:
-	gbe converge --manifest concourse
-
-cf: traefik concourse-manifest
+cf: traefik
 	gbe $(VERB) -y $@
 
 concourse: cf

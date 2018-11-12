@@ -97,7 +97,7 @@ operations_files:
     - database-pxc-bosh-lite
     - log-cache-bosh-lite
     - scale-disks
-    # - tls-from-gorouters-to-backends
+    - tls-from-gorouters-to-backends
     - missing-network-renames
 
 
@@ -145,8 +145,17 @@ deployment_vars:
   cf_mysql_version: "36.15.0"
   cf_mysql_sha1: 0764d9d6aae7cefd10019437ed83e7715e614633
 
+  credhub_version: "2.1.1"
+  credhub_sha1:    dd0b607d855a8d23e6fd52b990573570e68bbbf6
+
   uaa_version: "63.0"
   uaa_sha1: 1ad8813665e94d2a3defda3304083af57c151541
+
+  os_conf_version: "20.0.0"
+  os_conf_sha1: a60187f038d45e2886db9df82b72a9ab5fdcc49d
+
+  bosh_dns_aliases_version: "0.0.3"
+  bosh_dns_aliases_sha1: b0d0a0350ed87f1ded58b2ebb469acea0e026ccc
 
   network_name: default # injected in cloud-config
 
@@ -157,9 +166,3 @@ imported_vars:
       - name: grafana_redirect_uri
         from: depl-vars
         value: https://uaa.((system_domain))/login
-
-  - subsys: concourse
-    imports:
-      - name: concourse_external_ca_certificate
-        from: depl-creds
-        path: /concourse-external-ca/certificate

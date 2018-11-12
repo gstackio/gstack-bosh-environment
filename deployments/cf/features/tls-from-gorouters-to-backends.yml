@@ -1,10 +1,35 @@
 ---
 
+- path: /releases/name=os-conf?
+  type: replace
+  value:
+    name: os-conf
+    version: ((os_conf_version))
+    url: https://bosh.io/d/github.com/cloudfoundry/os-conf-release?v=((os_conf_version))
+    sha1: ((os_conf_sha1))
+
 - path: /instance_groups/name=router/jobs/name=gorouter/properties/router/backends?/enable_tls
   type: replace
   value: true
 
-- path: /instance_groups/name=router/jobs/name=gorouter/properties/router/ca_certs?
+- path: /instance_groups/name=router/jobs/name=ca_certs?
   type: replace
-  value: |
-    ((concourse_external_ca_certificate))
+  # Note: we don't use the 'router.ca_certs' job property here, because it's
+  # already used by the default 'cf-deployment.yml' and we don't wan't to
+  # interfeere or being coupled with any updates that might occur over there.
+  # Instead, we opt for this alternative solution, based on 'os-conf' release.
+  value:
+    name: ca_certs
+    release: os-conf
+    properties:
+      certs: |
+        ((router_tls_backends_ca.certificate))
+
+- path: /variables/name=router_tls_backends_ca?
+  type: replace
+  value:
+    name: router_tls_backends_ca
+    type: certificate
+    options:
+      is_ca: true
+      common_name: Router-TLS-Backends-CA

@@ -1,0 +1,9 @@
+---
+
+- path: /variables/name=encryption_key?
+  type: replace
+  value:
+    name: encryption_key
+    type: password
+    options:
+      length: 32

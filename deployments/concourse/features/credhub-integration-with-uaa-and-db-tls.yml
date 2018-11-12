@@ -15,6 +15,97 @@
 
 
 
+# ------------------------------ #
+# BOSH addons: BPM, DNS Aliases & Database CA cert #
+# ------------------------------ #
+
+- path: /releases/name=bpm?
+  type: replace
+  value:
+    name: bpm
+    version: ((bpm_version))
+    url: https://bosh.io/d/github.com/cloudfoundry-incubator/bpm-release?v=((bpm_version))
+    sha1: ((bpm_sha1))
+
+- path: /releases/name=bosh-dns-aliases?
+  type: replace
+  value:
+    name: bosh-dns-aliases
+    version: ((bosh_dns_aliases_version))
+    url: https://bosh.io/d/github.com/cloudfoundry/bosh-dns-aliases-release?v=((bosh_dns_aliases_version))
+    sha1: ((bosh_dns_aliases_sha1))
+
+- path: /releases/name=os-conf?
+  type: replace
+  value:
+    name: os-conf
+    version: ((os_conf_version))
+    url: https://bosh.io/d/github.com/cloudfoundry/os-conf-release?v=((os_conf_version))
+    sha1: ((os_conf_sha1))
+
+- path: /addons?/name=bpm
+  type: replace
+  value:
+    name: bpm
+    include:
+      instance_groups:
+        - uaa
+        - credhub
+    jobs:
+      - name: bpm
+        release: bpm
+
+- path: /addons/name=bosh-dns-aliases?/jobs/name=bosh-dns-aliases/release
+  type: replace
+  # Note: we use this trick here, for defining 'name:' and 'release:' keys
+  # only, in order to define the addon without clobbering any previously-
+  # defined aliases properties.
+  value: bosh-dns-aliases
+
+- path: /addons/name=db-ca-cert?
+  type: replace
+  value:
+    name: db-ca-cert
+    include:
+      instance_groups:
+        - uaa
+        - credhub
+        - web
+    jobs:
+      - name: ca_certs
+        release: os-conf
+        properties:
+          certs: |
+            ((database-tls.ca))
+
+
+
+# ------------------------ #
+# Instance groups ordering #
+# ------------------------ #
+
+- path: /instance_groups/name=db:after
+  type: replace
+  value:
+    name: uaa
+    instances: 1
+    azs: [ z1 ]
+    networks: [ { name: ((network_name)) } ]
+    stemcell: xenial
+    vm_type: default
+
+- path: /instance_groups/name=uaa:after
+  type: replace
+  value:
+    name: credhub
+    instances: 1
+    azs: [ z1 ]
+    networks: [ { name: ((network_name)) } ]
+    stemcell: xenial
+    vm_type: default
+
+
+
 # ------- #
 # CredHub #
 # ------- #
@@ -27,19 +118,31 @@
     url: https://bosh.io/d/github.com/pivotal-cf/credhub-release?v=((credhub_version))
     sha1: ((credhub_sha1))
 
-- path: /instance_groups/name=web/jobs/name=credhub?
+- path: /addons?/name=bosh-dns-aliases/jobs/name=bosh-dns-aliases/properties?/aliases/-
+  type: replace
+  value:
+    domain: &credhub_service_address credhub.service.concourse.internal
+    targets:
+    - query: '*'
+      instance_group: credhub
+      deployment: ((deployment_name))
+      network: ((network_name))
+      domain: bosh
+
+- path: /instance_groups/name=credhub/jobs?/name=credhub
   type: replace
   value:
     name: credhub
     release: credhub
     properties:
+      bpm: { enabled: true }
       credhub:
         port: 8844
         tls: ((credhub-tls))
         authentication:
           uaa:
-            url: &uaa_url https://127.0.0.1:8443
-            verification_key: ((uaa-jwt))
+            url: &uaa_url https://uaa.service.concourse.internal:8443
+            verification_key: ((uaa-jwt-signing-key.public_key))
             ca_certs:
               - ((uaa-tls.certificate))
         data_storage:
@@ -49,14 +152,24 @@
           database: &credhub_db_name credhub
         encryption:
           keys:
-            - provider_name: internal_ecrypter
+            - provider_name: internal_encrypter
               key_properties:
                 encryption_password: ((credhub-encryption-password))
               active: true
           providers:
-            - name: internal_ecrypter
+            - name: internal_encrypter
               type: internal
         log_level: ((log_level))
+        max_heap_size: 384
+
+- path: /instance_groups/name=credhub/update?/canary_watch_time
+  type: replace
+  value: 10000-120000
+
+- path: /instance_groups/name=credhub/update?/update_watch_time
+  type: replace
+  value: 10000-120000
+
 
 - path: /instance_groups/name=db/jobs/name=postgres/properties/databases/databases/-
   type: replace
@@ -69,6 +182,7 @@
     name: *credhub_db_username
     password: *credhub_db_password
 
+
 - path: /variables/name=credhub-tls?
   type: replace
   value:
@@ -76,9 +190,7 @@
     type: certificate
     options:
       ca: concourse-internal-ca
-      common_name: 127.0.0.1
-      alternative_names:
-        - ((web_ip))
+      common_name: *credhub_service_address
 
 - path: /variables/name=credhub-database-password?
   type: replace
@@ -106,7 +218,18 @@
     url: https://bosh.io/d/github.com/cloudfoundry/uaa-release?v=((uaa_version))
     sha1: ((uaa_sha1))
 
-- path: /instance_groups/name=web/jobs/name=uaa?
+- path: /addons?/name=bosh-dns-aliases/jobs/name=bosh-dns-aliases/properties?/aliases/-
+  type: replace
+  value:
+    domain: &uaa_service_address uaa.service.concourse.internal
+    targets:
+      - query: '*'
+        instance_group: uaa
+        deployment: ((deployment_name))
+        network: ((network_name))
+        domain: bosh
+
+- path: /instance_groups/name=uaa/jobs?/name=uaa?
   type: replace
   value:
     name: uaa
@@ -114,13 +237,10 @@
     consumes:
       database: { from: postgres }
     properties:
-      bpm: { enabled: false }
+      bpm: { enabled: true }
       uaa:
-        port: -1 # Deactivate HTTP port 8080 for the healthcheck to properly
-                 # curl the 8443 port (this has been fixed in UAA v60)
-        ssl: { port: 8443 }
-        url: *uaa_url
-        catalina_opts: -Djava.security.egd=file:/dev/./urandom -Xmx768m -XX:MaxMetaspaceSize=256m
+        url: https://uaa.service.concourse.internal
+        catalina_opts: "-Djava.security.egd=file:/dev/./urandom -Xms384m -Xmx384m -XX:MaxMetaspaceSize=256m"
         scim:
           users:
             - name: admin
@@ -141,7 +261,7 @@
             active_key_id: key-1
             keys:
               key-1:
-                signingKey: ((uaa-jwt.private_key))
+                signingKey: ((uaa-jwt-signing-key.private_key))
         logging_level: ((log_level))
       uaadb:
         port: 5432
@@ -164,14 +284,13 @@
           - label: encryption_key1
             passphrase: ((uaa-encryption-passphrase))
 
-- path: /instance_groups/name=web/update?/canary_watch_time
+- path: /instance_groups/name=uaa/update?/canary_watch_time
   type: replace
-  # With UAA, and CreHub starting after it, the startup may be slower
-  value: 10000-150000
+  value: 10000-120000
 
-- path: /instance_groups/name=web/update?/update_watch_time
+- path: /instance_groups/name=uaa/update?/update_watch_time
   type: replace
-  value: 10000-150000
+  value: 10000-120000
 
 
 - path: /instance_groups/name=db/jobs/name=postgres/properties/databases/databases/-
@@ -192,10 +311,10 @@
     name: uaa-admin-user-password
     type: password
 
-- path: /variables/name=uaa-jwt?
+- path: /variables/name=uaa-jwt-signing-key?
   type: replace
   value:
-    name: uaa-jwt
+    name: uaa-jwt-signing-key
     type: rsa
     options:
       key_length: 4096
@@ -207,10 +326,7 @@
     type: certificate
     options:
       ca: concourse-external-ca
-      common_name: 127.0.0.1
-      alternative_names:
-        - ((web_ip))
-        - ((concourse_domain))
+      common_name: *uaa_service_address
 
 - path: /variables/name=uaa-admin-client-secret?
   type: replace
@@ -242,7 +358,7 @@
 # UAA integration for CredHub #
 # --------------------------- #
 
-- path: /instance_groups/name=web/jobs/name=uaa/properties/uaa/clients?/credhub_cli
+- path: /instance_groups/name=uaa/jobs/name=uaa/properties/uaa/clients?/credhub_cli
   type: replace
   value:
     override: true
@@ -253,7 +369,7 @@
     refresh-token-validity: 3600
     secret: ""
 
-- path: /instance_groups/name=web/jobs/name=uaa/properties/uaa/clients?/credhub-admin
+- path: /instance_groups/name=uaa/jobs/name=uaa/properties/uaa/clients?/credhub-admin
   type: replace
   value:
     override: true
@@ -290,7 +406,7 @@
 
 # From turbo <https://github.com/pivotalservices/turbo/blob/master/deployments/ucc/manifest/manifest.yml#L137-L145>
 # From BUCC <https://github.com/starkandwayne/bucc/blob/master/ops/4-concourse-credhub.yml#L12-L20>
-- path: /instance_groups/name=web/jobs/name=uaa/properties/uaa/clients/concourse-to-credhub?
+- path: /instance_groups/name=uaa/jobs/name=uaa/properties/uaa/clients/concourse-to-credhub?
   type: replace
   value:
     override: true
@@ -313,14 +429,6 @@
 # Database TLS for ATC, CredHub and UAA #
 # ------------------------------------- #
 
-- path: /releases/name=os-conf?
-  type: replace
-  value:
-    name: os-conf
-    version: ((os_conf_version))
-    url: https://bosh.io/d/github.com/cloudfoundry/os-conf-release?v=((os_conf_version))
-    sha1: ((os_conf_sha1))
-
 
 - path: /instance_groups/name=web/jobs/name=atc/properties/postgresql/sslmode?
   type: replace
@@ -331,25 +439,16 @@
   value: ((database-tls.ca))
 
 
-- path: /instance_groups/name=web/jobs/name=credhub/properties/credhub/data_storage/require_tls?
+- path: /instance_groups/name=credhub/jobs/name=credhub/properties/credhub/data_storage/require_tls?
   type: replace
   value: true
 
-- path: /instance_groups/name=web/jobs/name=credhub/properties/credhub/data_storage/tls_ca?
+- path: /instance_groups/name=credhub/jobs/name=credhub/properties/credhub/data_storage/tls_ca?
   type: replace
   value: ((database-tls.ca))
 
 
-- path: /instance_groups/name=web/jobs/name=ca_certs?
-  type: replace
-  value:
-    name: ca_certs
-    release: os-conf
-    properties:
-      certs: |
-        ((database-tls.ca))
-
-- path: /instance_groups/name=web/jobs/name=uaa/properties/uaadb/tls_enabled?
+- path: /instance_groups/name=uaa/jobs/name=uaa/properties/uaadb/tls_enabled?
   type: replace
   # Note: enabling this requires the CA cert to be in
   # /usr/local/share/ca-certificates, as the 'ca_cert' job of 'os-conf'
@@ -357,7 +456,7 @@
   value: true
 
 
-- path: /instance_groups/name=web/jobs/name=uaa/properties/uaadb/skip_ssl_validation?
+- path: /instance_groups/name=uaa/jobs/name=uaa/properties/uaadb/skip_ssl_validation?
   type: replace
   value: false
 

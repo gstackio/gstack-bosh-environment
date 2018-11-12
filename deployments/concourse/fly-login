@@ -21,15 +21,11 @@ function state_var() {
     bosh int "$BASE_DIR/state/$SUBSYS_NAME/$state_file.yml" --path "$path"
 }
 
-function depl_var() {
-    state_var depl-manifest "$1"
-}
-
 function creds_var() {
     state_var depl-creds "$1"
 }
 
-concourse_domain=$(spec_var /deployment_vars/concourse_domain)
+external_host=$(spec_var /deployment_vars/external_host)
 atc_username=$(spec_var /deployment_vars/atc_basic_auth_username)
 atc_password=$(creds_var /atc_basic_auth_password)
 
@@ -37,7 +33,7 @@ if [[ ! -e $BASE_DIR/bin/fly ]]; then
 	"$SUBSYS_DIR/fetch-fly-cli"
 fi
 
-"$BASE_DIR/bin/fly" -t ef login -k -c "https://$concourse_domain" \
+"$BASE_DIR/bin/fly" -t ef login -k -c "https://${external_host}" \
 	-u "$atc_username" -p "$atc_password"
 login_status=$?
 

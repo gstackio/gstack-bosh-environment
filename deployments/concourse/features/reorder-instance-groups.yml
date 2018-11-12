@@ -1,0 +1,36 @@
+---
+
+- path: /instance_groups/name=db
+  type: remove
+
+- path: /instance_groups/name=web:before
+  type: replace
+  value:
+    # NOTE: the instance group definition below is a pure copy/pase of the
+    # 'db' instance group in the 'concourse.yml' base deployment manifest.
+    name: db
+    instances: 1
+    azs: [ z1 ]
+    networks: [ { name: ((network_name)) } ]
+    stemcell: xenial
+    vm_type: ((db_vm_type))
+    persistent_disk_type: ((db_persistent_disk_type))
+    jobs:
+      - release: postgres
+        name: postgres
+        properties:
+          databases:
+            port: 5432
+            databases:
+              - name: atc
+            roles:
+              - name: concourse
+                password: ((postgres_password))
+
+- path: /update/serial
+  type: replace
+  value: true
+
+- path: /update/max_in_flight
+  type: replace
+  value: 1
