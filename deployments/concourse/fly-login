@@ -30,7 +30,7 @@ atc_username=$(spec_var /deployment_vars/atc_basic_auth_username)
 atc_password=$(creds_var /atc_basic_auth_password)
 
 if [[ ! -e $BASE_DIR/bin/fly ]]; then
-	"$SUBSYS_DIR/fetch-fly-cli"
+	bash ${DEBUG:+"-x"} "$SUBSYS_DIR/fetch-fly-cli"
 fi
 
 "$BASE_DIR/bin/fly" -t ef login -k -c "https://${external_host}" \

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -eo pipefail
 
 SUBSYS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 readonly SUBSYS_DIR
@@ -40,7 +40,7 @@ concourse_target=ef
 set -x
 
 if ! fly -t "$concourse_target" status; then
-    "$SUBSYS_DIR/fly-login"
+    bash ${DEBUG:+"-x"} "$SUBSYS_DIR/fly-login"
 fi
 
 fly -t "$concourse_target" set-pipeline -n -p "$pipeline_name" -c <(set +x; echo "$pipeline"; set -x)
