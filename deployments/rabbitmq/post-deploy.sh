@@ -37,5 +37,11 @@ function run_errand_with_retry_for_debugging() {
     return ${error}
 }
 
-run_errand_with_retry_for_debugging "smoke-tests"
-exit $?
+# Due to an "sslv3 alert handshake failure", smoke tests are currently broken
+# for the RabbitMQ subsystem.
+#
+# See: https://github.com/pivotal-cf/cf-rabbitmq-smoke-tests-release/issues/3
+# See also: https://github.com/pivotal-cf/cf-rabbitmq-smoke-tests-release/pull/4
+#
+# run_errand_with_retry_for_debugging "smoke-tests"
+# exit $?
