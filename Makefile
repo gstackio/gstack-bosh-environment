@@ -81,7 +81,7 @@ data-services: cf
 mysql: cf
 	gbe $(VERB) -y $@
 
-neo4j: cf
+neo4j:
 	gbe $(VERB) -y $@
 
 postgres: cf
