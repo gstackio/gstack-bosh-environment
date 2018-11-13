@@ -58,10 +58,6 @@
       ingress_port: 443
     - name: CF SSH
       ingress_port: 2222
-    - name: Concourse HTTP
-      ingress_port: 8080
-    - name: CF-MySQL
-      ingress_port: 3306
     - name: SHIELD HTTPS
       ingress_port: 10443
     - name: SHIELD v7 HTTPS
@@ -95,10 +91,6 @@
       ingress_port: 443
     - name: CF SSH
       ingress_port: 2222
-    - name: Concourse HTTP
-      ingress_port: 8080
-    - name: CF-MySQL
-      ingress_port: 3306
     - name: SHIELD HTTPS
       ingress_port: 10443
     - name: SHIELD v7 HTTPS
