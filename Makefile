@@ -34,7 +34,7 @@ runtime-config:
 
 
 
-traefik:
+traefik: configs
 	gbe $(VERB) -y $@
 
 cf: traefik
