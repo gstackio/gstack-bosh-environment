@@ -1,290 +1,160 @@
-GBE — Gstack BOSH Environment
-=============================
+GBE (Gstack BOSH Environment) & Easy Foundry
+============================================
 
-GBE is the best BOSH 2.0 framework out there, no kidding. BOSH 2.0 is
-fantastic, and it now has its framework for doing bigger things with it.
+### GBE
 
-The great thing with GBE is that it models BOSH 2.0
-[environments](./docs/faq.md#what-do-you-mean-by-bosh-environment) and
-[deployments](./docs/faq.md#how-is-a-bosh-deployment-described) in an
-efficient way that helps operators in bootstrapping and working day-to-day
-with BOSH 2.0 infrastructure-as-code. For this, GBE establishes conventions
-and simple workflows. With GBE, operators can optionally track the
-infrastructure state in Git.
+GBE is a set of tools and conventions that establish best practice for
+managing “infrastructure as code”, through the _description_ of an expected
+infrastructure state, and _convergence_ towards that state.
+
+GBE a **convergent infrastructure framework** if you like, where the idea of
+“converging” infrastructure is a essential concept that embraces both initial
+deployment and any further updates or upgrades. It's a solution for both day 1
+_and_ day 2 concerns.
+
+### Easy Foundry
+
+_Easy Foundry_ is an Open Source distribution of Cloud Foundry, based on GBE.
+By “_distribution_”, we mean a set of [infrastructure modules](./docs/components.md)
+around Cloud Foundry that are consistently glued together to provide usable
+features. Those modules can be opted-in or out, whenever necessary, and have
+dependencies. You can think of it like a package manager for deploying
+distributed systems.
+
+One of the main design goals of Easy Foundry is to have minimal coupling with
+proprietary Cloud services, and thus reduce the risk of being tied with any
+Cloud Provider. This preserves Easy Foundry adopters freedom to chose the
+provider they want, and still being free to switch whenever necessary.
 
 
-Easy Foundry
-------------
 
-As a showcase example, GBE ships with **Easy Foundry**, which is a 100% Open
-Source distribution of Cloud Foundry. Easy Foundry provides you with
-everything you need around Cloud Foundry so that you get something complete in
-a snap (thanks to GBE), and right from the start.
+Overall picture
+---------------
 
-The [deployments](./deployments/) directory lists all the components that are
-currently integrated together. Namely:
+GBE brings a solution to several separate concerns:
 
-- [Cloud Foundry](https://github.com/cloudfoundry/cf-deployment), for pushing
-  code and get deployed and working stateless web applications.
+1. Bootstrap a BOSH environment. This is mainly about creating a BOSH server,
+   properly configured to pilot some _automated infrastructure_*. Here we
+   basically propose a (big) wrapper around `bosh create-env` for making
+   things easy, smooth, and provide a completely automated bootstrap process.
 
-- [Concourse](https://github.com/concourse/concourse) for Continuous
-  Integration.
+2. Converge [infrastructure modules](./docs/components.md), targeting a given
+   BOSH environment. This could be seen as a (big) wrapper around
+   `bosh deploy` for making things easy, smooth, and ensure modularity.
 
-- A 3-nodes [MariaDB](https://github.com/cloudfoundry/cf-mysql-release)
-  cluster available as Database-as-a-Service in `cf marketplace`.
+3. Converge application deployments on top of the converged infrastructure
+   modules. This is not finished yet, but is planned for the near future.
 
-- A [Cassandra](https://github.com/orange-cloudfoundry/cassandra-cf-service-boshrelease)
-  cluster, provided as Database-as-a-Service in `cf marketplace` for Big Data
-  needs.
+Those are separated. You could create your BOSH environment with any other
+solution like [BUCC][bucc], and still be able to deploy Easy Foundry on top of
+it.
 
-- A [RabbitMQ](https://github.com/pivotal-cf/cf-rabbitmq-release) 2-nodes
-  cluster with queue mirroring, for `cf marketplace` Message-Bus-as-a-Service.
 
-- Simple data services, like MySQL 5.6, PostgreSQL 9.6 and Redis 3.2
-  ([many others](https://github.com/cloudfoundry-community/docker-broker-deployment/tree/2eb645649b2fdb8e85bebdc8cbac29bc36533b96/operators/services/aged)
-  are possible), running as single Docker instances, and provided as
-  `cf marketplace` services that can be bound to your application.
+_* Automated Infrastructure_: BOSH supports various [Iaas][iaas] like public
+or private clouds, [Bare-Metal][bare_metal]-as-a-Service solutions like
+RackHD, or container orchestration platforms like Kubernetes.
 
-- [Logsearch](https://github.com/cloudfoundry-community/logsearch-boshrelease)
-  for ELK-based logs aggregation.
+[bucc]: https://github.com/starkandwayne/bucc
+[iaas]: https://en.wikipedia.org/wiki/Infrastructure_as_a_service
+[bare_metal]: https://en.wikipedia.org/wiki/Bare-metal_server
 
-- [Prometheus](https://github.com/bosh-prometheus/prometheus-boshrelease) for
-  monitoring concerns.
 
-- [SHIELD](https://github.com/starkandwayne/shield-boshrelease) for handling
-  backups of your statefull database clusters.
+
+Topologies
+----------
+
+### Deployment modes
+
+We address several deployment modes that are worth being explained.
+
+- **Multi VMs**: This is the classical BOSH mode, as used by many Fortune 500
+  companies for their production infrastructures. The BOSH server runs alone
+  on its VM, and all managed nodes are running on their own VM too. This mode
+  provides proper isolation between workloads and thus higher robustness, for
+  higher costs.
+
+- **Single VM**: This is the classical _BOSH-Lite_ mode, where one single VM
+  runs both the BOSH server, and managed nodes. The BOSH server is on the VM
+  itself, whereas managed nodes are deployed in containers, on the same VM.
+  This mode provides poor isolation of workloads, for absolute minimal costs.
+
+- **Hybrid VMs**: One VM, that only runs the BOSH server, and a second one for
+  running the managed nodes only. This is a hybrid setup where the BOSH server
+  is on its VM alone, whereas managed nodes are deployed in containers, on a
+  separate VM. This mode provides improved isolation, for very reduced costs.
+
+### Support status
+
+#### `gbe up`-based environments
+
+Infrastructure     | Topology   | System | Status             | GBE Flavor
+-------------------|------------|--------|--------------------|------------
+Bare-Metal server  | Single VM  | Linux  | Supported          | `ddbox`
+Bare-Metal server  | Hybrid VMs | Linux  | Actively supported | `ddbox`
+Bare-Metal server  | Multi VMs  | Linux  | Not planned        | `ddbox`
+Google Cloud (GCP) | Single VM  | Linux  | Supported          | `gcp`
+Google Cloud (GCP) | Hybrid VMs | Linux  | Not supported      | `gcp`
+Google Cloud (GCP) | Multi VMs  | Linux  | Not supported      | `gcp`
+Local Virtualbox   | Single VM  | Linux  | Supported          | `ddbox`
+Local Virtualbox   | Hybrid VMs | Linux  | Actively supported | `ddbox`
+Local Virtualbox   | Multi VMs  | Linux  | Not planned        | `ddbox`
+Local Virtualbox   | Single VM  | macOS  | Supported          | `ddbox`
+Local Virtualbox   | Hybrid VMs | macOS  | Supported          | `ddbox`
+Local Virtualbox   | Multi VMs  | macOS  | Not planned        | `ddbox`
+
+#### `bucc up`-based environments
+
+Infrastructure     | Topology  | System | Status
+-------------------|-----------|--------|--------
+AWS                | Multi VM  | Linux  | Supported
+Azure              | Multi VM  | Linux  | Supported
+Azure Stack        | Multi VM  | Linux  | Supported
+Docker             | Single VM | Linux  | Not supported
+Google Cloud (GCP) | Multi VM  | Linux  | Supported
+OpenStack          | Multi VM  | Linux  | Supported
+Virtualbox         | Single VM | Linux  | Supported
+vSphere            | Multi VM  | Linux  | Supported
 
 
 
 Getting started
 ---------------
 
-After some setup steps, the idea is to just run `gbe up` and `gbe converge all`.
-Then you can deploy apps in an awesome feature-full Cloud Foundry platform.
+Basically, you need to:
 
+1. Check some prerequisites.
 
-### Prerequisites
+2. `gbe up` for converging the base infrastructure environment.
 
-GBE is available to be used on GCP (Google Cloud Platform) or on-premise with
-Virtualbox. The Virtualbox is not really for your laptop (though GBE supports
-this use-case), but for being used on a bare-metal (physical) server of your
-own. We recommend providing ≈50GB of RAM for a complete Easy Foundry setup.
+3. `gbe converge` for converging [infrastructure modules](./docs/components.md)
+   or application deployments.
 
-Bash version 4 is necessary. On Linux boxes, this is now the default with
-recent distributions. On macOS though, the default is a Bash version 3. In
-this case, you need to install a more recent one whith `brew install bash` and
-ensure that `/usr/local/bin` in front of your `$PATH`.
 
-Depending on the flavor you choose, read one of these:
-- [GCP prerequisites](./docs/gcp-prerequisites.md)
-- [Virtualbox prerequisites](./docs/virtualbox-prerequisites.md)
+### Deployment guides
 
+We have several deployment guides for some topologies that we support.
 
-### Quick start
+- [Bare-Metal server](./docs/getting-started/bare-metal.dm)
+- [Google Cloud VM](./docs/getting-started/gcp-vm.dm)
+- [Local laptop](./docs/getting-started/local-vbox.dm)
 
-Let's get Easy Foundry up with GBE!
-
-
-#### 1. Start your project
-
-```bash
-git clone https://github.com/gstackio/gstack-bosh-environment.git
-
-cd gstack-bosh-environment/
-
-source /dev/stdin <<< "$(./bin/gbe env)" # sorry if that's clumsy, we couldn't get it easier unfortunately
-```
-
-
-#### 2. Configure GCP access [GCP only]
-
-1. Pick your own service account name, instead of the example
-   `my-service-account` below.
-
-2. Get your project ID from Google Cloud, and use it instead of the example
-   `alpha-sandbox-717101` below.
-
-```bash
-gbe gcp "my-service-account" "alpha-sandbox-717101"
-```
-
-This is a once-for-all setup that will create the private key file
-`base-env/conf/gcp-service-account.key.json` inside your project.
-The `base-env/conf/env-infra-vars.yml` file will also be updated with your
-specific GCP project ID. You can tweak your GCP zone, though and change the
-`zone: europe-west1-d` to whatever suits you best.
-
-
-#### 2. Provision Virtualbox [local Virtualbox only]
-
-Install Virtualbox 5.2+. On macOS, run `brew cask install virtualbox` and on
-Linux, [follow the documentation](https://www.virtualbox.org/wiki/Linux_Downloads).
-
-
-#### 2. Provision Virtualbox [distant Virtualbox only]
-
-Run the provided Ansible playbook to install Virtualbox and setup the network.
-
-```bash
-cd ddbox-env/provision
-$EDITOR ansible.cfg # review your username, and make sure it has your public key in its '~/.ssh/authorized_keys' file
-$EDITOR inventory.cfg # put the IP address of your remote box in the 'dedibox' section
-ansible-playbook -i inventory.cfg --ask-become provision.yml
-```
-
-
-#### 3. Configure your BOSH environment [GCP only]
-
-Edit the “gcp” environment's `spec.yml` file.
-
-```bash
-$EDITOR gcp-env/conf/spec.yml # in the 'infra_vars' section,
-                              # set the GCP region & zone,
-                              # and also check GCP project ID
-export GBE_ENVIRONMENT=gcp-env
-```
-
-
-#### 3. Configure your BOSH environment [distant Virtualbox only]
-
-Edit the `ddbox-env` environment's `spec.yml` file.
-
-```bash
-$EDITOR ddbox-env/conf/spec.yml
-```
-
-In the `operations_files` section, enable the `virtualbox/remote` ops file.
-
-In the `deployment_vars` section, input these variables
-
-```yaml
-  external_ip: "192.168.50.6"
-  vbox_host: "<the public IP of your distant box>"
-  vbox_username: "<an SSH-accessible username on the distant box>"
-  vbox_ssh:
-    private_key: |
-      -----BEGIN RSA PRIVATE KEY-----
-      <a valid SSH key for accessing the distant box with the specified username>
-      -----END RSA PRIVATE KEY-----
-```
-
-Establish a tunnel from your local machine to your distant box, using the same
-IP address and username.
-
-```bash
-sshuttle -r <username>@<distant-box-ip> 192.168.50.0/24 10.244.0.0/16
-```
-
-
-#### 3. Configure your BOSH environment [local Virtualbox only]
-
-Adjust the VM size for the “ddbox” environment.
-
-```bash
-$EDITOR ddbox-env/features/scale-vm-size.yml # set the number of CPUs to 4,
-                                             # and VM memory size to 8000 MB
-```
-
-Edit the `ddbox-env` environment's `spec.yml` file.
-
-```bash
-$EDITOR ddbox-env/conf/spec.yml
-```
-
-And set the `dns` section like this:
-
-```yaml
-dns:
-  zone: sslip.io
-  subdomain: 192-168-50-6
-```
-
-Then you can skip the step #4 about an “external DNS zone”.
-
-
-#### 4. Configure an external DNS zone
-
-To fully enjoy Cloud Foundry, you can setup an external DNS zone that GBE will
-converge with records pointing to your Easy Foundry installation.
-
-The DNS zone and subdomain setup is made in the environment `conf/spec.yml`,
-under the `dns:` section.
-
-Then provide a [DNSControl](https://github.com/StackExchange/dnscontrol)
-`creds.json` file and adjust the `dns/conf/zone-config-template.js` file. The
-DNS zone is converged as part of the `gbe up` checklist only when a
-`creds.json` file is provided. You'll end up with this layout under the `dns/`
-subdirectory:
-
-```
-dns/
-└── conf
-    ├── creds.json
-    └── zone-config-template.js
-```
-
-
-#### 5. Create your BOSH environment
-
-```bash
-gbe up
-```
-
-If necessary, this will install the supported versions of `bbl`, `terraform`,
-`bosh` and `dnscontrol`, as local binaries for your project. And the necessary
-firewall rules will also be set, calling `gbe firewall` for you. You'll be
-glad to know that everything that is set up here is local to your project.
-
-
-#### 6. Converge your deployments
-
-There is a compound command for converging all Easy Foundry components at
-once.
-
-```bash
-gbe converge all
-```
-
-
-#### Destroy the BOSH environment (optional)
-
-After having fun with Cloud Foundry, if you ever needs to take the whole thing
-down, you can delete the BOSH environment with:
-
-```bash
-gbe down
-```
-
-
-
-Troubleshooting
----------------
-
-```
-Received disconnect from 192.168.50.6 port 22:2: Too many authentication failures for jumpbox
-```
-
-This is a very common error. It means that you have too many keys loaded by
-your SSH agent, and when trying to SSH to the jumpbox, too many keys are tried
-before finding the right one. You can see the list of tried keys with
-`ssh-add -L`.
-
-The solution is to run `ssh-add -D` to remove them, then restart the `gbe`
-command you were running.
+In case you encounter issues, please refer to the [troubleshooting](./docs/troubleshooting.md)
+chapter of the documentation.
 
 
 
 Documentation
 -------------
 
-The `gbe` CLI provides inline help with `gbe help`.
+The `gbe` CLI provides inline help with `gbe help`. And generally, help on a
+given command can be obtained with `gbe <command> -h`.
 
 Other documentations are available in the [docs](./docs/) directory:
 
-- [How to tests the created deployments](./docs/deployments-tests.md)
 - [GBE Command Line Interface workflow](./docs/cli-workflow.md)
 - [GBE Command Line Interface reference](./docs/cli-reference.md)
 - [GBE file structure reference](./docs/gbe-structure-reference.md)
+- [Troubleshooting GBE](./docs/troubleshooting.md)
 
 
 
@@ -298,7 +168,7 @@ Please feel free to submit issues and pull requests.
 Author and License
 ------------------
 
-Copyright © 2017-2018, Benjamin Gandon, Gstack SAS
+Copyright © 2017-2018, Benjamin Gandon, Gstack
 
 Like the rest of BOSH, the Gstack BOSH environment is released under the terms
 of the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0).

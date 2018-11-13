@@ -1,5 +1,9 @@
 # Test the deployments
 
+**DEPRECATION NOTE: This an old piece of documentation that is now outdated
+and needs complete refactoring.**
+
+
 ## Basic tests
 
 The basic tests require no DNS setup. They grab the main IP address running
