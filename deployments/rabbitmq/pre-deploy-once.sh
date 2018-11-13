@@ -5,16 +5,21 @@ set -e # We can't use "-o pipefail" here, see NOTICE below.
 BASE_DIR=${BASE_DIR:-$(git rev-parse --show-toplevel)}
 SUBSYS_DIR=${SUBSYS_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}
 
-function main() {
-    # configuration is here below
-    local input_resource_index="2"
-    local release_name="cf-rabbitmq-smoke-tests"
-    local release_version=$(spec_var /deployment_vars/rabbitmq_smoke_tests_version)
+function _config() {
+    input_resource_index="2"
+    release_name="cf-rabbitmq-smoke-tests"
+    release_version=$(spec_var /deployment_vars/rabbitmq_smoke_tests_version)
+}
 
+function main() {
+    _config
 
     local developing
     developing=$(spec_var /developing)
-    if [[ $developing == false ]]; then
+    # We create a final release only if we are not developing any new version
+    # of the release (in which case we'll need to build a new release at each
+    # deploy or so)
+    if [[ $developing != true ]]; then
         set -x
         create_upload_final_release_if_missing \
             "$input_resource_index" "$release_name" "$release_version"
@@ -49,7 +54,7 @@ function create_upload_final_release() {
     local rsc_name
     rsc_name=$(spec_var "/input_resources/${input_resource_index}/name")
     pushd "$BASE_DIR/.cache/resources/${rsc_name}" || return 115
-        git submodule update --init --recursive
+        # Note: when building a final release, we don't need any submodule
         bosh create-release "releases/${release_name}/${release_name}-${release_version}.yml"
         bosh upload-release
     popd
