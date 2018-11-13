@@ -1,0 +1,5 @@
+---
+
+- path: /compilation/workers
+  type: replace
+  value: ((compilation_workers))

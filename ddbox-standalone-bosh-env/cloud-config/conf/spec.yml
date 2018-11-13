@@ -21,6 +21,7 @@ operations_files:
     - deployment/cloud-config/cf-integration
   20.local:
     - additional-disk-sizes
+    - set-compilation-workers
     - cf-mysql-support
     - concourse-support
     - shield-v8-support
@@ -32,7 +33,11 @@ operations_files:
     - redis-support
 
 
-config_vars: {}
+config_vars:
+  # Note: we lower compilation workers a little bit for our 7-cores test
+  # environment, whose load raises up to 17+ when running cf-d compilations.
+  # Feel free to add more workers for environments with more cores.
+  compilation_workers: 5
 
 
 imported_vars:
