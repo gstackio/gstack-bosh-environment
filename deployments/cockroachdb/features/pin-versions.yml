@@ -1,0 +1,9 @@
+---
+
+# Releases versions
+
+- path: /releases/name=cockroachdb?
+  type: replace
+  value:
+    name: cockroachdb
+    version: ((cockroachdb_version))

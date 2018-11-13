@@ -1,0 +1,5 @@
+---
+
+- path: /features?/use_dns_addresses
+  type: replace
+  value: true

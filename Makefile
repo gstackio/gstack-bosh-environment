@@ -72,6 +72,9 @@ shield-v8:
 cassandra: shield cf
 	gbe $(VERB) -y $@
 
+cockroachdb:
+	gbe $(VERB) -y $@
+
 data-services: cf
 	gbe $(VERB) -y $@
 

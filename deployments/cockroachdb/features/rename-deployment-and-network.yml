@@ -1,0 +1,25 @@
+---
+
+- path: /name
+  type: replace
+  value: ((deployment_name))
+
+
+
+- path: /instance_groups/name=cockroachdb/networks/name=default/name
+  type: replace
+  value: ((network_name))
+
+- path: /instance_groups/name=cockroachdb_root/networks/name=default/name
+  type: replace
+  value: ((network_name))
+
+- path: /instance_groups/name=smoke-tests/networks/name=default/name
+  type: replace
+  value: ((network_name))
+
+
+
+- path: /variables/name=cockroachdb_server_ssl/options/alternative_names/0
+  type: replace
+  value: "*.cockroachdb.((network_name)).((deployment_name)).bosh"

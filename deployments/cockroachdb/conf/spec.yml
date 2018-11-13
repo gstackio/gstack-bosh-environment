@@ -1,0 +1,67 @@
+---
+subsys:
+  name: cockroachdb
+  type: bosh-deployment
+
+input_resources:
+  - name: cockroachdb-boshrelease
+    type: git
+    uri: https://github.com/cppforlife/cockroachdb-release.git
+    version: "536c76e" # master as of final release v4
+
+
+main_deployment_file: cockroachdb-boshrelease/manifests/example.yml
+
+
+operations_files:
+  20.local:
+    - rename-deployment-and-network
+    - pin-stemcell
+    - pin-versions
+    - fix-errands-vm-names
+    - fix-erroneous-job-name
+    - use-dns-addresses
+
+variables_files: {}
+
+
+deployment_vars:
+  deployment_name: easyfoundry-cockroachdb
+
+
+  # Versions
+
+  cockroachdb_version: "4"
+
+  # stemcell_os:      # imported below
+  # stemcell_version: # imported below
+
+  # Note: we are experiencing an error 14 "all SubConns are in
+  # TransientFailure" with a Xenial stemcell, so we try using a Trusty
+  # stemcell instead.
+  stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+  stemcell_os: ubuntu-trusty
+  stemcell_version: "3586.52"
+  stemcell_sha1: 07a7dad0968b61e10daa613de23465de4af7a02f
+
+
+
+  # Reference declarations
+
+  network_name: default # cockroachdb-network
+
+
+
+imported_vars:
+  - subsys: cf
+    imports: []
+
+      # Versions
+
+      # - name: stemcell_os
+      #   from: depl-vars
+      #   path: /stemcell_os
+      # - name: stemcell_version
+      #   from: depl-vars
+      #   path: /stemcell_version
+

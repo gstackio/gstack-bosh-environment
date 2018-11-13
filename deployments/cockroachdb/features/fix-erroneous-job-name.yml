@@ -1,0 +1,7 @@
+---
+
+# Note: this is a typo to be fixed in the default deployment manifest.
+
+- path: /instance_groups/name=cockroachdb_root/jobs/name=cockroachdb_user/name
+  type: replace
+  value: cockroachdb-user
