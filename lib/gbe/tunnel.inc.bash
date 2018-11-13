@@ -41,6 +41,10 @@ function ssh_jumpbox() {
 
     jumpbox_key
 
+    # This workaround avoids the "Too many authentication failures for
+    # jumpbox" error when ensuring reachability below.
+    ssh-add -D || true # might fail when no authentication agent is running
+
     TERM=xterm-color ssh \
         -i "$env_state_dir/jumpbox.key" \
         "jumpbox@$(jumpbox_ip)" \
