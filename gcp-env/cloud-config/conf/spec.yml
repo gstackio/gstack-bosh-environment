@@ -65,15 +65,9 @@ imported_vars:
         path: /shield_vm_extension
   - subsys: shield-v7
     imports:
-      - name: shield_v7_port
-        from: depl-vars
-        path: /shield_port
       - name: shield_v7_network
         from: depl-vars
         path: /network_name
-      - name: shield_v7_vm_extension
-        from: depl-vars
-        path: /shield_vm_extension
   - subsys: prometheus
     imports:
       - name: prometheus_vm_extension

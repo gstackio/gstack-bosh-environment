@@ -11,14 +11,6 @@
         cloud_properties: { name: random }
         static: [ 10.244.205.2 - 10.244.205.60 ]
 
-- path: /vm_extensions/-
-  type: replace
-  value:
-    name: ((shield_v7_vm_extension))
-    cloud_properties:
-      ports:
-        - host: ((shield_v7_port))
-
 - path: /vm_types/name=default?
   type: replace
   value:

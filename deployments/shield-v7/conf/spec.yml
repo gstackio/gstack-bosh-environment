@@ -18,11 +18,10 @@ operations_files:
     - rename-deployment-and-network
     - pin-stemcell
     - set-versions
-    - set-domain-name
-    - set-tls-port
-    # - routing
-    - expose-ports
+    - tls-external-ca
+    - routing
     - scale-disks
+
     - shield-config
     - scality-store
     - minio-store
@@ -34,8 +33,7 @@ deployment_vars:
 
   # User-facing settings
 
-  shield_domain: shield-v7.easyfoundry.prototyp.it
-  shield_port: 20443 # injected in cloud-config
+  shield_hostname: backups # under the CF system domain
 
 
   # Versions
@@ -101,6 +99,14 @@ imported_vars:
       - name: cf_deployment_name
         from: depl-vars
         path: /deployment_name
+
+      - name: cf_system_domain
+        from: depl-vars
+        path: /system_domain
+
+      - name: tls-external-ca
+        from: depl-creds
+        path: /router_tls_backends_ca
 
   - subsys: scality
     imports:
