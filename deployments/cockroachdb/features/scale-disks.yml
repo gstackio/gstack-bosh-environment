@@ -1,0 +1,8 @@
+---
+
+- path: /instance_groups/name=cockroachdb/persistent_disk
+  type: remove
+
+- path: /instance_groups/name=cockroachdb/persistent_disk_type?
+  type: replace
+  value: 5GB
