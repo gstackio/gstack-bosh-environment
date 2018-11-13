@@ -37,10 +37,5 @@ function run_errand_with_retry_for_debugging() {
     return ${error}
 }
 
-# Smoke tests don't support Go Buildpack v1.8.28+ yet, so we disable them
-# temporarily.
-#
-# See: https://github.com/cloudfoundry-community/logsearch-boshrelease/issues/129
-#
-# run_errand_with_retry_for_debugging "smoke-tests"
+run_errand_with_retry_for_debugging "smoke-tests"
 exit $?
