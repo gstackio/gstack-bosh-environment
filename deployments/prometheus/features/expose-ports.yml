@@ -1,5 +1,0 @@
----
-
-- path: /instance_groups/name=nginx/vm_extensions?/-
-  type: replace
-  value: ((prometheus_vm_extension))

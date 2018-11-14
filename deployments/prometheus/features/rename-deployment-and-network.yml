@@ -1,0 +1,37 @@
+---
+
+- path: /name
+  type: replace
+  value: ((deployment_name))
+
+
+
+- path: /instance_groups/name=alertmanager/networks/name=default
+  type: replace
+  value:
+    name: ((network_name))
+
+- path: /instance_groups/name=prometheus2/networks/name=default
+  type: replace
+  value:
+    name: ((network_name))
+
+- path: /instance_groups/name=database/networks/name=default
+  type: replace
+  value:
+    name: ((network_name))
+
+- path: /instance_groups/name=grafana/networks/name=default
+  type: replace
+  value:
+    name: ((network_name))
+
+- path: /instance_groups/name=nginx/networks/name=default
+  type: replace
+  value:
+    name: ((network_name))
+
+- path: /instance_groups/name=firehose/networks/name=default
+  type: replace
+  value:
+    name: ((network_name))

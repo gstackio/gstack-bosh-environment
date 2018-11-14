@@ -4,15 +4,15 @@
 
 - type: replace
   path: /instance_groups/name=alertmanager/jobs/name=alertmanager/properties/alertmanager/web?/external_url
-  value: https://((alertmanager_domain))
+  value: https://((alertmanager_hostname)).((cf_system_domain))
 
 - type: replace
   path: /instance_groups/name=prometheus2/jobs/name=prometheus2/properties/prometheus/web?/external_url
-  value: https://((prometheus_domain))
+  value: https://((prometheus_hostname)).((cf_system_domain))
 
 - type: replace
   path: /instance_groups/name=grafana/jobs/name=grafana/properties/grafana/server?/root_url
-  value: https://((grafana_domain))
+  value: https://((grafana_hostname)).((cf_system_domain))
 
 
 # Customize routing setup
@@ -23,15 +23,15 @@
 
 - type: replace
   path: /instance_groups/name=nginx/jobs/name=route_registrar/properties/route_registrar/routes/name=grafana/uris
-  value: [ ((grafana_domain)) ]
+  value: [ ((grafana_hostname)).((cf_system_domain)) ]
 
 - type: replace
   path: /instance_groups/name=nginx/jobs/name=route_registrar/properties/route_registrar/routes/name=prometheus/uris
-  value: [ ((prometheus_domain)) ]
+  value: [ ((prometheus_hostname)).((cf_system_domain)) ]
 
 - type: replace
   path: /instance_groups/name=nginx/jobs/name=route_registrar/properties/route_registrar/routes/name=alertmanager/uris
-  value: [ ((alertmanager_domain)) ]
+  value: [ ((alertmanager_hostname)).((cf_system_domain)) ]
 
 
 # Control release version

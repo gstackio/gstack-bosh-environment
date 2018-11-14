@@ -44,11 +44,10 @@ operations_files:
     # If migration from Prometheus v1 is required
     # - manifests/operators/migrations/migrate_from_prometheus_1
   20.local:
-    - rename-deployment
+    - rename-deployment-and-network
     - pin-stemcell
     - set-versions
-    # - expose-ports
-    - customize-routing
+    - routing
     - scale-disks
     # - scale-disks-prometheus-v1 # only if 'migrate_from_prometheus_1' activated above
 
@@ -59,9 +58,9 @@ deployment_vars:
 
   # User-facing settings
 
-  grafana_domain: grafana.easyfoundry.prototyp.it
-  prometheus_domain: prometheus.easyfoundry.prototyp.it
-  alertmanager_domain: alertmanager.easyfoundry.prototyp.it
+  grafana_hostname: monitoring        # under the CF system domain
+  prometheus_hostname: prometheus     # under the CF system domain
+  alertmanager_hostname: alertmanager # under the CF system domain
 
   metrics_environment: easyfoundry-demo
 
@@ -139,6 +138,10 @@ imported_vars:
       - name: routing_deployment_name
         from: depl-vars
         path: /deployment_name
+
+      - name: cf_system_domain
+        from: depl-vars
+        path: /system_domain
 
 
       # CF integration plumbing

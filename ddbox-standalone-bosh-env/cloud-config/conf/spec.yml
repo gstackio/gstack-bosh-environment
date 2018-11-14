@@ -26,7 +26,6 @@ operations_files:
     - concourse-support
     - shield-v8-support
     - shield-v7-support
-    - prometheus-support
     - cassandra-support
     - logsearch-support
     - kong-support
@@ -67,11 +66,6 @@ imported_vars:
       - name: shield_v7_network
         from: depl-vars
         path: /network_name
-  - subsys: prometheus
-    imports:
-      - name: prometheus_vm_extension
-        from: depl-vars
-        path: /prometheus_vm_extension
   - subsys: cassandra
     imports:
       - name: cassandra_network
