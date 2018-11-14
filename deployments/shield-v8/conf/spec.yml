@@ -19,10 +19,8 @@ operations_files:
     - rename-deployment-and-network
     - pin-stemcell
     - pin-versions
-    - set-domain-name
-    - set-tls-port
-    # - routing # TLS routing doesn't support self-signed certificates yet
-    - expose-ports
+    - tls-external-ca
+    - routing
     - set-gui-color
     - fix-shield-link
     - scale-disks
@@ -34,8 +32,7 @@ deployment_vars:
 
   # User-facing settings
 
-  shield_domain: shield-v8.easyfoundry.prototyp.it
-  shield_port: 10443 # injected in cloud-config
+  shield_hostname: shield # under the CF system domain
   shield_color: red
 
 
@@ -44,8 +41,8 @@ deployment_vars:
   shield_version: "8.0.16"
   shield_sha1: 8a0ececa11e995834824bb3c8cba1c5301b09a03
 
-  # bpm_version:  # imported below
-  # bpm_sha1:     # imported below
+  # bpm_version:      # imported below
+  # bpm_sha1:         # imported below
 
   # routing_version:  # imported below
   # routing_sha1:     # imported below
@@ -97,3 +94,11 @@ imported_vars:
       - name: cf_deployment_name
         from: depl-vars
         path: /deployment_name
+
+      - name: cf_system_domain
+        from: depl-vars
+        path: /system_domain
+
+      - name: tls-external-ca
+        from: depl-creds
+        path: /router_tls_backends_ca

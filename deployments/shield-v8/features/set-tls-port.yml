@@ -1,5 +1,0 @@
----
-
-- path: /instance_groups/name=shield/jobs/name=core/properties/port?
-  type: replace
-  value: ((shield_port))

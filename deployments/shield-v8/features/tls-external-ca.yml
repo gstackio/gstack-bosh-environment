@@ -1,0 +1,8 @@
+---
+
+- path: /variables/name=shield-ca
+  type: remove
+
+- path: /variables/name=shield-tls/options/ca
+  type: replace
+  value: tls-external-ca

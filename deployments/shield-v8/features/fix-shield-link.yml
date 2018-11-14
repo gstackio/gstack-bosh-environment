@@ -14,4 +14,4 @@
       - address: ((shield_internal_hostname)) # 10.244.204.61
     properties:
       domain: ((shield_internal_hostname)) # 10.244.204.61
-      port: ((shield_port))
+      port: 10443

@@ -1,5 +1,23 @@
 ---
 
+- path: /instance_groups/name=shield/jobs/name=core/properties/domain
+  type: replace
+  value: ((shield_hostname)).((cf_system_domain))
+
+- path: /variables/name=shield-tls/options/alternative_names/-
+  type: replace
+  value: ((shield_hostname)).((cf_system_domain))
+
+
+
+- path: /instance_groups/name=shield/jobs/name=core/properties/port?
+  type: replace
+  # Note: we force this port value here in order to be sure that we use the
+  # same value below when registering our route.
+  value: &shield_port 10443
+
+
+
 - path: /releases/name=routing?
   type: replace
   value:
@@ -21,10 +39,10 @@
       route_registrar:
         routes:
         - name: ((deployment_name))
-          tls_port: ((shield_port))
-          server_cert_domain_san: ((shield_domain))
+          tls_port: *shield_port
+          server_cert_domain_san: ((shield_hostname)).((cf_system_domain))
           registration_interval: 20s
-          uris: [ ((shield_domain)) ]
+          uris: [ ((shield_hostname)).((cf_system_domain)) ]
 
 # NOTE: Routing release v0.180.0 and above require BPM to be colocated with
 # the 'route_registrar' job.

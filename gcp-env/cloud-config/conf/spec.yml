@@ -54,15 +54,9 @@ imported_vars:
         path: /web_network_vm_extension
   - subsys: shield-v8
     imports:
-      - name: shield_v8_port
-        from: depl-vars
-        path: /shield_port
       - name: shield_v8_network
         from: depl-vars
         path: /network_name
-      - name: shield_v8_vm_extension
-        from: depl-vars
-        path: /shield_vm_extension
   - subsys: shield-v7
     imports:
       - name: shield_v7_network
