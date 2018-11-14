@@ -3,10 +3,14 @@
 - name: Ruby | ruby-build support packages are installed
   become: yes
   apt:
-    name: "{{ item }}"
     update_cache: yes
+    package:
+      - libssl-dev
+      - libreadline-dev
+      - zlib1g-dev
+      # This one is not for ruby-build, but for the 'git' task below
+      - git
     state: present
-  with_items: [ libssl-dev, libreadline-dev, zlib1g-dev ]
 
 - name: Ruby | the ruby-build git repo is cloned
   git:

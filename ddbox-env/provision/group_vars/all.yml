@@ -5,3 +5,6 @@
 prefix_dir: /usr/local
 prefix_dir_must_become: yes
 resources_dir: "{{ ansible_env.HOME }}/resources"
+resources_dir_must_become: no
+
+ubuntu_codename: bionic # xenial

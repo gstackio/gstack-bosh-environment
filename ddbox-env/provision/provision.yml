@@ -1,6 +1,19 @@
 ---
 
-- hosts: dedibox
+# Install 'python' and 'python-simplejson' so that ansible -m ping can at least work
+# (see: <http://stackoverflow.com/a/36367273>)
+- name: Ansible | required python is installed
+  hosts: dedibox
+  serial: 1
+  gather_facts: no
+  become: yes
+  pre_tasks:
+    - raw: apt -qq update && apt -y -q install python-simplejson
+
+
+
+- name: BOSH Environment | Remote host server is set up
+  hosts: dedibox
   roles:
     - directories
     - virtualbox
@@ -11,20 +24,25 @@
     - name: Libraries | packages are installed
       become: true
       apt:
-        name: "{{ package }}"
         update_cache: yes
+        package:
+          - libcurl4-openssl-dev # for building dingo-postgresql-release
         state: present
-      with_items:
-        - libcurl4-openssl-dev # for building dingo-postgresql-release
-      loop_control: { loop_var: package }
       tags: [ libraries ]
 
     - name: Utilities | packages are installed
       become: true
       apt:
-        name: "{{ package }}"
         update_cache: yes
+        package:
+          # These packages are required for running 'gbe' on the distant host
+          # server, if you need to.
+          - jq
+          - make
+          - git
+          - git-lfs
+          - sshuttle
+          - curl
+          - unzip
         state: present
-      with_items: []
-      loop_control: { loop_var: package }
       tags: [ utilities ]

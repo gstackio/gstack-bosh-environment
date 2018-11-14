@@ -16,17 +16,15 @@
 - name: Virtualbox | the deb repo is added to apt sources
   become: true
   apt_repository:
-    repo: deb http://download.virtualbox.org/virtualbox/debian xenial contrib
+    repo: deb http://download.virtualbox.org/virtualbox/debian {{ ubuntu_codename }} contrib
     filename: virtualbox
     state: present
 
 - name: Virtualbox | the latest Synaptic Packages are installed
   become: true
   apt:
-    name: "{{ package }}"
     update_cache: yes
+    package:
+      - dkms
+      - virtualbox-{{ virtualbox_branch }}
     state: present
-  with_items:
-    - dkms
-    - virtualbox-{{ virtualbox_branch }}
-  loop_control: { loop_var: package }

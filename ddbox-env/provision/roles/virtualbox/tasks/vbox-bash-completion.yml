@@ -4,9 +4,8 @@
   become: yes
   apt:
     update_cache: yes
-    name: "{{ item }}"
+    package: [ bash-completion ]
     state: present
-  with_items: [ bash-completion ]
 
 - name: Virtualbox | bash completion script is installed
   become: yes

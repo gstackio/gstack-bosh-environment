@@ -189,7 +189,7 @@
 - name: VM networking | the 'iptables-persistent' package is installed
   become: yes
   apt:
-    name: iptables-persistent
+    package: iptables-persistent
     state: present
   tags: [ vm-networking, vm-networking-persist ]
 

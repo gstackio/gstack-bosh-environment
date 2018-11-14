@@ -11,7 +11,7 @@
   tags: [ directories ]
 
 - name: Directories | resources dir is created
-  become: "{{ prefix_dir_must_become }}"
+  become: "{{ resources_dir_must_become }}"
   file:
     dest: "{{ resources_dir }}"
     state: directory
