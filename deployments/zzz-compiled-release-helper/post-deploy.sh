@@ -3,7 +3,7 @@
 set -euo pipefail
 
 SUBSYS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-BASE_DIR=$(cd "$SUBSYS_DIR/../.." && pwd)
+BASE_DIR=${BASE_DIR:-$(git rev-parse --show-toplevel)}
 
 function runtime_config_var() {
     local path=$1
