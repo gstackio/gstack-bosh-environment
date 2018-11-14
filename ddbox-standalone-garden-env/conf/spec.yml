@@ -52,10 +52,6 @@ deployment_vars:
   vbox_host: ~
   vbox_username: ~
 
-  external_ip: "62.210.146.202"
-  vbox_host: "62.210.146.202"
-  vbox_username: benjamin
-
   routable_network_cidr: 10.244.0.0/16
 
   # web_router_ip: "10.244.0.34" # classical Gorouter reverse-proxy
