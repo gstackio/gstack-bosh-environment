@@ -64,7 +64,7 @@ variables_files:
 deployment_vars:
   director_name: easyfoundry-director
 
-  disk_size: 40_000 # i.e. 40GB
+  disk_size: 60_000 # i.e. 60GB
 
   external_ip: ~
   vbox_host: ~
