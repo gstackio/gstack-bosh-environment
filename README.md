@@ -154,7 +154,7 @@ Other documentations are available in the [docs](./docs/) directory:
 - [GBE Command Line Interface workflow](./docs/cli-workflow.md)
 - [GBE Command Line Interface reference](./docs/cli-reference.md)
 - [GBE file structure reference](./docs/gbe-structure-reference.md)
-- [Troubleshooting GBE](./docs/troubleshooting.md)
+- [Troubleshooting Guide](./docs/troubleshooting.md)
 
 
 
