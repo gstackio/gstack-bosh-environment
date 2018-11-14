@@ -58,16 +58,6 @@
       ingress_port: 443
     - name: CF SSH
       ingress_port: 2222
-    - name: SHIELD HTTPS
-      ingress_port: 10443
-    - name: SHIELD v7 HTTPS
-      ingress_port: 20443
-    - name: Grafana HTTP
-      ingress_port: 3000
-    - name: Prometheus HTTP
-      ingress_port: 9090
-    - name: Alertmanager HTTP
-      ingress_port: 9093
   loop_control: { loop_var: rule }
   tags: [ vm-networking, vm-networking-gstack-lb ]
 
@@ -85,22 +75,12 @@
     to_source: 192.168.50.1
     comment: "SNAT from LB the ingress {{ rule.name }} traffic from private networks to Garden VM"
   with_items:
-    - name: HTTP
+    - name: Traefik HTTP
       ingress_port: 80
-    - name: HTTPS
+    - name: Traefik HTTPS
       ingress_port: 443
     - name: CF SSH
       ingress_port: 2222
-    - name: SHIELD HTTPS
-      ingress_port: 10443
-    - name: SHIELD v7 HTTPS
-      ingress_port: 20443
-    - name: Grafana HTTP
-      ingress_port: 3000
-    - name: Prometheus HTTP
-      ingress_port: 9090
-    - name: Alertmanager HTTP
-      ingress_port: 9093
   loop_control: { loop_var: rule }
   tags: [ vm-networking, vm-networking-gstack-lb ]
 
