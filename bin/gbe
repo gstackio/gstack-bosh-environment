@@ -486,7 +486,7 @@ function add_routes() {
         darwin) "${ssh_cmd[@]}" "${sudo_cmd[@]}" route add -net "$network_cidr"    "$(internal_ip)" ;;
         linux)  "${ssh_cmd[@]}" "${sudo_cmd[@]}" route add -net "$network_cidr" gw "$(internal_ip)" ;;
         *)
-            echo "ERROR: cannot set routes on unsupported platform '$platform'" >&2
+            echo "${RED}ERROR:$RESET cannot set routes on unsupported platform '$platform'" >&2
             exit 1 ;;
     esac
 }

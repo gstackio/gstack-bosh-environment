@@ -177,7 +177,7 @@ function read_bosh-deployment_spec() {
     local depl_rsc_file
     depl_rsc_file=$(spec_var /main_deployment_file)
     if [[ -z $depl_rsc_file ]]; then
-        echo "ERROR: missing 'main_deployment_file' in subsys spec." >&2
+        echo "${RED}ERROR:$RESET missing 'main_deployment_file' in subsys spec." >&2
         return 1
     fi
 
@@ -191,7 +191,7 @@ function read_bosh-config_spec() {
     local config_rsc_file
     config_rsc_file=$(spec_var /main_config_file)
     if [[ -z $config_rsc_file ]]; then
-        echo "ERROR: missing 'main_config_file' in subsys spec." >&2
+        echo "${RED}ERROR:$RESET missing 'main_config_file' in subsys spec." >&2
         return 1
     fi
     MAIN_CONFIG_FILE=$(expand_resource_dir "$config_rsc_file")
@@ -228,11 +228,11 @@ function import_file_value() {
     var_value=$(spec_var "$base_path/value")
     import_path=$(spec_var "$base_path/path")
     if [[ -z $var_name ]]; then
-        echo "ERROR: missing '$base_path/name' YAML node in subsys spec." >&2
+        echo "${RED}ERROR:$RESET missing '$base_path/name' YAML node in subsys spec." >&2
         return 1
     fi
     if [[ -z $var_value && -z $import_path ]]; then
-        echo "ERROR: either '$base_path/path' or '$base_path/value' YAML nodes" \
+        echo "${RED}ERROR:$RESET either '$base_path/path' or '$base_path/value' YAML nodes" \
             "must be specified in subsys spec." >&2
         return 1
     fi
@@ -282,11 +282,11 @@ function import_state_value() {
     var_value_tmpl=$(spec_var "$base_path/value")
     import_path=$(spec_var "$base_path/path")
     if [[ -z $var_name ]]; then
-        echo "ERROR: missing '$base_path/name' YAML node in subsys spec." >&2
+        echo "${RED}ERROR:$RESET missing '$base_path/name' YAML node in subsys spec." >&2
         return 1
     fi
     if [[ -z $var_value_tmpl && -z $import_path ]]; then
-        echo "ERROR: either '$base_path/path' or '$base_path/value' YAML nodes" \
+        echo "${RED}ERROR:$RESET either '$base_path/path' or '$base_path/value' YAML nodes" \
             "must be specified in subsys spec." >&2
         return 1
     fi
@@ -406,7 +406,7 @@ function state_dir() {
     local gbe_subsys
     gbe_subsys=${1:-$(spec_var /subsys/name)}
     if [[ -z $gbe_subsys ]]; then
-        echo "ERROR: missing subsys name. Aborting." >&2
+        echo "${RED}ERROR:$RESET missing subsys name. Aborting." >&2
         return 1
     fi
     echo "$BASE_DIR/state/$gbe_subsys"
