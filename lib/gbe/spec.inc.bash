@@ -196,7 +196,7 @@ function populate_operations_arguments() {
 
     local key rsc op_dir op_file
     for key in $(spec_var /operations_files | awk -F: '/^[^- #].*:/{print $1}'); do
-        rsc=$(sed -e 's/^[[:digit:]]\{1,\}[.-]//' <<< "$key")
+        rsc=$(sed -e 's/^[[:digit:]]\{1,\}[-_]//' <<< "$key")
         op_dir=$(expand_resource_dir "$rsc" features)
         for op_file in $(spec_var --required "/operations_files/$key" | sed -e 's/^- //'); do
             OPERATIONS_ARGUMENTS+=(-o "$op_dir/${op_file}.yml")
@@ -210,7 +210,7 @@ function populate_vars_files_arguments() {
 
     local key rsc vars_file_dir files_count file_idx vars_file
     for key in $(spec_var /variables_files | awk -F: '/^[^- #].*:/{print $1}'); do
-        rsc=$(sed -e 's/^[[:digit:]]\{1,\}[.-]//' <<< "$key")
+        rsc=$(sed -e 's/^[[:digit:]]\{1,\}[-_]//' <<< "$key")
         vars_file_dir=$(expand_resource_dir "$rsc" conf)
 
         files_count=$(spec_var "/variables_files/$key" | awk '/^-/{print $1}' \

@@ -26,9 +26,9 @@ main_deployment_file: rabbitmq-boshrelease/manifests/cf-rabbitmq-template.yml
 
 
 operations_files:
-  10.rabbitmq-broker-boshrelease:
+  10_rabbitmq-broker-boshrelease:
     - manifests/enable-tls
-  20.local:
+  20_local:
     - rename-deployment
     - rename-network
     - pin-stemcell

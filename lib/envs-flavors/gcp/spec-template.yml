@@ -29,7 +29,7 @@ dns:
 main_deployment_file: bosh-deployment/bosh.yml
 
 operations_files:
-  10.bosh-deployment:
+  10_bosh-deployment:
     - gcp/cpi
     - gcp/bosh-lite-vm-type
     - bosh-lite
@@ -37,9 +37,9 @@ operations_files:
     - external-ip-not-recommended
     - uaa
     - credhub
-  20.prometheus-boshrelease:
+  20_prometheus-boshrelease:
     - manifests/operators/bosh/add-bosh-exporter-uaa-clients
-  30.local:
+  30_local:
     - enable-local-access
     - custom-stemcell-version
     - custom-bosh-version-precompiled

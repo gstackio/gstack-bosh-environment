@@ -22,12 +22,12 @@ dns:
 main_deployment_file: bosh-deployment/bosh.yml
 
 operations_files:
-  10.bosh-deployment:
+  10_bosh-deployment:
     - virtualbox/cpi
     - virtualbox/remote
     - bosh-lite
     - jumpbox-user
-  30.local:
+  30_local:
     - keep-bosh-agent
     - custom-stemcell-version
     - set-disk-size
@@ -35,7 +35,7 @@ operations_files:
     - retain-garden-only
 
 variables_files:
-  10.local:
+  10_local:
     - file: secrets
       example:
         vbox_ssh:

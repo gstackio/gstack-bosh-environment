@@ -16,7 +16,7 @@ input_resources:
 main_deployment_file: dingo-postgresql-release/manifests/dingo-postgresql.yml
 
 operations_files:
-  10.local:
+  10_local:
     - rename-deployment
     - rename-network
     - pin-stemcell

@@ -15,7 +15,7 @@ main_deployment_file: neo4j-on-cloud-foundry/manifests/neo4j-bosh-lite.yml
 
 
 operations_files:
-  10.local:
+  10_local:
     - rename-deployment
     - pin-stemcell
     # - set-disk-size

@@ -15,13 +15,14 @@ main_deployment_file: cassandra-deployment/cassandra.yml
 
 
 operations_files:
-  10.cassandra-deployment:
+  10_cassandra-deployment:
     - operations/bosh-lite
     - operations/cf-service-broker
     - operations/shield-v7-agent
     - operations/shield-v7-purge-archives
     - operations/use-bpm
-  20.local:
+    - operations/admin-tools
+  20_local:
     - inject-variables
     - pin-stemcell
     - pin-versions

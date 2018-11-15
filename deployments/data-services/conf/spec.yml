@@ -23,14 +23,14 @@ main_deployment_file: cf-containers-broker-boshrelease/manifests/docker-broker.y
 
 
 operations_files:
-  10.cf-containers-broker-boshrelease:
+  10_cf-containers-broker-boshrelease:
     - manifests/operators/cf-integration
     - manifests/operators/services/mysql56
     - manifests/operators/services/postgresql96
     - manifests/operators/services/redis32
-  15.broker-registrar-boshrelease:
+  20_broker-registrar-boshrelease:
     - manifests/operators/cf-admin-user
-  20.local:
+  30_local:
     - rename-deployment
     - pin-stemcell
     - set-versions

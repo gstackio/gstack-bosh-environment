@@ -26,7 +26,7 @@ dns:
 main_deployment_file: bosh-deployment/bosh.yml
 
 operations_files:
-  10.bosh-deployment:
+  10_bosh-deployment:
     - virtualbox/cpi
     - virtualbox/remote
     - bosh-lite
@@ -35,9 +35,9 @@ operations_files:
     - jumpbox-user
     - uaa
     - credhub
-  20.prometheus-boshrelease:
+  20_prometheus-boshrelease:
     - manifests/operators/bosh/add-bosh-exporter-uaa-clients
-  30.local:
+  30_local:
     - keep-bosh-agent
     # - enable-vbox-port-forwarding # disabled in favor of a more consistent setup based on iptables
     - custom-stemcell-version
@@ -50,7 +50,7 @@ operations_files:
     # - fixup-lb-networking # not working yet
 
 variables_files:
-  10.local:
+  10_local:
     - file: secrets
       example:
         vbox_ssh:

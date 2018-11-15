@@ -15,7 +15,7 @@ main_deployment_file: prometheus-boshrelease/manifests/prometheus.yml
 
 
 operations_files:
-  10.prometheus-boshrelease:
+  10_prometheus-boshrelease:
     # Bosh monitoring
     - manifests/operators/monitor-bosh
     - manifests/operators/enable-bosh-uaa
@@ -43,7 +43,7 @@ operations_files:
 
     # If migration from Prometheus v1 is required
     # - manifests/operators/migrations/migrate_from_prometheus_1
-  20.local:
+  20_local:
     - rename-deployment-and-network
     - pin-stemcell
     - set-versions

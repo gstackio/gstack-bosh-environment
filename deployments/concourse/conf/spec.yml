@@ -14,16 +14,16 @@ input_resources:
 main_deployment_file: concourse-deployment/cluster/concourse.yml
 
 operations_files:
-  10.local:
+  10_local:
     - reorder-instance-groups # must appear first, before anything is modified in instance group 'db'
-  20.concourse-deployment:
+  20_concourse-deployment:
     - cluster/operations/web-network-extension
     - cluster/operations/worker-ephemeral-disk
     - cluster/operations/static-web
     - cluster/operations/encryption
     - cluster/operations/tls
     - cluster/operations/tls-vars
-  30.local:
+  30_local:
     - pin-stemcell
     - set-log-level
     - basic-auth-with-vars  # replaces 'cluster/operations/basic-auth'
@@ -35,7 +35,7 @@ operations_files:
 
 
 variables_files:
-  10.concourse-deployment:
+  10_concourse-deployment:
     # Note: most version values defined here by the 'versions.yml' file are
     # actually overridden below by deployment variables. This mainly because
     # currently, the variables defined in such a variables file cannot be

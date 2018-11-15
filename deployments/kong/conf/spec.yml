@@ -14,7 +14,7 @@ main_deployment_file: kong-ce-boshrelease/manifests/kong.yml
 
 
 operations_files:
-  20.local:
+  10_local:
     - rename-deployment-and-network
     - pin-stemcell
     - pin-versions

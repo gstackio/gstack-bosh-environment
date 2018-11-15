@@ -27,7 +27,7 @@ dns:
 main_deployment_file: bosh-deployment/bosh.yml
 
 operations_files:
-  10.bosh-deployment:
+  10_bosh-deployment:
     - virtualbox/cpi
     - virtualbox/remote
     - bosh-lite
@@ -36,9 +36,9 @@ operations_files:
     - jumpbox-user
     - uaa
     - credhub
-  20.prometheus-boshrelease:
+  20_prometheus-boshrelease:
     - manifests/operators/bosh/add-bosh-exporter-uaa-clients
-  30.local:
+  30_local:
     - keep-bosh-agent
     - custom-stemcell-version
     - custom-bosh-version-precompiled
@@ -51,7 +51,7 @@ operations_files:
     - credhub-bosh-lite
 
 variables_files:
-  10.local:
+  10_local:
     - file: secrets
       example:
         vbox_ssh:

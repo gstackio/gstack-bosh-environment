@@ -18,7 +18,7 @@ input_resources:
 main_deployment_file: cf-deployment/cf-deployment.yml
 
 operations_files:
-  10.cf-deployment:
+  10_cf-deployment:
     - operations/use-compiled-releases
     - operations/bosh-lite
     # operations/stop-skipping-tls-validation # to be enabled when using produciton certs
@@ -85,10 +85,10 @@ operations_files:
     # assisted mode.
     # - operations/experimental/enable-traffic-to-internal-networks.
 
-  20.prometheus-boshrelease:
+  20_prometheus-boshrelease:
     - manifests/operators/cf/add-prometheus-uaa-clients
     - manifests/operators/cf/add-grafana-uaa-clients
-  30.local:
+  30_local:
     - pin-stemcell
     # - set-mysql-version
     - set-routing-version

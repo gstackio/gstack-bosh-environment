@@ -17,7 +17,7 @@ main_deployment_file: redis-boshrelease/manifest/deployment.yml
 
 
 operations_files:
-  10.local:
+  10_local:
     - pin-versions
     - customize-routing
     - remove-director-uuid

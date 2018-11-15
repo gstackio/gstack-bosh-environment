@@ -14,7 +14,7 @@ input_resources:
 main_deployment_file: traefik-boshrelease/deployment/traefik-deployment.yml
 
 operations_files:
-  10.traefik-boshrelease:
+  10_traefik-boshrelease:
     - deployment/operations/rename-deployment
     - deployment/operations/rename-network
     - deployment/operations/cf-integration
@@ -23,7 +23,7 @@ operations_files:
     # - deployment/operations/enable-web-backend-tls # to disable when using the cf-integration above
     - deployment/operations/static-ip
     # - deployment/operations/latest-release
-  20.local:
+  20_local:
     - pin-stemcell
     - scale-disk
     # - activate-debug

@@ -15,10 +15,10 @@ input_resources:
 main_deployment_file: logsearch-boshrelease/deployment/logsearch-deployment.yml
 
 operations_files:
-  10.logsearch-boshrelease:
+  10_logsearch-boshrelease:
     - deployment/operations/cerebro
     - deployment/operations/cloudfoundry
-  20.local:
+  20_local:
     - rename-deployment
     - pin-stemcell
     - set-versions
