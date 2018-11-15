@@ -7,9 +7,9 @@ with `gbe up -h`.
 
 ## BOSH environment commands
 
-- `gbe up`: converges the infrastructure (i.e. a BOSH environment) towards
-  its desired states. Note that `gbe converge` with no more arguments is an
-  alias for `gbe up`.
+- `gbe up [--recreate]`: converges the infrastructure (i.e. a BOSH
+  environment) towards its desired states. Note that `gbe converge` with no
+  more arguments is an alias for `gbe up`.
 
 - `gbe update [-y] <cloud-config|runtime-config> ...`: updates the cloud
   config or the runtime config of the BOSH environment.
