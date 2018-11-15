@@ -11,7 +11,7 @@ input_resources:
   - name: traefik-boshrelease
     type: git
     uri: https://github.com/gstackio/traefik-boshrelease.git
-    version: v1.2.0
+    version: "9b8c5ca" # master after version 1.2.0
 
 
 main_config_file: cf-deployment/iaas-support/bosh-lite/cloud-config.yml
