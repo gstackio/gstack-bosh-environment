@@ -2,40 +2,43 @@
 
 set -euo pipefail
 
-SUBSYS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-readonly SUBSYS_DIR
-BASE_DIR=$(cd "$SUBSYS_DIR/../.." && pwd)
-readonly BASE_DIR
+function main() {
+    setup
 
-function spec_var() {
-    local path=$1
-    bosh int "$SUBSYS_DIR/conf/spec.yml" --path "$path"
+    external_host=$(spec_var /deployment_vars/external_host)
+    atc_username=$(spec_var /deployment_vars/atc_basic_auth_username)
+    atc_password=$(creds_var /atc_basic_auth_password)
+
+    local concourse_target=${1:-"ef"}
+
+    if [[ ! -e $BASE_DIR/bin/fly ]]; then
+        bash ${DEBUG:+"-x"} "$SUBSYS_DIR/fetch-fly-cli"
+    fi
+    "$BASE_DIR/bin/fly" -t "$concourse_target" sync
+
+    "$BASE_DIR/bin/fly" -t "$concourse_target" login -k \
+        -c "https://${external_host}" -u "$atc_username" -p "$atc_password"
+    login_status=$?
+
+    if [[ $login_status -eq 0 ]]; then echo OK; else echo ERROR; fi
+    exit $login_status
 }
 
-SUBSYS_NAME=$(spec_var /subsys/name)
-readonly SUBSYS_NAME
-
-function state_var() {
-    local state_file=$1
-    local path=$2
-    bosh int "$BASE_DIR/state/$SUBSYS_NAME/$state_file.yml" --path "$path"
+function setup() {
+    SUBSYS_DIR=${SUBSYS_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}
+    BASE_DIR=${BASE_DIR:-$(git rev-parse --show-toplevel)}
+    SUBSYS_NAME=$(spec_var /subsys/name)
+    readonly SUBSYS_DIR BASE_DIR SUBSYS_NAME
 }
 
 function creds_var() {
     state_var depl-creds "$1"
 }
 
-external_host=$(spec_var /deployment_vars/external_host)
-atc_username=$(spec_var /deployment_vars/atc_basic_auth_username)
-atc_password=$(creds_var /atc_basic_auth_password)
+function state_var() {
+    local state_file=$1
+    local path=$2
+    bosh int "${BASE_DIR}/state/${SUBSYS_NAME}/${state_file}.yml" --path "${path}"
+}
 
-if [[ ! -e $BASE_DIR/bin/fly ]]; then
-	bash ${DEBUG:+"-x"} "$SUBSYS_DIR/fetch-fly-cli"
-fi
-
-"$BASE_DIR/bin/fly" -t ef login -k -c "https://${external_host}" \
-	-u "$atc_username" -p "$atc_password"
-login_status=$?
-
-if [[ $login_status -eq 0 ]]; then echo OK; else echo ERROR; fi
-exit $login_status
+main "$@"

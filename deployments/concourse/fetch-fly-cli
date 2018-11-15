@@ -1,20 +1,29 @@
 #!/usr/bin/env bash
 
-SUBSYS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-BASE_DIR=$(cd "$SUBSYS_DIR/../.." && pwd)
+set -eo pipefail
+
+function main() {
+    setup
+
+    external_host=$(spec_var "/deployment_vars/external_host")
+    platform=$(uname -s | tr "[:upper:]" "[:lower:]")
+
+    set -x
+
+    curl -fsSL -k "https://${external_host}/api/v1/cli?arch=amd64&platform=${platform}" \
+        -o "${BASE_DIR}/bin/fly"
+    chmod +x "${BASE_DIR}/bin/fly"
+}
+
+function setup() {
+    SUBSYS_DIR=${SUBSYS_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}
+    BASE_DIR=${BASE_DIR:-$(git rev-parse --show-toplevel)}
+    readonly SUBSYS_DIR BASE_DIR
+}
 
 function spec_var() {
     local path=$1
-    bosh int "$SUBSYS_DIR/conf/spec.yml" --path "$path"
+    bosh int "${SUBSYS_DIR}/conf/spec.yml" --path "${path}"
 }
 
-set -e
-
-external_host=$(spec_var /deployment_vars/external_host)
-platform=$(uname -s | tr '[:upper:]' '[:lower:]')
-
-set -x
-
-curl -fsSL -k "https://${external_host}/api/v1/cli?arch=amd64&platform=${platform}" \
-    -o "$BASE_DIR/bin/fly"
-chmod +x "$BASE_DIR/bin/fly"
+main "$@"

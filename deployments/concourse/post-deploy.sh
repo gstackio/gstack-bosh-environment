@@ -2,14 +2,28 @@
 
 set -eo pipefail
 
-SUBSYS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+function main() {
+    setup
+
+    run_errand_with_retry_for_debugging "smoke_tests" "smoke-tests"
+    exit $?
+}
+
+function setup() {
+    SUBSYS_DIR=${SUBSYS_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}
+    BASE_DIR=${BASE_DIR:-$(git rev-parse --show-toplevel)}
+    readonly SUBSYS_DIR BASE_DIR
+}
 
 function run_errand_with_retry_for_debugging() {
     local errand_name=$1
     local errand_vm_name=$2
 
+    local concourse_target
+    concourse_target=$(spec_var /sanity-tests/concourse-target)
+
     set +e -x
-    "${SUBSYS_DIR}/sanity-tests"
+    "${SUBSYS_DIR}/sanity-tests" "$concourse_target"
     error=$?
     set +x -e
 
@@ -36,5 +50,9 @@ function run_errand_with_retry_for_debugging() {
     return ${error}
 }
 
-run_errand_with_retry_for_debugging "smoke_tests" "smoke-tests"
-exit $?
+function spec_var() {
+    local path=$1
+    bosh int "$SUBSYS_DIR/conf/spec.yml" --path "$path"
+}
+
+main "$@"
