@@ -30,4 +30,5 @@
     block: |
       source {{ prefix_dir }}/share/chruby/chruby.sh
       source {{ prefix_dir }}/share/chruby/auto.sh
+      chruby {{ ruby_version }}
     state: present
