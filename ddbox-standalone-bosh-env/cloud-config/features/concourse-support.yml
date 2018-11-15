@@ -1,11 +1,4 @@
 ---
-- path: /vm_extensions/-
-  type: replace
-  value:
-    name: ((concourse_vm_extension))
-    cloud_properties:
-      ports:
-        - host: 8080
 
 - path: /networks/-
   type: replace

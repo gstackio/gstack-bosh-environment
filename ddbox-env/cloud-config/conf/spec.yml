@@ -48,9 +48,6 @@ imported_vars:
       - name: concourse_network
         from: depl-vars
         path: /network_name
-      - name: concourse_vm_extension
-        from: depl-vars
-        path: /web_network_vm_extension
   - subsys: shield-v8
     imports:
       - name: shield_v8_network
