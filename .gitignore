@@ -7,6 +7,9 @@
 /bin/cf
 /bin/humanize-manifest
 /bin/fly
+/bin/shield
+/logs/
+/tmp/
 creds.yml
 creds.json
 *-creds.yml
@@ -14,3 +17,4 @@ creds.json
 bbl-state.json
 *.key
 *.key.json
+id_rsa
