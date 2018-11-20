@@ -788,7 +788,9 @@ function converge_deployment() {
 
     SUBSYS_DIR=$BASE_DIR/deployments/$depl_name
     eval "$(env_exports)"
-    upload_stemcell
+    if [[ -z $manifest_only && -z $offline ]]; then
+        upload_stemcell
+    fi
 
     assert_subsys bosh-deployment
 
