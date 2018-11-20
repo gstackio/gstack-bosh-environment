@@ -192,13 +192,15 @@ function expand_resource_dir() {
 }
 
 function populate_operations_arguments() {
+    local base_path=${1:-"/operations_files"}
+
     OPERATIONS_ARGUMENTS=()
 
     local key rsc op_dir op_file
-    for key in $(spec_var /operations_files | awk -F: '/^[^- #].*:/{print $1}'); do
+    for key in $(spec_var "$base_path" | awk -F: '/^[^- #].*:/{print $1}'); do
         rsc=$(sed -e 's/^[[:digit:]]\{1,\}[-_]//' <<< "$key")
         op_dir=$(expand_resource_dir "$rsc" features)
-        for op_file in $(spec_var --required "/operations_files/$key" | sed -e 's/^- //'); do
+        for op_file in $(spec_var --required "$base_path/$key" | sed -e 's/^- //'); do
             OPERATIONS_ARGUMENTS+=(-o "$op_dir/${op_file}.yml")
         done
     done
@@ -209,7 +211,7 @@ function populate_vars_files_arguments() {
     local secrets_files=()
 
     local key rsc vars_file_dir files_count file_idx vars_file
-    for key in $(spec_var /variables_files | awk -F: '/^[^- #].*:/{print $1}'); do
+    for key in $(spec_var "/variables_files" | awk -F: '/^[^- #].*:/{print $1}'); do
         rsc=$(sed -e 's/^[[:digit:]]\{1,\}[-_]//' <<< "$key")
         vars_file_dir=$(expand_resource_dir "$rsc" conf)
 
@@ -238,6 +240,8 @@ function populate_vars_files_arguments() {
 }
 
 function read_bosh-deployment_spec() {
+    update_bosh_depl_configs "$@"
+
     local depl_rsc_file
     depl_rsc_file=$(spec_var /main_deployment_file)
     if [[ -z $depl_rsc_file ]]; then
@@ -464,6 +468,53 @@ function imported_vars() {
         imports_from "$subsys_name" "$subsys_path/imports"
         idx=$(($idx + 1))
     done
+}
+
+function update_bosh_depl_configs() {
+    local configs_count idx config_path name type file
+    configs_count=$(spec_var /bosh_configs | awk '/^-/{print $1}' \
+                    | wc -l | tr -d ' ')
+    idx=0
+    while [[ $idx -lt $configs_count ]]; do
+        config_path=/bosh_configs/$idx
+        name=$(spec_var --required "$config_path/name")
+        type=$(spec_var --required "$config_path/type")
+        file=$(spec_var --required "$config_path/file")
+        update_bosh_depl_config "$config_path" "$name" "$type" "$file"
+        idx=$(($idx + 1))
+    done
+}
+
+function update_bosh_depl_config() {
+    local cfg_path=$1; shift
+    local name=$1; shift
+    local type=$1; shift
+    local file=$1; shift
+
+    local manifest dry_run offline
+    if [[ $@ == *--manifest* ]]; then manifest_only=yes; fi
+    if [[ $@ == *--dry-run* ]]; then  dry_run=yes; fi
+    if [[ $@ == *--offline* ]]; then  offline=yes; fi
+
+    MAIN_DEPLOYMENT_FILE=$(expand_resource_dir "$file")
+    populate_operations_arguments "$cfg_path/operations"
+    populate_vars_files_arguments
+
+    local subsys_state_dir
+    subsys_state_dir=$(state_dir)
+    bosh_ro_invoke interpolate > "$subsys_state_dir/${name}.yml"
+    [[ -x $(which humanize-manifest) ]] && \
+        humanize-manifest "$subsys_state_dir/${name}.yml" \
+            > "$subsys_state_dir/${name}-humanized.yml" \
+            || true
+
+    if [[ -z $manifest_only || -z $offline ]]; then
+        bosh_rw_invoke update-config --name="${name}" --type="${type}"
+    fi
+
+    unset MAIN_DEPLOYMENT_FILE
+    unset OPERATIONS_ARGUMENTS
+    unset VARS_FILES_ARGUMENTS # actually it's going to be re-computed exactly the same, but we want to be hermetic
 }
 
 function state_dir() {

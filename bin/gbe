@@ -822,7 +822,7 @@ function converge_deployment() {
 
     local subsys_type
     subsys_type=$(spec_var --required /subsys/type)
-    "read_${subsys_type}_spec"
+    "read_${subsys_type}_spec" "$@"
 
     restrict_permissions "$subsys_state_dir/depl-creds.yml"
     bosh_ro_invoke interpolate > "$subsys_state_dir/depl-manifest.yml"
