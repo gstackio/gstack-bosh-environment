@@ -7,28 +7,28 @@ function main() {
 
     local concourse_target=${1:-"ef"}
 
-    local pipeline_name pipeline
-    pipeline_name=self-sanity-tests
-    pipeline=$(pipeline_definition)
+    local pipeline_name=self-sanity-tests
 
     set -x
 
-    if [[ ! -e $BASE_DIR/bin/fly ]]; then
-        bash ${DEBUG:+"-x"} "$SUBSYS_DIR/fetch-fly-cli"
+    if [[ ! -e ${BASE_DIR}/bin/fly ]]; then
+        bash ${DEBUG:+"-x"} "${SUBSYS_DIR}/fetch-fly-cli"
     fi
-    "$BASE_DIR/bin/fly" -t "$concourse_target" sync
+    "${BASE_DIR}/bin/fly" -t "${concourse_target}" sync
 
-    if ! fly -t "$concourse_target" status; then
-        bash ${DEBUG:+"-x"} "$SUBSYS_DIR/fly-login" "$concourse_target"
+    set +e
+    if ! fly -t "${concourse_target}" status; then
+        bash ${DEBUG:+"-x"} "${SUBSYS_DIR}/fly-login" "${concourse_target}"
     fi
+    set -e
 
-    fly -t "$concourse_target" set-pipeline -n -p "$pipeline_name" -c <(set +x; echo "$pipeline"; set -x)
+    fly -t "${concourse_target}" set-pipeline -n -p "${pipeline_name}" -c <(pipeline_definition)
 
-    fly -t "$concourse_target" unpause-pipeline -p "$pipeline_name"
+    fly -t "${concourse_target}" unpause-pipeline -p "${pipeline_name}"
 
-    fly -t "$concourse_target" trigger-job -j "$pipeline_name/test-job" -w
+    fly -t "${concourse_target}" trigger-job -j "${pipeline_name}/test-job" -w
 
-    fly -t "$concourse_target" destroy-pipeline -n -p "$pipeline_name" > /dev/null
+    fly -t "${concourse_target}" destroy-pipeline -n -p "${pipeline_name}" > /dev/null
 
     exit 0
 }

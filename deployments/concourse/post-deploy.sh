@@ -12,7 +12,8 @@ function main() {
 function setup() {
     SUBSYS_DIR=${SUBSYS_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}
     BASE_DIR=${BASE_DIR:-$(git rev-parse --show-toplevel)}
-    readonly SUBSYS_DIR BASE_DIR
+    SUBSYS_NAME=$(own_spec_var /subsys/name)
+    readonly SUBSYS_DIR BASE_DIR SUBSYS_NAME
 }
 
 function run_errand_with_retry_for_debugging() {
@@ -23,7 +24,7 @@ function run_errand_with_retry_for_debugging() {
     concourse_target=$(spec_var /sanity-tests/concourse-target)
 
     set +e -x
-    "${SUBSYS_DIR}/sanity-tests" "$concourse_target"
+    "${SUBSYS_DIR}/sanity-tests" "${concourse_target}"
     error=$?
     set +x -e
 
@@ -38,7 +39,7 @@ function run_errand_with_retry_for_debugging() {
     mkdir -p "${logs_dir}"
 
     set +e -x
-    DEBUG=yes time bash -x "$SUBSYS_DIR/sanity-tests"
+    DEBUG=yes time bash -x "${SUBSYS_DIR}/sanity-tests" "${concourse_target}"
     error=$?
     set +x -e
 
@@ -50,9 +51,27 @@ function run_errand_with_retry_for_debugging() {
     return ${error}
 }
 
+function own_spec_var() {
+    local path=$1
+    bosh int "${SUBSYS_DIR}/conf/spec.yml" --path "${path}"
+}
+
 function spec_var() {
     local path=$1
-    bosh int "$SUBSYS_DIR/conf/spec.yml" --path "$path"
+
+    local has_upstream spec_file
+    has_upstream=$(own_spec_var "/subsys/upstream" 2> /dev/null || true)
+    if [[ -n ${has_upstream} ]]; then
+        state_var "merged-spec" "${path}"
+    else
+        own_spec_var "${path}"
+    fi
+}
+
+function state_var() {
+    local state_file=$1
+    local path=$2
+    bosh int "${BASE_DIR}/state/${SUBSYS_NAME}/${state_file}.yml" --path "${path}"
 }
 
 main "$@"

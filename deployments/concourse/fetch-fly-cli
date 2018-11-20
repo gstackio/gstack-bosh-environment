@@ -18,12 +18,31 @@ function main() {
 function setup() {
     SUBSYS_DIR=${SUBSYS_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}
     BASE_DIR=${BASE_DIR:-$(git rev-parse --show-toplevel)}
-    readonly SUBSYS_DIR BASE_DIR
+    SUBSYS_NAME=$(own_spec_var /subsys/name)
+    readonly SUBSYS_DIR BASE_DIR SUBSYS_NAME
+}
+
+function own_spec_var() {
+    local path=$1
+    bosh int "${SUBSYS_DIR}/conf/spec.yml" --path "${path}"
 }
 
 function spec_var() {
     local path=$1
-    bosh int "${SUBSYS_DIR}/conf/spec.yml" --path "${path}"
+
+    local has_upstream spec_file
+    has_upstream=$(own_spec_var "/subsys/upstream" 2> /dev/null || true)
+    if [[ -n ${has_upstream} ]]; then
+        state_var "merged-spec" "${path}"
+    else
+        own_spec_var "${path}"
+    fi
+}
+
+function state_var() {
+    local state_file=$1
+    local path=$2
+    bosh int "${BASE_DIR}/state/${SUBSYS_NAME}/${state_file}.yml" --path "${path}"
 }
 
 main "$@"
