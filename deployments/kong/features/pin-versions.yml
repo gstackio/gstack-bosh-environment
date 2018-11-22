@@ -2,13 +2,21 @@
 
 # Releases versions
 
-- path: /releases/name=kong-ce?
+- path: /releases/name=gk-kong?
   type: replace
   value:
-    name: kong-ce
+    name: gk-kong
     version: ((kong_release_version))
-    url: https://github.com/gstackio/kong-ce-boshrelease/releases/download/v((kong_release_version))/kong-ce-((kong_release_version)).tgz
+    url: https://github.com/gstackio/gk-kong-boshrelease/releases/download/v((kong_release_version))/gk-kong-((kong_release_version)).tgz
     sha1: ((kong_release_sha1))
+
+- path: /releases/name=bpm
+  type: replace
+  value:
+    name: bpm
+    version: ((bpm_version))
+    url: https://bosh.io/d/github.com/cloudfoundry-incubator/bpm-release?v=((bpm_version))
+    sha1: ((bpm_sha1))
 
 - path: /releases/name=postgres
   type: replace

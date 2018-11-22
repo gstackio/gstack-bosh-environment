@@ -4,18 +4,17 @@ subsys:
   type: bosh-deployment
 
 input_resources:
-  - name: kong-ce-boshrelease
+  - name: kong-boshrelease
     type: git
-    uri: https://github.com/gstackio/kong-ce-boshrelease.git
-    version: "d5719ed" # v1.0.0 with manifest fixes
+    uri: https://github.com/gstackio/gk-kong-boshrelease.git
+    version: "v1.0.0"
 
 
-main_deployment_file: kong-ce-boshrelease/manifests/kong.yml
+main_deployment_file: kong-boshrelease/deploy/kong.yml
 
 
 operations_files:
   10_local:
-    - rename-deployment-and-network
     - pin-stemcell
     - pin-versions
 
@@ -29,17 +28,16 @@ deployment_vars:
   # Versions
 
   kong_release_version: "1.0.0"
-  kong_release_sha1: f829807866f70361b7593747bf079eeb8dd6f775
+  kong_release_sha1: 619d4eaf727f310fc99aade4c726a2fefd883951
+
+  # bpm_version:      # imported below
+  # bpm_sha1:         # imported below
 
   # postgres_version: # imported below
   # postgres_sha1:    # imported below
 
   # stemcell_os:      # imported below
   # stemcell_version: # imported below
-  stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
-  stemcell_os: ubuntu-trusty
-  stemcell_version: "3586.52"
-  stemcell_sha1: 07a7dad0968b61e10daa613de23465de4af7a02f
 
 
   # Reference declarations
@@ -49,16 +47,23 @@ deployment_vars:
 
 imported_vars:
   - subsys: cf
-    imports: []
+    imports:
 
       # Versions
 
-      # - name: stemcell_os
-      #   from: depl-vars
-      #   path: /stemcell_os
-      # - name: stemcell_version
-      #   from: depl-vars
-      #   path: /stemcell_version
+      - name: stemcell_os
+        from: depl-vars
+        path: /stemcell_os
+      - name: stemcell_version
+        from: depl-vars
+        path: /stemcell_version
+
+      - name: bpm_version
+        from: depl-vars
+        path: /bpm_version
+      - name: bpm_sha1
+        from: depl-vars
+        path: /bpm_sha1
 
   - subsys: concourse
     imports:
