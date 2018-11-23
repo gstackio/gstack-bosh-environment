@@ -7,7 +7,7 @@ input_resources:
   - name: kong-boshrelease
     type: git
     uri: https://github.com/gstackio/gk-kong-boshrelease.git
-    version: "v1.0.0"
+    version: "v1.1.0"
 
 
 main_deployment_file: kong-boshrelease/deploy/kong.yml
@@ -17,6 +17,7 @@ operations_files:
   10_local:
     - pin-stemcell
     - pin-versions
+    - scale-disks
 
 variables_files: {}
 
@@ -25,10 +26,15 @@ deployment_vars:
   deployment_name: easyfoundry-kong
 
 
+  # Scaling
+
+  database_disk_type: 1GB
+
+
   # Versions
 
-  kong_release_version: "1.0.0"
-  kong_release_sha1: 619d4eaf727f310fc99aade4c726a2fefd883951
+  kong_release_version: "1.1.0"
+  kong_release_sha1: b2a1b7fd1af0cd64719c51c95f0bab67306ff5e6
 
   # bpm_version:      # imported below
   # bpm_sha1:         # imported below

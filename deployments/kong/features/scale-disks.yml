@@ -1,0 +1,5 @@
+---
+
+- path: /instance_groups/name=database/persistent_disk_type
+  type: replace
+  value: ((database_disk_type))
