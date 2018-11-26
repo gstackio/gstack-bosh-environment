@@ -7,19 +7,19 @@ GBE is a set of tools and conventions that establish best practice for
 managing “infrastructure as code”, through the _description_ of an expected
 infrastructure state, and _convergence_ towards that state.
 
-GBE a **convergent infrastructure framework** if you like, where the idea of
-“converging” infrastructure is a essential concept that embraces both initial
-deployment and any further updates or upgrades. It's a solution for both day 1
-_and_ day 2 concerns.
+GBE is a **convergent infrastructure framework** if you like, where the idea
+of “converging” infrastructure embraces both initial deployment and any
+further updates or upgrades. It's a solution for both day 1 and day 2
+concerns.
 
 ### Easy Foundry
 
-_Easy Foundry_ is an Open Source distribution of Cloud Foundry, based on GBE.
-By “_distribution_”, we mean a set of [infrastructure modules](./docs/components.md)
+_Easy Foundry_ is a GBE-based distribution of Cloud Foundry. It's 100% Open
+Source. By “_distribution_”, we mean a set of [infrastructure modules](./docs/components.md)
 around Cloud Foundry that are consistently glued together to provide usable
-features. Those modules can be opted-in or out, whenever necessary, and have
-dependencies. You can think of it like a package manager for deploying
-distributed systems.
+features. Those modules can be opted-in or out, whenever necessary, and
+declare other modules they depend on. You can think of GBE like a package
+manager for deploying distributed systems.
 
 One of the main design goals of Easy Foundry is to have minimal coupling with
 proprietary Cloud services, and thus reduce the risk of being tied with any
