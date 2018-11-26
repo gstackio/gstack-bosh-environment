@@ -67,15 +67,15 @@ scality:
 
 shield: shield-v7
 
-shield-v7: minio scality
+shield-v7: cf minio scality
 	gbe $(VERB) -y $@
 
-shield-v8:
+shield-v8: cf
 	gbe $(VERB) -y $@
 
 
 
-cassandra: shield cf
+cassandra: cf shield
 	gbe $(VERB) -y $@
 
 cockroachdb:
@@ -96,6 +96,6 @@ postgres: cf
 rabbitmq: cf
 	gbe $(VERB) -y $@
 
-redis: shield cf
+redis: cf shield
 	gbe $(VERB) -y $@
 
