@@ -160,7 +160,7 @@ function setup_spruce() {
 
     assert_utilities curl "to install the Spruce CLI"
 
-    echo -e "${BLUE}Installing ${BOLD}Bosh CLI$RESET v$spruce_version as: $spruce_bin"
+    echo -e "${BLUE}Installing ${BOLD}Spruce CLI$RESET v$spruce_version as: $spruce_bin"
     curl -sL "https://github.com/geofffranks/spruce/releases/download/v${spruce_version}/spruce-$(platform)-amd64" \
         -o "$spruce_bin"
     chmod +x "$spruce_bin"
