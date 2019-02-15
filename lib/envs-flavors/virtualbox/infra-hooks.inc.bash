@@ -47,7 +47,7 @@ function reachable_ip_hook() {
 function pre_create_env_hook() {
     echo -e "\n${BLUE}Provisionning ${BOLD}dedibox$RESET with pre-requisites for the Virtualbox infrastructure\n"
 
-    pushd $BASE_DIR/ddbox-env/provision
+    pushd $BASE_DIR/ddbox-standalone-bosh-env/provision
         # ansible-playbook -i inventory.cfg --ask-become provision.yml
         echo skipped
     popd
