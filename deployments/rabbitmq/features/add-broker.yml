@@ -81,7 +81,7 @@
       - name: bpm
         release: bpm
     vm_type: default
-    stemcell: trusty
+    stemcell: xenial
     azs:
       - z1
     networks:
