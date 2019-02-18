@@ -13,6 +13,8 @@
   value:
     name: cf-rabbitmq-smoke-tests
     version: ((rabbitmq_smoke_tests_version))
+    url: https://bosh.io/d/github.com/pivotal-cf/cf-rabbitmq-smoke-tests-release?v=((rabbitmq_smoke_tests_version))
+    sha1: ((rabbitmq_smoke_tests_sha1))
 
 - path: /releases/name=cf-cli?
   type: replace
