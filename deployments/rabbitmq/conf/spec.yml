@@ -56,7 +56,7 @@ deployment_vars:
   # Customizations
 
   persistent_disk_type: 1GB
-  disk_alarm_threshold: 100_000_000 # 100MB # in Bosh-Lite, we can't use the default "{mem_relative,0.4}" or the Pivotal-recommended "{mem_relative,1.5}"
+  disk_alarm_threshold: 100_000_000 # 100MB # in Bosh-Lite, we can't use the default "{mem_relative,0.4}", nor the Pivotal-recommended "{mem_relative,1.5}"
   cluster-partition-handling-strategy: autoheal # Recommended for BOSH-Lite instead of the default 'pause_minority'
   rabbitmq_instances: 2
   haproxy-instances: 1
