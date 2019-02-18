@@ -8,15 +8,15 @@ input_resources:
   - name: rabbitmq-boshrelease
     type: git
     uri: https://github.com/pivotal-cf/cf-rabbitmq-release.git
-    version: v252.0.0
+    version: v253.0.0
   - name: rabbitmq-broker-boshrelease
     type: git
     uri: https://github.com/pivotal-cf/cf-rabbitmq-multitenant-broker-release.git
-    version: v37.0.0
+    version: v38.0.0
   - name: rabbitmq-smoke-tests-boshrelease
     type: git
     uri: https://github.com/pivotal-cf/cf-rabbitmq-smoke-tests-release.git
-    version: v19.0.0
+    version: v20.0.0
 
 
 developing: false
@@ -66,13 +66,14 @@ deployment_vars:
 
   rabbitmq_version: "3.7"
 
-  rabbitmq_release_version: "252.0.0"
-  rabbitmq_release_sha1: 289c258f329535c469ce9b5596f2b5737c837a36
+  rabbitmq_release_version: "253.0.0"
+  rabbitmq_release_sha1: 92c6b8f01a651ae4609f8515af2a444423d15bd0
 
-  rabbitmq_broker_version: "37.0.0"
-  rabbitmq_broker_sha1: 146049116e60593af959d1c738a139b59e8480a7
+  rabbitmq_broker_version: "38.0.0"
+  rabbitmq_broker_sha1: 11bed83a75ad1feca3ccd90136f9f5381d984aa3
 
-  rabbitmq_smoke_tests_version: "19.0.0"
+  rabbitmq_smoke_tests_version: "20.0.0"
+  rabbitmq_smoke_tests_sha1: a02c8721504070b142d61b3ab811d41bd93ae5a0
 
   cf_cli_release_version: "1.8.0"
   cf_cli_release_sha1: 15d0718bc82ff9394efd2c9798873a39bf7eba06
@@ -91,8 +92,8 @@ deployment_vars:
   # stemcell_sha1:    # imported below
   stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
   stemcell_os: ubuntu-trusty
-  stemcell_version: "3586.36"
-  stemcell_sha1: 69163bcf21ae6d5ffeb92f099644d295b289b63e
+  stemcell_version: "3586.79"
+  stemcell_sha1: 500b107f3714f3e527dcf9bf446a7a285935a0e4
 
 
   # Reference declarations
