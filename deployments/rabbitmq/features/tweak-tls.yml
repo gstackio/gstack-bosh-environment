@@ -21,6 +21,14 @@
 
 
 
+# TLS versions tweaks
+
+- path: /instance_groups/name=rmq/jobs/name=rabbitmq-server/properties/rabbitmq-server/ssl?/versions
+  type: replace
+  value: ((tls_versions))
+
+
+
 # Certificates tweaks
 
 - path: /instance_groups/name=rmq/jobs/name=rabbitmq-server/properties/rabbitmq-server/ssl?/cacert

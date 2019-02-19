@@ -52,6 +52,8 @@ deployment_vars:
 
   product-name: rabbitmq # as displayed in 'cf marketplace'
 
+  tls_versions: [ "tlsv1.2" ] # [ "tlsv1.2", "tlsv1.1" ] # TLS protocol versions to support
+
 
   # Customizations
 
