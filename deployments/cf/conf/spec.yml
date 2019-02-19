@@ -19,7 +19,7 @@ main_deployment_file: cf-deployment/cf-deployment.yml
 
 operations_files:
   10_cf-deployment:
-    - operations/use-compiled-releases
+    # - operations/use-compiled-releases
     - operations/bosh-lite
     # operations/stop-skipping-tls-validation # to be enabled when using produciton certs
     - operations/rename-network-and-deployment
@@ -131,8 +131,8 @@ deployment_vars:
 
   stemcell_name: bosh-warden-boshlite-ubuntu-xenial-go_agent
   stemcell_os: ubuntu-xenial
-  stemcell_version: "97.32"
-  stemcell_sha1: 9448c28eaedccff300f1384991132fb8d5dae47c
+  stemcell_version: "170.30"
+  stemcell_sha1: 859497296ab443fc71300180109f9f61e7727a25
 
 
   # Reference declarations
