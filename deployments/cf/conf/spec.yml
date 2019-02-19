@@ -44,8 +44,8 @@ operations_files:
     # # downtime app deployments.
     # - operations/experimental/add-deployment-updater
 
-    # # Add the cflinuxfs3 stack and buildpacks.
-    # - operations/experimental/add-cflinuxfs3
+    # Add the cflinuxfs3 stack and buildpacks.
+    - operations/experimental/add-cflinuxfs3
 
     # # Enables container proxy on the Diego Cell 'rep' and configures gorouter
     # # to opt into TLS-enabled connections to the backend.
