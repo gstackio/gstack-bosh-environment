@@ -63,3 +63,20 @@
     options:
       is_ca: true
       common_name: rabbitmq_ca
+
+
+
+# Exposed ports
+
+- path: /instance_groups/name=rmq/jobs/name=rabbitmq-server/properties/rabbitmq-server/ports
+  type: replace
+  value:
+    # - 5672  # not used anymore (maybe AMQP TCP listener)
+    - 5671  # TLS (SSL) listener
+    - 1883  # MQTT TCP listener
+    - 8883  # MQTT TLS listener
+    - 61613 # STOMP TCP listener
+    - 61614 # STOMP TLS listener
+    - 15671 # Management plugin: HTTPS listener
+    - 15672 # Management plugin: HTTP (non-TLS) listener
+    # - 15674 # not used anymore
