@@ -47,9 +47,8 @@ deployment_vars:
 
   # User-facing settings
 
-  rabbitmq-management-hostname: rabbitmq
-  rabbitmq-broker-hostname: rabbitmq-broker
-  system-domain: easyfoundry.prototyp.it
+  rabbitmq-management-hostname: rabbitmq    # Exposes the RMQ UI at https://rabbitmq.<cf-system-domain>
+  rabbitmq-broker-hostname: rabbitmq-broker # Exposes the RMQ broker at https://rabbitmq-broker.<cf-system-domain>
 
   product-name: rabbitmq # as displayed in 'cf marketplace'
 
@@ -143,6 +142,12 @@ imported_vars:
       - name: routing_deployment_name
         from: depl-vars
         path: /deployment_name
+
+      # CF-RabbitMQ deployment plumbery
+
+      - name: system-domain
+        from: depl-vars
+        path: /system_domain
 
       # Broker plumbery
 
