@@ -38,7 +38,7 @@ operations_files:
     - customize-routing
     - add-broker
     - tweak-tls
-    - customize-pugins
+    - customize-plugins
 
 
 deployment_vars:
