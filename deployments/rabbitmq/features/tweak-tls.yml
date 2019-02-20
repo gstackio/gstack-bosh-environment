@@ -80,3 +80,49 @@
     - 15671 # Management plugin: HTTPS listener
     - 15672 # Management plugin: HTTP (non-TLS) listener
     # - 15674 # not used anymore
+
+
+
+# Management UI TLS (not working yet)
+
+# - path: /instance_groups/name=rmq/jobs/name=rabbitmq-server/properties/rabbitmq-server/management_tls?/enabled
+#   type: replace
+#   value: true
+
+# - path: /instance_groups/name=rmq/jobs/name=rabbitmq-server/properties/rabbitmq-server/management_tls?/cacert
+#   type: replace
+#   value: ((tls_certificate.ca))
+
+# - path: /instance_groups/name=rmq/jobs/name=rabbitmq-server/properties/rabbitmq-server/management_tls?/cert
+#   type: replace
+#   value: ((tls_certificate.certificate))
+
+# - path: /instance_groups/name=rmq/jobs/name=rabbitmq-server/properties/rabbitmq-server/management_tls?/key
+#   type: replace
+#   value: ((tls_certificate.private_key))
+
+
+
+# Client certificate authentication
+
+# - path: /instance_groups/name=rmq/jobs/name=rabbitmq-server/properties/rabbitmq-server/config
+#   type: replace
+#   # NOTE: the base64 value below sets the 'EXTERNAL' authentication to allow
+#   # client cert auth, and configure client cert auth to obtain the login from
+#   # the Common Name (CN) field of the client cert.
+#   #
+#   # [
+#   #   {rabbit, [
+#   #     {auth_mechanisms, ['PLAIN', 'AMQPLAIN', 'EXTERNAL']},
+#   #     {ssl_cert_login_from, common_name}
+#   #   ]}
+#   # ].
+#   value: WwogIHtyYWJiaXQsIFsKICAgIHthdXRoX21lY2hhbmlzbXMsIFsnUExBSU4nLCAnQU1RUExBSU4nLCAnRVhURVJOQUwnXX0sCiAgICB7c3NsX2NlcnRfbG9naW5fZnJvbSwgY29tbW9uX25hbWV9CiAgXX0KXS4K
+
+# - path: /instance_groups/name=rmq/jobs/name=rabbitmq-server/properties/rabbitmq-server/ssl/verify?
+#   type: replace
+#   value: true
+
+# - path: /instance_groups/name=rmq/jobs/name=rabbitmq-server/properties/rabbitmq-server/ssl/fail_if_no_peer_cert?
+#   type: replace
+#   value: true
