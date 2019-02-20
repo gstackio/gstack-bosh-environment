@@ -2,11 +2,13 @@
 
 # RabbitMQ service broker tweaks
 
-# This option is actually unused, but we set it anyway to be in line with the
-# job spec documentation.
+# WARN: this option is incorrectly documented in the job spec documentation of
+# the cf-rabbitmq-multitenant-broker-release. You actually need to put here
+# the TLS certificate of the RabbitMQ servers (and not 'true' or 'false' as
+# documented).
 - path: /instance_groups/name=rmq-broker/jobs/name=rabbitmq-broker/properties/rabbitmq-broker/rabbitmq/ssl?
   type: replace
-  value: true
+  value: ((tls_certificate.certificate))
 
 
 
