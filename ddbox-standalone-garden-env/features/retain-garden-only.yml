@@ -13,7 +13,7 @@
 
 # Only keep Garden, Groot, Warden CPI and NATS jobs
 
-- path: /instance_groups/name=bosh/jobs/name=postgres-9.4
+- path: /instance_groups/name=bosh/jobs/name=postgres-10
   type: remove
 
 - path: /instance_groups/name=bosh/jobs/name=blobstore

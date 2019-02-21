@@ -7,7 +7,7 @@ input_resources:
   - name: bosh-deployment
     type: git
     uri: https://github.com/cloudfoundry/bosh-deployment.git
-    version: "28deae6" # BOSH v268.2.0 (as of Oct 26nd, 2018)
+    version: "beb413d" # BOSH v268.6.0 (as of Feb 20th, 2019)
 
 
 infra_vars:
@@ -30,6 +30,7 @@ operations_files:
   30_local:
     - keep-bosh-agent
     - custom-stemcell-version
+    - custom-bosh-version-precompiled
     - set-disk-size
     - scale-vm-size
     - retain-garden-only
@@ -60,6 +61,13 @@ deployment_vars:
   internal_ip: "192.168.50.7"
   internal_gw: "192.168.50.1"
   internal_cidr: 192.168.50.0/24
+
+
+  # Versions
+
+  bosh_precompiled_version: "268.6.0"
+  bosh_precompiled_url: https://s3.amazonaws.com/bosh-compiled-release-tarballs/bosh-268.6.0-ubuntu-xenial-170.25-20190130-230319-172875782-20190130230326.tgz
+  bosh_precompiled_sha1: 2715c3f3183945c69111378327cacd8610109da7
 
   stemcell_name: bosh-vsphere-esxi-ubuntu-xenial-go_agent
   stemcell_version: "170.30"

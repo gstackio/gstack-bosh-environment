@@ -8,7 +8,7 @@ input_resources:
   - name: bosh-deployment
     type: git
     uri: https://github.com/cloudfoundry/bosh-deployment.git
-    version: "28deae6" # BOSH v268.2.0 (as of Oct 26nd, 2018)
+    version: "beb413d" # BOSH v268.6.0 (as of Feb 20th, 2019)
   - name: prometheus-boshrelease
     type: git
     uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
@@ -77,9 +77,9 @@ deployment_vars:
 
   # Versions
 
-  bosh_precompiled_version: "268.2.0"
-  bosh_precompiled_url: https://s3.amazonaws.com/bosh-compiled-release-tarballs/bosh-268.2.0-ubuntu-xenial-97.28-20181024-210824-586102372-20181024210828.tgz
-  bosh_precompiled_sha1: 3107ba41a109561cf181862ac59aa1e82ab0b286
+  # bosh_precompiled_version: # imported below
+  # bosh_precompiled_url:     # imported below
+  # bosh_precompiled_sha1:    # imported below
 
   # stemcell_name:    # imported below
   # stemcell_version: # imported below
@@ -99,6 +99,16 @@ imported_vars:
       - name: stemcell_sha1
         from: depl-vars
         path: /stemcell_sha1
+
+      - name: bosh_precompiled_version
+        from: depl-vars
+        path: /bosh_precompiled_version
+      - name: bosh_precompiled_url
+        from: depl-vars
+        path: /bosh_precompiled_url
+      - name: bosh_precompiled_sha1
+        from: depl-vars
+        path: /bosh_precompiled_sha1
 
       # For 'remove-garden.yml' ops file
       - name: garden_backend_ip
