@@ -264,6 +264,10 @@ function down_usage() {
     echo "        which is useful to preserve the allocated public IP address for"
     echo "        the BOSH director."
     echo
+    echo "    -f"
+    echo "        Don't run drain scripts when stopping BOSH VM micro-services"
+    echo "        processes."
+    echo
 }
 
 function dns_usage() {
@@ -987,6 +991,9 @@ function create_env() {
 }
 
 function delete_env() {
+    local ignore_errors=no
+    if [[ $@ == *--force* ]]; then ignore_errors=yes; fi
+
     SUBSYS_DIR=$BASE_DIR/$GBE_ENVIRONMENT
 
     # Assert subsystem is a bosh-environment
@@ -1028,7 +1035,7 @@ function delete_env() {
         echo -e "\n${BLUE}Skipping ${BOLD}bosh delete-env$RESET, as the 'state/$GBE_ENVIRONMENT/env-infra-state.json' file is absent\n"
     else
         echo -e "\n${BLUE}Running ${BOLD}bosh delete-env$RESET to destroy the BOSH environment\n"
-        infra_bosh_rw_invoke delete-env
+        infra_bosh_rw_invoke delete-env ${ignore_errors:+"--skip-drain"}
         # rm -vf "$subsys_state_dir/depl-creds.yml"
     fi
 
@@ -1047,7 +1054,7 @@ function delete_env() {
     fi
 
 
-    post_delete_env_hook "$@"
+    post_delete_env_hook
 }
 
 # GBE_ENVIRONMENT=${GBE_ENVIRONMENT:-gcp-env}
@@ -1109,10 +1116,16 @@ case $1 in
         ;;
     down)
         shift
-        if [[ $1 == "-h" ]]; then
-            down_usage; exit 0
-        fi
-        delete_env "$@"
+        ignore_errors=
+        while [[ -n $1 ]]; do
+            case $1 in
+                -h) down_usage; exit 0 ;;
+                -f) ignore_errors=yes ;;
+                *)  down_usage; exit 2 ;;
+            esac
+            shift
+        done
+        delete_env ${ignore_errors:+"--force"}
         ;;
     firewall)   setup_firewall ;;
     tunnel)
