@@ -105,12 +105,23 @@ function env_exports() {
             echo "export BOSH_DEPLOYMENT=\"$depl_name\""
         fi
     fi
+
+    echo "export CREDHUB_SERVER=\"https://$(internal_ip):8844\""
+    local credhub_ca_cert=$(state_dir "$GBE_ENVIRONMENT")/credhub_CAs.pem
+    echo "export CREDHUB_CA_CERT=\"${credhub_ca_cert}\""
+    {
+        env_creds_var "/credhub_ca/certificate"
+        env_creds_var "/default_ca/certificate"
+    } > "$credhub_ca_cert"
+
+    echo "export CREDHUB_CLIENT=\"credhub-admin\""
+    echo "export CREDHUB_SECRET=\"$(env_creds_var "/credhub_admin_client_secret")\""
 }
 
 function credhub_login() {
     local creds=$(state_dir "$GBE_ENVIRONMENT")/depl-creds.yml
 
-    if [[ ! -f "$creds" || ! -f "$(state_dir "$GBE_ENVIRONMENT")/bbl-state.json" ]]; then
+    if [[ ! -f "$creds" || ! -f "$(state_dir "$GBE_ENVIRONMENT")/env-infra-state.json" ]]; then
         return
     fi
 
@@ -121,14 +132,10 @@ function credhub_login() {
         bosh int "$creds" --path /default_ca/certificate
     ) > "$CREDHUB_CA_CERT"
 
-    export https_proxy=socks5://127.0.0.1:5000
+    export CREDHUB_CLIENT=credhub-admin
+    export CREDHUB_SECRET=$(bosh int "$creds" --path /credhub_admin_client_secret)
 
-    local credhub_username=credhub-cli
-    local credhub_password=$(bosh int "$creds" --path /credhub_cli_password)
-
-    credhub login \
-        --username "$credhub_username" \
-        --password "$credhub_password"
+    credhub login
 }
 
 function setup_gcp() {
