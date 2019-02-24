@@ -2,11 +2,13 @@
 
 BASE_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
 
+SUBSYS_NAME=$(basename "$(dirname "${BASH_SOURCE[0]}")")
+
 if ! which pbcopy > /dev/null; then
 	echo "ERROR: no executable 'pbcopy' on your PATH. Aborting." >&2
 	exit 1
 fi
 
-bosh int "$BASE_DIR/state/cf/depl-creds.yml" --path /cf_admin_password \
+bosh int "${BASE_DIR}/state/${SUBSYS_NAME}/depl-creds.yml" --path /cf_admin_password \
     | tr -d '\n' \
     | pbcopy
