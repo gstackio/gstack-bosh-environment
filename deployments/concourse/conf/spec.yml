@@ -61,10 +61,8 @@ deployment_vars:
   garden_runc_version: "1.18.3"
   garden_runc_sha1: 1aa15e644c6c0c6c7ec072bf668fe5d9bcc4c632
 
-  postgres_version: "32"
-  postgres_sha1: b9652c22cbc664d60af82b534624e3f63753feb5
-  # postgres_version: "35"
-  # postgres_sha1: 8a30528f55a1add20562eff4bd9c11a3f970865e
+  postgres_version: "35"
+  postgres_sha1: 8a30528f55a1add20562eff4bd9c11a3f970865e
 
   # os_conf_version:          # imported below
   # os_conf_sha1:             # imported below
