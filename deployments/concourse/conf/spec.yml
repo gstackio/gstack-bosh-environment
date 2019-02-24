@@ -8,7 +8,7 @@ input_resources:
   - name: concourse-deployment
     type: git
     uri: https://github.com/concourse/concourse-deployment.git
-    version: v4.2.1
+    version: release/v4.2.3
 
 
 main_deployment_file: concourse-deployment/cluster/concourse.yml
@@ -17,7 +17,6 @@ operations_files:
   10_local:
     - reorder-instance-groups # must appear first, before anything is modified in instance group 'db'
   20_concourse-deployment:
-    - cluster/operations/web-network-extension
     - cluster/operations/worker-ephemeral-disk
     - cluster/operations/static-web
     - cluster/operations/encryption
@@ -56,14 +55,18 @@ deployment_vars:
 
   # Versions
 
-  # concourse_version: "4.2.1" # now defined in the 'versions.yml' file
-  # concourse_sha1: 470a6fdd7cb82fc723d7d78930c7d261ca4a6cb4
+  concourse_version: "4.2.3" # now defined in the 'versions.yml' file
+  concourse_sha1: 915ab6a3ea9fa8e611887e51630c7a4947dcd8c1
 
-  garden_runc_version: "1.16.7"
-  garden_runc_sha1: c5d6bedc7aec670cda0f9808de67fe2feeb4d583
+  garden_runc_version: "1.18.3"
+  garden_runc_sha1: 1aa15e644c6c0c6c7ec072bf668fe5d9bcc4c632
 
-  postgres_version: "30"
-  postgres_sha1: a798999d29b9f5aa12035cff907b26674b491200
+  postgres_version: "31"
+  postgres_sha1: bbe4151f4000f349c2ffaf72412aac9cc0a3c741
+  # postgres_version: "32"
+  # postgres_sha1: b9652c22cbc664d60af82b534624e3f63753feb5
+  # postgres_version: "35"
+  # postgres_sha1: 8a30528f55a1add20562eff4bd9c11a3f970865e
 
   # os_conf_version:          # imported below
   # os_conf_sha1:             # imported below
@@ -102,12 +105,8 @@ deployment_vars:
 
   # Reference declarations
 
-  network_name: &network_name concourse-network # injected in cloud-config
+  network_name: concourse-network # injected in cloud-config
   web_ip: 10.244.16.2 # first address in the 'static' range
-  # A VM extension from your BOSH Director's cloud config that will attach 'web'
-  # instances to your ELB.
-  web_network_vm_extension: concourse-atc-loadbalancer
-  web_network_name: *network_name # Plumbery for the 'web-network-extension.yml' ops file
 
 
 imported_vars:

@@ -21,7 +21,7 @@ function run_errand_with_retry_for_debugging() {
     local errand_vm_name=$2
 
     local concourse_target
-    concourse_target=$(spec_var /sanity-tests/concourse-target)
+    concourse_target=$(spec_var /sanity-tests/concourse-target 2> /dev/null || true)
 
     set +e -x
     "${SUBSYS_DIR}/sanity-tests" "${concourse_target}"
