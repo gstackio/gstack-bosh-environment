@@ -15,9 +15,9 @@
 
 
 
-# ------------------------------ #
+# ------------------------------------------------ #
 # BOSH addons: BPM, DNS Aliases & Database CA cert #
-# ------------------------------ #
+# ------------------------------------------------ #
 
 - path: /releases/name=bpm?
   type: replace
@@ -137,7 +137,7 @@
     properties:
       bpm: { enabled: true }
       credhub:
-        port: 8844
+        port: 8844 # explicit that value for the glue below to stick
         tls: ((credhub-tls))
         authentication:
           uaa:
@@ -240,6 +240,8 @@
       bpm: { enabled: true }
       uaa:
         url: https://uaa.service.concourse.internal
+        ssl:
+          port: 8443 # explicit that value for the glue below to stick
         catalina_opts: "-Djava.security.egd=file:/dev/./urandom -Xms384m -Xmx384m -XX:MaxMetaspaceSize=256m"
         scim:
           users:
@@ -396,7 +398,7 @@
   type: replace
   value:
     path_prefix: /concourse
-    url: https://127.0.0.1:8844
+    url: https://credhub.service.concourse.internal:8844
     tls:
       ca_cert:
         certificate: ((concourse-internal-ca.certificate))
