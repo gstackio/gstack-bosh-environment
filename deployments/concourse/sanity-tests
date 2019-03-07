@@ -40,7 +40,7 @@ function setup() {
 }
 
 function pipeline_definition() {
-    cat <<EOF
+    cat <<'EOF'
 ---
 resources:
   - name: test-resource
@@ -65,7 +65,11 @@ jobs:
 
           run:
             path: bash
-            args: [ "-ec", "echo 'Concourse rocks!'" ]
+            args:
+              - -ec
+              - |
+                export TERM=xterm-256color
+                echo "$(tput setaf 5)$(tput bold)Concourse rocks"\!"$(tput sgr0)"
 EOF
 }
 
