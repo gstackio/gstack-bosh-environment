@@ -141,7 +141,8 @@
         tls: ((credhub-tls))
         authentication:
           uaa:
-            url: &uaa_url https://uaa.service.concourse.internal:8443
+            url: https://uaa.((external_host))
+            internal_url: https://uaa.service.concourse.internal:8443
             verification_key: ((uaa-jwt-signing-key.public_key))
             ca_certs:
               - ((uaa-tls.certificate))
@@ -239,7 +240,7 @@
     properties:
       bpm: { enabled: true }
       uaa:
-        url: https://uaa.service.concourse.internal
+        url: https://uaa.((external_host))
         ssl:
           port: 8443 # explicit that value for the glue below to stick
         catalina_opts: "-Djava.security.egd=file:/dev/./urandom -Xms384m -Xmx384m -XX:MaxMetaspaceSize=256m"
@@ -254,7 +255,7 @@
                 - credhub.write
         admin: { client_secret: ((uaa-admin-client-secret)) }
         login: { client_secret: ((uaa-login-client-secret)) }
-        zones: { internal: { hostnames: [] } }
+        zones: { internal: { hostnames: [ *uaa_service_address ] } }
         sslCertificate: ((uaa-tls.certificate))
         sslPrivateKey: ((uaa-tls.private_key))
         jwt:
