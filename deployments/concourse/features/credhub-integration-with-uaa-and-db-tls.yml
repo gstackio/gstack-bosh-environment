@@ -192,6 +192,8 @@
     options:
       ca: concourse-internal-ca
       common_name: *credhub_service_address
+      alternative_names:
+        - *credhub_service_address
 
 - path: /variables/name=credhub-database-password?
   type: replace
@@ -255,7 +257,7 @@
                 - credhub.write
         admin: { client_secret: ((uaa-admin-client-secret)) }
         login: { client_secret: ((uaa-login-client-secret)) }
-        zones: { internal: { hostnames: [ *uaa_service_address ] } }
+        zones: { internal: { hostnames: [ "uaa.((external_host))", *uaa_service_address ] } }
         sslCertificate: ((uaa-tls.certificate))
         sslPrivateKey: ((uaa-tls.private_key))
         jwt:
@@ -330,6 +332,8 @@
     options:
       ca: concourse-external-ca
       common_name: *uaa_service_address
+      alternative_names:
+        - *uaa_service_address
 
 - path: /variables/name=uaa-admin-client-secret?
   type: replace
