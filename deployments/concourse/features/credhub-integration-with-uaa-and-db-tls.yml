@@ -137,12 +137,12 @@
     properties:
       bpm: { enabled: true }
       credhub:
-        port: 8844 # explicit that value for the glue below to stick
+        port: ((credhub_tls_port)) # explicit that value for the glue below to stick
         tls: ((credhub-tls))
         authentication:
           uaa:
             url: https://uaa.((external_host))
-            internal_url: https://uaa.service.concourse.internal:8443
+            internal_url: https://uaa.service.concourse.internal:((uaa_tls_port))
             verification_key: ((uaa-jwt-signing-key.public_key))
             ca_certs:
               - ((uaa-tls.certificate))
@@ -242,7 +242,7 @@
       uaa:
         url: https://uaa.((external_host))
         ssl:
-          port: 8443 # explicit that value for the glue below to stick
+          port: ((uaa_tls_port)) # explicit that value for the glue below to stick
         catalina_opts: "-Djava.security.egd=file:/dev/./urandom -Xms384m -Xmx384m -XX:MaxMetaspaceSize=256m"
         scim:
           users:
@@ -399,7 +399,7 @@
   type: replace
   value:
     path_prefix: /concourse
-    url: https://credhub.service.concourse.internal:8844
+    url: https://credhub.service.concourse.internal:((credhub_tls_port))
     tls:
       ca_cert:
         certificate: ((concourse-internal-ca.certificate))

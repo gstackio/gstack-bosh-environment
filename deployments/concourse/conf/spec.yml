@@ -103,6 +103,8 @@ deployment_vars:
 
   network_name: concourse-network # injected in cloud-config
   web_ip: 10.244.16.2 # first address in the 'static' range
+  uaa_tls_port: 8443
+  credhub_tls_port: 8844
 
 
 imported_vars:
