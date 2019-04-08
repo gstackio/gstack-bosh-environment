@@ -470,6 +470,21 @@
   # release does above.
   value: true
 
+- path: /instance_groups/name=uaa/jobs/name=pre-start-script?
+  tyoe: replace
+  value:
+    # NOTE: UAA database schema upgrades require the PstgreSQL root CA
+    # certificate to be in '/home/vcap/.postgresql/root.crt'
+    name: pre-start-script
+    release: os-conf
+    properties:
+      script: |
+        mkdir -p /home/vcap/.postgresql
+        chown vcap:vcap /home/vcap/.postgresql
+        cat > /home/vcap/.postgresql/root.crt <<EOF
+        ((database-tls.ca))
+        EOF
+
 
 - path: /instance_groups/name=uaa/jobs/name=uaa/properties/uaadb/skip_ssl_validation?
   type: replace
