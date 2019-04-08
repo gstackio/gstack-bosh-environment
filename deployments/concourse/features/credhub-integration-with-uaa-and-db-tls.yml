@@ -508,6 +508,8 @@
     type: certificate
     options:
       ca: concourse-internal-ca
-      common_name: 127.0.0.1
+      common_name: q-s0.db.((network_name)).((deployment_name)).bosh
       alternative_names:
+        - q-s0.db.((network_name)).((deployment_name)).bosh
+        - 127.0.0.1
         - ((web_ip))
