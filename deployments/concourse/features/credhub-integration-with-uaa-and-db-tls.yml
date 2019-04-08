@@ -139,6 +139,8 @@
       credhub:
         port: ((credhub_tls_port)) # explicit that value for the glue below to stick
         tls: ((credhub-tls))
+        internal_url: *credhub_service_address # this is for other instance groups to auto-configure through the 'credhub' BOSH link
+        ca_certificate: ((credhub-tls.ca))     # this is for other instance groups to auto-configure through the 'credhub' BOSH link
         authentication:
           uaa:
             enabled: true
