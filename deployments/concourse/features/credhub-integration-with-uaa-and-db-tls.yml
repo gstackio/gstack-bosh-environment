@@ -479,11 +479,14 @@
     release: os-conf
     properties:
       script: |
+        #!/usr/bin/env bash
+        set -ex
         mkdir -p /home/vcap/.postgresql
         chown vcap:vcap /home/vcap/.postgresql
         cat > /home/vcap/.postgresql/root.crt <<EOF
         ((database-tls.ca))
         EOF
+        chown vcap:vcap /home/vcap/.postgresql/root.crt
 
 
 - path: /instance_groups/name=uaa/jobs/name=uaa/properties/uaadb/skip_ssl_validation?
