@@ -247,7 +247,7 @@
     consumes:
       database: { from: postgres }
     properties:
-      bpm: { enabled: true }
+      bpm: { enabled: false } # conflicts with the '/home/vcap/.postgresql/root.crt' workaround below
       uaa:
         url: https://uaa.((external_host))
         ssl:
