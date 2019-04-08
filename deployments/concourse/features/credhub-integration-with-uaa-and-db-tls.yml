@@ -141,9 +141,9 @@
         tls: ((credhub-tls))
         authentication:
           uaa:
+            enabled: true
             url: https://uaa.((external_host))
             internal_url: https://uaa.service.concourse.internal:((uaa_tls_port))
-            verification_key: ((uaa-jwt-signing-key.public_key))
             ca_certs:
               - ((uaa-tls.ca))
         data_storage:
