@@ -146,6 +146,11 @@
             internal_url: https://uaa.service.concourse.internal:((uaa_tls_port))
             ca_certs:
               - ((uaa-tls.ca))
+        authorization:
+          permissions:
+            - path: /*
+              actors: [ uaa-client:credhub-admin ]
+              operations: [ read, write, delete, read_acl, write_acl ]
         data_storage:
           type: postgres
           username: &credhub_db_username credhub
