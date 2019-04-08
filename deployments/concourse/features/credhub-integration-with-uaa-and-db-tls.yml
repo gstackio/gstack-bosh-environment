@@ -471,7 +471,7 @@
   value: true
 
 - path: /instance_groups/name=uaa/jobs/name=pre-start-script?
-  tyoe: replace
+  type: replace
   value:
     # NOTE: UAA database schema upgrades require the PstgreSQL root CA
     # certificate to be in '/home/vcap/.postgresql/root.crt'
