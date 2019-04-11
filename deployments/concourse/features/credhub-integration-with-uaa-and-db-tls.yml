@@ -149,11 +149,6 @@
             internal_url: https://uaa.service.concourse.internal:((uaa_tls_port))
             ca_certs:
               - ((uaa-tls.ca))
-        authorization:
-          permissions:
-            - path: /*
-              actors: [ uaa-client:credhub-admin ]
-              operations: [ read, write, delete, read_acl, write_acl ]
         data_storage:
           type: postgres
           username: &credhub_db_username credhub
@@ -395,6 +390,15 @@
     access-token-validity: 3600
     secret: ((credhub-admin-client-secret))
 
+- path: /instance_groups/name=credhub/jobs/name=credhub/properties/credhub/authorization?/permissions/-
+  type: replace
+  value:
+    path: /*
+    actors:
+      - uaa-user:credhub_cli
+      - uaa-client:credhub-admin
+    operations: [ read, write, delete, read_acl, write_acl ]
+
 - path: /variables/-
   type: replace
   value:
@@ -432,6 +436,13 @@
     access-token-validity: 600
     refresh-token-validity: 3600
     secret: ((concourse-to-credhub-client-secret))
+
+- path: /instance_groups/name=credhub/jobs/name=credhub/properties/credhub/authorization/permissions/-
+  type: replace
+  value:
+    path: /concourse/*
+    actors: [ uaa-client:concourse-to-credhub ]
+    operations: [ read ]
 
 - path: /variables/name=concourse-to-credhub-client-secret?
   type: replace
