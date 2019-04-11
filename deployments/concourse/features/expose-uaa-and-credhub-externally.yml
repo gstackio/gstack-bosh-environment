@@ -1,0 +1,64 @@
+---
+
+- path: /instance_groups/name=uaa/jobs?/name=uaa/properties/uaa/ssl/port
+  type: replace
+  value: ((uaa_tls_port))
+
+- path: /instance_groups/name=credhub/jobs?/name=credhub/properties/credhub/port
+  type: replace
+  value: ((credhub_tls_port))
+
+
+- path: /instance_groups/name=uaa/jobs?/name=uaa/properties/uaa/url
+  type: replace
+  value: https://uaa.((external_host))
+
+- path: /instance_groups/name=uaa/jobs/name=route_registrar?
+  type: replace
+  value:
+    name: route_registrar
+    release: routing
+    consumes:
+      nats:
+        from: nats
+        deployment: ((cf_deployment_name))
+    properties:
+      route_registrar:
+        routes:
+          - name: ((deployment_name))_uaa_https
+            uris:
+              - uaa.((external_host))
+            tls_port: ((uaa_tls_port))
+            server_cert_domain_san: uaa.((external_host))
+            registration_interval: 20s
+
+- path: /instance_groups/name=credhub/jobs/name=route_registrar?
+  type: replace
+  value:
+    name: route_registrar
+    release: routing
+    consumes:
+      nats:
+        from: nats
+        deployment: ((cf_deployment_name))
+    properties:
+      route_registrar:
+        routes:
+          - name: ((deployment_name))_credhub_https
+            uris:
+              - credhub.((external_host))
+            tls_port: ((credhub_tls_port))
+            server_cert_domain_san: credhub.((external_host))
+            registration_interval: 20s
+
+- path: /variables/name=uaa-tls/options/alternative_names/-
+  type: replace
+  value: uaa.((external_host))
+
+- path: /variables/name=credhub-tls/options/alternative_names/-
+  type: replace
+  value: credhub.((external_host))
+
+- path: /variables/name=credhub-tls/options/ca
+  type: replace
+  value: concourse-external-ca

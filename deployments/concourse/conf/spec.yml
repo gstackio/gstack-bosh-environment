@@ -30,7 +30,8 @@ operations_files:
     - tls-external-ca       # tweaks 'cluster/operations/tls-vars'
     - credhub-integration-with-uaa-and-db-tls
     - routing               # requires 'cluster/operations/static-web'
-    # - expose-uaa-externally
+    - expose-uaa-and-credhub-externally
+    - trust-traefik-ca # in order for ATC to reach UAA through its public URL, as advertised by CredHub
 
 
 variables_files:
@@ -50,7 +51,6 @@ deployment_vars:
 
   external_host: ci.easyfoundry.prototyp.it
   atc_basic_auth_username: admin
-  # uaa_external_host: uaa.ci.easyfoundry.prototyp.it # only when 'expose-uaa-externally.yml' is enabled
 
 
   # Versions
@@ -170,3 +170,10 @@ imported_vars:
       - name: concourse-external-ca
         from: depl-creds
         path: /router_tls_backends_ca
+
+  - subsys: traefik
+    imports:
+
+      - name: traefik_ca_cert
+        from: depl-creds
+        path: /traefikCA/certificate

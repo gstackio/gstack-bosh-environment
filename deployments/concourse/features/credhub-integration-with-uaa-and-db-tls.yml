@@ -62,10 +62,10 @@
   # defined aliases properties.
   value: bosh-dns-aliases
 
-- path: /addons/name=db-ca-cert?
+- path: /addons/name=trusted-ca-certs?
   type: replace
   value:
-    name: db-ca-cert
+    name: trusted-ca-certs
     include:
       instance_groups:
         - uaa
@@ -76,7 +76,8 @@
         release: os-conf
         properties:
           certs: |
-            ((database-tls.ca))
+            ((concourse-internal-ca.certificate))
+            ((concourse-external-ca.certificate))
 
 
 
