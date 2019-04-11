@@ -22,13 +22,24 @@ function main() {
     fi
     set -e
 
+    set +x
+    source <("${SUBSYS_DIR}/credhub-env")
+    set -x
+    credhub login
+
+    trap cleanup EXIT
+
+    credhub set --name "/concourse/main/team-var"                      --type "value" --value "plip"
+    credhub set --name "/concourse/main/${pipeline_name}/pipeline-var" --type "value" --value "plop"
+
+    credhub get --name "/concourse/main/team-var"
+    credhub get --name "/concourse/main/${pipeline_name}/pipeline-var"
+
     fly -t "${concourse_target}" set-pipeline -n -p "${pipeline_name}" -c <(pipeline_definition)
 
     fly -t "${concourse_target}" unpause-pipeline -p "${pipeline_name}"
 
     fly -t "${concourse_target}" trigger-job -j "${pipeline_name}/test-job" -w
-
-    fly -t "${concourse_target}" destroy-pipeline -n -p "${pipeline_name}" > /dev/null
 
     exit 0
 }
@@ -37,6 +48,13 @@ function setup() {
     SUBSYS_DIR=${SUBSYS_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}
     BASE_DIR=${BASE_DIR:-$(git rev-parse --show-toplevel)}
     readonly SUBSYS_DIR BASE_DIR
+}
+
+function cleanup() {
+    fly -t "${concourse_target}" destroy-pipeline -n -p "${pipeline_name}" > /dev/null
+
+    credhub delete --name "/concourse/main/team-var"
+    credhub delete --name "/concourse/main/${pipeline_name}/pipeline-var"
 }
 
 function pipeline_definition() {
@@ -60,15 +78,33 @@ jobs:
       - get: test-image
       - task: test-task
         image: test-image
+        params:
+          TEAM_VAR: ((team-var))
+          PIPELINE_VAR: ((pipeline-var))
         config:
           platform: linux
 
+          params:
+            TEAM_VAR:     changeme
+            PIPELINE_VAR: changeme
           run:
             path: bash
             args:
               - -ec
               - |
                 export TERM=xterm-256color
+                error=0
+                if [[ "${TEAM_VAR}" != "plip" ]]; then
+                    echo >&2 "$(tput setaf 1)$(tput smso)ERROR:$(tput rmso) expected the 'team-var' variable value '((team-var))' to be 'plip'$(tput sgr0)"
+                    error=$(( $error + 1 ))
+                fi
+                if [[ "${PIPELINE_VAR}" != "plop" ]]; then
+                    echo >&2 "$(tput setaf 1)$(tput smso)ERROR:$(tput rmso) expected the 'pipeline-var' variable value '((pipeline-var))' to be 'plop'$(tput sgr0)"
+                    error=$(( $error + 1 ))
+                fi
+                if [[ "${error}" -gt 0 ]]; then
+                    exit 1
+                fi
                 echo "$(tput setaf 5)$(tput bold)Concourse rocks"\!"$(tput sgr0)"
 EOF
 }
