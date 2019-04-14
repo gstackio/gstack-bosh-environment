@@ -1,0 +1,5 @@
+---
+
+- path: /variables/name=traefik_tls/options/alternative_names/-
+  type: replace
+  value:  "*.((concourse_external_host))"
