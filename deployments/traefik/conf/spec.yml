@@ -32,23 +32,19 @@ variables_files:
   10_local:
     - file: private-config
       example:
+        # User-facing settings
+        traefik_domain: easyfoundry.example.com
         acme_certs_email: acme-certs@example.com
+        api_username: admin
 
 
 deployment_vars:
   deployment_name: easyfoundry-traefik
 
 
-  # User-facing settings
-
-  traefik_domain: easyfoundry.prototyp.it
-  web_backend_hostname: traefik.easyfoundry.prototyp.it
+  # Debugging
 
   acme_staging: true
-
-  api_username: admin
-
-  # static_ip: ~      # imported below
 
 
   # Versions
@@ -68,6 +64,15 @@ deployment_vars:
 
 
 imported_vars:
+  - subsys: traefik
+    imports:
+      # Note: this is actually an auto-import trick in order to inject a value
+      # from private-config.yml into the 'web_backend_hostname' variable
+      - name: web_backend_hostname
+        from: vars-file
+        file: private-config
+        value: traefik.((traefik_domain))
+
   - subsys: ddbox-standalone-garden-env # instead of generic 'base-env', to be fixed
     imports:
       - name: static_ip

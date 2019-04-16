@@ -432,6 +432,11 @@ function imports_from() {
             bbl-vars)
                 import_file_value "$var_path" \
                     <(extern_infra_vars_hook) ;;
+            vars-file)
+                local vars_file
+                vars_file=$(spec_var --required "${var_path}/file")
+                import_file_value "${var_path}" \
+                    "${subsys_dir}/conf/${vars_file}.yml" ;;
             depl-vars)
                 import_file_value "$var_path" \
                     <(spec_var /deployment_vars "$subsys_dir") ;;
