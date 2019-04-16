@@ -530,9 +530,38 @@ function state_dir() {
 function bosh_ro_invoke() {
     local verb=$1; shift
 
-    bosh "$verb" "$MAIN_DEPLOYMENT_FILE" \
-        "${OPERATIONS_ARGUMENTS[@]}" \
-        "${VARS_FILES_ARGUMENTS[@]}" \
+    local bosh_cmd_head bosh_cmd_tail
+    bosh_cmd_head=(bosh "${verb}" "${MAIN_DEPLOYMENT_FILE}")
+    bosh_cmd_tail=("${OPERATIONS_ARGUMENTS[@]}" \
+        "${VARS_FILES_ARGUMENTS[@]}")
+
+    if [[ ${GBE_DEBUG_LEVEL} -ge 1 ]]; then
+        local missing_nl="no"
+        echo >&2 "${bosh_cmd_head[@]/#"${BASE_DIR}/"/}"
+        local arg
+        for arg in \
+                "${bosh_cmd_tail[@]}" \
+                --var "BASE_DIR=${BASE_DIR}" \
+                --vars-file "<(imported_vars)" \
+                --vars-file "<(spec_var /deployment_vars)" \
+                "$@"
+        do
+            if [[ ${arg} == "-"* ]]; then
+                echo >&2 -n "    ${arg}"
+                missing_nl="yes"
+            else
+                echo >&2 " ${arg//"${BASE_DIR}/"/}"
+                missing_nl="no"
+            fi
+        done
+        if [[ ${missing_nl} == "yes" ]]; then
+            echo
+        fi
+        echo
+    fi
+
+    "${bosh_cmd_head[@]}" \
+        "${bosh_cmd_tail[@]}" \
         --var "BASE_DIR=${BASE_DIR}" \
         --vars-file <(imported_vars) \
         --vars-file <(spec_var /deployment_vars) \

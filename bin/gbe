@@ -854,6 +854,9 @@ function converge_deployment() {
         run_hook "$SUBSYS_DIR/pre-deploy.sh"
     fi
 
+    if [[ ${GBE_DEBUG_LEVEL} -ge 2 ]]; then
+        set -- "$@" --no-redact
+    fi
     bosh_rw_invoke deploy "$@"
 
     if [[ -z $dry_run ]]; then
@@ -978,7 +981,7 @@ function create_env() {
             > "$env_state_dir/depl-manifest-humanized.yml" \
             || true
 
-    if [[ -n $GBE_DEBUG_LEVEL ]]; then
+    if [[ ${GBE_DEBUG_LEVEL} -ge 3 ]]; then
         # This is just an example of how we can have verbose logs using the
         # GBE_DEBUG_LEVEL environment variable.
         export BOSH_LOG_LEVEL=DEBUG
