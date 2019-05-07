@@ -1252,6 +1252,25 @@ case $1 in
             shift
         done
         ;;
+    recover)
+        shift
+        non_interactive=
+        while [[ -n $1 ]]; do
+            case $1 in
+                -h) recover_usage; exit 0 ;;
+                -y) non_interactive=yes ;;
+                *)
+                    if ! assert_subsys_name "$1"; then
+                        recover_usage; exit 2
+                    fi
+                    subsys_name=$1
+                    subsys_dir=$(get_subsys_dir_from_subsys_name "${subsys_name}")
+                    deployment_name=$(spec_var --required "/deployment_vars/deployment_name" "${subsys_dir}")
+                    bosh cloud-check -d "${deployment_name}" ${non_interactive:+-n --auto --resolution=recreate_vm} ;;
+            esac
+            shift
+        done
+        ;;
     delete)
         shift
         non_interactive=
