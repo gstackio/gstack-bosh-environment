@@ -567,15 +567,15 @@ function upload_stemcell() {
         "https://bosh.io/d/stemcells/$stemcell_name?v=$stemcell_version"
 }
 
-function list_deployments() {
+function list_subsystems() {
     echo -e "\n$BLUE${BOLD}Affected subsystems$RESET in order:\n"
-    each_deployment "$@" print_deployment_name
+    each_subsystem "$@" print_subsys_name
     echo
 }
 
-function print_deployment_name() {
-    local depl_name=$1
-    echo "  - $depl_name"
+function print_subsys_name() {
+    local subsys_name=$1
+    echo "  - $subsys_name"
 }
 
 function max_of() {
@@ -758,7 +758,7 @@ function generate_depl_order_makefile() {
     done
 }
 
-function each_deployment() {
+function each_subsystem() {
     local reverse_arg cmd
     if [[ x$1 == x-r || x$1 == x--reverse ]]; then
         reverse_arg=$1; shift
@@ -773,16 +773,16 @@ function each_deployment() {
 
     local old_IFS=$IFS
     IFS=$'\n'
-        local deployments
-        deployments=$(make -f "${makefile}" -n all | cat -n | sed -e 's/^ *//')
+        local subsystems
+        subsystems=$(make -f "${makefile}" -n all | cat -n | sed -e 's/^ *//')
         if [[ -n $reverse_arg ]]; then
-            deployments=$(grep -v ' --manifest$' <<< "${deployments}")
+            subsystems=$(grep -v ' --manifest$' <<< "${subsystems}")
         fi
-        deployments=($(sort -n $reverse_arg -s -k 1,2 <<< "${deployments}" | cut -d $'\t' -f2-))
+        subsystems=($(sort -n $reverse_arg -s -k 1,2 <<< "${subsystems}" | cut -d $'\t' -f2-))
 
-        local depl_spec
-        for depl_spec in "${deployments[@]}"; do
-            "${cmd}" ${depl_spec} "$@"
+        local subsys_name
+        for subsys_name in "${subsystems[@]}"; do
+            "${cmd}" ${subsys_name} "$@"
         done
     IFS=$old_IFS
 }
@@ -796,8 +796,8 @@ function assert_subsys_name() {
     return 0
 }
 
-function converge_deployment() {
-    local depl_name=$1; shift
+function converge_subsystem() {
+    local subsys_name=$1; shift
 
     local manifest dry_run offline
     if [[ $@ == *--manifest* ]]; then manifest_only=yes; fi
@@ -811,9 +811,9 @@ function converge_deployment() {
         action="Converging (dry run)"
     fi
 
-    echo -e "\n${BLUE}$action the $BOLD'$depl_name'$RESET subsystem.\n"
+    echo -e "\n${BLUE}$action the $BOLD'$subsys_name'$RESET subsystem.\n"
 
-    SUBSYS_DIR=$BASE_DIR/deployments/$depl_name
+    SUBSYS_DIR=$BASE_DIR/deployments/$subsys_name
     eval "$(env_exports)"
     if [[ -z $manifest_only && -z $offline ]]; then
         upload_stemcell
@@ -881,7 +881,7 @@ function converge_deployment() {
     fi
 }
 
-function delete_deployment() {
+function delete_subsystem() {
     local subsys_name=$1; shift
 
     local ignore_errors=no
@@ -1217,7 +1217,7 @@ case $1 in
                     --offline)  offline=yes ;;
                     --compiled) compiled=yes ;;
                     list)
-                        list_deployments
+                        list_subsystems
                         break ;;
                     all)
                         ensure_reachability
@@ -1226,15 +1226,15 @@ case $1 in
                         fi
                         update_config cloud -n
                         update_config runtime -n
-                        list_deployments
-                        each_deployment converge_deployment -n
+                        list_subsystems
+                        each_subsystem converge_subsystem -n
                         break ;;
                     *)
                         if ! assert_subsys_name "$1"; then
                             converge_usage; exit 2
                         fi
                         ensure_reachability
-                        converge_deployment "$1" \
+                        converge_subsystem "$1" \
                             ${non_interactive:+"-n"} \
                             ${manifest_only:+"--manifest"} \
                             ${dry_run:+"--dry-run"} \
@@ -1253,14 +1253,14 @@ case $1 in
                 -y) non_interactive=yes ;;
                 all)
                     ensure_reachability
-                    list_deployments
-                    each_deployment converge_deployment -n --recreate --fix --canaries=0
+                    list_subsystems
+                    each_subsystem converge_subsystem -n --recreate --fix --canaries=0
                     break ;;
                 *)
                     if ! assert_subsys_name "$1"; then
                         recreate_usage; exit 2
                     fi
-                    converge_deployment "$1" ${non_interactive:+"-n"} --recreate --fix --canaries=0 ;;
+                    converge_subsystem "$1" ${non_interactive:+"-n"} --recreate --fix --canaries=0 ;;
             esac
             shift
         done
@@ -1294,20 +1294,20 @@ case $1 in
                 -y) non_interactive=yes ;;
                 -f) ignore_errors=yes ;;
                 list)
-                    list_deployments --reverse
+                    list_subsystems --reverse
                     break ;;
                 all)
                     shift
                     ensure_reachability
-                    list_deployments --reverse
-                    each_deployment --reverse delete_deployment -n ${ignore_errors:+"--force"} "$@"
+                    list_subsystems --reverse
+                    each_subsystem --reverse delete_subsystem -n ${ignore_errors:+"--force"} "$@"
                     break ;;
                 *)
                     if ! assert_subsys_name "$1"; then
                         delete_usage; exit 2
                     fi
                     ensure_reachability
-                    delete_deployment "$1" ${non_interactive:+"-n"} ${ignore_errors:+"--force"} ;;
+                    delete_subsystem "$1" ${non_interactive:+"-n"} ${ignore_errors:+"--force"} ;;
             esac
             shift
         done
