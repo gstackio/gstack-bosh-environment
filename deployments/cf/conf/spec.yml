@@ -8,7 +8,7 @@ input_resources:
   - name: cf-deployment
     type: git
     uri: https://github.com/cloudfoundry/cf-deployment.git
-    version: v5.4.0
+    version: v6.10.0
   - name: prometheus-boshrelease
     type: git
     uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
@@ -26,13 +26,14 @@ operations_files:
     - operations/enable-service-discovery
     - operations/override-app-domains # must appear after 'enable-service-discovery'
     - operations/backup-and-restore/enable-backup-restore
-    - operations/bits-service/use-bits-service
+    # - operations/bits-service/use-bits-service
 
     # - operations/use-pxc
     # - operations/migrate-cf-mysql-to-pxc
     # - operations/use-pxc-for-nfs-volume-service
 
     # - operations/use-external-blobstore
+    # - operations/use-s3-custom-blobstore # compatible with Minio, see example variables files below
 
     # - operations/enable-nfs-volume-service
     # - operations/experimental/enable-nfs-volume-service-credhub
@@ -40,19 +41,16 @@ operations_files:
     # - operations/backup-and-restore/enable-backup-restore-nfs-broker
 
 
-    # # Add 'cc_deployment_updater' job to 'scheduler' vm, which enables zero
-    # # downtime app deployments.
-    # - operations/experimental/add-deployment-updater
-
-    # Add the cflinuxfs3 stack and buildpacks.
-    - operations/experimental/add-cflinuxfs3
+    # Add 'cc_deployment_updater' job to 'scheduler' vm, which enables zero
+    # downtime app deployments.
+    - operations/experimental/add-deployment-updater
 
     # # Enables container proxy on the Diego Cell 'rep' and configures gorouter
     # # to opt into TLS-enabled connections to the backend.
     # - operations/experimental/enable-routing-integrity
 
-    # # Improve routability in the face of cell presence loss
-    # - operations/experimental/enable-suspect-actual-lrp-generation
+    # Improve routability in the face of cell presence loss
+    - operations/experimental/enable-suspect-actual-lrp-generation
 
     # # Enable rootless garden-runc containers.
     # - operations/experimental/rootless-containers
@@ -60,16 +58,16 @@ operations_files:
     # # Configure Garden to create OCI compatible images.
     # - operations/experimental/enable-oci-phase-1
 
-    # # Configure Cloud Controller to use Log Cache instead of Traffic
-    # # Controller for app container metrics.
-    # - operations/experimental/use-logcache-for-cloud-controller-app-stats
+    # Configure Cloud Controller to use Log Cache instead of Traffic
+    # Controller for app container metrics.
+    - operations/experimental/use-logcache-for-cloud-controller-app-stats
 
     # # Enables TLS on the database job, and secures all client database
     # # connections.
     # - operations/experimental/enable-mysql-tls
 
     # - operations/experimental/perm-service # Requires 'enable-mysql-tls'
-    # # - operations/experimental/perm-service-with-tcp-routing
+    # - operations/experimental/perm-service-with-tcp-routing
     # - operations/experimental/perm-service-with-pxc-release
 
 
@@ -100,6 +98,12 @@ operations_files:
     - scale-disks
     - tls-from-gorouters-to-backends
     - missing-network-renames
+    # - pin-perm-service-version
+
+
+variables_files:
+  10_cf-deployment: []
+    # - operations/example-vars-files/vars-use-s3-custom-blobstore # See ops file above for s3 blobstore
 
 
 deployment_vars:
@@ -137,20 +141,20 @@ deployment_vars:
 
   # Reference declarations
 
-  bpm_version: "0.13.0"
-  bpm_sha1: 4b6ebfdaa467c04855528172b099e565d679e0f5
+  bpm_version: "1.0.0"
+  bpm_sha1: 42b95d4a0d6d15dd0b0ead62418ffb56208e2307
 
-  routing_version: "0.182.0"
-  routing_sha1: 6e341a527a0dd2c920b54dea82156ae9bc0b29eb
+  routing_version: "0.184.0"
+  routing_sha1: f35eb9884e1c097ff21843e6f2d0eebd22ac2073
 
-  cf_mysql_version: "36.15.0"
-  cf_mysql_sha1: 0764d9d6aae7cefd10019437ed83e7715e614633
+  cf_mysql_version: "36.17.0"
+  cf_mysql_sha1: 04cbfafa0a2c11b133da20de8282595c98bc0049
 
-  credhub_version: "2.1.1"
-  credhub_sha1:    dd0b607d855a8d23e6fd52b990573570e68bbbf6
+  credhub_version: "2.1.2"
+  credhub_sha1: 754a24dbffe8bc5efce7e698d935b5f4df541f38
 
-  uaa_version: "63.0"
-  uaa_sha1: 1ad8813665e94d2a3defda3304083af57c151541
+  uaa_version: "68.0"
+  uaa_sha1: a06e5390463c760bcbcc0bacaec063f41a5ea089
 
   os_conf_version: "20.0.0"
   os_conf_sha1: a60187f038d45e2886db9df82b72a9ab5fdcc49d

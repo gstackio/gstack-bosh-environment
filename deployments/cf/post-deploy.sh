@@ -7,7 +7,7 @@ function run_errand_with_retry_for_debugging() {
     local errand_vm_name=$2
 
     set -x
-    bosh run-errand "${errand_name}" --when-changed
+    bosh run-errand "${errand_name}" # --when-changed
     error=$?
     set +x -e
 

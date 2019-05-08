@@ -1,8 +1,8 @@
 ---
 
-- path: /instance_groups/name=bits/networks/name=default/name
-  type: replace
-  value: ((network_name))
+# - path: /instance_groups/name=bits/networks/name=default/name
+#   type: replace
+#   value: ((network_name))
 
 - path: /instance_groups/name=backup-restore/networks/name=default/name
   type: replace
