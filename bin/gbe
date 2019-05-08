@@ -347,13 +347,17 @@ function converge_usage() {
     echo "        Run unattended. Don't ask for user input."
     echo
     echo "    --manifest"
-    echo "        Don't actually deploy. Only render deployment manifest"
+    echo "        Don't actually converge. Only render deployment manifest"
     echo "        and generate credentials. Don't run BOSH or any hooks."
     echo
     echo "    --dry-run"
-    echo "        Don't actually deploy. Only render deployment manifest,"
+    echo "        Don't actually converge. Only render deployment manifest,"
     echo "        generate credentials, and run BOSH in dry-run mode. In this"
     echo "        mode, the director downloads any necessary BOSH releases."
+    echo
+    echo "    --compiled"
+    echo "        When converging 'all' subsystems, first upload any compiled"
+    echo "        releases from the local cahe to the BOSH Director."
     echo
 }
 
@@ -1203,6 +1207,7 @@ case $1 in
             manifest_only=
             dry_run=
             offline=
+            compiled=
             while [[ -n $1 ]]; do
                 case $1 in
                     -h)         converge_usage; exit 0 ;;
@@ -1210,19 +1215,15 @@ case $1 in
                     --manifest) manifest_only=yes ;;
                     --dry-run)  dry_run=yes ;;
                     --offline)  offline=yes ;;
+                    --compiled) compiled=yes ;;
                     list)
                         list_deployments
                         break ;;
                     all)
                         ensure_reachability
-                        upload_compiled_releases
-                        update_config cloud -n
-                        update_config runtime -n
-                        list_deployments
-                        each_deployment converge_deployment -n
-                        break ;;
-                    deployments)
-                        ensure_reachability
+                        if [[ $compiled == "yes" ]]; then
+                            upload_compiled_releases
+                        fi
                         update_config cloud -n
                         update_config runtime -n
                         list_deployments
