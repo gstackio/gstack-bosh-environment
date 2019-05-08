@@ -626,6 +626,7 @@ function dependency_type() {
 
 function generate_dependencies() {
     local for_subsys_dir=$1
+    local with_subsys_name=$2
 
     local subsys_count idx subsys_path subsys_name
     subsys_count=$(spec_var /imported_vars "$for_subsys_dir" \
@@ -637,6 +638,10 @@ function generate_dependencies() {
         subsys_name=$(spec_var --required "$subsys_path/subsys" "$for_subsys_dir")
         if [[ $subsys_name == *-env ]]; then
             # Let's assume that environments are properly converged
+            continue
+        fi
+        if [[ $subsys_name == $with_subsys_name ]]; then
+            # Ignore any self-dependencies
             continue
         fi
         dependency_type "$for_subsys_dir" "$subsys_name" "$subsys_path/imports"
@@ -682,7 +687,7 @@ function generate_makefile() {
             return 1
         fi
 
-        auto_deps=$(generate_dependencies "$subsys_dir")
+        auto_deps=$(generate_dependencies "$subsys_dir" "$subsys_name")
         declarated_deps=$(spec_var /subsys/depends_on "$subsys_dir" \
                 | sed -ne 's/^- //p')
 
@@ -730,7 +735,7 @@ function generate_depl_order_makefile() {
             return 1
         fi
 
-        auto_deps=$(generate_dependencies "$subsys_dir")
+        auto_deps=$(generate_dependencies "$subsys_dir" "$subsys_name")
         declarated_deps=$(spec_var /subsys/depends_on "$subsys_dir" \
                 | sed -ne 's/^- //p')
 
