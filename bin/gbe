@@ -574,8 +574,8 @@ function list_subsystems() {
 }
 
 function print_subsys_name() {
-    local subsys_name=$1
-    echo "  - $subsys_name"
+    local subsys_name=$1; shift
+    echo "  - $subsys_name" "$@"
 }
 
 function max_of() {
@@ -751,7 +751,7 @@ function generate_depl_order_makefile() {
         done
 
         echo -e "${subsys_basename}-manifest: ${auto_deps//$'\n'/ }"
-        echo -e "\t\$@ --manifest\n"
+        echo -e "\t\$@\n"
 
         echo -e "${subsys_basename}: ${dedup_deps}"
         echo -e "\t\$@\n"
@@ -782,7 +782,11 @@ function each_subsystem() {
 
         local subsys_name
         for subsys_name in "${subsystems[@]}"; do
-            "${cmd}" ${subsys_name} "$@"
+            if [[ "${subsys_name}" == *"-manifest" ]]; then
+                "${cmd}" "${subsys_name%"-manifest"}" --manifest "$@"
+            else
+                "${cmd}" "${subsys_name}" "$@"
+            fi
         done
     IFS=$old_IFS
 }
