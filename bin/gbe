@@ -596,14 +596,21 @@ function dependency_type() {
         case $import_from in
             depl-vars|conf-vars)
                 dep_level=$(max_of 0 "${dep_level}") ;;
-            depl-manifest|depl-creds)
+            vars-file|depl-manifest|depl-creds)
+                # NOTE: depending on whether 'vars-file' refers to a file in
+                # the project repo or in a 'input resource' repo, the
+                # dependency level is 0 or 1 (respectively).
+                #
+                # For simplicity of the code here, we assume the higher level
+                # of dependency of 1 for 'vars-file' dependencies.
                 dep_level=$(max_of 1 "${dep_level}") ;;
             bbl-vars)
                 dep_level=$(max_of 2 "${dep_level}") ;;
             *)
-                echo "${RED}ERROR:${RESET} unsupported var import type: '${import_from}'." \
-                    "Expected 'bbl-vars', 'depl-vars', 'conf-vars', 'depl-manifest'," \
-                    "or 'depl-creds'. Aborting." >&2
+                echo "${RED}ERROR:${RESET} while computing dependency type," \
+                    "unsupported var import type: '${import_from}'." \
+                    "Expected 'bbl-vars', 'vars-file', 'depl-vars', 'conf-vars'," \
+                    "'depl-manifest' or 'depl-creds'. Aborting." >&2
                 return 1 ;;
         esac
 
