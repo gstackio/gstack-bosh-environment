@@ -1000,8 +1000,8 @@ function create_env() {
     if [[ ${GBE_DEBUG_LEVEL} -ge 3 ]]; then
         # This is just an example of how we can have verbose logs using the
         # GBE_DEBUG_LEVEL environment variable.
-        export BOSH_LOG_LEVEL=DEBUG
-        export BOSH_LOG_PATH=$env_state_dir/bosh-create-env.log
+        export BOSH_LOG_LEVEL="DEBUG"
+        export BOSH_LOG_PATH="${env_state_dir}/bosh-create-env.log"
     fi
     infra_bosh_rw_invoke create-env "$@"
 

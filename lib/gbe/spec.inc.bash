@@ -201,7 +201,7 @@ function populate_operations_arguments() {
         rsc=$(sed -e 's/^[[:digit:]]\{1,\}[-_]//' <<< "$key")
         op_dir=$(expand_resource_dir "$rsc" features)
         for op_file in $(spec_var --required "$base_path/$key" | sed -e 's/^- //'); do
-            OPERATIONS_ARGUMENTS+=(-o "$op_dir/${op_file}.yml")
+            OPERATIONS_ARGUMENTS+=(--ops-file "$op_dir/${op_file}.yml")
         done
     done
 }
@@ -223,7 +223,7 @@ function populate_vars_files_arguments() {
             if [[ $vars_file == *secrets* ]]; then
                 secrets_files+=("$vars_file_dir/${vars_file}.yml")
             else
-                VARS_FILES_ARGUMENTS+=(-l "$vars_file_dir/${vars_file}.yml")
+                VARS_FILES_ARGUMENTS+=(--vars-file "$vars_file_dir/${vars_file}.yml")
             fi
             file_idx=$(($file_idx + 1))
         done
@@ -334,6 +334,8 @@ function merge_yaml_value_in_vars_file() {
         <<< "--- [ { path: '/${dst_var_name}?', value: ((var_value)), type: replace } ]" \
         > "$tmp_file"
 
+    # Note: we don't 'mv' here, in order to keep the destination file
+    # permissions unchanged.
     cp "$tmp_file" "$dst_yaml_file"
     rm -f "$tmp_file"
 }
@@ -374,13 +376,15 @@ function import_state_value() {
             # $var_name
             #
             # FIXME: poor YAML escaping here below
-            echo "--- [ { path: '/${var_name}?', value: $var_value_tmpl, type: replace } ]" \
-                | bosh int \
-                       --ops-file /dev/stdin \
-                       --vars-file "$vars_file" \
-                       "$to_yaml_file" \
-                   > "$tmp_file"
+            bosh int \
+                    --ops-file /dev/stdin \
+                    --vars-file "$vars_file" \
+                    "$to_yaml_file" \
+                <<< "--- [ { path: '/${var_name}?', value: $var_value_tmpl, type: replace } ]" \
+                > "$tmp_file"
 
+            # Note: we don't 'mv' here, in order to keep the destination file
+            # permissions unchanged.
             cp "$tmp_file" "$to_yaml_file"
             rm -f "$tmp_file"
         fi
