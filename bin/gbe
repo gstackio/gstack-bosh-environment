@@ -799,7 +799,7 @@ function assert_subsys_name() {
 function converge_subsystem() {
     local subsys_name=$1; shift
 
-    local manifest dry_run offline
+    local manifest_only dry_run offline
     if [[ $@ == *--manifest* ]]; then manifest_only=yes; fi
     if [[ $@ == *--dry-run* ]]; then  dry_run=yes; fi
     if [[ $@ == *--offline* ]]; then  offline=yes; fi
