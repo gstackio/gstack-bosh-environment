@@ -8,7 +8,7 @@ input_resources:
   - name: cassandra-deployment
     type: git
     uri: https://github.com/orange-cloudfoundry/cassandra-deployment.git
-    version: "d798cd6" # v8 with improvements, as of Oct 31st, 2018
+    version: v9
 
 
 main_deployment_file: cassandra-deployment/cassandra.yml
@@ -31,6 +31,7 @@ operations_files:
     - routing
     - shield-integration
     - remove-future-smoke-tests
+    - fix-service-broker-vars
 
 
 deployment_vars:
@@ -59,8 +60,8 @@ deployment_vars:
 
   # Versions
 
-  cassandra_version: "8"
-  cassandra_sha1: e8b8221f89a09f66e015d9e2356fa2d4a23d1aa9
+  cassandra_version: "9"
+  cassandra_sha1: 852f38b691eb8236b94e26151ecf2716682c22d3
 
   broker_registrar_version: "3.4.0"
   broker_registrar_sha1: d44d9af8fd06ecf6d50004c9bfd5516a6e482201
@@ -82,8 +83,8 @@ deployment_vars:
   # must revert back to a Trusty stemcell.
   stemcell_name: bosh-warden-boshlite-ubuntu-trusty-go_agent
   stemcell_os: ubuntu-trusty
-  stemcell_version: "3586.52"
-  stemcell_sha1: 07a7dad0968b61e10daa613de23465de4af7a02f
+  stemcell_version: "3586.100"
+  stemcell_sha1: 2234c87513356e2f038ab993ef508b8724893683
 
 
   # Reference declarations

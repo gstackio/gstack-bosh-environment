@@ -1,0 +1,13 @@
+---
+
+# Service broker requires a truststore password
+
+- path: /instance_groups/name=cassandra-brokers/jobs/name=broker/properties?/broker/truststore_password
+  type: replace
+  value: ((cassandra_keystore_password))
+
+- path: /variables?/name=cassandra_keystore_password
+  type: replace
+  value:
+    name: cassandra_keystore_password
+    type: password
