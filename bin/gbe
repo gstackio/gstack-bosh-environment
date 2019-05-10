@@ -271,6 +271,7 @@ function down_usage() {
 }
 
 function dns_usage() {
+    local b=$BOLD
     local ul=$UNDERLINE
     local noul=$NOUNDERLINE
     local rst=$RESET
@@ -280,6 +281,24 @@ function dns_usage() {
     echo
     echo "Dry-run the DNS congergence with '${b}dnscontrol preview$rst' or"
     echo "actually converge the DNS with '${b}dnscontrol push$rst'."
+    echo
+}
+
+function ssh_usage() {
+    local ul=$UNDERLINE
+    local noul=$NOUNDERLINE
+    local rst=$RESET
+    echo "Usage:"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}ssh$noul"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}ssh$noul  command..."
+    echo
+    echo "Start an interactive SSH session on the base VM of the current"
+    echo "environment, or run a one-off command through an SSH connection."
+    echo
+    echo "Examples:"
+    echo "  $ gbe ssh"
+    echo "  $ gbe ssh df -h /var/vcap/store"
+    echo "  $ GBE_ENVIRONMENT=ddbox-standalone-garden-env gbe ssh df -h"
     echo
 }
 
@@ -1176,6 +1195,9 @@ case $1 in
         ;;
     ssh)
         shift
+        if [[ $1 == "-h" ]]; then
+            ssh_usage; exit 0
+        fi
         ssh_jumpbox "$@"
         ;;
     makefile)
