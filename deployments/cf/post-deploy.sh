@@ -1,41 +1,14 @@
 #!/usr/bin/env bash
 
-set -o pipefail
+set -eo pipefail
 
-function run_errand_with_retry_for_debugging() {
-    local errand_name=$1
-    local errand_vm_name=$2
+BASE_DIR=${BASE_DIR:-$(git rev-parse --show-toplevel)}
+SUBSYS_DIR=${SUBSYS_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}
 
-    set -x
-    bosh run-errand "${errand_name}" # --when-changed
-    error=$?
-    set +x -e
+source "${BASE_DIR}/lib/hooks-api/bosh-errands.inc.bash"
 
-    if [[ ${error} -eq 0 ]]; then
-        return 0
-    fi
-
-    # When there's an error, we restart the smoke tests, collecting logs and
-    # keeping the VM arround for debugging purpose.
-
-    logs_dir="${BASE_DIR}/logs/$(basename "${SUBSYS_DIR}")/${errand_name}"
-    mkdir -p "${logs_dir}"
-
-    set +e -x
-    time bosh run-errand "${errand_name}" --keep-alive --download-logs --logs-dir="${logs_dir}"
-    error=$?
-    set +x -e
-
-    if [[ ${error} -eq 0 ]]; then
-        # Whenever the second try succeeds, we delete the collected logs and
-        # any dedicated errand VM.
-        rm -r "${logs_dir}"
-        if [[ -n ${errand_vm_name} ]]; then
-            bosh --non-interactive stop --hard "${errand_vm_name}"
-        fi
-    fi
-    return ${error}
+function main() {
+    run_errand_with_retry_for_debugging "smoke_tests" "smoke-tests" # --when-changed
 }
 
-run_errand_with_retry_for_debugging "smoke_tests" "smoke-tests"
-exit $?
+main "$@"

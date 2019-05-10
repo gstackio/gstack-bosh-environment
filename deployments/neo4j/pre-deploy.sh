@@ -1,33 +1,33 @@
 #!/usr/bin/env bash
 
-SUBSYS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+set -eo pipefail
 
-function spec_var() {
-    local path=$1
-    bosh int "$SUBSYS_DIR/conf/spec.yml" --path "$path"
+BASE_DIR=${BASE_DIR:-$(git rev-parse --show-toplevel)}
+SUBSYS_DIR=${SUBSYS_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}
+
+source "${BASE_DIR}/lib/hooks-api/common.inc.bash"
+source "${BASE_DIR}/lib/hooks-api/bosh-releases.inc.bash"
+
+function _config() {
+    provide_dev_release="true"
+    input_resource_index="0"
+    release_name="neo4j"
+    release_subdir_in_git="neo4j-release"
 }
 
-set -e
+function main() {
+    _config
 
-developing=true
-dev_release_name=neo4j
-base_version=
+    local developing
+    developing=$(own_spec_var "/developing" 2> /dev/null || true)
 
-if [[ $developing == true ]]; then
-    rsc_name=$(spec_var /input_resources/0/name)
-    pushd "$BASE_DIR/.cache/resources/$rsc_name/neo4j-release" || exit 115
-        latest_dev_release=$(ls -t dev_releases/$dev_release_name/$dev_release_name-*.yml 2> /dev/null | head -n 1)
-        set -x
-        if [[ -z $latest_dev_release \
-                || $(bosh int "$latest_dev_release" --path /commit_hash) != $(git rev-parse --short HEAD) ]]; then
-            # bosh reset-release
-            # ./scripts/add-blobs.sh
-            bosh create-release --force
-        fi
-        # if bosh inspect-release "$dev_release_name/${base_version}+dev.1" &> /dev/null; then
-        #     bosh delete-release "$dev_release_name/${base_version}+dev.1"
-        # fi
-        bosh upload-release
-        set +x
-    popd
-fi
+    if [[ "${developing}" == "true" ]]; then
+        create_upload_dev_release_if_necessary "${input_resource_index}" \
+            "${release_name}" "${release_subdir_in_git}"
+    elif [[ "${provide_dev_release}" == "true" ]]; then
+        create_upload_dev_release_only_if_missing "${input_resource_index}" \
+            "${release_name}" "${release_subdir_in_git}"
+    fi
+}
+
+main "$@"

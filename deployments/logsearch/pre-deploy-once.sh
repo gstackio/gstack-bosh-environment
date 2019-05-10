@@ -1,32 +1,28 @@
 #!/usr/bin/env bash
 
-SUBSYS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+set -eo pipefail
 
-function spec_var() {
-    local path=$1
-    bosh int "$SUBSYS_DIR/conf/spec.yml" --path "$path"
+BASE_DIR=${BASE_DIR:-$(git rev-parse --show-toplevel)}
+SUBSYS_DIR=${SUBSYS_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}
+
+source "${BASE_DIR}/lib/hooks-api/common.inc.bash"
+source "${BASE_DIR}/lib/hooks-api/bosh-releases.inc.bash"
+
+function _config() {
+    # Notice: creating this dev release requires activating the 2nd
+    # input resource in 'conf/spec.yml'.
+    provide_dev_release=false
+    input_resource_index="1"
+    release_name="logsearch-for-cloudfoundry"
 }
 
-set -ex
+function main() {
+    _config
 
-create_release=false
-dev_release_name=logsearch-for-cloudfoundry # requires activating the 2nd input resource in spec.yml
+    if [[ "${provide_dev_release}" == "true" ]]; then
+        create_upload_dev_release_only_if_missing \
+            "${input_resource_index}" "${release_name}"
+    fi
+}
 
-if [[ $create_release == true ]]; then
-    rsc_name=$(spec_var /input_resources/1/name)
-    pushd "$BASE_DIR/.cache/resources/$rsc_name" || exit 115
-        git submodule update --init --recursive
-
-        latest_dev_release=$(ls -t dev_releases/$dev_release_name/$dev_release_name-*.yml 2> /dev/null | head -n 1)
-        if [[ -z $latest_dev_release \
-                || $(bosh int "$latest_dev_release" --path /commit_hash) != $(git rev-parse --short HEAD) ]]; then
-            bosh reset-release
-            bosh create-release --force
-        fi
-        # base_version=207.0.0
-        # if bosh inspect-release "$dev_release_name/${base_version}+dev.1" &> /dev/null; then
-        #     bosh delete-release "$dev_release_name/${base_version}+dev.1"
-        # fi
-        bosh upload-release
-    popd
-fi
+main "$@"

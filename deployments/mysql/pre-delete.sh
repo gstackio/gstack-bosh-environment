@@ -1,14 +1,22 @@
 #!/usr/bin/env bash
 
-SUBSYS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+set -eo pipefail
 
-function spec_var() {
-    local path=$1
-    bosh int "$SUBSYS_DIR/conf/spec.yml" --path "$path"
+BASE_DIR=${BASE_DIR:-$(git rev-parse --show-toplevel)}
+SUBSYS_DIR=${SUBSYS_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}
+
+source "${BASE_DIR}/lib/hooks-api/common.inc.bash"
+
+function main() {
+    local deployment_name
+    deployment_name=$(own_spec_var "/deployment_vars/deployment_name")
+
+    set -x \
+        +o pipefail # because of the `bosh ... | grep -q ...` construct below
+
+    if bosh deployments | grep -qE "\\b${deployment_name}\\b"; then
+        bosh run-errand "deregister-and-purge-instances" || true
+    fi
 }
 
-set -ex
-
-if bosh deployments | grep -qE "\\b$(spec_var /deployment_vars/deployment_name)\\b"; then
-    bosh run-errand deregister-and-purge-instances
-fi
+main "$@"
