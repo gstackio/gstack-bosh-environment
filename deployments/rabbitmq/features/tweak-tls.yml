@@ -6,7 +6,7 @@
 # the cf-rabbitmq-multitenant-broker-release. You actually need to put here
 # the TLS certificate of the RabbitMQ servers (and not 'true' or 'false' as
 # documented).
-- path: /instance_groups/name=rmq-broker/jobs/name=rabbitmq-broker/properties/rabbitmq-broker/rabbitmq/ssl?
+- path: /instance_groups/name=rmq-broker/jobs/name=rabbitmq-service-broker/properties/rabbitmq-service-broker/rabbitmq/ssl?
   type: replace
   value: ((tls_certificate.certificate))
 

@@ -30,12 +30,12 @@
     name: rmq-broker
     instances: 1
     jobs:
-      - name: rabbitmq-broker
+      - name: rabbitmq-service-broker
         release: cf-rabbitmq-multitenant-broker
         properties:
           cf:
             domain: ((system-domain))
-          rabbitmq-broker:
+          rabbitmq-service-broker:
             route: ((rabbitmq-broker-hostname))
             cc_endpoint: http://api.((cf_system_domain))
             service:
@@ -113,8 +113,8 @@
   value:
     name: broker-registrar
     version: ((broker_registrar_version))
-    url: https://bosh.io/d/github.com/cloudfoundry-community/broker-registrar-boshrelease?v=((broker_registrar_version))
-    sha1: ((broker_registrar_sha1))
+    # url: https://bosh.io/d/github.com/cloudfoundry-community/broker-registrar-boshrelease?v=((broker_registrar_version))
+    # sha1: ((broker_registrar_sha1))
 
 - path: /instance_groups/name=rmq-broker?/jobs/name=broker-registrar
   type: replace

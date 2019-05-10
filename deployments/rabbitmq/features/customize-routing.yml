@@ -4,6 +4,7 @@
   path: /instance_groups/name=haproxy/jobs/name=route_registrar/consumes/nats/deployment
   value: ((routing_deployment_name))
 
+
 # NOTE: Routing release v0.180.0 and above require BPM to be colocated with
 # the 'route_registrar' job.
 #
@@ -14,3 +15,15 @@
   value:
     name: bpm
     release: bpm
+
+
+# Our Traefik reverse -proxy only accepts HTTPS requests.
+# This enables the 'broker-registrar' errand to succeed
+
+- path: /instance_groups/name=rmq-broker/jobs/name=broker-registrar/consumes/servicebroker/properties/ssl_enabled
+  type: replace
+  value: true
+
+- path: /instance_groups/name=rmq-broker/jobs/name=broker-registrar/consumes/servicebroker/properties/skip_ssl_validation?
+  type: replace
+  value: true

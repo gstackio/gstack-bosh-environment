@@ -8,15 +8,21 @@ input_resources:
   - name: rabbitmq-boshrelease
     type: git
     uri: https://github.com/pivotal-cf/cf-rabbitmq-release.git
-    version: v260.0.0
+    version: v265.0.0
   - name: rabbitmq-broker-boshrelease
     type: git
     uri: https://github.com/pivotal-cf/cf-rabbitmq-multitenant-broker-release.git
-    version: v42.0.0
+    version: v51.0.0
   - name: rabbitmq-smoke-tests-boshrelease
     type: git
     uri: https://github.com/pivotal-cf/cf-rabbitmq-smoke-tests-release.git
-    version: v27.0.0
+    version: v29.0.0
+
+  # Workaround issues with broker-registrar-boshrelease v3.4.0
+  - name: broker-registrar-boshrelease
+    type: git
+    uri: https://github.com/gstackio/broker-registrar-boshrelease.git
+    version: "e3c6c78" # 'master' branch as of May the 9th, 2019
 
 
 developing: false
@@ -35,8 +41,8 @@ operations_files:
     - set-versions
     - fix-missing-variables
     - scale-for-bosh-lite
-    - customize-routing
     - add-broker
+    - customize-routing
     - tweak-tls
     - customize-plugins
 
@@ -68,20 +74,21 @@ deployment_vars:
 
   rabbitmq_version: "3.7"
 
-  rabbitmq_release_version: "260.0.0"
-  rabbitmq_release_sha1: f7a8603f43c597ae56dd7fe6473f84f491bee0ec
+  rabbitmq_release_version: "265.0.0"
+  rabbitmq_release_sha1: 04f5ce7f98922f03959883f7a1e279012b1a58e0
 
-  rabbitmq_broker_version: "42.0.0"
-  rabbitmq_broker_sha1: 38d624a376010b74198b1923070ac330d5962279
+  rabbitmq_broker_version: "51.0.0"
+  rabbitmq_broker_sha1: f3f8c2dafe46b7906ef79ca5fe005fef1c45fb69
 
-  rabbitmq_smoke_tests_version: "27.0.0"
-  rabbitmq_smoke_tests_sha1: dc7f82ac51588ff721bd9df9d6f5eeb992679061
+  rabbitmq_smoke_tests_version: "29.0.0"
+  rabbitmq_smoke_tests_sha1: 5920aea04179c42fe8cf1dcbc553ad2eb54732e7
 
-  cf_cli_release_version: "1.8.0"
-  cf_cli_release_sha1: 15d0718bc82ff9394efd2c9798873a39bf7eba06
+  cf_cli_release_version: "1.14.0"
+  cf_cli_release_sha1: 0c0ea67ef3a4d0622918a1a1bc5a5fa95e7426cf
 
-  broker_registrar_version: "3.4.0"
-  broker_registrar_sha1: d44d9af8fd06ecf6d50004c9bfd5516a6e482201
+  # broker_registrar_version: "3.4.0"
+  # broker_registrar_sha1: d44d9af8fd06ecf6d50004c9bfd5516a6e482201
+  broker_registrar_version: latest
 
   # bpm_version:  # imported below
   # bpm_sha1:     # imported below
@@ -92,6 +99,12 @@ deployment_vars:
   # stemcell_os:      # imported below
   # stemcell_version: # imported below
   # stemcell_sha1:    # imported below
+
+  # # Stemcell downgrade, sometimes necessary:
+  # stemcell_name: bosh-warden-boshlite-ubuntu-xenial-go_agent
+  # stemcell_os: ubuntu-xenial
+  # stemcell_version: "170.51"
+  # stemcell_sha1: 7a1b2d4e560e16fa8698f3de3751f30735b1a63c
 
 
   # Reference declarations
