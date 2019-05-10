@@ -35,3 +35,15 @@
   value:
     name: bpm
     release: bpm
+
+
+# Our Traefik reverse -proxy only accepts HTTPS requests.
+# This enables the 'broker-registrar' errand to succeed
+
+- path: /instance_groups/name=broker-registrar-vm/jobs/name=broker-registrar/consumes/servicebroker/properties/ssl_enabled
+  type: replace
+  value: true
+
+- path: /instance_groups/name=broker-registrar-vm/jobs/name=broker-registrar/consumes/servicebroker/properties/skip_ssl_validation?
+  type: replace
+  value: true
