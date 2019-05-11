@@ -13,6 +13,9 @@ input_resources:
     version: 002d11a # master as of 2018-08-08
 
 
+developing: false
+
+
 main_deployment_file: dingo-postgresql-release/manifests/dingo-postgresql.yml
 
 operations_files:
@@ -83,8 +86,8 @@ deployment_vars:
   # cf_containers_broker_version: "1.0.3"
   # cf_containers_broker_sha1: 11001a58965ce4243bd18f0e4301cdbbe949a2d9
 
-  broker_registrar_version: "3.4.0"
-  broker_registrar_sha1: d44d9af8fd06ecf6d50004c9bfd5516a6e482201
+  broker_registrar_version: "3.5.0"
+  broker_registrar_sha1: d794f7d180ff4b9ea8469cdf231c648eda081534
 
   # bpm_version:  # imported below
   # bpm_sha1:     # imported below

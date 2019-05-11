@@ -16,7 +16,7 @@ input_resources:
   - name: broker-registrar-boshrelease
     type: git
     uri: https://github.com/cloudfoundry-community/broker-registrar-boshrelease.git
-    version: v3.4.0
+    version: v3.5.0
 
 
 main_deployment_file: cf-containers-broker-boshrelease/manifests/docker-broker.yml
@@ -72,8 +72,8 @@ deployment_vars:
   # docker_version: "32.0.0"
   # docker_sha1: 75a3e4f85f8d1a59b58c6b34cf568f72397b5680
 
-  broker_registrar_version: "3.4.0"
-  broker_registrar_sha1: d44d9af8fd06ecf6d50004c9bfd5516a6e482201
+  broker_registrar_version: "3.5.0"
+  broker_registrar_sha1: d794f7d180ff4b9ea8469cdf231c648eda081534
 
   # bpm_version:      # imported below
   # bpm_sha1:         # imported below
