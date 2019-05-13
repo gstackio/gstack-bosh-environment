@@ -11,6 +11,12 @@ input_resources:
     version: "d798cd6" # v8 with improvements, as of Oct 31st, 2018
     # version: v9
 
+  # Workaround issue with broker-registrar-boshrelease v3.5.0
+  - name: broker-registrar-boshrelease
+    type: git
+    uri: https://github.com/gstackio/broker-registrar-boshrelease.git
+    version: "8ae0aab" # 'master' branch as of May the 13th, 2019
+
 
 main_deployment_file: cassandra-deployment/cassandra.yml
 
@@ -66,8 +72,9 @@ deployment_vars:
   # cassandra_version: "9"
   # cassandra_sha1: 852f38b691eb8236b94e26151ecf2716682c22d3
 
-  broker_registrar_version: "3.5.0"
-  broker_registrar_sha1: d794f7d180ff4b9ea8469cdf231c648eda081534
+  # broker_registrar_version: "3.5.0"
+  # broker_registrar_sha1: d794f7d180ff4b9ea8469cdf231c648eda081534
+  broker_registrar_version: latest
 
   # shield_version:   # imported below
   # shield_sha1:      # imported below
