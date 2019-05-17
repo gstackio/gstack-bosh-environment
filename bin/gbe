@@ -154,7 +154,8 @@ function setup_gcp() {
     echo -e "${BLUE}Setting ${BOLD}GCP credentials$RESET" \
         "for service account '$service_account_name' and project '$project_id'"
 
-    local initial_errexit=$(tr -Cd e <<< "$-")
+    local initial_errexit shell_opts="$-"
+    initial_errexit=$(tr -Cd "e" <<< "${shell_opts}")
     if [[ -z $initial_errexit ]]; then set -e; fi
     gcloud iam service-accounts create "$service_account_name"
     gcloud iam service-accounts keys create \

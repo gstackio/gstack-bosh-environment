@@ -49,7 +49,8 @@ function spec_var() {
         return 1
     fi
 
-    local initial_errexit=$(tr -Cd e <<< "$-")
+    local initial_errexit shell_opts="$-"
+    initial_errexit=$(tr -Cd "e" <<< "${shell_opts}")
     if [[ -n $initial_errexit ]]; then set +e; fi
 
     local return_status=0

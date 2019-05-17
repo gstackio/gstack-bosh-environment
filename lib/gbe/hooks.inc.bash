@@ -11,7 +11,8 @@ function run_hook_once() {
         return
     fi
 
-    local initial_errexit=$(tr -Cd e <<< "$-")
+    local initial_errexit shell_opts="$-"
+    initial_errexit=$(tr -Cd "e" <<< "${shell_opts}")
     if [[ -n $initial_errexit ]]; then set +e; fi
     run_hook "$script" "$@"
     local status=$?

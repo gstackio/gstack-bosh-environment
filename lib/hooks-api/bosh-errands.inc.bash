@@ -39,7 +39,8 @@ function run_scripts_with_retry_and_cleanup() {
 
     local initial_xtrace initial_errexit error
 
-    initial_errexit=$(tr -Cd "e" <<< "$-")
+    local shell_opts="$-"
+    initial_errexit=$(tr -Cd "e" <<< "${shell_opts}")
     if [[ -n $initial_errexit ]]; then set +e; fi
         initial_xtrace=$(tr -Cd "x" <<< "$-")
         if [[ -z "${initial_xtrace}" ]]; then set -x; fi
@@ -52,7 +53,8 @@ function run_scripts_with_retry_and_cleanup() {
         return 0
     fi
 
-    initial_errexit=$(tr -Cd "e" <<< "$-")
+    shell_opts="$-"
+    initial_errexit=$(tr -Cd "e" <<< "${shell_opts}")
     if [[ -n $initial_errexit ]]; then set +e; fi
         initial_xtrace=$(tr -Cd "x" <<< "$-")
         if [[ -z "${initial_xtrace}" ]]; then set -x; fi
