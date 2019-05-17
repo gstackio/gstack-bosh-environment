@@ -70,7 +70,7 @@ deployment_vars:
   ## S3 bucket, use the 'custom-bosh-version' operation file instead, with these
   ## settings:
   # bosh_version: "268.7.0"
-  # bosh_sha1: ac6133b42bc3defc6ed8efa41eca606cef7fdb99
+  # bosh_sha1: 38eb110e3b2ee31fffe346f0f53e4e050e2f8079
 
   ## When the release is not available yet on the `bosh-compiled-release-tarballs`
   ## S3 bucket, and you have a compiled release in your cache:
