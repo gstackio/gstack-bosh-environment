@@ -3,3 +3,7 @@
 - path: /instance_groups/name=doppler/jobs/name=log-cache/properties/memory_limit_percent?
   type: replace
   value: ((log_cache_memory_limit_percent))
+
+- path: /instance_groups/name=doppler/jobs/name=log-cache/properties/max_per_source?
+  type: replace
+  value: ((log_cache_max_per_source))

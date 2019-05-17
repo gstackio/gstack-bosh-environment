@@ -128,7 +128,8 @@ deployment_vars:
   # This setting depends on the total RAM size allocated to the Garden VM.
   # Example: 2% of the total 25GB RAM means 500MB max.
   # See also: the 'scale-vm-size.yml' ops file for the Garden VM.
-  log_cache_memory_limit_percent: 2
+  log_cache_memory_limit_percent: 1
+  log_cache_max_per_source: 50000
 
 
   # Versions
