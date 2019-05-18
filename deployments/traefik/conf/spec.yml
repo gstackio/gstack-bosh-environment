@@ -8,20 +8,22 @@ input_resources:
   - name: traefik-boshrelease
     type: git
     uri: https://github.com/gstackio/traefik-boshrelease.git
-    version: v1.4.0
+    version: "6fa9a89" # v1.5.0 with improvements
+
+
+developing: false
 
 
 main_deployment_file: traefik-boshrelease/deployment/traefik-deployment.yml
 
 operations_files:
   10_traefik-boshrelease:
-    - deployment/operations/rename-deployment
-    - deployment/operations/rename-network
     - deployment/operations/cf-integration
     - deployment/operations/enable-lets-encrypt
     - deployment/operations/enable-api
     - deployment/operations/static-ip
-    # - deployment/operations/latest-release
+    # - deployment/operations/latest-release               # when 'developing' is 'true'
+    # - deployment/operations/testflight/smoke-tests-setup # when 'developing' is 'true'
   20_local:
     - pin-stemcell
     - scale-disk
@@ -29,7 +31,9 @@ operations_files:
     - additional-alternative-names
 
 variables_files:
-  10_local:
+  # 10_traefik-boshrelease:
+  #   - file: deployment/operations/testflight/smoke-tests-vars
+  20_local:
     - file: private-config
       example:
         # User-facing settings
