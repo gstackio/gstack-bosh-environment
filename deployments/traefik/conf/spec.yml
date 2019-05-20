@@ -8,7 +8,8 @@ input_resources:
   - name: traefik-boshrelease
     type: git
     uri: https://github.com/gstackio/traefik-boshrelease.git
-    version: "6fa9a89" # v1.5.0 with improvements
+    version: v1.6.0
+    # version: master # when 'developing' is 'true'
 
 
 developing: false
@@ -18,22 +19,23 @@ main_deployment_file: traefik-boshrelease/deployment/traefik-deployment.yml
 
 operations_files:
   10_traefik-boshrelease:
+    # - deployment/operations/latest-release               # when 'developing' is 'true'
+    # - deployment/operations/testflight/smoke-tests-setup # when 'developing' is 'true'
     - deployment/operations/cf-integration
     - deployment/operations/enable-lets-encrypt
     - deployment/operations/enable-api
+    - deployment/operations/enable-rest # required by the smoke tests
     - deployment/operations/static-ip
-    # - deployment/operations/latest-release               # when 'developing' is 'true'
-    # - deployment/operations/testflight/smoke-tests-setup # when 'developing' is 'true'
   20_local:
+    # - activate-debug # when 'developing' is 'true'
     - pin-stemcell
+    - pin-versions
     - scale-disk
-    # - activate-debug
     - additional-alternative-names
+    - setup-smoke-tests
 
 variables_files:
-  # 10_traefik-boshrelease:
-  #   - file: deployment/operations/testflight/smoke-tests-vars
-  20_local:
+  10_local:
     - file: private-config
       example:
         # User-facing settings
@@ -76,23 +78,36 @@ imported_vars:
         from: vars-file
         file: private-config
         value: traefik.((traefik_domain))
+      - name: smoke_tests_frontend_hostname
+        from: vars-file
+        file: private-config
+        value: smoke-tests-6713.((traefik_domain))
 
   - subsys: ddbox-standalone-garden-env # instead of generic 'base-env', to be fixed
     imports:
       - name: static_ip
         from: depl-vars
         path: /web_router_ip
-  # - subsys: cf
-  #   imports:
-  #     - name: stemcell_os
-  #       from: depl-vars
-  #       path: /stemcell_os
-  #     - name: stemcell_version
-  #       from: depl-vars
-  #       path: /stemcell_version
-  #     - name: stemcell_sha1
-  #       from: depl-vars
-  #       path: /stemcell_sha1
+
+  - subsys: cf
+    imports:
+      # - name: stemcell_os
+      #   from: depl-vars
+      #   path: /stemcell_os
+      # - name: stemcell_version
+      #   from: depl-vars
+      #   path: /stemcell_version
+      # - name: stemcell_sha1
+      #   from: depl-vars
+      #   path: /stemcell_sha1
+
+      - name: bpm_version
+        from: depl-vars
+        path: /bpm_version
+      - name: bpm_sha1
+        from: depl-vars
+        path: /bpm_sha1
+
   - subsys: concourse
     imports:
       - name: concourse_external_host

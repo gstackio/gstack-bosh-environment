@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+BASE_DIR=${BASE_DIR:-$(git rev-parse --show-toplevel)}
+SUBSYS_DIR=${SUBSYS_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}
+SUBSYS_NAME=$(basename "${SUBSYS_DIR}")
+
+if ! which pbcopy > /dev/null; then
+	echo "ERROR: no executable 'pbcopy' on your PATH. Aborting." >&2
+	exit 1
+fi
+
+bosh int "${BASE_DIR}/state/${SUBSYS_NAME}/depl-creds.yml" --path "/api_password" \
+    | tr -d '\n' \
+    | pbcopy

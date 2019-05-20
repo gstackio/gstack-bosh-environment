@@ -1,0 +1,6 @@
+---
+
+- path: /instance_groups/name=traefik/jobs/name=smoke-tests/properties?
+  type: replace
+  value:
+    frontend_hostname: ((smoke_tests_frontend_hostname))
