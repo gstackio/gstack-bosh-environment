@@ -377,7 +377,7 @@ function converge_usage() {
     echo
     echo "    --compiled"
     echo "        When converging 'all' subsystems, first upload any compiled"
-    echo "        releases from the local cahe to the BOSH Director."
+    echo "        releases from the local cache to the BOSH Director."
     echo
 }
 
