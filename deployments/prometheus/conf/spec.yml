@@ -70,8 +70,8 @@ deployment_vars:
   prometheus_version: "23.3.0"
   prometheus_sha1: e60092e845d05e8b0c4643d9b10009fe946be877
 
-  # postgres_version: # imported below
-  # postgres_sha1:    # imported below
+  postgres_version: "31"
+  postgres_sha1: bbe4151f4000f349c2ffaf72412aac9cc0a3c741
 
   # bpm_version:      # imported below
   # bpm_sha1:         # imported below
@@ -91,17 +91,17 @@ deployment_vars:
 
 
 imported_vars:
-  - subsys: concourse
-    imports:
+  # - subsys: concourse
+  #   imports:
 
-      # Versions
+  #     # Versions
 
-      - name: postgres_version
-        from: depl-vars
-        path: /postgres_version
-      - name: postgres_sha1
-        from: depl-vars
-        path: /postgres_sha1
+  #     - name: postgres_version
+  #       from: depl-vars
+  #       path: /postgres_version
+  #     - name: postgres_sha1
+  #       from: depl-vars
+  #       path: /postgres_sha1
 
 
   - subsys: cf
