@@ -18,12 +18,6 @@ input_resources:
     uri: https://github.com/pivotal-cf/cf-rabbitmq-smoke-tests-release.git
     version: v29.0.0
 
-  # Workaround issue with broker-registrar-boshrelease v3.5.0
-  - name: broker-registrar-boshrelease
-    type: git
-    uri: https://github.com/gstackio/broker-registrar-boshrelease.git
-    version: "8ae0aab" # 'master' branch as of May the 13th, 2019
-
 
 main_deployment_file: rabbitmq-boshrelease/manifests/cf-rabbitmq-template.yml
 
@@ -83,9 +77,8 @@ deployment_vars:
   cf_cli_release_version: "1.14.0"
   cf_cli_release_sha1: 0c0ea67ef3a4d0622918a1a1bc5a5fa95e7426cf
 
-  # broker_registrar_version: "3.5.0"
-  # broker_registrar_sha1: d794f7d180ff4b9ea8469cdf231c648eda081534
-  broker_registrar_version: latest
+  broker_registrar_version: "3.5.1"
+  broker_registrar_sha1: 9250e45ed194105e3c613bb2f195ade85f4cbe32
 
   # bpm_version:  # imported below
   # bpm_sha1:     # imported below

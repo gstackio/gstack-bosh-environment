@@ -5,8 +5,8 @@
   value:
     name: broker-registrar
     version: ((broker_registrar_version))
-    # url: https://bosh.io/d/github.com/cloudfoundry-community/broker-registrar-boshrelease?v=((broker_registrar_version))
-    # sha1: ((broker_registrar_sha1))
+    url: https://bosh.io/d/github.com/cloudfoundry-community/broker-registrar-boshrelease?v=((broker_registrar_version))
+    sha1: ((broker_registrar_sha1))
 
 - path: /instance_groups/name=broker-registrar-vm?
   type: replace

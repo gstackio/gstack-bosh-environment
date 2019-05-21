@@ -12,12 +12,6 @@ input_resources:
     # version: links-and-cloud-config # ongoing work on the 'links-and-cloud-config' branch (version 0.10.3-rc.38), as of June 23rd, 2018
     version: 002d11a # master as of 2018-08-08
 
-  # Workaround issue with broker-registrar-boshrelease v3.5.0
-  - name: broker-registrar-boshrelease
-    type: git
-    uri: https://github.com/gstackio/broker-registrar-boshrelease.git
-    version: "8ae0aab" # 'master' branch as of May the 13th, 2019
-
 
 developing: false
 
@@ -92,9 +86,8 @@ deployment_vars:
   # cf_containers_broker_version: "1.0.3"
   # cf_containers_broker_sha1: 11001a58965ce4243bd18f0e4301cdbbe949a2d9
 
-  # broker_registrar_version: "3.5.0"
-  # broker_registrar_sha1: d794f7d180ff4b9ea8469cdf231c648eda081534
-  broker_registrar_version: latest
+  broker_registrar_version: "3.5.1"
+  broker_registrar_sha1: 9250e45ed194105e3c613bb2f195ade85f4cbe32
 
   # bpm_version:  # imported below
   # bpm_sha1:     # imported below
