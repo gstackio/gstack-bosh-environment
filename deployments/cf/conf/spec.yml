@@ -126,10 +126,17 @@ deployment_vars:
   # Tweaks
 
   # This setting depends on the total RAM size allocated to the Garden VM.
-  # Example: 2% of the total 25GB RAM means 500MB max.
+  # Example: 1% of the total 24GB RAM means 240MB max.
   # See also: the 'scale-vm-size.yml' ops file for the Garden VM.
   log_cache_memory_limit_percent: 1
-  log_cache_max_per_source: 50000
+  # Issue: it turns out that even with 1% of 24GB RAM, log-cache still
+  # consumes 2.7GB RAM (11.4%) or resident memory, which is way too much
+  # compared to what's expected. So we lower the setting below from 100k to
+  # 10k.
+  log_cache_max_per_source: 10000 # 100000
+  # Finally, the only workaround to this excessive memory consumption is to
+  # disable 'log-cache'.
+  log_cache_disabled: true
 
 
   # Versions

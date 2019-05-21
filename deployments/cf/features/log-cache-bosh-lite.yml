@@ -1,5 +1,9 @@
 ---
 
+- path: /instance_groups/name=doppler/jobs/name=log-cache/properties/disabled?
+  type: replace
+  value: ((log_cache_disabled))
+
 - path: /instance_groups/name=doppler/jobs/name=log-cache/properties/memory_limit_percent?
   type: replace
   value: ((log_cache_memory_limit_percent))

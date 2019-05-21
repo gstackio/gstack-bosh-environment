@@ -14,7 +14,8 @@
 
 ### Notice
 
-
+- `log-cache` is disabled in Cloud Foundry, because of excessive memory
+  consumption in BOSH-Lite.
 
 ### Components Versions
 
