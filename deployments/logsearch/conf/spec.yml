@@ -8,7 +8,7 @@ input_resources:
   - name: logsearch-boshrelease
     type: git
     uri: https://github.com/cloudfoundry-community/logsearch-boshrelease.git
-    version: v209.1.0
+    version: v210.2.0
 
 
 # main_deployment_file: ./conf/logsearch-deployment.yml
@@ -52,11 +52,11 @@ deployment_vars:
 
   # Versions
 
-  logsearch_version: "209.1.0"
-  logsearch_sha1: b186654abf73a6387430cf804e86131ade19a7bb
+  logsearch_version: "210.2.0"
+  logsearch_sha1: f23c694271eb3d7a357fc826511195fb4a04d2b8
 
-  logsearch_for_cloudfoundry_version: "207.0.3"
-  logsearch_for_cloudfoundry_sha1: c91893dac6ab10487259fd0a17af279974ae34d2
+  logsearch_for_cloudfoundry_version: "210.2.0"
+  logsearch_for_cloudfoundry_sha1: f26ed0a65b7eda4e52f96520003fb4838f218885
 
   # stemcell_os:      # imported below
   # stemcell_version: # imported below

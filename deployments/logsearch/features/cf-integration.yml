@@ -10,6 +10,10 @@
   type: replace
   value: ((cf_deployment_name))
 
+- path: /instance_groups/name=maintenance/jobs/name=upload-kibana-objects/consumes/cloud_controller/deployment
+  type: replace
+  value: ((cf_deployment_name))
+
 - path: /instance_groups/name=kibana/jobs/name=kibana-auth-plugin/consumes/cloud_controller/deployment
   type: replace
   value: ((cf_deployment_name))
