@@ -21,7 +21,7 @@ operations_files:
   20_local:
     - rename-deployment
     - pin-stemcell
-    - set-versions
+    - pin-versions
     - scale-vms
     - cf-integration
     - bosh-lite-support

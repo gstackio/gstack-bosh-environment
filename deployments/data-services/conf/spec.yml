@@ -33,7 +33,7 @@ operations_files:
   30_local:
     - rename-deployment
     - pin-stemcell
-    - set-versions
+    - pin-versions
     - scale-disks
     - inject-variables # must be after 'use-cf-admin-user-link'
     - customize-services

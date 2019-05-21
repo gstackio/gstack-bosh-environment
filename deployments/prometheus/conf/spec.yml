@@ -46,7 +46,7 @@ operations_files:
   20_local:
     - rename-deployment-and-network
     - pin-stemcell
-    - set-versions
+    - pin-versions
     - routing
     - scale-disks
     # - scale-disks-prometheus-v1 # only if 'migrate_from_prometheus_1' activated above
@@ -73,8 +73,8 @@ deployment_vars:
   # postgres_version: # imported below
   # postgres_sha1:    # imported below
 
-  # bpm_version:  # imported below
-  # bpm_sha1:     # imported below
+  # bpm_version:      # imported below
+  # bpm_sha1:         # imported below
 
   # routing_version:  # imported below
   # routing_sha1:     # imported below

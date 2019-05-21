@@ -29,7 +29,7 @@ operations_files:
     - rename-deployment
     - rename-network
     - pin-stemcell
-    - set-versions
+    - pin-versions
     - fix-missing-variables
     - scale-for-bosh-lite
     - add-broker

@@ -22,7 +22,7 @@ operations_files:
   20_local:
     - rename-deployment
     - pin-stemcell
-    - set-versions
+    - pin-versions
     - customize-service
     - scale-disks
     - workaround-cf-apps-domain-issue

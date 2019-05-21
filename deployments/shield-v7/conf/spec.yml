@@ -17,7 +17,7 @@ operations_files:
   10_local:
     - rename-deployment-and-network
     - pin-stemcell
-    - set-versions
+    - pin-versions
     - tls-external-ca
     - routing
     - scale-disks
