@@ -1,0 +1,5 @@
+---
+
+- path: /instance_groups/name=credhub/jobs/name=credhub/properties/credhub/max_heap_size?
+  type: replace
+  value: 256

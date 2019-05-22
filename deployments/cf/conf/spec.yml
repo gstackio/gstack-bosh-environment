@@ -95,6 +95,7 @@ operations_files:
     # - database-pxc-bosh-lite
     - database-mysql-bosh-lite
     - log-cache-bosh-lite
+    - credhub-bosh-lite
     - scale-disks
     - tls-from-gorouters-to-backends
     - missing-network-renames
