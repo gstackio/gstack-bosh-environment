@@ -16,7 +16,7 @@ function main() {
     _config
 
     run_errand_with_retry_for_debugging \
-        "${errand_name}" "${errand_vm_name}" --when-changed
+        "${errand_name}" "${errand_vm_name}" # --when-changed
 }
 
 main "$@"

@@ -32,3 +32,38 @@
 - path: /instance_groups/name=ingestor/jobs/name=ingestor_syslog/properties?/logstash/heap_size
   type: replace
   value: ((logstash_heap_size))
+
+
+# Kibana memory size
+
+- path: /instance_groups/name=kibana/jobs/name=kibana/properties/kibana/memory_limit?
+  type: replace
+  value: ((kibana_memory_limit))
+
+- path: /instance_groups/name=cluster_monitor/jobs/name=kibana/properties/kibana/memory_limit
+  type: replace
+  value: ((cluster_monitor_kibana_memory_limit))
+
+
+# Kibana max startup time
+
+- path: /instance_groups/name=kibana/jobs/name=kibana/properties/kibana/health?/timeout
+  type: replace
+  value: ((kibana_health_timeout))
+
+- path: /instance_groups/name=cluster_monitor/jobs/name=kibana/properties/kibana/health?/timeout
+  type: replace
+  value: ((kibana_health_timeout))
+
+
+# Kibana verbose logging
+
+- path: /instance_groups/name=kibana/jobs/name=kibana/properties/kibana/config_options?
+  type: replace
+  value: &kibana_config_options
+    # logging.quiet: true
+    logging.verbose: true
+
+- path: /instance_groups/name=cluster_monitor/jobs/name=kibana/properties/kibana/config_options?
+  type: replace
+  value: *kibana_config_options

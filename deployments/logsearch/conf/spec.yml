@@ -37,8 +37,17 @@ deployment_vars:
   elasticsearch_master_nodes: 1
   elasticsearch_data_nodes: 2
   ingestor_nodes: 1
-  elasticsearch_heap_size: 500M
-  logstash_heap_size: 500M
+  elasticsearch_heap_size: 400M
+  logstash_heap_size: 400M
+  # Kibana memory limit is expressed in percentage of total RAM available.
+  # In BOSH-Lite this is the total RAM size allocated to the Garden VM.
+  # Example: 4% of the total 24GB RAM means 980MB max.
+  # See also: the 'scale-vm-size.yml' ops file for the Garden VM.
+  kibana_memory_limit:                 4 # % of total RAM
+  cluster_monitor_kibana_memory_limit: 4 # % of total RAM
+  # Kibana is slow to start on our infrastruture, so we raise the maximum
+  # startup tim from 5 to 10 minutes.
+  kibana_health_timeout: 600
 
 
   # Versions

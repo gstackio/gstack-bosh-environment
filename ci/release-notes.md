@@ -4,9 +4,12 @@
 - Bumped the `broker-registrar` release to v3.5.1, removing the workaround
   implemented in `cassandra`, `data-services`, `postgres` and  `rabbitmq`
   subsystems.
+- Logsearch memory consumtion has been reduced.
 - Version updates, see below.
 
 ### Fixes
+
+- Fixed the startup timeout of Kibana in the `logsearch` subsystem.
 
 - The Postgres subsystem was not working because Prometheus v23.3.0 is not
   compatible with the Postgres v11.x shipped by the Postgres release v36.
