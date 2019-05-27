@@ -3,7 +3,7 @@
 # Install 'python' and 'python-simplejson' so that ansible -m ping can at least work
 # (see: <http://stackoverflow.com/a/36367273>)
 - name: Ansible | required python is installed
-  hosts: dedibox
+  hosts: "{{ target_host | default('dedibox') }}"
   serial: 1
   gather_facts: no
   become: yes
@@ -13,7 +13,7 @@
 
 
 - name: BOSH Environment | Remote host server is set up
-  hosts: dedibox
+  hosts: "{{ target_host | default('dedibox') }}"
   roles:
     - directories
     - virtualbox
