@@ -134,9 +134,9 @@ Basically, you need to:
 
 We have several deployment guides for some topologies that we support.
 
-- [Bare-Metal server](./docs/getting-started/bare-metal.dm)
-- [Google Cloud VM](./docs/getting-started/gcp-vm.dm)
-- [Local laptop](./docs/getting-started/local-vbox.dm)
+- [Bare-Metal server](./docs/getting-started/bare-metal.md)
+- [Google Cloud VM](./docs/getting-started/gcp-vm.md)
+- [Local laptop](./docs/getting-started/local-vbox.md)
 
 In case you encounter issues, please refer to the [troubleshooting](./docs/troubleshooting.md)
 chapter of the documentation.
