@@ -547,7 +547,9 @@ function bosh_ro_invoke() {
 
     if [[ ${GBE_DEBUG_LEVEL} -ge 1 ]]; then
         local missing_nl="no"
-        echo >&2 "${bosh_cmd_head[@]/#"${BASE_DIR}/"/}"
+        echo >&2 "BOSH_ENVIRONMENT=${BOSH_ENVIRONMENT} \\"
+        echo >&2 "BOSH_DEPLOYMENT=${BOSH_DEPLOYMENT} \\"
+        echo >&2 "${bosh_cmd_head[@]/#"${BASE_DIR}/"/} \\"
         local arg
         for arg in \
                 "${bosh_cmd_tail[@]}" \
@@ -560,12 +562,12 @@ function bosh_ro_invoke() {
                 echo >&2 -n "    ${arg}"
                 missing_nl="yes"
             else
-                echo >&2 " ${arg//"${BASE_DIR}/"/}"
+                echo >&2 " ${arg//"${BASE_DIR}/"/} \\"
                 missing_nl="no"
             fi
         done
         if [[ ${missing_nl} == "yes" ]]; then
-            echo
+            echo " \\"
         fi
         echo
     fi

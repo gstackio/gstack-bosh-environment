@@ -838,10 +838,6 @@ function converge_subsystem() {
     echo -e "\n${BLUE}$action the $BOLD'$subsys_name'$RESET subsystem.\n"
 
     SUBSYS_DIR=$BASE_DIR/deployments/$subsys_name
-    eval "$(env_exports)"
-    if [[ -z $manifest_only && -z $offline ]]; then
-        upload_stemcell
-    fi
 
     assert_subsys bosh-deployment
 
@@ -869,6 +865,11 @@ function converge_subsystem() {
 
         # Fetch any new resources from the merged spec
         fetch_input_resources ${offline:+"--offline"}
+    fi
+
+    eval "$(env_exports)"
+    if [[ -z $manifest_only && -z $offline ]]; then
+        upload_stemcell
     fi
 
     local subsys_type
