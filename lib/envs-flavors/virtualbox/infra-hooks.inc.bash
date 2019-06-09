@@ -47,10 +47,10 @@ function reachable_ip_hook() {
 function pre_create_env_hook() {
     echo -e "\n${BLUE}Provisionning ${BOLD}dedibox$RESET with pre-requisites for the Virtualbox infrastructure\n"
 
-    pushd $BASE_DIR/ddbox-standalone-bosh-env/provision
-        # ansible-playbook -i inventory.cfg --ask-become provision.yml
-        echo skipped
-    popd
+    echo skipped
+    # pushd $BASE_DIR/$GBE_ENVIRONMENT/provision
+    #     ansible-playbook -i inventory.cfg --ask-become provision.yml
+    # popd
 
     local secrets_file=$SUBSYS_DIR/conf/secrets.yml
     restrict_permissions "$secrets_file"
@@ -67,10 +67,13 @@ function pre_create_env_hook() {
 
         local ssh_key_base_filename=$SUBSYS_DIR/conf/id_rsa
         if [ ! -f "$ssh_key_base_filename" ]; then
-            ssh-keygen -b 4096 -N '' -C "boshinit@$(spec_var /subsys/name "$BASE_DIR/$GBE_ENVIRONMENT")" \
-                -f "$ssh_key_base_filename"
+            local env_name
+            env_name=$(spec_var "/subsys/name" "${BASE_DIR}/${GBE_ENVIRONMENT}")
+            ssh-keygen -b 4096 -N "" -C "boshinit@${env_name}" \
+                -f "${ssh_key_base_filename}"
             chmod 600 "$ssh_key_base_filename"
         fi
+        echo "INFO: inserting SSH private key into '${secrets_file}' as '/vbox_ssh/private_key'"
         yaml_upsert_file_content "$secrets_file" "/vbox_ssh?/private_key" \
             "$ssh_key_base_filename"
         ssh-copy-id -i "${ssh_key_base_filename}.pub" "$vbox_username@$vbox_host"
