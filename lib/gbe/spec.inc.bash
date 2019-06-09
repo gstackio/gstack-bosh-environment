@@ -233,6 +233,10 @@ function populate_vars_files_arguments() {
     local dst_vars_store secrets_file var_value
     dst_vars_store=$(state_dir)/depl-creds.yml
     for secrets_file in "${secrets_files[@]}"; do
+        if [[ ! -f "${secrets_file}" ]]; then
+            echo "${RED}WARNING:${RESET} no such secrets file: '${secrets_file}'. Skipping." >&2
+            continue
+        fi
         for key in $(awk -F: '/^[^- #].*:/{print $1}' "$secrets_file"); do
             var_value=$(bosh int "$secrets_file" --path "/$key")
             merge_yaml_value_in_vars_file "$var_value" "$key" "$dst_vars_store"
