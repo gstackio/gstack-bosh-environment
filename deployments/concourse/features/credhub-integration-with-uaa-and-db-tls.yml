@@ -485,7 +485,7 @@
 - path: /instance_groups/name=uaa/jobs/name=pre-start-script?
   type: replace
   value:
-    # NOTE: UAA database schema upgrades require the PstgreSQL root CA
+    # NOTE: UAA database schema upgrades require the PostgreSQL root CA
     # certificate to be in '/home/vcap/.postgresql/root.crt'
     name: pre-start-script
     release: os-conf
