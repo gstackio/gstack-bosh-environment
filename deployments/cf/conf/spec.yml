@@ -26,7 +26,7 @@ operations_files:
     - operations/enable-service-discovery
     - operations/override-app-domains # must appear after 'enable-service-discovery'
     - operations/backup-and-restore/enable-backup-restore
-    # - operations/bits-service/use-bits-service
+    # - operations/bits-service/use-bits-service # Discontinued as of July 2019. To be avoided.
 
     # - operations/use-pxc
     # - operations/migrate-cf-mysql-to-pxc
@@ -135,9 +135,12 @@ deployment_vars:
   # compared to what's expected. So we lower the setting below from 100k to
   # 10k.
   log_cache_max_per_source: 10000 # 100000
-  # Finally, the only workaround to this excessive memory consumption is to
-  # disable 'log-cache'.
+  # A possible workaround to this excessive memory consumption could be
+  # disabling 'log-cache'. But it still ends up consuming 1.6GB anyway, which
+  # is 6.5% of total Garden VM RAM.
   log_cache_disabled: true
+  # => Still consumes 3.2GB of resident memory, which are 13.6% of our 23.9GB
+  # memory VM.
 
 
   # Versions
