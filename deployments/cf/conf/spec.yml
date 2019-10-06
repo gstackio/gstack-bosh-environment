@@ -105,23 +105,27 @@ operations_files:
 variables_files:
   10_cf-deployment: []
     # - operations/example-vars-files/vars-use-s3-custom-blobstore # See ops file above for s3 blobstore
+  20_local:
+    - file: private-config
+      example:
+        # User-facing settings
+        system_domain: sys.easyfoundry.example.com
+        app_domains:
+          - name: &apps_domain apps.easyfoundry.example.com
+          # NOTE: the 'apps.internal' domain below is normally brought by
+          # 'operations/enable-service-discovery', but is actually overridden by
+          # 'operations/override-app-domains'.
+          - name: apps.internal
+            internal: true
+
 
 
 deployment_vars:
   deployment_name: easyfoundry-cf
 
-
   # User-facing settings
 
-  system_domain: sys.easyfoundry.prototyp.it
-  app_domains:
-    - name: &apps_domain apps.easyfoundry.prototyp.it
-    # NOTE: the 'apps.internal' domain below is normally brought by
-    # 'operations/enable-service-discovery', but is actually overridden by
-    # 'operations/override-app-domains'.
-    - name: apps.internal
-      internal: true
-  smoke_test_app_domain: *apps_domain
+  # (none)
 
 
   # Tweaks
@@ -181,5 +185,6 @@ imported_vars:
   - subsys: cf
     imports:
       - name: grafana_redirect_uri
-        from: depl-vars
+        from: vars-file
+        file: private-config
         value: https://uaa.((system_domain))/login
