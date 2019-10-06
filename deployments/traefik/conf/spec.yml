@@ -8,7 +8,7 @@ input_resources:
   - name: traefik-boshrelease
     type: git
     uri: https://github.com/gstackio/traefik-boshrelease.git
-    version: v1.6.0
+    version: 3e2091d # v1.8.0 (Traefik v1.7.18) with compiled release for stemcell v456.27
     # version: master # when 'developing' is 'true'
 
 
@@ -23,7 +23,7 @@ operations_files:
     # - deployment/operations/testflight/smoke-tests-setup # when 'developing' is 'true'
     - deployment/operations/cf-integration
     - deployment/operations/enable-lets-encrypt
-    - deployment/operations/enable-api
+    - deployment/operations/enable-api  # required by the smoke tests
     - deployment/operations/enable-rest # required by the smoke tests
     - deployment/operations/static-ip
   20_local:
@@ -72,8 +72,9 @@ deployment_vars:
 imported_vars:
   - subsys: traefik
     imports:
-      # Note: this is actually an auto-import trick in order to inject a value
-      # from private-config.yml into the 'web_backend_hostname' variable
+      # Note: the following “imports” are actually an “auto-import trick”,
+      # that eallow us to inject a value from 'private-config.yml' into the
+      # 'web_backend_hostname' variable
       - name: web_backend_hostname
         from: vars-file
         file: private-config
