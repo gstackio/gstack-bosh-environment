@@ -11,7 +11,7 @@ source "${BASE_DIR}/lib/hooks-api/bosh-releases.inc.bash"
 function _config() {
     must_provide_dev_release="false"
     input_resource_index="0"
-    release_name="shield"
+    release_name="traefik"
 }
 
 function main() {
@@ -21,9 +21,7 @@ function main() {
     developing=$(own_spec_var "/developing" 2> /dev/null || true)
 
     if [[ "${developing}" == "true" ]]; then
-        set -x
         delete_any_existing_unused_release "${release_name}"
-        set +x
         create_upload_dev_release_if_necessary \
             "${input_resource_index}" "${release_name}"
     elif [[ "${must_provide_dev_release}" == "true" ]]; then
