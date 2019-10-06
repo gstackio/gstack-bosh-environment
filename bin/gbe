@@ -1016,7 +1016,7 @@ function create_env() {
 
     echo -e "\n${BLUE}Running ${BOLD}bosh create-env$RESET to create the BOSH environment\n"
 
-    restrict_permissions "$subsys_state_dir/depl-creds.yml"
+    restrict_permissions "${env_state_dir}/depl-creds.yml"
     infra_bosh_ro_invoke interpolate > "$env_state_dir/depl-manifest.yml"
     [[ -x $(which humanize-manifest) ]] && \
         humanize-manifest "$env_state_dir/depl-manifest.yml" \
