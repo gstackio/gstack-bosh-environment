@@ -8,7 +8,7 @@ input_resources:
   - name: cf-deployment
     type: git
     uri: https://github.com/cloudfoundry/cf-deployment.git
-    version: v6.10.0
+    version: v12.0.0
   - name: prometheus-boshrelease
     type: git
     uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
@@ -19,7 +19,7 @@ main_deployment_file: cf-deployment/cf-deployment.yml
 
 operations_files:
   10_cf-deployment:
-    # - operations/use-compiled-releases
+    - operations/use-compiled-releases
     - operations/bosh-lite
     # operations/stop-skipping-tls-validation # to be enabled when using produciton certs
     - operations/rename-network-and-deployment
@@ -27,10 +27,6 @@ operations_files:
     - operations/override-app-domains # must appear after 'enable-service-discovery'
     - operations/backup-and-restore/enable-backup-restore
     # - operations/bits-service/use-bits-service # Discontinued as of July 2019. To be avoided.
-
-    # - operations/use-pxc
-    # - operations/migrate-cf-mysql-to-pxc
-    # - operations/use-pxc-for-nfs-volume-service
 
     # - operations/use-external-blobstore
     # - operations/use-s3-custom-blobstore # compatible with Minio, see example variables files below
@@ -41,39 +37,12 @@ operations_files:
     # - operations/backup-and-restore/enable-backup-restore-nfs-broker
 
 
-    # Add 'cc_deployment_updater' job to 'scheduler' vm, which enables zero
-    # downtime app deployments.
-    - operations/experimental/add-deployment-updater
-
-    # # Enables container proxy on the Diego Cell 'rep' and configures gorouter
-    # # to opt into TLS-enabled connections to the backend.
-    # - operations/experimental/enable-routing-integrity
-
-    # Improve routability in the face of cell presence loss
-    - operations/experimental/enable-suspect-actual-lrp-generation
-
     # # Enable rootless garden-runc containers.
     # - operations/experimental/rootless-containers
 
     # # Configure Garden to create OCI compatible images.
     # - operations/experimental/enable-oci-phase-1
 
-    # Configure Cloud Controller to use Log Cache instead of Traffic
-    # Controller for app container metrics.
-    - operations/experimental/use-logcache-for-cloud-controller-app-stats
-
-    # # Enables TLS on the database job, and secures all client database
-    # # connections.
-    # - operations/experimental/enable-mysql-tls
-
-    # - operations/experimental/perm-service # Requires 'enable-mysql-tls'
-    # - operations/experimental/perm-service-with-tcp-routing
-    # - operations/experimental/perm-service-with-pxc-release
-
-
-    # Add the Prometheus node exporter and Loggregator Prom Scraper to addons.
-    # This puts infrastructure metrics into Loggregator's metric stream.
-    # - operations/experimental/infrastructure-metrics
 
     # Configures the default 'vm_strategy' to be 'create-swap-delete'.
     # - operations/experimental/use-create-swap-delete-vm-strategy
@@ -88,12 +57,10 @@ operations_files:
     - manifests/operators/cf/add-grafana-uaa-clients
   30_local:
     - pin-stemcell
-    # - set-mysql-version
     - set-routing-version
     - expose-admin-user-as-link
     # - cassandra-support # only kept as an example ASG
-    # - database-pxc-bosh-lite
-    - database-mysql-bosh-lite
+    - database-pxc-bosh-lite
     - log-cache-bosh-lite
     - credhub-bosh-lite
     - scale-disks
@@ -130,50 +97,52 @@ deployment_vars:
 
   # Tweaks
 
-  # This setting depends on the total RAM size allocated to the Garden VM.
-  # Example: 1% of the total 24GB RAM means 240MB max.
-  # See also: the 'scale-vm-size.yml' ops file for the Garden VM.
-  log_cache_memory_limit_percent: 1
-  # Issue: it turns out that even with 1% of 24GB RAM, log-cache still
-  # consumes 2.7GB RAM (11.4%) or resident memory, which is way too much
-  # compared to what's expected. So we lower the setting below from 100k to
-  # 10k.
-  log_cache_max_per_source: 10000 # 100000
-  # A possible workaround to this excessive memory consumption could be
-  # disabling 'log-cache'. But it still ends up consuming 1.6GB anyway, which
-  # is 6.5% of total Garden VM RAM.
-  log_cache_disabled: true
-  # => Still consumes 3.2GB of resident memory, which are 13.6% of our 23.9GB
-  # memory VM.
+  # NOTE: the following tweaks have been established on cf-deployment v6.10.0,
+  # and need to be re-evaluated with more recent version.
+  #
+  # # This setting depends on the total RAM size allocated to the Garden VM.
+  # # Example: 1% of the total 24GB RAM means 240MB max.
+  # # See also: the 'scale-vm-size.yml' ops file for the Garden VM.
+  # log_cache_memory_limit_percent: 1
+  # # Issue: it turns out that even with 1% of 24GB RAM, log-cache still
+  # # consumes 2.7GB RAM (11.4%) or resident memory, which is way too much
+  # # compared to what's expected. So we lower the setting below from 100k to
+  # # 10k.
+  # log_cache_max_per_source: 10000 # 100000
+  # # A possible workaround to this excessive memory consumption could be
+  # # disabling 'log-cache'. But it still ends up consuming 1.6GB anyway, which
+  # # is 6.5% of total Garden VM RAM.
+  # log_cache_disabled: true
+  # # => Still consumes 3.2GB of resident memory, which are 13.6% of our 23.9GB
+  # # memory VM.
 
 
   # Versions
 
   stemcell_name: bosh-warden-boshlite-ubuntu-xenial-go_agent
   stemcell_os: ubuntu-xenial
-  stemcell_version: "456.27"
-  stemcell_sha1: 518b991efb9d1e5fb2c861e7c180e076ae66f76e
+  # stemcell_version: "456.27"
+  # stemcell_sha1: 518b991efb9d1e5fb2c861e7c180e076ae66f76e
+  stemcell_version: "456.22"
+  stemcell_sha1: 3bb1f63d4ad70404a091f7fb475c443131809c1d
 
 
   # Reference declarations
 
-  bpm_version: "1.0.0"
-  bpm_sha1: 42b95d4a0d6d15dd0b0ead62418ffb56208e2307
+  bpm_version: "1.1.3"
+  bpm_sha1: b41556af773ea9aec93dd21a9bbf129200849eed
 
-  routing_version: "0.184.0"
-  routing_sha1: f35eb9884e1c097ff21843e6f2d0eebd22ac2073
+  routing_version: "0.191.0"
+  routing_sha1: 8d6e700e43c0312614364cf4e84f0ac63b931a9e
 
-  cf_mysql_version: "36.17.0"
-  cf_mysql_sha1: 04cbfafa0a2c11b133da20de8282595c98bc0049
+  credhub_version: "2.5.6"
+  credhub_sha1: 788c7da077480fc76a49a69095debbd887c9250e
 
-  credhub_version: "2.1.2"
-  credhub_sha1: 754a24dbffe8bc5efce7e698d935b5f4df541f38
+  uaa_version: "74.1.0"
+  uaa_sha1: e5ec082acf7d9c0154883ca46c937fc7838891aa
 
-  uaa_version: "68.0"
-  uaa_sha1: a06e5390463c760bcbcc0bacaec063f41a5ea089
-
-  os_conf_version: "20.0.0"
-  os_conf_sha1: a60187f038d45e2886db9df82b72a9ab5fdcc49d
+  os_conf_version: "21.0.0"
+  os_conf_sha1: 7579a96515b265c6d828924bf4f5fae115798199
 
   bosh_dns_aliases_version: "0.0.3"
   bosh_dns_aliases_sha1: b0d0a0350ed87f1ded58b2ebb469acea0e026ccc
