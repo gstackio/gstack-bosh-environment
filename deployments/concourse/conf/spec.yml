@@ -8,14 +8,16 @@ input_resources:
   - name: concourse-deployment
     type: git
     uri: https://github.com/concourse/concourse-deployment.git
-    version: release/v4.2.3
+    version: v5.6.0
 
 
 main_deployment_file: concourse-deployment/cluster/concourse.yml
 
 operations_files:
   10_local:
-    - reorder-instance-groups # must appear first, before anything is modified in instance group 'db'
+    # Note: reordering instance groups must appear first, before anything is
+    # modified in instance group 'db'
+    - reorder-instance-groups
   20_concourse-deployment:
     - cluster/operations/worker-ephemeral-disk
     - cluster/operations/static-web
@@ -41,28 +43,24 @@ variables_files:
     # currently, the variables defined in such a variables file cannot be
     # imported by other subsystems.
     - file: versions
+  20_local:
+    - file: private-config
+      example:
+        # User-facing settings
+        external_host: ci.easyfoundry.example.com
+        atc_basic_auth_username: admin
 
 
 deployment_vars:
   deployment_name: easyfoundry-concourse
 
 
-  # User-facing settings
-
-  external_host: ci.easyfoundry.prototyp.it
-  atc_basic_auth_username: admin
-
-
   # Versions
 
-  concourse_version: "4.2.3" # now defined in the 'versions.yml' file
-  concourse_sha1: 915ab6a3ea9fa8e611887e51630c7a4947dcd8c1
-
-  garden_runc_version: "1.18.3"
-  garden_runc_sha1: 1aa15e644c6c0c6c7ec072bf668fe5d9bcc4c632
-
-  postgres_version: "36"
-  postgres_sha1: 3dd10b417b21cfa3257f1cc891e9e46f02fefe16
+  # NOTE: the following version and SHA1 hash are copied/pasted from the
+  # 'versions.yml' file, in order for other subsystems to import them.
+  postgres_version: "39"
+  postgres_sha1: 8ff395540e77a461322a01c41aa68973c10f1ffb
 
   # os_conf_version:          # imported below
   # os_conf_sha1:             # imported below

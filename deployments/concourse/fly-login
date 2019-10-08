@@ -5,9 +5,9 @@ set -euo pipefail
 function main() {
     setup
 
-    external_host=$(spec_var /deployment_vars/external_host)
-    atc_username=$(spec_var /deployment_vars/atc_basic_auth_username)
-    atc_password=$(creds_var /atc_basic_auth_password)
+    external_host=$(priv_cfg_var "/external_host")
+    atc_username=$(priv_cfg_var "/atc_basic_auth_username")
+    atc_password=$(creds_var "/atc_basic_auth_password")
 
     local concourse_target=${1:-"ef"}
 
@@ -15,11 +15,27 @@ function main() {
         bash ${DEBUG:+"-x"} "${SUBSYS_DIR}/fetch-fly-cli"
     fi
 
-    "${BASE_DIR}/bin/fly" -t "${concourse_target}" login -k \
-        -c "https://${external_host}" -u "${atc_username}" -p "${atc_password}"
+    # When target does not exist yet the following will create it. When it is
+    # outdated, this will set it properly, then the 'fly sync' below will
+    # solve the version mismatch.
+    set +e
+    "${BASE_DIR}/bin/fly" --target="${concourse_target}" login --insecure \
+        --concourse-url="https://${external_host}" \
+        --username="${atc_username}" --password="${atc_password}"
     login_status=$?
+    set -e
 
     "${BASE_DIR}/bin/fly" -t "${concourse_target}" sync
+
+    if [[ ${login_status} -ne 0 ]]; then
+        # Try to log in again, if by any chance it failed because of version
+        # mismatch that would be solved by the 'fly sync' above.
+        set +e
+        "${BASE_DIR}/bin/fly" -t "${concourse_target}" login -k \
+            -c "https://${external_host}" -u "${atc_username}" -p "${atc_password}"
+        login_status=$?
+        set -e
+    fi
 
     if [[ ${login_status} -eq 0 ]]; then echo "OK"; else echo "ERROR"; fi
     exit "${login_status}"
@@ -31,6 +47,11 @@ function setup() {
     BASE_DIR=${BASE_DIR:-$(git rev-parse --show-toplevel)}
     SUBSYS_NAME=$(own_spec_var /subsys/name)
     readonly SUBSYS_DIR BASE_DIR SUBSYS_NAME
+}
+
+function priv_cfg_var() {
+    local path=$1
+    bosh int "${SUBSYS_DIR}/conf/private-config.yml" --path "${path}"
 }
 
 function own_spec_var() {

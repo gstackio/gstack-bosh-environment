@@ -1,17 +1,17 @@
 ---
 
-- path: /instance_groups/name=web/jobs/name=atc/properties/external_url
+- path: /instance_groups/name=web/jobs/name=web/properties/external_url
   type: replace
   value: https://((external_host))
 
-- path: /instance_groups/name=web/jobs/name=atc/properties/tls_bind_port?
+- path: /instance_groups/name=web/jobs/name=web/properties/tls_bind_port?
   type: replace
   # Note: we force this port value here (which is the default) in order to be
   # sure that we use the same value below when registering our route.
   value: &atc_tls_bind_port 4443
 
 
-- path: /instance_groups/name=web/jobs/name=atc/properties/x_frame_options?
+- path: /instance_groups/name=web/jobs/name=web/properties/x_frame_options?
   type: replace
   # Prevent clickjacking attacks
   # See <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options>

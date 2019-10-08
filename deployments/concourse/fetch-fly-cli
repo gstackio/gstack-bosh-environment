@@ -5,7 +5,7 @@ set -eo pipefail
 function main() {
     setup
 
-    external_host=$(spec_var "/deployment_vars/external_host")
+    external_host=$(priv_cfg_var "/external_host")
     platform=$(uname -s | tr "[:upper:]" "[:lower:]")
 
     set -x
@@ -20,6 +20,11 @@ function setup() {
     BASE_DIR=${BASE_DIR:-$(git rev-parse --show-toplevel)}
     SUBSYS_NAME=$(own_spec_var /subsys/name)
     readonly SUBSYS_DIR BASE_DIR SUBSYS_NAME
+}
+
+function priv_cfg_var() {
+    local path=$1
+    bosh int "${SUBSYS_DIR}/conf/private-config.yml" --path "${path}"
 }
 
 function own_spec_var() {

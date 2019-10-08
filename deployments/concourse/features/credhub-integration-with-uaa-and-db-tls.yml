@@ -412,7 +412,7 @@
 # --------------------------------- #
 
 # From turbo <https://github.com/pivotalservices/turbo/blob/master/deployments/ucc/manifest/manifest.yml#L68-L76>
-- path: /instance_groups/name=web/jobs/name=atc/properties/credhub?
+- path: /instance_groups/name=web/jobs/name=web/properties/credhub?
   type: replace
   value:
     path_prefix: /concourse
@@ -457,11 +457,11 @@
 # ------------------------------------- #
 
 
-- path: /instance_groups/name=web/jobs/name=atc/properties/postgresql/sslmode?
+- path: /instance_groups/name=web/jobs/name=web/properties/postgresql/sslmode?
   type: replace
   value: verify-ca
 
-- path: /instance_groups/name=web/jobs/name=atc/properties/postgresql/ca_cert?
+- path: /instance_groups/name=web/jobs/name=web/properties/postgresql/ca_cert?
   type: replace
   value: ((database-tls.ca))
 

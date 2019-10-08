@@ -11,11 +11,6 @@ function main() {
 
     set -x
 
-    if [[ ! -e ${BASE_DIR}/bin/fly ]]; then
-        bash ${DEBUG:+"-x"} "${SUBSYS_DIR}/fetch-fly-cli"
-    fi
-    "${BASE_DIR}/bin/fly" -t "${concourse_target}" sync
-
     set +e
     if ! fly -t "${concourse_target}" status; then
         bash ${DEBUG:+"-x"} "${SUBSYS_DIR}/fly-login" "${concourse_target}"

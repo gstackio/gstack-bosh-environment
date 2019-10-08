@@ -1,10 +1,10 @@
 ---
 
-- path: /instance_groups/name=web/jobs/name=atc/properties/main_team?/auth/local/users
+- path: /instance_groups/name=web/jobs/name=web/properties/main_team?/auth/local/users
   type: replace
   value: [ ((atc_basic_auth_username)) ]
 
-- path: /instance_groups/name=web/jobs/name=atc/properties/add_local_users?
+- path: /instance_groups/name=web/jobs/name=web/properties/add_local_users?
   type: replace
   value: [ ((atc_basic_auth_username)):((atc_basic_auth_password)) ]
 

@@ -6,7 +6,7 @@ function main() {
     setup
 
     local external_host # credhub_ip credhub_port
-    external_host=$(own_spec_var /deployment_vars/external_host)
+    external_host=$(priv_cfg_var "/external_host")
     # credhub_ip=$(own_spec_var /deployment_vars/credhub_ip0) # or credhub_ip1
     # credhub_port=$(own_spec_var /deployment_vars/credhub_tls_port)
 
@@ -29,6 +29,11 @@ function setup() {
     BASE_DIR=${BASE_DIR:-$(git rev-parse --show-toplevel)}
     SUBSYS_NAME=$(own_spec_var /subsys/name)
     readonly SUBSYS_DIR BASE_DIR SUBSYS_NAME
+}
+
+function priv_cfg_var() {
+    local path=$1
+    bosh int "${SUBSYS_DIR}/conf/private-config.yml" --path "${path}"
 }
 
 function own_spec_var() {
