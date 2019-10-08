@@ -61,7 +61,7 @@ operations_files:
     - expose-admin-user-as-link
     # - cassandra-support # only kept as an example ASG
     - database-pxc-bosh-lite
-    - log-cache-bosh-lite
+    # - log-cache-bosh-lite
     - credhub-bosh-lite
     - scale-disks
     - tls-from-gorouters-to-backends
@@ -97,8 +97,9 @@ deployment_vars:
 
   # Tweaks
 
-  # NOTE: the following tweaks have been established on cf-deployment v6.10.0,
-  # and need to be re-evaluated with more recent version.
+  # NOTE: the following tweaks depend on the 'log-cache-bosh-lite.yml'
+  # ops-file. They have been established on cf-deployment v6.10.0, and need to
+  # be re-evaluated with more recent version.
   #
   # # This setting depends on the total RAM size allocated to the Garden VM.
   # # Example: 1% of the total 24GB RAM means 240MB max.
