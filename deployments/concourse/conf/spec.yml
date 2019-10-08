@@ -24,6 +24,7 @@ operations_files:
     - cluster/operations/encryption
     - cluster/operations/tls
     - cluster/operations/tls-vars
+    - cluster/operations/storage-driver
   30_local:
     - pin-stemcell
     - set-log-level
@@ -94,6 +95,7 @@ deployment_vars:
   # A VM extension from your BOSH Director's cloud config that will attach
   # sufficient ephemeral storage to worker VMs.
   worker_ephemeral_disk: 50GB_ephemeral_disk # consider 200GB for production systems
+  storage_driver: overlay # prevent the default 'detect' to resolve to the problematic 'btrfs'
   log_level: info # set this to 'debug' whenever necessary
 
 
