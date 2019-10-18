@@ -43,7 +43,6 @@ operations_files:
     - enable-local-access
     - custom-stemcell-version
     - custom-bosh-version-precompiled
-    # - custom-bosh-version
     - disable-resurrector
     - scale-vm-and-disk
     - enable-index-based-dns-aliases
@@ -59,28 +58,16 @@ deployment_vars:
   # web_router_ip: "10.244.0.34" # classical Gorouter reverse-proxy
   web_router_ip: "10.244.0.43" # Træfik reverse-proxy for Let's Encrypt support
 
-  ## When the release is available on the `bosh-compiled-release-tarballs` S3
-  ## bucket, use the 'custom-bosh-version-precompiled' operation file with these
-  ## settings:
-  bosh_precompiled_version: "268.7.0"
-  bosh_precompiled_url: https://s3.amazonaws.com/bosh-compiled-release-tarballs/bosh-268.7.0-ubuntu-xenial-250.29-20190408-223837-280092742-20190408223850.tgz
-  bosh_precompiled_sha1: 7c70c07d4eb5a922ea936d0f5676d5a5aaa192e5
 
-  ## When the release is not available yet on the `bosh-compiled-release-tarballs`
-  ## S3 bucket, use the 'custom-bosh-version' operation file instead, with these
-  ## settings:
-  # bosh_version: "268.7.0"
-  # bosh_sha1: 38eb110e3b2ee31fffe346f0f53e4e050e2f8079
+  # Versions
 
-  ## When the release is not available yet on the `bosh-compiled-release-tarballs`
-  ## S3 bucket, and you have a compiled release in your cache:
-  # bosh_precompiled_version: "268.7.0"
-  # bosh_precompiled_url: file://../../.cache/compiled-releases/bosh-268.7.0-ubuntu-xenial-250.38-20190130-230319-172875782-20190130230326.tgz
-  # bosh_precompiled_sha1: 2715c3f3183945c69111378327cacd8610109da7
+  bosh_precompiled_version: "270.7.0"
+  bosh_precompiled_url: https://s3.amazonaws.com/bosh-compiled-release-tarballs/bosh-270.7.0-ubuntu-xenial-456.30-20191008-184323-54400337-20191008184329.tgz
+  bosh_precompiled_sha1: 33d372002bd84b8ea8095f3a1c0354cf51527c74
 
   stemcell_name: bosh-google-kvm-ubuntu-xenial-go_agent
-  stemcell_version: "456.27"
-  stemcell_sha1: c5a9f5a98d60de43034a73fd0e87f2e794d0f5ef # this is a Google KVM Light stemcell, actually
+  stemcell_version: "456.30"
+  stemcell_sha1: 819b171120d1ce5e583f601adee009a90085d20c # this is a Google KVM Light stemcell, actually
 
 
 imported_vars: []
