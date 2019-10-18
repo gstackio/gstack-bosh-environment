@@ -7,7 +7,7 @@ input_resources:
   - name: kong-boshrelease
     type: git
     uri: https://github.com/gstackio/gk-kong-boshrelease.git
-    version: v1.2.0
+    version: v1.3.0
 
 
 main_deployment_file: kong-boshrelease/deploy/kong.yml
@@ -33,8 +33,8 @@ deployment_vars:
 
   # Versions
 
-  kong_release_version: "1.2.0"
-  kong_release_sha1: 6a2babe8b3b0547069ea62811a3ef96ec613beea
+  kong_release_version: "1.3.0"
+  kong_release_sha1: e00595b028fd9a479aef3c92664651ef8dd7d1f8
 
   # bpm_version:      # imported below
   # bpm_sha1:         # imported below
