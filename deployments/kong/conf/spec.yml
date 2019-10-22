@@ -7,10 +7,10 @@ input_resources:
   - name: kong-boshrelease
     type: git
     uri: https://github.com/gstackio/gk-kong-boshrelease.git
-    version: v1.3.0
+    version: 8f74a67 # v1.3.0 (Kong v0.15.0) with compiled release for stemcell v456.30
 
 
-main_deployment_file: kong-boshrelease/deploy/kong.yml
+main_deployment_file: kong-boshrelease/deploy/gk-kong.yml
 
 
 operations_files:
