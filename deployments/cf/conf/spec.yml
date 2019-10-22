@@ -91,11 +91,6 @@ variables_files:
 deployment_vars:
   deployment_name: easyfoundry-cf
 
-  # User-facing settings
-
-  # (none)
-
-
   # Tweaks
 
   # NOTE: the following tweaks depend on the 'log-cache-bosh-lite.yml'
@@ -129,8 +124,8 @@ deployment_vars:
 
   # Reference declarations
 
-  bpm_version: "1.1.3"
-  bpm_sha1: b41556af773ea9aec93dd21a9bbf129200849eed
+  bpm_version: "1.1.4"
+  bpm_sha1: 7b7c576b5814a4ba49f2ddb009040963106a4dc1
 
   routing_version: "0.191.0"
   routing_sha1: 8d6e700e43c0312614364cf4e84f0ac63b931a9e
@@ -138,8 +133,8 @@ deployment_vars:
   credhub_version: "2.5.6"
   credhub_sha1: 788c7da077480fc76a49a69095debbd887c9250e
 
-  uaa_version: "74.1.0"
-  uaa_sha1: e5ec082acf7d9c0154883ca46c937fc7838891aa
+  uaa_version: "74.5.0"
+  uaa_sha1: f4a2cd2fc0ac08f80e9feebbdf4a159109492dd3
 
   os_conf_version: "21.0.0"
   os_conf_sha1: 7579a96515b265c6d828924bf4f5fae115798199
