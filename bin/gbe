@@ -404,6 +404,46 @@ function recreate_usage() {
     echo
 }
 
+function recover_usage() {
+    local ul=$UNDERLINE
+    local noul=$NOUNDERLINE
+    echo "Usage:"
+    echo "  ${ul}${SCRIPT_NAME}${noul}  ${ul}recover${noul}  [-y]  <subsys-name>..."
+    echo
+    echo "    <subsys-name>   The name of a subsys to recreate."
+    echo
+    echo "Recovers one or all subsystems to their desired states."
+    echo "This command is supposed to recover missing subsystems instances,"
+    echo "which is typically necessary after a Garden environment update."
+    echo
+    echo "    -y"
+    echo "        Run unattended. Don't ask for user input."
+    echo
+}
+
+function recreate_usage() {
+    local b=$BOLD
+    local ul=$UNDERLINE
+    local noul=$NOUNDERLINE
+    local rst=$RESET
+    echo "Usage:"
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}recreate$noul  [-y]  <subsys-name>..."
+    echo "  $ul$SCRIPT_NAME$noul  ${ul}recreate$noul  all"
+    echo
+    echo "    <subsys-name>   The name of a subsys to recreate."
+    echo
+    echo "Recreates one or all subsystems towards their desired states."
+    echo "This command is supposed to recreate subsystems that were"
+    echo "previously deployed with no errors."
+    echo
+    echo "When specifying ${b}all$rst, the recreation will not ask for any"
+    echo "user input."
+    echo
+    echo "    -y"
+    echo "        Run unattended. Don't ask for user input."
+    echo
+}
+
 function delete_usage() {
     local b=$BOLD
     local ul=$UNDERLINE
@@ -1308,6 +1348,7 @@ case $1 in
                     subsys_name=$1
                     subsys_dir=$(get_subsys_dir_from_subsys_name "${subsys_name}")
                     deployment_name=$(spec_var --required "/deployment_vars/deployment_name" "${subsys_dir}")
+                    echo -e "\n${BLUE}Recovering the ${BOLD}'${subsys_name}'${RESET} subsystem.\n"
                     bosh cloud-check -d "${deployment_name}" ${non_interactive:+-n --auto --resolution=recreate_vm} ;;
             esac
             shift
