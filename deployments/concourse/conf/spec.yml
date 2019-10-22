@@ -9,6 +9,10 @@ input_resources:
     type: git
     uri: https://github.com/concourse/concourse-deployment.git
     version: v5.6.0
+  - name: prometheus-boshrelease
+    type: git
+    uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
+    version: v25.0.0
 
 
 main_deployment_file: concourse-deployment/cluster/concourse.yml
@@ -25,7 +29,10 @@ operations_files:
     - cluster/operations/tls
     - cluster/operations/tls-vars
     - cluster/operations/storage-driver
-  30_local:
+    # - cluster/operations/worker-rebalancing
+  30_prometheus-boshrelease:
+    - manifests/operators/concourse/enable-prometheus-metrics
+  40_local:
     - pin-stemcell
     - set-log-level
     - basic-auth-with-vars  # replaces 'cluster/operations/basic-auth'

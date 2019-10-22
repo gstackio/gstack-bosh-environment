@@ -36,7 +36,8 @@ operations_files:
     # - manifests/operators/monitor-credhub # TODO
     # - manifests/operators/monitor-elasticsearch # TODO
 
-    # - manifests/operators/monitor-concourse # TODO
+    # Concourse monitoring
+    - manifests/operators/monitor-concourse
 
     # CF integration
     - manifests/operators/enable-cf-route-registrar
