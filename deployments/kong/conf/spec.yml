@@ -8,16 +8,25 @@ input_resources:
     type: git
     uri: https://github.com/gstackio/gk-kong-boshrelease.git
     version: 8f74a67 # v1.3.0 (Kong v0.15.0) with compiled release for stemcell v456.30
+    # version: master # when switching to 'developing: true'
+
+
+# developing: true
 
 
 main_deployment_file: kong-boshrelease/deploy/gk-kong.yml
 
 
 operations_files:
+  # 05_kong-boshrelease:
+  #   - deploy/operators/separate-control-and-data-planes
+  #   - deploy/operators/disable-tls
   10_local:
     - pin-stemcell
     - pin-versions
     - scale-disks
+
+    # - develop-kong-release # when switching to 'developing: true'
 
 variables_files: {}
 
