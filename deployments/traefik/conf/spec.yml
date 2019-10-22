@@ -99,5 +99,6 @@ imported_vars:
   - subsys: concourse
     imports:
       - name: concourse_external_host
-        from: depl-vars
+        from: vars-file
+        file: private-config
         path: /external_host
