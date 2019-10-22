@@ -119,6 +119,9 @@ imported_vars:
         from: depl-creds
         path: /jumpbox_ssh/private_key
 
+      - name: default_ca
+        from: depl-creds
+        path: /default_ca
 
       - name: nats_password
         from: depl-creds
