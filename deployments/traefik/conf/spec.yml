@@ -9,25 +9,25 @@ input_resources:
     type: git
     uri: https://github.com/gstackio/traefik-boshrelease.git
     version: c580189 # v1.8.0 (Traefik v1.7.18) with compiled release for stemcell v456.30
-    # version: master # when 'developing' is 'true'
+    # version: master # when switching to 'developing: true'
 
 
-developing: false
+# developing: true
 
 
 main_deployment_file: traefik-boshrelease/deployment/traefik.yml
 
 operations_files:
   10_traefik-boshrelease:
-    # - deployment/operations/latest-release               # when 'developing' is 'true'
-    # - deployment/operations/testflight/smoke-tests-setup # when 'developing' is 'true'
+    # - deployment/operations/latest-release               # when switching to 'developing: true'
+    # - deployment/operations/testflight/smoke-tests-setup # when switching to 'developing: true'
     - deployment/operations/cf-integration
     - deployment/operations/enable-lets-encrypt
     - deployment/operations/enable-api  # required by the smoke tests
     - deployment/operations/enable-rest # required by the smoke tests
     - deployment/operations/static-ip
   20_local:
-    # - activate-debug # when 'developing' is 'true'
+    # - activate-debug # when switching to 'developing: true'
     - pin-stemcell
     - pin-versions
     - scale-disk
