@@ -1,0 +1,5 @@
+---
+
+- path: /instance_groups/name=database/jobs/name=postgres_exporter/properties/postgres_exporter/log_level?
+  type: replace
+  value: debug

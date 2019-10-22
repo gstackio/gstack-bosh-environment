@@ -8,7 +8,7 @@ input_resources:
   - name: prometheus-boshrelease
     type: git
     uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
-    version: v23.3.0
+    version: v25.0.0
 
 
 main_deployment_file: prometheus-boshrelease/manifests/prometheus.yml
@@ -33,23 +33,21 @@ operations_files:
     # - manifests/operators/monitor-redis # TODO
     # - manifests/operators/monitor-shield # TODO
     # - manifests/operators/monitor-mongodb # TODO
+    # - manifests/operators/monitor-credhub # TODO
+    # - manifests/operators/monitor-elasticsearch # TODO
 
     # - manifests/operators/monitor-concourse # TODO
 
     # CF integration
     - manifests/operators/enable-cf-route-registrar
     - manifests/operators/enable-grafana-uaa
-    # - manifests/operators/enable-cf-route-registrar
-
-    # If migration from Prometheus v1 is required
-    # - manifests/operators/migrations/migrate_from_prometheus_1
   20_local:
     - rename-deployment-and-network
     - pin-stemcell
     - pin-versions
     - routing
     - scale-disks
-    # - scale-disks-prometheus-v1 # only if 'migrate_from_prometheus_1' activated above
+    # - set-log-level
 
 
 deployment_vars:
@@ -65,23 +63,15 @@ deployment_vars:
   metrics_environment: easyfoundry-demo
 
 
+  # CF monitoring
+
+  traffic_controller_external_port: 443
+
+
   # Versions
 
-  prometheus_version: "23.3.0"
-  prometheus_sha1: e60092e845d05e8b0c4643d9b10009fe946be877
-
-  postgres_version: "31"
-  postgres_sha1: bbe4151f4000f349c2ffaf72412aac9cc0a3c741
-
-  # bpm_version:      # imported below
-  # bpm_sha1:         # imported below
-
-  # routing_version:  # imported below
-  # routing_sha1:     # imported below
-
-  # stemcell_os:      # imported below
-  # stemcell_version: # imported below
-  # stemcell_sha1:    # imported below
+  prometheus_version: "25.0.0"
+  prometheus_sha1: f2a1de6d1b00c856402964347685274877b33910
 
 
   # Reference declarations
@@ -91,17 +81,17 @@ deployment_vars:
 
 
 imported_vars:
-  # - subsys: concourse
-  #   imports:
+  - subsys: concourse
+    imports:
 
-  #     # Versions
+      # Versions
 
-  #     - name: postgres_version
-  #       from: depl-vars
-  #       path: /postgres_version
-  #     - name: postgres_sha1
-  #       from: depl-vars
-  #       path: /postgres_sha1
+      - name: postgres_version
+        from: depl-vars
+        path: /postgres_version
+      - name: postgres_sha1
+        from: depl-vars
+        path: /postgres_sha1
 
 
   - subsys: cf
@@ -140,7 +130,8 @@ imported_vars:
         path: /deployment_name
 
       - name: cf_system_domain
-        from: depl-vars
+        from: vars-file
+        file: private-config
         path: /system_domain
 
 
@@ -162,7 +153,8 @@ imported_vars:
         path: /deployment_name
 
       - name: system_domain
-        from: depl-vars
+        from: vars-file
+        file: private-config
         path: /system_domain
 
 
@@ -177,10 +169,6 @@ imported_vars:
       - name: uaa_clients_firehose_exporter_secret
         from: depl-creds
         path: /uaa_clients_firehose_exporter_secret
-
-      - name: traffic_controller_external_port
-        from: depl-manifest
-        path: /instance_groups/name=log-api/jobs/name=route_registrar/properties/route_registrar/routes/name=doppler/port
 
 
   # Bosh monitoring plumbing
