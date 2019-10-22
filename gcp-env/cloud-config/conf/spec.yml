@@ -7,11 +7,11 @@ input_resources:
   - name: cf-deployment
     type: git
     uri: https://github.com/cloudfoundry/cf-deployment.git
-    version: v6.10.0
+    version: v12.0.0
   - name: traefik-boshrelease
     type: git
     uri: https://github.com/gstackio/traefik-boshrelease.git
-    version: "9b8c5ca" # master after version 1.2.0
+    version: c580189 # v1.8.0 (Traefik v1.7.18) with compiled release for stemcell v456.30
 
 
 main_config_file: cf-deployment/iaas-support/bosh-lite/cloud-config.yml
