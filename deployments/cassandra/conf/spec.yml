@@ -66,8 +66,8 @@ deployment_vars:
   # cassandra_version: "9"
   # cassandra_sha1: 852f38b691eb8236b94e26151ecf2716682c22d3
 
-  broker_registrar_version: "3.5.1"
-  broker_registrar_sha1: 9250e45ed194105e3c613bb2f195ade85f4cbe32
+  broker_registrar_version: "3.6.0"
+  broker_registrar_sha1: 21ce1f251f064fd5336db479d309caa81412c60a
 
   # shield_version:   # imported below
   # shield_sha1:      # imported below
