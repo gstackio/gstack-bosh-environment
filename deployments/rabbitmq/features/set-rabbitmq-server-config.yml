@@ -1,0 +1,6 @@
+---
+
+- path: /instance_groups/name=rmq/jobs/name=rabbitmq-server/properties/rabbitmq-server/config?
+  type: replace
+  # NOTE: this is the base64-encoded content of the conf/rabbitmq-server-config.erl file
+  value: "WwogIHtyYWJiaXQsIFsKICAgIHthdXRoX21lY2hhbmlzbXMsIFsnUExBSU4nLCAnQU1RUExBSU4nLCAnRVhURVJOQUwnXX0sCiAgICB7c3NsX2NlcnRfbG9naW5fZnJvbSwgY29tbW9uX25hbWV9CiAgXX0KXS4K"

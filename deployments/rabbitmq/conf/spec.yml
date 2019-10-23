@@ -36,6 +36,7 @@ operations_files:
     - customize-routing
     - tweak-tls
     - customize-plugins
+    - set-rabbitmq-server-config
 
 
 deployment_vars:
