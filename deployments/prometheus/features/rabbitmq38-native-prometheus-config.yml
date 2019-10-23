@@ -1,0 +1,47 @@
+---
+# This ops-file depends on the 'manifests/operators/monitor-rabbitmq.yml'
+# ops-file, from the Prometheus BOSH Release.
+
+
+# Remove the RabbitMQ exporter that we don't need, now that RabbitMQ 3.8.0
+# ships with the 'rabbitmq_prometheus' RabbitMQ plugin, which acts as abuilt-in
+# exporter.
+- path: /instance_groups/name=prometheus2/jobs/name=rabbitmq_exporter?
+  type: remove
+
+
+# Define scaping rules in order to target the endpoint exposed by the
+# 'rabbitmq_prometheus' RabbitMQ plugin. Default port is 15692.
+- path: /instance_groups/name=prometheus2/jobs/name=prometheus2/properties/prometheus/scrape_configs/job_name=rabbitmq:after
+  type: replace
+  value:
+    job_name: rabbitmq38
+    file_sd_configs:
+      - files:
+          - /var/vcap/store/bosh_exporter/bosh_target_groups.json
+    relabel_configs:
+
+      # Enable selectors based on meaningful BOSH categories
+
+      - source_labels: [ __meta_bosh_deployment ]
+        regex: "(.*)"
+        target_label: bosh_deployment
+
+      - source_labels: [ __meta_bosh_job_process_name ]
+        regex: "(.*)"
+        target_label: bosh_job_name
+
+      - source_labels: [ __address__ ]
+        regex: "(.*)"
+        target_label: bosh_job_ip
+
+
+      # Default relabelling, kept just as they are for the 'rabbitmq' scrape config
+
+      - source_labels: [ __meta_bosh_job_process_name ]
+        regex: rabbitmq-server
+        action: keep
+      - source_labels: [ __address__ ]
+        regex: (.*)
+        target_label: __address__
+        replacement: ${1}:15692

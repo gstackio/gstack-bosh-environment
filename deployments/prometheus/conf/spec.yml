@@ -9,6 +9,10 @@ input_resources:
     type: git
     uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
     version: v25.0.0
+  - name: prometheus-rabbitmq-dashboards
+    type: git
+    uri: https://github.com/rabbitmq/rabbitmq-prometheus.git
+    version: e8d4eda # master as of 2019-10-21 (v3.8.0 with improvements)
 
 
 main_deployment_file: prometheus-boshrelease/manifests/prometheus.yml
@@ -27,9 +31,7 @@ operations_files:
     # - manifests/operators/monitor-mysql # TODO
 
     # CF Services monitoring
-    # - manifests/operators/monitor-p-rabbitmq # TODO
-    # - manifests/operators/monitor-p-redis # TODO
-    # - manifests/operators/monitor-rabbitmq # TODO
+    - manifests/operators/monitor-rabbitmq
     # - manifests/operators/monitor-redis # TODO
     # - manifests/operators/monitor-shield # TODO
     # - manifests/operators/monitor-mongodb # TODO
@@ -49,6 +51,7 @@ operations_files:
     - routing
     - scale-disks
     # - set-log-level
+    - rabbitmq38-native-prometheus-config
 
 
 deployment_vars:

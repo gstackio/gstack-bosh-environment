@@ -1,6 +1,11 @@
 
 # Requires: 'common.inc.bash'
 
+function cf_file_var() {
+    local file=$1 path=$2
+    bosh int "${SUBSYS_DIR}/conf/${file}.yml" --path "${path}"
+}
+
 function cf_state_var() {
     local SUBSYS_NAME="cf"
     state_var "$@"
