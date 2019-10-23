@@ -136,6 +136,9 @@ deployment_vars:
   uaa_version: "74.5.0"
   uaa_sha1: f4a2cd2fc0ac08f80e9feebbdf4a159109492dd3
 
+  cf_cli_release_version: "1.20.0"
+  cf_cli_release_sha1: 61da1fa709b7fcde933d7846c2b180c23e19bdd9
+
   os_conf_version: "21.0.0"
   os_conf_sha1: 7579a96515b265c6d828924bf4f5fae115798199
 

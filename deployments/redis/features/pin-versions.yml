@@ -25,3 +25,11 @@
     version: ((routing_version))
     url: https://bosh.io/d/github.com/cloudfoundry-incubator/cf-routing-release?v=((routing_version))
     sha1: ((routing_sha1))
+
+- path: /releases/name=cf-cli?
+  type: replace
+  value:
+    name: cf-cli
+    version: ((cf_cli_release_version))
+    url: https://bosh.io/d/github.com/bosh-packages/cf-cli-release?v=((cf_cli_release_version))
+    sha1: ((cf_cli_release_sha1))

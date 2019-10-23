@@ -101,7 +101,8 @@ imported_vars:
         path: /deployment_name
 
       - name: cf_system_domain
-        from: depl-vars
+        from: vars-file
+        file: private-config
         path: /system_domain
 
       - name: tls-external-ca

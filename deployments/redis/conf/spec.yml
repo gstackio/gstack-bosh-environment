@@ -8,19 +8,21 @@ input_resources:
   - name: redis-boshrelease
     type: git
     uri: https://github.com/pivotal-cf/cf-redis-release.git
-    # version: 465a969 # i.e. v434.0.22 with improvement to deployment manifest
-    version: v434.2.1
+    version: v434.3.12
+  # - name: redis-boshrelease
+  #   type: git
+  #   uri: https://github.com/pivotal-cf/shared-redis-release.git
+  #   version: v436.0.4
 
 
-main_deployment_file: redis-boshrelease/manifest/deployment.yml
-# main_deployment_file: ./conf/depl-manifest-v2.yml
+# main_deployment_file: redis-boshrelease/manifest/deployment.yml
+main_deployment_file: ./conf/depl-manifest-v2.yml
 
 
 operations_files:
   10_local:
     - pin-versions
     - customize-routing
-    - remove-director-uuid
     - add-missing-broker-password-var
     - remove-syslog-forwarder
     - keep-dedicated-vm-plan
@@ -40,18 +42,8 @@ deployment_vars:
 
   # Versions
 
-  redis_release_version: "434.2.1"
-  redis_release_sha1: 77f75a32f54e37291989e536e2a31fb7aa2d4ae4
-
-  # bpm_version:      # imported below
-  # bpm_sha1:         # imported below
-
-  # shield_version:   # imported below
-  # shield_sha1:      # imported below
-
-  # stemcell_os:      # imported below
-  # stemcell_version: # imported below
-  # stemcell_sha1:    # imported below
+  redis_release_version: "434.3.12"
+  redis_release_sha1: 5c760d44391936cbde10cfea4bc53865ab48f726
 
 
   # Plumbery
@@ -96,6 +88,13 @@ imported_vars:
         from: depl-vars
         path: /routing_sha1
 
+      - name: cf_cli_release_version
+        from: depl-vars
+        path: /cf_cli_release_version
+      - name: cf_cli_release_sha1
+        from: depl-vars
+        path: /cf_cli_release_sha1
+
       - name: stemcell_os
         from: depl-vars
         path: /stemcell_os
@@ -124,11 +123,13 @@ imported_vars:
         path: /cf_admin_password
 
       - name: system_domain
-        from: depl-vars
+        from: vars-file
+        file: private-config
         path: /system_domain
 
       - name: apps_domain
-        from: depl-vars
+        from: vars-file
+        file: private-config
         path: /app_domains/0/name
 
   - subsys: shield-v7
