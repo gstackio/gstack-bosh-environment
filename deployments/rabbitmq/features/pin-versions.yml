@@ -25,3 +25,10 @@
     version: ((bpm_version))
     url: https://bosh.io/d/github.com/cloudfoundry-incubator/bpm-release?v=((bpm_version))
     sha1: ((bpm_sha1))
+
+
+# Pin Erlang version
+
+- path: /instance_groups/name=rmq/jobs/name=rabbitmq-server/properties/rabbitmq-server/erlang_major_version?
+  type: replace
+  value: ((erlang_major_version))

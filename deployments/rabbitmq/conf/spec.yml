@@ -63,7 +63,8 @@ deployment_vars:
 
   # Versions
 
-  rabbitmq_version: "3.7"
+  rabbitmq_version: "3.8"
+  erlang_major_version: "22"
 
   rabbitmq_release_version: "277.0.0"
   rabbitmq_release_sha1: 6a25b8f930ea34dba3ad54ff7ff11a46150128ff
