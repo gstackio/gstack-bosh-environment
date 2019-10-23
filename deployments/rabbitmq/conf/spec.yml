@@ -8,15 +8,15 @@ input_resources:
   - name: rabbitmq-boshrelease
     type: git
     uri: https://github.com/pivotal-cf/cf-rabbitmq-release.git
-    version: v265.0.0
+    version: v277.0.0
   - name: rabbitmq-broker-boshrelease
     type: git
     uri: https://github.com/pivotal-cf/cf-rabbitmq-multitenant-broker-release.git
-    version: v51.0.0
+    version: v58.0.0
   - name: rabbitmq-smoke-tests-boshrelease
     type: git
     uri: https://github.com/pivotal-cf/cf-rabbitmq-smoke-tests-release.git
-    version: v29.0.0
+    version: v35.0.0
 
 
 main_deployment_file: rabbitmq-boshrelease/manifests/cf-rabbitmq-template.yml
@@ -65,36 +65,17 @@ deployment_vars:
 
   rabbitmq_version: "3.7"
 
-  rabbitmq_release_version: "265.0.0"
-  rabbitmq_release_sha1: 04f5ce7f98922f03959883f7a1e279012b1a58e0
+  rabbitmq_release_version: "277.0.0"
+  rabbitmq_release_sha1: 6a25b8f930ea34dba3ad54ff7ff11a46150128ff
 
-  rabbitmq_broker_version: "51.0.0"
-  rabbitmq_broker_sha1: f3f8c2dafe46b7906ef79ca5fe005fef1c45fb69
+  rabbitmq_broker_version: "58.0.0"
+  rabbitmq_broker_sha1: bd855156d90e0168c1c37aae4440938f1f77847a
 
-  rabbitmq_smoke_tests_version: "29.0.0"
-  rabbitmq_smoke_tests_sha1: 5920aea04179c42fe8cf1dcbc553ad2eb54732e7
+  rabbitmq_smoke_tests_version: "35.0.0"
+  rabbitmq_smoke_tests_sha1: 171a57d161e0004c9dc82edc7385b81ba18fca4d
 
-  cf_cli_release_version: "1.14.0"
-  cf_cli_release_sha1: 0c0ea67ef3a4d0622918a1a1bc5a5fa95e7426cf
-
-  broker_registrar_version: "3.5.1"
-  broker_registrar_sha1: 9250e45ed194105e3c613bb2f195ade85f4cbe32
-
-  # bpm_version:  # imported below
-  # bpm_sha1:     # imported below
-
-  # routing_version:  # imported below
-  # routing_sha1:     # imported below
-
-  # stemcell_os:      # imported below
-  # stemcell_version: # imported below
-  # stemcell_sha1:    # imported below
-
-  # # Stemcell downgrade, sometimes necessary:
-  # stemcell_name: bosh-warden-boshlite-ubuntu-xenial-go_agent
-  # stemcell_os: ubuntu-xenial
-  # stemcell_version: "170.51"
-  # stemcell_sha1: 7a1b2d4e560e16fa8698f3de3751f30735b1a63c
+  broker_registrar_version: "3.6.0"
+  broker_registrar_sha1: 21ce1f251f064fd5336db479d309caa81412c60a
 
 
   # Reference declarations
@@ -130,6 +111,13 @@ imported_vars:
         from: depl-vars
         path: /routing_sha1
 
+      - name: cf_cli_release_version
+        from: depl-vars
+        path: /cf_cli_release_version
+      - name: cf_cli_release_sha1
+        from: depl-vars
+        path: /cf_cli_release_sha1
+
       - name: stemcell_os
         from: depl-vars
         path: /stemcell_os
@@ -149,7 +137,8 @@ imported_vars:
       # CF-RabbitMQ deployment plumbery
 
       - name: system-domain
-        from: depl-vars
+        from: vars-file
+        file: private-config
         path: /system_domain
 
       # Broker plumbery
@@ -171,5 +160,6 @@ imported_vars:
         path: /cf_admin_password
 
       - name: cf_system_domain
-        from: depl-vars
+        from: vars-file
+        file: private-config
         path: /system_domain
