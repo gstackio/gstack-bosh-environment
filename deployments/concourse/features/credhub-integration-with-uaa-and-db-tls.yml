@@ -432,6 +432,8 @@
     override: true
     authorized-grant-types: client_credentials,password,refresh_token
     scope: ""
+    # NOTE: surprisingly, the 'credhub.write' is necessary here, or we get this error:
+    # failed to interpolate task config: Finding variable '...': insufficient_scope: Insufficient scope for this resource
     authorities: credhub.read,credhub.write
     access-token-validity: 600
     refresh-token-validity: 3600

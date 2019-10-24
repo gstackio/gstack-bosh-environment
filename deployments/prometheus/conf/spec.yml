@@ -35,11 +35,11 @@ operations_files:
     # - manifests/operators/monitor-redis # TODO
     # - manifests/operators/monitor-shield # TODO
     # - manifests/operators/monitor-mongodb # TODO
-    # - manifests/operators/monitor-credhub # TODO
     # - manifests/operators/monitor-elasticsearch # TODO
 
     # Concourse monitoring
     - manifests/operators/monitor-concourse
+    - manifests/operators/monitor-credhub
 
     # CF integration
     - manifests/operators/enable-cf-route-registrar
@@ -52,6 +52,7 @@ operations_files:
     - scale-disks
     # - set-log-level
     - rabbitmq38-native-prometheus-config
+    - remove-local-credhub-exporter
 
 
 deployment_vars:

@@ -42,6 +42,7 @@ operations_files:
     - routing               # requires 'cluster/operations/static-web'
     - expose-uaa-and-credhub-externally
     - trust-traefik-ca # in order for ATC to reach UAA through its public URL, as advertised by CredHub
+    - complete-prometheus-monitoring
 
 
 variables_files:
@@ -184,3 +185,18 @@ imported_vars:
       - name: traefik_ca_cert
         from: depl-creds
         path: /traefikCA/certificate
+
+  - subsys: prometheus
+    imports:
+
+      - name: prometheus_version
+        from: depl-vars
+        path: /prometheus_version
+
+      - name: prometheus_sha1
+        from: depl-vars
+        path: /prometheus_sha1
+
+      - name: metrics_environment
+        from: depl-vars
+        path: /metrics_environment
