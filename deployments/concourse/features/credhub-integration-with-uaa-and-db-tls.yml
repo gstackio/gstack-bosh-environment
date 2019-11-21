@@ -512,10 +512,10 @@
 
 - path: /instance_groups/name=db/jobs/name=postgres/properties/databases/tls?
   type: replace
-  value:
-    ca: ((database-tls.ca))
-    certificate: ((database-tls.certificate))
-    private_key: ((database-tls.private_key))
+  value: ((database-tls))
+    # ca: ((database-tls.ca))
+    # certificate: ((database-tls.certificate))
+    # private_key: ((database-tls.private_key))
 
 
 - path: /variables/name=database-tls?
