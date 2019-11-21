@@ -12,6 +12,7 @@
     options:
       is_ca: true
       common_name: Concourse internal CA
+    update_mode: converge
 
 
 
@@ -197,6 +198,7 @@
       common_name: *credhub_service_address
       alternative_names:
         - *credhub_service_address
+    update_mode: converge
 
 - path: /variables/name=credhub-database-password?
   type: replace
@@ -337,6 +339,7 @@
       common_name: *uaa_service_address
       alternative_names:
         - *uaa_service_address
+    update_mode: converge
 
 - path: /variables/name=uaa-admin-client-secret?
   type: replace
@@ -527,3 +530,4 @@
         - q-s0.db.((network_name)).((deployment_name)).bosh
         - 127.0.0.1
         - ((web_ip))
+    update_mode: converge
