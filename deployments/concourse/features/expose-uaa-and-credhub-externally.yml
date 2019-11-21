@@ -59,6 +59,10 @@
   type: replace
   value: credhub.((external_host))
 
+- path: /variables/name=uaa-tls/options/ca
+  type: replace
+  value: concourse-external-ca
+
 - path: /variables/name=credhub-tls/options/ca
   type: replace
   value: concourse-external-ca

@@ -72,13 +72,13 @@
         - uaa
         - credhub
         - web
+        - workers
     jobs:
       - name: ca_certs
         release: os-conf
         properties:
           certs: |
             ((concourse-internal-ca.certificate))
-            ((concourse-external-ca.certificate))
 
 
 
@@ -335,7 +335,7 @@
     name: uaa-tls
     type: certificate
     options:
-      ca: concourse-external-ca
+      ca: concourse-internal-ca
       common_name: *uaa_service_address
       alternative_names:
         - *uaa_service_address
