@@ -16,7 +16,7 @@ function main() {
     echo "CREDHUB_SERVER=\"https://credhub.${external_host}\""
     cd "${SUBSYS_DIR}" || exit 115
     echo "CREDHUB_CA_CERT=\"$(creds_var "/concourse-internal-ca/certificate" &&
-                        echo && creds_var "/concourse-external-ca/certificate" &&
+                        echo && ( creds_var "/concourse-external-ca/certificate" 2> /dev/null || true ) &&
                         echo && creds_var "/traefik_ca_cert" &&
                         echo && cat "${SUBSYS_DIR}/conf/fakelerootx1.pem")\""
     # echo "CREDHUB_CA_CERT=\"$(creds_var "/concourse-internal-ca/certificate" && echo && creds_var "/concourse-external-ca/certificate" && echo && cat fakeleintermediatex1.pem fakelerootx1.pem)\""
