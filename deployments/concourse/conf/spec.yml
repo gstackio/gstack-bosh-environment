@@ -39,8 +39,8 @@ operations_files:
     - encryption-vars       # augments 'cluster/operations/encryption'
     - tls-external-ca       # tweaks 'cluster/operations/tls-vars'
     - credhub-integration-with-uaa-and-db-tls
-    - routing               # requires 'cluster/operations/static-web'
-    - expose-uaa-and-credhub-externally
+    - route-web-through-cf-router # requires 'cluster/operations/static-web'
+    - route-uaa-and-credhub-through-cf-router
     - trust-traefik-ca # in order for ATC to reach UAA through its public URL, as advertised by CredHub
     - complete-prometheus-monitoring
 
