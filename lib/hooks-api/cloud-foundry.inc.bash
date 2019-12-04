@@ -3,7 +3,7 @@
 
 function cf_file_var() {
     local file=$1 path=$2
-    bosh int "${SUBSYS_DIR}/conf/${file}.yml" --path "${path}"
+    bosh int "${SUBSYS_DIR}/../cf/conf/${file}.yml" --path "${path}"
 }
 
 function cf_state_var() {
