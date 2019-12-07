@@ -8,7 +8,7 @@ input_resources:
   - name: cf-deployment
     type: git
     uri: https://github.com/cloudfoundry/cf-deployment.git
-    version: v12.2.0
+    version: v12.14.0
   - name: prometheus-boshrelease
     type: git
     uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
@@ -118,23 +118,23 @@ deployment_vars:
 
   stemcell_name: bosh-warden-boshlite-ubuntu-xenial-go_agent
   stemcell_os: ubuntu-xenial
-  stemcell_version: "456.30"
-  stemcell_sha1: 61791b4d37ee3aacb9db36bb819c1fbcc4785a9e
+  stemcell_version: "621.26"
+  stemcell_sha1: 1cd123dbf1213c63c35a6f289073f2800da4a1ea
 
 
   # Reference declarations
 
-  bpm_version: "1.1.4"
-  bpm_sha1: 7b7c576b5814a4ba49f2ddb009040963106a4dc1
+  bpm_version: "1.1.5"
+  bpm_sha1: e612e88543012ae5d376dd3746159d5abe748076
 
-  routing_version: "0.191.0"
-  routing_sha1: 8d6e700e43c0312614364cf4e84f0ac63b931a9e
+  routing_version: "0.195.0"
+  routing_sha1: 2b899d7bd6d35b9aacb410f0343989e82397d86d
 
-  credhub_version: "2.5.6"
-  credhub_sha1: 788c7da077480fc76a49a69095debbd887c9250e
+  credhub_version: "2.5.8"
+  credhub_sha1: 03d6f7765a710b1503980d224f7f7664d5550e67
 
-  uaa_version: "74.5.0"
-  uaa_sha1: f4a2cd2fc0ac08f80e9feebbdf4a159109492dd3
+  uaa_version: "74.10.0"
+  uaa_sha1: 8fbc7344691240859a628140b9220045f264aa8e
 
   cf_cli_release_version: "1.20.0"
   cf_cli_release_sha1: 61da1fa709b7fcde933d7846c2b180c23e19bdd9
