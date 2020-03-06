@@ -1,5 +1,12 @@
 ---
 
+# Daemon config: installation name
+
+- path: /instance_groups/name=shield/jobs/name=shield-daemon/properties/name?
+  type: replace
+  value: ((installation_name))
+
+
 # Default target for SHIELD PostgreSQL database
 
 - path: /instance_groups/name=shield/jobs/name=shield-agent/properties/targets?/shield-postgres-db

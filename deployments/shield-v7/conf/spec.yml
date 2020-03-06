@@ -34,6 +34,7 @@ deployment_vars:
   # User-facing settings
 
   shield_hostname: backups # under the CF system domain
+  installation_name: Easy Foundry SHIELD v7
 
 
   # Versions
