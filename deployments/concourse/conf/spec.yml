@@ -8,7 +8,7 @@ input_resources:
   - name: concourse-deployment
     type: git
     uri: https://github.com/concourse/concourse-deployment.git
-    version: v5.6.0
+    version: "2ad9655" # v5.7.2, which is not tagged yet, unfortunately
   - name: prometheus-boshrelease
     type: git
     uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git

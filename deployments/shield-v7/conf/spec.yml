@@ -56,7 +56,7 @@ deployment_vars:
 
 
   # Plumbery
-  shield_disk_type: 1GB
+  shield_disk_type: 2GB
 
 
   # Reference declarations
