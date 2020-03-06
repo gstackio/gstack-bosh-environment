@@ -104,6 +104,7 @@ deployment_vars:
 
   # web_router_ip: "10.244.0.34" # classical Gorouter reverse-proxy
   web_router_ip: "10.244.0.43" # Træfik reverse-proxy for Let's Encrypt support
+  ssh_proxy_ip: "10.244.0.34"
 
   internal_ip: "192.168.50.6"
   internal_gw: "192.168.50.1"

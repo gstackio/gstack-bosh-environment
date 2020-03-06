@@ -159,9 +159,10 @@ function setup_firewall_hook() {
         echo -e "\n${BLUE}Fixing ${BOLD}routing$RESET from internal instances to external IP endpoints\n"
 
         # FIXME: we now have some kludge shim here
-        local external_ip web_router_ip internal_net_cidr rule_index
+        local external_ip web_router_ip ssh_proxy_ip internal_net_cidr rule_index
         external_ip=$(external_ip)
         web_router_ip=$(env_depl_var web_router_ip | sed -e 's/^null$//')
+        ssh_proxy_ip=$(env_depl_var ssh_proxy_ip | sed -e 's/^null$//')
         if [[ -n $web_router_ip ]]; then
             internal_net_cidr=$(env_depl_var --required routable_network_cidr)
 
@@ -173,7 +174,7 @@ function setup_firewall_hook() {
                 -j DNAT --to-dest "$web_router_ip"
             set_nat_rule PREROUTING 4 "gbe[f55fc128-6cec-4f38-9303-2e45b0010c73]" \
                 -i w+ -p tcp -d "$external_ip" --dport 2222 \
-                -j DNAT --to-dest "$web_router_ip"
+                -j DNAT --to-dest "$ssh_proxy_ip"
 
             set_nat_rule POSTROUTING 1 "gbe[f55fc128-6cec-4f38-9303-2e45b0010c81]" \
                 -o w+ -p tcp -s "$internal_net_cidr" -d "$web_router_ip" --dport 80 \
@@ -182,7 +183,7 @@ function setup_firewall_hook() {
                 -o w+ -p tcp -s "$internal_net_cidr" -d "$web_router_ip" --dport 443 \
                 -j MASQUERADE
             set_nat_rule POSTROUTING 3 "gbe[f55fc128-6cec-4f38-9303-2e45b0010c83]" \
-                -o w+ -p tcp -s "$internal_net_cidr" -d "$web_router_ip" --dport 2222 \
+                -o w+ -p tcp -s "$internal_net_cidr" -d "$ssh_proxy_ip" --dport 2222 \
                 -j MASQUERADE
         fi
         return
