@@ -1,0 +1,5 @@
+---
+
+- path: /instance_groups/name=kv-store-ui/jobs/name=consul/properties/ui/enforce_client_cert_auth?
+  type: replace
+  value: false

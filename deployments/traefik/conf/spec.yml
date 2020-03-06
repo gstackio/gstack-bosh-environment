@@ -8,7 +8,7 @@ input_resources:
   - name: traefik-boshrelease
     type: git
     uri: https://github.com/gstackio/traefik-boshrelease.git
-    version: c580189 # v1.8.0 (Traefik v1.7.18) with compiled release for stemcell v456.30
+    version: b7fd0e0 # v1.12.0 (Traefik v1.7.21) with compiled release for stemcell v621.59
     # version: master # when switching to 'developing: true'
 
 
@@ -21,11 +21,12 @@ operations_files:
   10_traefik-boshrelease:
     # - deployment/operations/latest-release               # when switching to 'developing: true'
     # - deployment/operations/testflight/smoke-tests-setup # when switching to 'developing: true'
+    - deployment/operations/clustering
     - deployment/operations/cf-integration
     - deployment/operations/enable-lets-encrypt
     - deployment/operations/enable-api  # required by the smoke tests
     - deployment/operations/enable-rest # required by the smoke tests
-    - deployment/operations/static-ip
+    # - deployment/operations/static-ip
   20_local:
     # - activate-debug # when switching to 'developing: true'
     - pin-stemcell
@@ -33,6 +34,8 @@ operations_files:
     - scale-disk
     - additional-alternative-names
     - setup-smoke-tests
+    - cluster-static-ips
+    - disable-client-cert-auth-on-consul-https-ui-not-recommended
 
 variables_files:
   10_local:
@@ -48,6 +51,10 @@ deployment_vars:
   deployment_name: easyfoundry-traefik
 
 
+  static_ip2: "10.244.0.44"
+  static_ip3: "10.244.0.45"
+
+
   # Debugging
 
   acme_staging: true
@@ -57,8 +64,8 @@ deployment_vars:
 
   stemcell_name: bosh-warden-boshlite-ubuntu-xenial-go_agent
   stemcell_os: ubuntu-xenial
-  stemcell_version: "456.30"
-  stemcell_sha1: 61791b4d37ee3aacb9db36bb819c1fbcc4785a9e
+  stemcell_version: "621.26"
+  stemcell_sha1: 1cd123dbf1213c63c35a6f289073f2800da4a1ea
 
 
   # Reference declarations

@@ -1,0 +1,5 @@
+---
+
+- path: /instance_groups/name=traefik/networks/0/static_ips?
+  type: replace
+  value: [ ((static_ip)), ((static_ip2)), ((static_ip3)) ]
