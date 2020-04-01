@@ -21,12 +21,12 @@ operations_files:
   10_traefik-boshrelease:
     # - deployment/operations/latest-release               # when switching to 'developing: true'
     # - deployment/operations/testflight/smoke-tests-setup # when switching to 'developing: true'
-    - deployment/operations/clustering
+    # - deployment/operations/clustering
     - deployment/operations/cf-integration
     - deployment/operations/enable-lets-encrypt
     - deployment/operations/enable-api  # required by the smoke tests
     - deployment/operations/enable-rest # required by the smoke tests
-    # - deployment/operations/static-ip
+    - deployment/operations/static-ip
   20_local:
     # - activate-debug # when switching to 'developing: true'
     - pin-stemcell
@@ -34,8 +34,8 @@ operations_files:
     - scale-disk
     - additional-alternative-names
     - setup-smoke-tests
-    - cluster-static-ips
-    - disable-client-cert-auth-on-consul-https-ui-not-recommended
+    # - cluster-static-ips
+    # - disable-client-cert-auth-on-consul-https-ui-not-recommended
 
 variables_files:
   10_local:
@@ -64,8 +64,8 @@ deployment_vars:
 
   stemcell_name: bosh-warden-boshlite-ubuntu-xenial-go_agent
   stemcell_os: ubuntu-xenial
-  stemcell_version: "621.26"
-  stemcell_sha1: 1cd123dbf1213c63c35a6f289073f2800da4a1ea
+  stemcell_version: "621.59"
+  stemcell_sha1: d76fbe3b31fe382d4b9c599cce7eb04783e70a8d
 
 
   # Reference declarations

@@ -5,5 +5,5 @@
   value:
     name: routing
     version: ((routing_version))
-    url: https://bosh.io/d/github.com/cloudfoundry-incubator/cf-routing-release?v=((routing_version))
+    url: https://bosh.io/d/github.com/cloudfoundry/routing-release?v=((routing_version))
     sha1: ((routing_sha1))
