@@ -3,5 +3,6 @@
   path: /resource_pools/name=vms/cloud_properties?
   value:
     cpus: 2
-    memory: 3500
-    ephemeral_disk: 32_768 # in 512-bytes blocks: 32_768 gives a 16GB disk
+    memory: 3000
+    # ephemeral_disk: 32_768 # in 512-bytes blocks: 32_768 gives a 16GB disk
+    ephemeral_disk: 12_000
