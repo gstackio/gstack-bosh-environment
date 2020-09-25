@@ -7,7 +7,7 @@ input_resources:
   - name: bosh-deployment
     type: git
     uri: https://github.com/cloudfoundry/bosh-deployment.git
-    version: "50d4313" # BOSH v270.9.0 (as of Dec 3rd, 2019)
+    version: "a6f337d" # BOSH v271.2.0 (as of Sep 24th, 2020)
   - name: prometheus-boshrelease
     type: git
     uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
@@ -114,13 +114,13 @@ deployment_vars:
 
   # Versions
 
-  bosh_precompiled_version: "270.9.0"
-  bosh_precompiled_url: https://s3.amazonaws.com/bosh-compiled-release-tarballs/bosh-270.9.0-ubuntu-xenial-621.26-20191126-183003-146564909-20191126183010.tgz
-  bosh_precompiled_sha1: e913a0fecb79b324e6fa6d27bb7c345074b3658d
+  bosh_precompiled_version: "271.2.0"
+  bosh_precompiled_url: https://s3.amazonaws.com/bosh-compiled-release-tarballs/bosh-271.2.0-ubuntu-xenial-621.84-20200909-134751-25286893-20200909134752.tgz
+  bosh_precompiled_sha1: 6e234f26428b84f94398c66d36ed9e12c74d387e
 
   stemcell_name: bosh-vsphere-esxi-ubuntu-xenial-go_agent
-  stemcell_version: "621.26"
-  stemcell_sha1: cf72f275d86c346bac223818fc45884328b0fc25
+  stemcell_version: "621.84"
+  stemcell_sha1: 8e6dd61fcad1560afec0415a762b725993d86b26
 
 
 imported_vars: []
