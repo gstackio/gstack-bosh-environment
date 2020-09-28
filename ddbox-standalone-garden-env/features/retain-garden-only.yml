@@ -48,9 +48,6 @@
 - path: /instance_groups/name=bosh/properties/agent/env/bosh/blobstores/0/options/endpoint
   type: replace
   value: http://((blobstore_ip)):25250
-- path: /instance_groups/name=bosh/properties/warden_cpi/agent/blobstore/options/endpoint
-  type: replace
-  value: http://((blobstore_ip)):25250
 
 
 - path: /variables/name=admin_password
