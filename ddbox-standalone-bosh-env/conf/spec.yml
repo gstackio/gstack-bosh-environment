@@ -8,7 +8,7 @@ input_resources:
   - name: bosh-deployment
     type: git
     uri: https://github.com/cloudfoundry/bosh-deployment.git
-    version: "a6f337d" # BOSH v271.2.0 (as of Sep 24th, 2020)
+    version: "5ef43d7" # BOSH v270.12.0 (as of Apr 11th, 2020)
   - name: prometheus-boshrelease
     type: git
     uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
