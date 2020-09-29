@@ -8,7 +8,7 @@ input_resources:
   - name: cf-deployment
     type: git
     uri: https://github.com/cloudfoundry/cf-deployment.git
-    version: v12.35.0
+    version: v12.45.0
   - name: prometheus-boshrelease
     type: git
     uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
@@ -51,6 +51,9 @@ operations_files:
     # allow applications to communicate with the running CredHub in non-
     # assisted mode.
     # - operations/experimental/enable-traffic-to-internal-networks.
+
+    # Prepare migration to cf-deployment v13.x
+    - operations/experimental/add-disabled-syslog-agent-for-upgrade
 
   20_prometheus-boshrelease:
     - manifests/operators/cf/add-prometheus-uaa-clients
@@ -118,29 +121,29 @@ deployment_vars:
 
   stemcell_name: bosh-warden-boshlite-ubuntu-xenial-go_agent
   stemcell_os: ubuntu-xenial
-  stemcell_version: "621.59"
-  stemcell_sha1: d76fbe3b31fe382d4b9c599cce7eb04783e70a8d
+  stemcell_version: "621.71"
+  stemcell_sha1: 6190d7f100f9d48fe425c2d69ba93d7137e6bc19
 
 
   # Reference declarations
 
-  bpm_version: "1.1.7"
-  bpm_sha1: e7d474c3a205fa4438ea5a60d3b59479939163aa
+  bpm_version: "1.1.9"
+  bpm_sha1: dcf0582d838a73de29da273552ae79ac3098ee8b
 
-  routing_version: "0.198.0"
-  routing_sha1: 90de2a9bcc5fea7ece8da8b8675949c1772e33be
+  routing_version: "0.200.0"
+  routing_sha1: a617e78ef9e0fde906b35e13b8f0ecd9580e9994
 
-  credhub_version: "2.5.11"
-  credhub_sha1: f1810c1e662a1c76f40911cffd1d159204c9a661
+  credhub_version: "2.6.0"
+  credhub_sha1: c45af16ed393bb3cf061b8749e3ee4cae74ce995
 
-  uaa_version: "74.14.0"
-  uaa_sha1: b65d0e184085cefbe6f18f413e6eafb90b92d9cc
+  uaa_version: "74.17.0"
+  uaa_sha1: ad4967615f2321648372497402ca6359ab8ba0df
 
-  cf_cli_release_version: "1.24.0"
-  cf_cli_release_sha1: 2abe6917b9f576a700418522f1bf452af5768819
+  cf_cli_release_version: "1.26.0"
+  cf_cli_release_sha1: ed3aef6b2b25cb7cec1b0eaff3b7c736374a2f47
 
-  os_conf_version: "21.0.0"
-  os_conf_sha1: 7579a96515b265c6d828924bf4f5fae115798199
+  os_conf_version: "22.1.0"
+  os_conf_sha1: 7ef05f6f3ebc03f59ad8131851dbd1abd1ab3663
 
   bosh_dns_aliases_version: "0.0.3"
   bosh_dns_aliases_sha1: b0d0a0350ed87f1ded58b2ebb469acea0e026ccc
