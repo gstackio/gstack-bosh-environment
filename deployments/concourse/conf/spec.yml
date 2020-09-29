@@ -7,8 +7,8 @@ subsys:
 input_resources:
   - name: concourse-deployment
     type: git
-    uri: https://github.com/concourse/concourse-deployment.git
-    version: "2ad9655" # v5.7.2, which is not tagged yet, unfortunately
+    uri: https://github.com/concourse/concourse-bosh-deployment.git
+    version: v5.8.1
   - name: prometheus-boshrelease
     type: git
     uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
@@ -64,12 +64,15 @@ deployment_vars:
   deployment_name: easyfoundry-concourse
 
 
+  azs: [ z1 ] # shim
+
+
   # Versions
 
   # NOTE: the following version and SHA1 hash are copied/pasted from the
   # 'versions.yml' file, in order for other subsystems to import them.
-  postgres_version: "39"
-  postgres_sha1: 8ff395540e77a461322a01c41aa68973c10f1ffb
+  postgres_version: "40"
+  postgres_sha1: 343f04f1594c57ecea65638802e94e311cd72688
 
   # os_conf_version:          # imported below
   # os_conf_sha1:             # imported below
@@ -184,7 +187,7 @@ imported_vars:
 
       - name: traefik_ca_cert
         from: depl-creds
-        path: /traefikCA/certificate
+        path: /traefik_ca/certificate
 
   - subsys: prometheus
     imports:

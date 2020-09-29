@@ -91,7 +91,7 @@
   value:
     name: uaa
     instances: 1
-    azs: [ z1 ]
+    azs: ((azs))
     networks: [ { name: ((network_name)) } ]
     stemcell: xenial
     vm_type: default
@@ -101,7 +101,7 @@
   value:
     name: credhub
     instances: 1
-    azs: [ z1 ]
+    azs: ((azs))
     networks: [ { name: ((network_name)) } ]
     stemcell: xenial
     vm_type: default

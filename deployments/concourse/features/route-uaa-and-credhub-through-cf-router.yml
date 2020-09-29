@@ -31,6 +31,9 @@
             tls_port: ((uaa_tls_port))
             server_cert_domain_san: uaa.((external_host))
             registration_interval: 20s
+            health_check:
+              name: uaa-healthcheck
+              script_path: /var/vcap/jobs/uaa/bin/dns/healthy
 
 - path: /instance_groups/name=credhub/jobs/name=route_registrar?
   type: replace
@@ -50,6 +53,9 @@
             tls_port: ((credhub_tls_port))
             server_cert_domain_san: credhub.((external_host))
             registration_interval: 20s
+            health_check:
+              name: credhub-healthcheck
+              script_path: /var/vcap/jobs/credhub/bin/dns_health_check
 
 - path: /variables/name=uaa-tls/options/alternative_names/-
   type: replace

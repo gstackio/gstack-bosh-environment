@@ -10,7 +10,7 @@
     # 'db' instance group in the 'concourse.yml' base deployment manifest.
     name: db
     instances: 1
-    azs: [ z1 ]
+    azs: ((azs))
     networks: [ { name: ((network_name)) } ]
     stemcell: xenial
     vm_type: ((db_vm_type))
