@@ -19,9 +19,9 @@ function main() {
             fi
             expiry_date=$(openssl x509 -enddate -noout <<< "${cert}" \
                 | sed 's/notAfter=//')
-            if ! openssl x509 -checkend 0 -noout <<< "${cert}"; then
+            if ! openssl x509 -checkend 0 -noout <<< "${cert}" > /dev/null; then
                 echo "ERROR: certificate '${name}' from Credhub has expired on '${expiry_date}'"
-            elif ! openssl x509 -checkend $(( 30 * 86400 )) -noout <<< "${cert}"; then
+            elif ! openssl x509 -checkend $(( 30 * 86400 )) -noout <<< "${cert}" > /dev/null; then
                 echo "WARN: certificate '${name}' from Credhub is about to expire on '${expiry_date}'"
             else
                 echo "INFO: certificate '${name}' from Credhub is valid until '${expiry_date}'"
@@ -72,9 +72,9 @@ function verify_cert() {
     if [[ -n "${cert}" ]]; then
         expiry_date=$(openssl x509 -enddate -noout <<< "${cert}" \
             | sed 's/notAfter=//')
-        if ! openssl x509 -checkend 0 -noout <<< "${cert}"; then
+        if ! openssl x509 -checkend 0 -noout <<< "${cert}" > /dev/null; then
             echo "ERROR: certificate '${prop_path}' from subsys '${subsys}' has expired on '${expiry_date}'"
-        elif ! openssl x509 -checkend $(( 30 * 86400 )) -noout <<< "${cert}"; then
+        elif ! openssl x509 -checkend $(( 30 * 86400 )) -noout <<< "${cert}" > /dev/null; then
             echo "WARN: certificate '${prop_path}' from subsys '${subsys}' is about to expire on '${expiry_date}'"
         else
             echo "INFO: certificate '${prop_path}' from subsys '${subsys}' is valid until '${expiry_date}'"
