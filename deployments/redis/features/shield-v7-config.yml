@@ -30,26 +30,3 @@
           target: (deployment)/(name)-(index)
           store: scality-main
           retention: week
-
-
-- path: /instance_groups/name=dedicated-node/jobs/name=shield-agent?
-  type: replace
-  value:
-    name: shield-agent
-    release: shield
-    consumes: *shield_daemon_link
-    properties:
-      autoprovision: true
-      targets:
-        redis-dedicated:
-          name: (deployment)/(name)-(index)
-          plugin: redis-broker
-          config:
-            redis_type: dedicated
-      jobs:
-        redis-dedicated_hourly2fs:
-          name: (deployment)/(name)-(index)
-          schedule: hourly-45
-          target: (deployment)/(name)-(index)
-          store: scality-main
-          retention: week

@@ -1,0 +1,140 @@
+---
+name: ((deployment_name))
+
+instance_groups:
+  - name: cf-redis-broker
+    instances: 1
+    azs: [ ((default_az)) ]
+    jobs:
+      - name: cf-redis-broker
+        release: shared-redis
+        properties:
+          cf:
+            apps_domain: ((apps_domain))
+            system_domain: ((system_domain))
+          redis:
+            maxmemory: 262144000 # 250 MB
+            config_command: configalias
+            save_command: anotherrandomstring
+            bg_save_command: yetanotherrandomstring
+            broker:
+              name: ((broker_name))
+              backend_port: 12345
+              network: ((default_network))
+              auth:
+                username: ((broker_username))
+                password: ((broker_password))
+              service_name: ((service_name))
+              service_id: ((service_id))
+              shared_vm_plan_id: ((shared_vm_plan_id))
+              service_instance_limit: 5
+      - name: cf-cli-6-linux
+        release: cf-cli
+      - name: route_registrar
+        release: routing
+        consumes:
+          nats: { from: nats, deployment: ((cf_deployment_name)) }
+        properties:
+          route_registrar:
+            routes:
+              - name: broker_0
+                health_check:
+                  name: ((broker_name))
+                  script_path: /var/vcap/jobs/cf-redis-broker/bin/health_check.sh
+                port: 12350
+                registration_interval: 10s
+                tags:
+                  component: redis-broker
+                  env: production
+                uris:
+                  - ((broker_name)).((system_domain))
+      - name: bpm
+        release: bpm
+      - name: syslog_forwarder
+        release: syslog
+        properties:
+          syslog:
+            address: ((syslog_endpoint_host))
+            port: ((syslog_endpoint_port))
+            transport: tcp
+      - name: broker-registrar
+        release: shared-redis
+        properties:
+          cf:
+            api_url: https://api.((system_domain))
+            skip_ssl_validation: true
+            admin_username: ((cf_username))
+            admin_password: ((cf_password))
+          broker:
+            name: ((broker_name))
+            host: ((broker_name)).((system_domain))
+            username: ((broker_username))
+            password: ((broker_password))
+          redis:
+            broker:
+              enable_service_access: true
+              service_name: ((service_name))
+              service_instance_limit: 5
+      - name: broker-deregistrar
+        release: shared-redis
+        properties:
+          cf:
+            api_url: https://api.((system_domain))
+            skip_ssl_validation: true
+            admin_username: ((cf_username))
+            admin_password: ((cf_password))
+          broker:
+            name: ((broker_name))
+          redis:
+            broker:
+              service_name: ((service_name))
+              service_instance_limit: 5
+      - name: smoke-tests
+        release: shared-redis
+        properties:
+          cf:
+            api_url: https://api.((system_domain))
+            skip_ssl_validation: true
+            admin_username: ((cf_username))
+            admin_password: ((cf_password))
+            apps_domain: ((apps_domain))
+            system_domain: ((system_domain))
+          redis:
+            broker:
+              service_name: ((service_name))
+              service_instance_limit: 5
+          retry:
+            backoff: linear
+            baseline_interval_milliseconds: 5000
+            max_attempts: 10
+    stemcell: default
+    vm_type: ((default_vm_type))
+    persistent_disk_type: ((default_persistent_disk_type))
+    networks: [ name: ((default_network)) ]
+
+update:
+  canaries: 1
+  canary_watch_time: 30000-180000
+  max_in_flight: 6
+  update_watch_time: 30000-180000
+
+variables:
+  - name: broker_password
+    type: password
+
+releases:
+  - name: shared-redis
+    version: latest
+  - name: routing
+    version: ((routing_version))
+  - name: bpm
+    version: ((bpm_version))
+  - name: syslog
+    version: ((syslog_version))
+  - name: cf-cli
+    version: latest
+
+stemcells:
+  - alias: default
+    os: ((stemcell_os))
+    version: ((stemcell_version))

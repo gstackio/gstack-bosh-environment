@@ -5,17 +5,13 @@ subsys:
   depends_on: [ shield-v7, cf ]
 
 input_resources:
-  - name: redis-boshrelease
+  - name: shared-redis-boshrelease
     type: git
-    uri: https://github.com/pivotal-cf/cf-redis-release.git
-    version: v434.3.12
-  # - name: redis-boshrelease
-  #   type: git
-  #   uri: https://github.com/pivotal-cf/shared-redis-release.git
-  #   version: v436.0.4
+    uri: https://github.com/pivotal-cf/shared-redis-release.git
+    version: v437.0.15
 
 
-# main_deployment_file: redis-boshrelease/manifest/deployment.yml
+# main_deployment_file: shared-redis-boshrelease/manifest/deployment.yml
 main_deployment_file: ./conf/depl-manifest-v2.yml
 
 
@@ -23,9 +19,8 @@ operations_files:
   10_local:
     - pin-versions
     - customize-routing
-    - add-missing-broker-password-var
+    # - add-missing-broker-password-var # only for shared-redis-boshrelease/manifest/deployment.yml
     - remove-syslog-forwarder
-    - keep-dedicated-vm-plan
     - shield-v7-config
 
 
@@ -36,14 +31,13 @@ deployment_vars:
   # User-facing settings
 
   broker_hostname: redis # the hostname to use, under Cloud Foundry ((system_domain))
-  dedicated_node_count: 2
   default_persistent_disk_type: 1GB # some disk_type from your cloud-config
 
 
   # Versions
 
-  redis_release_version: "434.3.12"
-  redis_release_sha1: 5c760d44391936cbde10cfea4bc53865ab48f726
+  shared_redis_release_version: "437.0.15"
+  shared_redis_release_sha1: 193b4c3b9b7ed6b6fd18a5a6bbdd70793350fc06
 
 
   # Plumbery
@@ -55,7 +49,6 @@ deployment_vars:
                       # Think twice before doing it.
   service_id: 317e7eb9-01e8-49d8-bf9f-6caa5c60d023
   shared_vm_plan_id: 6869222c-6e27-4754-8027-e023c75063fc
-  dedicated_vm_plan_id: e612d367-0c18-488f-ba10-97ec7525a93b
 
   default_vm_type: default # some vm_type from your cloud-config
   default_az: z1 # some az from your cloud-config

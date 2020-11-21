@@ -1,7 +1,0 @@
----
-
-- path: /instance_groups/name=cf-redis-broker/jobs/name=deprecate-dedicated-vm-plan?
-  type: remove
-
-- path: /instance_groups/name=cf-redis-broker/jobs/name=cleanup-metadata-if-dedicated-disabled?
-  type: remove

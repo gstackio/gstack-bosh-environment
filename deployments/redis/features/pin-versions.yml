@@ -2,13 +2,13 @@
 
 # Releases versions
 
-- path: /releases/name=cf-redis?
+- path: /releases/name=shared-redis?
   type: replace
   value:
-    name: cf-redis
-    version: ((redis_release_version))
-    url: https://bosh.io/d/github.com/pivotal-cf/cf-redis-release?v=((redis_release_version))
-    sha1: ((redis_release_sha1))
+    name: shared-redis
+    version: ((shared_redis_release_version))
+    url: https://bosh.io/d/github.com/pivotal-cf/shared-redis-release?v=((shared_redis_release_version))
+    sha1: ((shared_redis_release_sha1))
 
 - path: /releases/name=bpm?
   type: replace

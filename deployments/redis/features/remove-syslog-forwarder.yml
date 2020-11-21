@@ -3,8 +3,5 @@
 - path: /instance_groups/name=cf-redis-broker/jobs/name=syslog_forwarder
   type: remove
 
-- path: /instance_groups/name=dedicated-node/jobs/name=syslog_forwarder
-  type: remove
-
 - path: /releases/name=syslog
   type: remove

@@ -27,12 +27,6 @@
 
 
 
-# Align broker config
-
-- path: /instance_groups/name=cf-redis-broker/jobs/name=cf-redis-broker/properties/broker/host
-  type: replace
-  value: ((broker_hostname)).((system_domain))
-
 - path: /instance_groups/name=cf-redis-broker/jobs/name=broker-registrar/properties/broker/host
   type: replace
   value: ((broker_hostname)).((system_domain))
