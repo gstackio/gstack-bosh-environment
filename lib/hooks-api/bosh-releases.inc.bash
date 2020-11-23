@@ -122,9 +122,9 @@ function create_dev_release_if_necessary_or_if_stale() {
             # building a dev release with the same blobs is very low, as only
             # what's different is sent and stored.
 
-            if [[ -x "./scripts/add-blobs.sh" ]]; then
-                ./scripts/add-blobs.sh
-            fi
+            # if [[ -x "./scripts/add-blobs.sh" ]]; then
+            #     ./scripts/add-blobs.sh
+            # fi
 
             bosh create-release --force
         if [[ -z "${initial_xtrace}" ]]; then set +x; fi
