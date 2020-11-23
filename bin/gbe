@@ -1323,10 +1323,42 @@ case $1 in
                         recover_usage; exit 2
                     fi
                     subsys_name=$1
-                    subsys_dir=$(get_subsys_dir_from_subsys_name "${subsys_name}")
-                    deployment_name=$(spec_var --required "/deployment_vars/deployment_name" "${subsys_dir}")
+                    SUBSYS_DIR=$(get_subsys_dir_from_subsys_name "${subsys_name}")
+
+                    # shell_opts="$-"
+                    # initial_xtrace=$(tr -Cd "x" <<< "${shell_opts}")
+                    # if [[ -z $initial_xtrace ]]; then set -x; fi
+
+                    assert_subsys bosh-deployment
+
+                    UPSTREAM_RESOURCES=()
+                    fetch_input_resources ${offline:+"--offline"}
+
+                    subsys_state_dir=$(state_dir)
+                    mkdir -p "$subsys_state_dir"
+
+                    upstream_subsys=$(spec_var /subsys/upstream)
+                    if [[ -n $upstream_subsys && ${#UPSTREAM_RESOURCES[@]} -ge 1 ]]; then
+                        assert_utilities spruce "to create the merged subsys spec file"
+
+                        upstream_dir=$(expand_resource_dir "$upstream_subsys")
+                        upstream_spec=$upstream_dir/conf/spec.yml
+                        overriding_spec=$SUBSYS_DIR/conf/spec.yml
+                        SPEC_FILE=$subsys_state_dir/merged-spec.yml
+                        spruce merge --prune ".subsys.upstream" \
+                            "$upstream_spec" "$overriding_spec" > "$SPEC_FILE"
+
+                        # Fetch any new resources from the merged spec
+                        fetch_input_resources ${offline:+"--offline"}
+                    fi
+
+                    deployment_name=$(spec_var --required "/deployment_vars/deployment_name")
                     echo -e "\n${BLUE}Recovering the ${BOLD}'${subsys_name}'${RESET} subsystem.\n"
-                    bosh cloud-check -d "${deployment_name}" ${non_interactive:+-n --auto --resolution=recreate_vm} ;;
+
+                    bosh cloud-check -d "${deployment_name}" ${non_interactive:+-n --auto --resolution=recreate_vm}
+
+                    # if [[ -z $initial_xtrace ]]; then set +x; fi
+                    ;;
             esac
             shift
         done
