@@ -45,38 +45,39 @@ function reachable_ip_hook() {
 }
 
 function pre_create_env_hook() {
-    echo -e "\n${BLUE}Provisionning ${BOLD}dedibox$RESET with pre-requisites for the Virtualbox infrastructure\n"
+    echo -e "\n${BLUE}Provisionning ${BOLD}dedibox${RESET} with pre-requisites for the Virtualbox infrastructure\n"
 
     echo skipped
     # pushd $BASE_DIR/$GBE_ENVIRONMENT/provision
     #     ansible-playbook -i inventory.cfg --ask-become provision.yml
     # popd
 
-    local secrets_file=$SUBSYS_DIR/conf/secrets.yml
-    restrict_permissions "$secrets_file"
+    local secrets_file="${SUBSYS_DIR}/conf/secrets.yml"
+    restrict_permissions "${secrets_file}"
 
     local vbox_host
-    vbox_host=$(env_depl_var vbox_host | sed -e 's/^null$//')
-    if [[ -n $vbox_host ]]; then
-        echo -e "\n${BLUE}Setting up ${BOLD}ssh key$RESET to access the distant Virtualbox host\n"
+    vbox_host=$(env_depl_var "vbox_host" | sed -e 's/^null$//')
+    if [[ -n ${vbox_host} ]]; then
+        echo -e "\n${BLUE}Setting up ${BOLD}ssh key${RESET} to access" \
+            "the distant Virtualbox host\n"
 
-        assert_utilities ssh-copy-id "to grant the ssh key on the distant Virtualbox host"
+        assert_utilities ssh-copy-id "to grant the SSH key on the distant Virtualbox host"
 
         local vbox_username
-        vbox_username=$(env_depl_var --required vbox_username)
+        vbox_username=$(env_depl_var --required "vbox_username")
 
-        local ssh_key_base_filename=$SUBSYS_DIR/conf/id_rsa
-        if [ ! -f "$ssh_key_base_filename" ]; then
+        local ssh_key_base_filename="${SUBSYS_DIR}/conf/id_rsa"
+        if [[ ! -f "${ssh_key_base_filename}" ]]; then
             local env_name
             env_name=$(spec_var "/subsys/name" "${BASE_DIR}/${GBE_ENVIRONMENT}")
             ssh-keygen -b 4096 -N "" -C "boshinit@${env_name}" \
                 -f "${ssh_key_base_filename}"
-            chmod 600 "$ssh_key_base_filename"
+            chmod 600 "${ssh_key_base_filename}"
         fi
         echo "INFO: inserting SSH private key into '${secrets_file}' as '/vbox_ssh/private_key'"
-        yaml_upsert_file_content "$secrets_file" "/vbox_ssh?/private_key" \
-            "$ssh_key_base_filename"
-        ssh-copy-id -i "${ssh_key_base_filename}.pub" "$vbox_username@$vbox_host"
+        yaml_upsert_file_content "${secrets_file}" "/vbox_ssh?/private_key" \
+            "${ssh_key_base_filename}"
+        ssh-copy-id -i "${ssh_key_base_filename}.pub" "${vbox_username}@${vbox_host}"
     fi
 }
 
