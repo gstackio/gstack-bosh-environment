@@ -6,11 +6,6 @@ function cf_file_var() {
     bosh int "${SUBSYS_DIR}/../cf/conf/${file}.yml" --path "${path}"
 }
 
-function cf_state_var() {
-    local SUBSYS_NAME="cf"
-    state_var "$@"
-}
-
 function cf_manif_var() {
     cf_state_var "depl-manifest" "$1"
 }
