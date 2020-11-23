@@ -740,10 +740,10 @@ function generate_makefile() {
         done
 
         echo -e "${subsys_basename}-manifest: ${auto_deps//$'\n'/ }"
-        echo -e "\tgbe converge --manifest \$@\n"
+        echo -e "\t${SCRIPT_NAME} converge --manifest \$@\n"
 
         echo -e "${subsys_basename}: ${dedup_deps}"
-        echo -e "\tgbe \$(VERB) -y \$@\n"
+        echo -e "\t${SCRIPT_NAME} \$(VERB) -y \$@\n"
     done
 }
 
