@@ -42,9 +42,15 @@ function cf_enforce_security_group() {
     set +o pipefail
 
     if ! cf security-groups 2> /dev/null | grep -qE "\\b${security_group_name}\\b"; then
-        cf create-security-group "${security_group_name}" "${SUBSYS_DIR}/security-groups.json"
+        (
+            set -x
+            cf create-security-group "${security_group_name}" "${SUBSYS_DIR}/security-groups.json"
+        )
     fi
     if ! cf running-security-groups 2> /dev/null | grep -q "^${security_group_name}\$"; then
-        cf bind-running-security-group "${security_group_name}"
+        (
+            set -x
+            cf bind-running-security-group "${security_group_name}"
+        )
     fi
 }
