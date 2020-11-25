@@ -15,6 +15,10 @@ input_resources:
     version: v25.0.0
 
 
+sanity-tests:
+  concourse-target: ef # like Easy Foundry
+
+
 main_deployment_file: concourse-deployment/cluster/concourse.yml
 
 operations_files:
