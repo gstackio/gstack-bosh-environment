@@ -32,8 +32,8 @@ config_vars:
 
   # Versions
 
-  bosh_dns_version: "1.10.0"
-  bosh_dns_sha1: d1aadbda5d60c44dec4a429cda872cf64f6d8d0b
+  bosh_dns_version: "1.24.0"
+  bosh_dns_sha1: ba1e42c045c76ff097939f28e5168439c583686d
 
   node_exporter_version: "4.2.0"
   node_exporter_sha1: b4ffebacc55fbb9934425ac792bb7179eed7e61c
