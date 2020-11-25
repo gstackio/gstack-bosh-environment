@@ -529,5 +529,4 @@
       alternative_names:
         - q-s0.db.((network_name)).((deployment_name)).bosh
         - 127.0.0.1
-        - ((web_ip))
     update_mode: converge
