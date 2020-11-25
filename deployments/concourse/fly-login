@@ -5,11 +5,14 @@ set -euo pipefail
 function main() {
     setup
 
+    local external_host atc_username atc_password default_concourse_target
     external_host=$(priv_cfg_var "/external_host")
     atc_username=$(priv_cfg_var "/atc_basic_auth_username")
     atc_password=$(creds_var "/atc_basic_auth_password")
 
-    local concourse_target=${1:-"ef"}
+    default_concourse_target=$(spec_var "/sanity-tests/concourse-target")
+    local concourse_target=${1:-"${default_concourse_target}"}
+    shift
 
     if [[ ! -e ${BASE_DIR}/bin/fly ]]; then
         bash ${DEBUG:+"-x"} "${SUBSYS_DIR}/fetch-fly-cli"
@@ -21,7 +24,8 @@ function main() {
     set +e
     "${BASE_DIR}/bin/fly" --target="${concourse_target}" login --insecure \
         --concourse-url="https://${external_host}" \
-        --username="${atc_username}" --password="${atc_password}"
+        --username="${atc_username}" --password="${atc_password}" \
+        "$@"
     login_status=$?
     set -e
 
@@ -31,8 +35,10 @@ function main() {
         # Try to log in again, if by any chance it failed because of version
         # mismatch that would be solved by the 'fly sync' above.
         set +e
-        "${BASE_DIR}/bin/fly" -t "${concourse_target}" login -k \
-            -c "https://${external_host}" -u "${atc_username}" -p "${atc_password}"
+        "${BASE_DIR}/bin/fly" --target="${concourse_target}" login --insecure \
+            --concourse-url="https://${external_host}" \
+            --username="${atc_username}" --password="${atc_password}" \
+            "$@"
         login_status=$?
         set -e
     fi
