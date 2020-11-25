@@ -8,7 +8,7 @@ input_resources:
   - name: traefik-boshrelease
     type: git
     uri: https://github.com/gstackio/traefik-boshrelease.git
-    version: "1b1bf77" # v1.13.0 (Traefik v1.7.24) with compiled release for stemcell v621.84
+    version: "6473e21" # v1.14.0 (Traefik v1.7.26) with compiled release for stemcell v621.90
     # version: master # when switching to 'developing: true'
 
 
@@ -32,7 +32,6 @@ operations_files:
     - pin-stemcell
     - pin-versions
     - scale-disk
-    - additional-alternative-names
     - setup-smoke-tests
     # - cluster-static-ips
     # - disable-client-cert-auth-on-consul-https-ui-not-recommended
