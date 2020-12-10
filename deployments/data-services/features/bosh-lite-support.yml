@@ -1,0 +1,14 @@
+---
+
+# In BOSH-Lite, docker will refuse to start when no persistent disk is present
+# on the instance.
+# The error message mentions something about some "graphdriver".
+# This has been observed with Docker BOSH Release v35.3.4 and Xenial Stemcell
+# v621.71.
+
+# Sanity tests require docker, and thus we are forced to add a persistent disk
+# to the ephemeral VM.
+
+- path: /instance_groups/name=sanity-test/persistent_disk_type?
+  type: replace
+  value: 5GB

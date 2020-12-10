@@ -8,15 +8,15 @@ input_resources:
   # - name: docker-boshrelease
   #   type: git
   #   uri: https://github.com/cloudfoundry-incubator/docker-boshrelease.git
-  #   version: v32.0.0
+  #   version: v35.3.4
   - name: cf-containers-broker-boshrelease
     type: git
     uri: https://github.com/cloudfoundry-community/cf-containers-broker-boshrelease.git
-    version: v1.0.3
+    version: v1.0.5
   - name: broker-registrar-boshrelease
     type: git
     uri: https://github.com/cloudfoundry-community/broker-registrar-boshrelease.git
-    version: v3.5.1
+    version: v3.6.0
 
 
 main_deployment_file: cf-containers-broker-boshrelease/manifests/docker-broker.yml
@@ -51,26 +51,14 @@ deployment_vars:
 
   # Versions
 
-  cf_containers_broker_version: "1.0.3"
-  cf_containers_broker_sha1: 11001a58965ce4243bd18f0e4301cdbbe949a2d9
+  cf_subway_version: "3.2.0"
+  cf_subway_sha1: 57de13d5a7b4709c065b6f909cd86372badfe2da"
 
-  docker_version: "31.0.1"
-  docker_sha1: d7fba11988621d8a8b57c2d298067e7d85e26148
+  cf_containers_broker_version: "1.0.5"
+  cf_containers_broker_sha1: a90ee9fe04678d50201b9e43a5aaadc1a1303867
 
-  # NOTICE: Docker release v31.1.0 & v32.0.0 are no more compatible with
-  #         stemcells versions above 3586.24
-  #
-  # # /var/vcap/packages/docker/bin/docker \
-  #       -H :4243 --tls --tlscacert /var/vcap/jobs/docker/config/docker.cacert \
-  #       --tlscert /var/vcap/jobs/docker/config/docker.cert --tlskey /var/vcap/jobs/docker/config/docker.key \
-  #       run frodenas/mysql:5.6
-  # /var/vcap/packages/docker/bin/docker: Error response from daemon: cgroups: cannot found cgroup mount destination: unknown.
-  # ERRO[0001] error waiting for container: context canceled
-  #
-  # docker_version: "31.1.0"
-  # docker_sha1: 5bd41b3ddb7005e90af09a93a7d3ea1649216260
-  # docker_version: "32.0.0"
-  # docker_sha1: 75a3e4f85f8d1a59b58c6b34cf568f72397b5680
+  docker_version: "35.3.4"
+  docker_sha1: 8dcacf558067ed5302e30e4c8de928ee7917695e
 
   broker_registrar_version: "3.6.0"
   broker_registrar_sha1: 21ce1f251f064fd5336db479d309caa81412c60a
