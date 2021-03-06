@@ -16,7 +16,7 @@
 - name: Virtualbox | the deb repo is added to apt sources
   become: true
   apt_repository:
-    repo: deb http://download.virtualbox.org/virtualbox/debian {{ ubuntu_codename }} contrib
+    repo: deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian {{ ubuntu_codename }} contrib
     filename: virtualbox
     state: present
 
