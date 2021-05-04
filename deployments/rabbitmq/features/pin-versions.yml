@@ -23,7 +23,7 @@
   value:
     name: bpm
     version: ((bpm_version))
-    url: https://bosh.io/d/github.com/cloudfoundry-incubator/bpm-release?v=((bpm_version))
+    url: https://bosh.io/d/github.com/cloudfoundry/bpm-release?v=((bpm_version))
     sha1: ((bpm_sha1))
 
 
