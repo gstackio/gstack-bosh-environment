@@ -8,7 +8,7 @@ input_resources:
   - name: traefik-boshrelease
     type: git
     uri: https://github.com/gstackio/traefik-boshrelease.git
-    version: "6473e21" # v1.14.0 (Traefik v1.7.26) with compiled release for stemcell v621.90
+    version: "266ad65" # v1.15.0 (Traefik v1.7.26) with compiled release for stemcell v621.90
     # version: master # when switching to 'developing: true'
 
 
@@ -63,8 +63,8 @@ deployment_vars:
 
   stemcell_name: bosh-warden-boshlite-ubuntu-xenial-go_agent
   stemcell_os: ubuntu-xenial
-  stemcell_version: "621.84"
-  stemcell_sha1: 305497923033888fd8186aa257e15bc382f2067e
+  stemcell_version: "621.125"
+  stemcell_sha1: f399044d2ebe3351f0f1b0b3f97ef11464d283b4
 
 
   # Reference declarations

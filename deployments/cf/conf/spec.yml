@@ -8,7 +8,7 @@ input_resources:
   - name: cf-deployment
     type: git
     uri: https://github.com/cloudfoundry/cf-deployment.git
-    version: v12.45.0
+    version: v13.23.0
   - name: prometheus-boshrelease
     type: git
     uri: https://github.com/bosh-prometheus/prometheus-boshrelease.git
@@ -60,7 +60,7 @@ operations_files:
     - manifests/operators/cf/add-grafana-uaa-clients
   30_local:
     - pin-stemcell
-    - set-routing-version
+    # - set-routing-version
     - expose-admin-user-as-link
     # - cassandra-support # only kept as an example ASG
     - database-pxc-bosh-lite
@@ -121,8 +121,8 @@ deployment_vars:
 
   stemcell_name: bosh-warden-boshlite-ubuntu-xenial-go_agent
   stemcell_os: ubuntu-xenial
-  stemcell_version: "621.71"
-  stemcell_sha1: 6190d7f100f9d48fe425c2d69ba93d7137e6bc19
+  stemcell_version: "621.125"
+  stemcell_sha1: f399044d2ebe3351f0f1b0b3f97ef11464d283b4
 
 
   # Reference declarations
