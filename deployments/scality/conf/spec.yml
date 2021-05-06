@@ -39,8 +39,8 @@ deployment_vars:
 
   # Versions
 
-  docker_version: "33.0.0"
-  docker_sha1: 4051195b3868cdb236c172f7e96cb474f2d4728f
+  docker_version: "35.3.4"
+  docker_sha1: 8dcacf558067ed5302e30e4c8de928ee7917695e
 
   # These newer version of the Docker BOSH Release do not work
   #

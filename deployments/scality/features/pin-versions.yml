@@ -5,5 +5,5 @@
   value:
     name: docker
     version: ((docker_version))
-    url: https://bosh.io/d/github.com/cf-platform-eng/docker-boshrelease?v=((docker_version))
+    url: https://bosh.io/d/github.com/cloudfoundry-incubator/docker-boshrelease?v=((docker_version))
     sha1: ((docker_sha1))
