@@ -8,15 +8,15 @@ input_resources:
   - name: rabbitmq-boshrelease
     type: git
     uri: https://github.com/pivotal-cf/cf-rabbitmq-release.git
-    version: v277.0.0
+    version: v372.0.0
   - name: rabbitmq-broker-boshrelease
     type: git
     uri: https://github.com/pivotal-cf/cf-rabbitmq-multitenant-broker-release.git
-    version: v58.0.0
+    version: v94.0.0
   - name: rabbitmq-smoke-tests-boshrelease
     type: git
     uri: https://github.com/pivotal-cf/cf-rabbitmq-smoke-tests-release.git
-    version: v35.0.0
+    version: v98.0.0
 
 
 main_deployment_file: rabbitmq-boshrelease/manifests/cf-rabbitmq-template.yml
@@ -65,16 +65,16 @@ deployment_vars:
   # Versions
 
   rabbitmq_version: "3.8"
-  erlang_major_version: "22"
+  erlang_major_version: "23"
 
-  rabbitmq_release_version: "277.0.0"
-  rabbitmq_release_sha1: 6a25b8f930ea34dba3ad54ff7ff11a46150128ff
+  rabbitmq_release_version: "336.0.0"
+  rabbitmq_release_sha1: cf03e73395d376d8122b6495dc5eed2b10e92f2f
 
-  rabbitmq_broker_version: "58.0.0"
-  rabbitmq_broker_sha1: bd855156d90e0168c1c37aae4440938f1f77847a
+  rabbitmq_broker_version: "83.0.0"
+  rabbitmq_broker_sha1: fd501aa3c302c6d380fc04debb41712b8ae34313
 
-  rabbitmq_smoke_tests_version: "35.0.0"
-  rabbitmq_smoke_tests_sha1: 171a57d161e0004c9dc82edc7385b81ba18fca4d
+  rabbitmq_smoke_tests_version: "73.0.0"
+  rabbitmq_smoke_tests_sha1: bebca4463971a69b964b55629395890e04f05caf
 
   broker_registrar_version: "3.6.0"
   broker_registrar_sha1: 21ce1f251f064fd5336db479d309caa81412c60a
