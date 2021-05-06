@@ -4,11 +4,11 @@ subsys:
   type: bosh-deployment
   depends_on: [ shield-v7, cf ]
 
-input_resources:
-  - name: shared-redis-boshrelease
-    type: git
-    uri: https://github.com/pivotal-cf/shared-redis-release.git
-    version: v437.0.15
+input_resources: []
+  # - name: shared-redis-boshrelease
+  #   type: git
+  #   uri: https://github.com/pivotal-cf/shared-redis-release.git
+  #   version: v437.0.18
 
 
 # main_deployment_file: shared-redis-boshrelease/manifest/deployment.yml
@@ -36,8 +36,8 @@ deployment_vars:
 
   # Versions
 
-  shared_redis_release_version: "437.0.15"
-  shared_redis_release_sha1: 193b4c3b9b7ed6b6fd18a5a6bbdd70793350fc06
+  shared_redis_release_version: "437.0.18"
+  ehared_redis_release_sha1: 95fb00fbc037e82b50f9d51024c112aa73c5e89f
 
 
   # Plumbery
