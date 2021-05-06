@@ -32,6 +32,7 @@
     options:
       is_ca: true
       common_name: Minio_CA
+    update_mode: converge
 
 - path: /variables/name=minio-tls?
   type: replace
@@ -40,6 +41,7 @@
     type: certificate
     options:
       ca: minio-ca
-      common_name: minio.((network_name)).((deployment_name)).bosh
+      common_name: "*.minio.((network_name)).((deployment_name)).bosh"
       alternative_names:
         - "*.minio.((network_name)).((deployment_name)).bosh"
+    update_mode: converge
