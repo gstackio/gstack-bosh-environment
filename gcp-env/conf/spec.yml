@@ -65,8 +65,8 @@ deployment_vars:
   bosh_precompiled_sha1: 6e234f26428b84f94398c66d36ed9e12c74d387e
 
   stemcell_name: bosh-google-kvm-ubuntu-xenial-go_agent
-  stemcell_version: "621.84"
-  stemcell_sha1: 287bc96421d10e2112cf769a57822f8a7860176f # this is a Google KVM Light stemcell, actually
+  stemcell_version: "621.125"
+  stemcell_sha1: acd1bda34939c523a047d6274843bbdde2efb8b7 # this is a Google KVM Light stemcell, actually
 
 
 imported_vars: []
