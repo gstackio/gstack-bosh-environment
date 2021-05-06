@@ -6,6 +6,14 @@
   type: replace
   value: ((cf_deployment_name))
 
+- path: /instance_groups/name=docker/jobs/name=docker/properties?/storage_driver
+  type: replace
+  value: vfs
+
+- path: /instance_groups/name=sanity-test/jobs/name=docker/properties?/storage_driver
+  type: replace
+  value: vfs
+
 - path: /instance_groups/name=broker-registrar/jobs/name=broker-registrar/consumes/cf-admin-user/deployment
   type: replace
   value: ((cf_deployment_name))
