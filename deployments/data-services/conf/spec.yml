@@ -46,7 +46,7 @@ deployment_vars:
 
   # User-facing settings
 
-  broker-route-uri: data-services.easyfoundry.prototyp.it
+  broker-route-uri: data-services.sandbox.gstack.io
 
 
   # Versions
