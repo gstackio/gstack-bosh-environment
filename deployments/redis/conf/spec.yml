@@ -2,7 +2,7 @@
 subsys:
   name: redis
   type: bosh-deployment
-  depends_on: [ shield-v7, cf ]
+  depends_on: [ cf ]
 
 input_resources: []
   # - name: shared-redis-boshrelease
@@ -21,7 +21,7 @@ operations_files:
     - customize-routing
     # - add-missing-broker-password-var # only for shared-redis-boshrelease/manifest/deployment.yml
     - remove-syslog-forwarder
-    - shield-v7-config
+    # - shield-v7-config
 
 
 deployment_vars:
@@ -125,16 +125,16 @@ imported_vars:
         file: private-config
         path: /app_domains/0/name
 
-  - subsys: shield-v7
-    imports:
-      - name: shield_deployment_name
-        from: depl-vars
-        path: /deployment_name
+  # - subsys: shield-v7
+  #   imports:
+  #     - name: shield_deployment_name
+  #       from: depl-vars
+  #       path: /deployment_name
 
-      - name: shield_version
-        from: depl-vars
-        path: /shield_version
+  #     - name: shield_version
+  #       from: depl-vars
+  #       path: /shield_version
 
-      - name: shield_sha1
-        from: depl-vars
-        path: /shield_sha1
+  #     - name: shield_sha1
+  #       from: depl-vars
+  #       path: /shield_sha1
