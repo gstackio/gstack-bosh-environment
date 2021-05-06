@@ -15,7 +15,7 @@ input_resources:
     version: vRELEASE.2018-10-30T19-11-26Z # in 'gk-master' as of Oct 30th, 2018
 
 
-main_deployment_file: minio-boshrelease/manifests/manifest-dist-example.yml
+main_deployment_file: gk-minio-boshrelease/manifests/manifest-dist-example.yml
 
 
 operations_files:
