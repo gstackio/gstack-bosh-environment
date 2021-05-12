@@ -39,14 +39,16 @@ operations_files:
     - customize-services
     - fix-errands-vms-names # must be last
 
+variables_files:
+  10_local:
+    - file: private-config
+      example:
+        # User-facing settings
+        broker-route-uri: data-services.easyfoundry.example.com
+
 
 deployment_vars:
   deployment_name: easyfoundry-data-services
-
-
-  # User-facing settings
-
-  broker-route-uri: data-services.easyfoundry.prototyp.it
 
 
   # Versions
