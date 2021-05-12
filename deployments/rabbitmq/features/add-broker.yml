@@ -4,17 +4,13 @@
   type: replace
   value:
     name: cf-rabbitmq-multitenant-broker
-    version: ((rabbitmq_broker_version))
-    url: https://bosh.io/d/github.com/pivotal-cf/cf-rabbitmq-multitenant-broker-release?v=((rabbitmq_broker_version))
-    sha1: ((rabbitmq_broker_sha1))
+    version: latest
 
 - path: /releases/name=cf-rabbitmq-smoke-tests?
   type: replace
   value:
     name: cf-rabbitmq-smoke-tests
-    version: ((rabbitmq_smoke_tests_version))
-    url: https://bosh.io/d/github.com/pivotal-cf/cf-rabbitmq-smoke-tests-release?v=((rabbitmq_smoke_tests_version))
-    sha1: ((rabbitmq_smoke_tests_sha1))
+    version: latest
 
 - path: /releases/name=cf-cli?
   type: replace

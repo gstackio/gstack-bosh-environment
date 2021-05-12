@@ -7,8 +7,21 @@
   value:
     name: cf-rabbitmq
     version: ((rabbitmq_release_version))
-    url: https://bosh.io/d/github.com/pivotal-cf/cf-rabbitmq-release?v=((rabbitmq_release_version))
-    sha1: ((rabbitmq_release_sha1))
+    url: git+https://github.com/gstackio/cf-rabbitmq-release.git
+
+- path: /releases/name=cf-rabbitmq-multitenant-broker?
+  type: replace
+  value:
+    name: cf-rabbitmq-multitenant-broker
+    version: ((rabbitmq_broker_version))
+    url: git+https://github.com/gstackio/cf-rabbitmq-multitenant-broker-release.git
+
+- path: /releases/name=cf-rabbitmq-smoke-tests?
+  type: replace
+  value:
+    name: cf-rabbitmq-smoke-tests
+    version: ((rabbitmq_smoke_tests_version))
+    url: git+https://github.com/gstackio/cf-rabbitmq-smoke-tests-release.git
 
 - path: /releases/name=routing?
   type: replace

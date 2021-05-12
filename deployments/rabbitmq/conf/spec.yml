@@ -8,15 +8,15 @@ input_resources:
   - name: rabbitmq-boshrelease
     type: git
     uri: https://github.com/pivotal-cf/cf-rabbitmq-release.git
-    version: v372.0.0
+    version: v374.0.0
   - name: rabbitmq-broker-boshrelease
     type: git
     uri: https://github.com/pivotal-cf/cf-rabbitmq-multitenant-broker-release.git
-    version: v94.0.0
+    version: v95.0.0
   - name: rabbitmq-smoke-tests-boshrelease
     type: git
     uri: https://github.com/pivotal-cf/cf-rabbitmq-smoke-tests-release.git
-    version: v98.0.0
+    version: v101.0.0
 
 
 main_deployment_file: rabbitmq-boshrelease/manifests/cf-rabbitmq-template.yml
@@ -28,11 +28,11 @@ operations_files:
   20_local:
     - rename-deployment
     - rename-network
+    - add-broker
     - pin-stemcell
     - pin-versions
     - fix-missing-variables
     - scale-for-bosh-lite
-    - add-broker
     - customize-routing
     - tweak-tls
     - customize-plugins
@@ -56,7 +56,7 @@ deployment_vars:
   # Customizations
 
   persistent_disk_type: 1GB
-  disk_alarm_threshold: 100_000_000 # 100MB # in Bosh-Lite, we can't use the default "{mem_relative,0.4}", nor the Pivotal-recommended "{mem_relative,1.5}"
+  disk_alarm_threshold: "{mem_relative,0.0035}" # 100MB # in Bosh-Lite, we wouldn't use the default "{mem_relative,0.4}", nor the Pivotal-recommended "{mem_relative,1.5}"
   cluster-partition-handling-strategy: autoheal # Recommended for BOSH-Lite instead of the default 'pause_minority'
   rabbitmq_instances: 2
   haproxy-instances: 1
@@ -67,14 +67,11 @@ deployment_vars:
   rabbitmq_version: "3.8"
   erlang_major_version: "23"
 
-  rabbitmq_release_version: "336.0.0"
-  rabbitmq_release_sha1: cf03e73395d376d8122b6495dc5eed2b10e92f2f
+  rabbitmq_release_version: "374.0.0"
 
-  rabbitmq_broker_version: "83.0.0"
-  rabbitmq_broker_sha1: fd501aa3c302c6d380fc04debb41712b8ae34313
+  rabbitmq_broker_version: "95.0.0"
 
-  rabbitmq_smoke_tests_version: "73.0.0"
-  rabbitmq_smoke_tests_sha1: bebca4463971a69b964b55629395890e04f05caf
+  rabbitmq_smoke_tests_version: "101.0.0"
 
   broker_registrar_version: "3.6.0"
   broker_registrar_sha1: 21ce1f251f064fd5336db479d309caa81412c60a
