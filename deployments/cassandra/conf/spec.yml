@@ -2,7 +2,7 @@
 subsys:
   name: cassandra
   type: bosh-deployment
-  depends_on: [ cf, shield-v7 ]
+  depends_on: [ cf ]
 
 input_resources:
   - name: cassandra-deployment
@@ -19,8 +19,8 @@ operations_files:
   10_cassandra-deployment:
     - operations/bosh-lite
     - operations/cf-service-broker
-    - operations/shield-v7-agent
-    - operations/shield-v7-purge-archives
+    # - operations/shield-v7-agent
+    # - operations/shield-v7-purge-archives
     - operations/use-bpm
     - operations/admin-tools
   20_local:
@@ -30,7 +30,7 @@ operations_files:
     - adjust-startup-timeouts
     - randomize-az-placement
     - routing
-    - shield-integration
+    # - shield-integration
     - remove-future-smoke-tests
     # - fix-service-broker-vars # required with v9
 
@@ -148,16 +148,16 @@ imported_vars:
         file: private-config
         path: /app_domains/0/name
 
-  - subsys: shield-v7
-    imports:
-      - name: shield_deployment_name
-        from: depl-vars
-        path: /deployment_name
+  # - subsys: shield-v7
+  #   imports:
+  #     - name: shield_deployment_name
+  #       from: depl-vars
+  #       path: /deployment_name
 
-      - name: shield_version
-        from: depl-vars
-        path: /shield_version
+  #     - name: shield_version
+  #       from: depl-vars
+  #       path: /shield_version
 
-      - name: shield_sha1
-        from: depl-vars
-        path: /shield_sha1
+  #     - name: shield_sha1
+  #       from: depl-vars
+  #       path: /shield_sha1

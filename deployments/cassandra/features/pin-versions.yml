@@ -18,13 +18,13 @@
     url: https://bosh.io/d/github.com/cloudfoundry/bpm-release?v=((bpm_version))
     sha1: ((bpm_sha1))
 
-- path: /releases/name=shield?
-  type: replace
-  value:
-    name: shield
-    version: ((shield_version))
-    url: https://github.com/gstackio/gk-shield-boshrelease/releases/download/v((shield_version))/shield-((shield_version)).tgz
-    sha1: ((shield_sha1))
+# - path: /releases/name=shield?
+#   type: replace
+#   value:
+#     name: shield
+#     version: ((shield_version))
+#     url: https://github.com/gstackio/gk-shield-boshrelease/releases/download/v((shield_version))/shield-((shield_version)).tgz
+#     sha1: ((shield_sha1))
 
 - path: /releases/name=broker-registrar?
   type: replace
