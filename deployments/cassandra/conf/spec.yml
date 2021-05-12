@@ -144,7 +144,8 @@ imported_vars:
         path: /cf_admin_password
 
       - name: cf_app_domain
-        from: depl-vars
+        from: vars-file
+        file: private-config
         path: /app_domains/0/name
 
   - subsys: shield-v7
