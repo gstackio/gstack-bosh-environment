@@ -27,15 +27,13 @@ operations_files:
     - scale-disks
     - workaround-cf-apps-domain-issue
 
+variables_files:
+  10_local:
+    - file: private-config
 
 deployment_vars:
   deployment_name: easyfoundry-mysql
 
-
-  # User-facing settings
-
-  cf_mysql_external_host: mysql.easyfoundry.prototyp.it
-  cf_service_name: mysql
 
 
   # Versions
