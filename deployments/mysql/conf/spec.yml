@@ -8,7 +8,7 @@ input_resources:
   - name: cf-mysql-deployment
     type: git
     uri: https://github.com/cloudfoundry/cf-mysql-deployment.git
-    version: "6ffe5ec" # v36.15.0 with improvements, as of Oct 25th, 2018
+    version: "v36.19.0"
 
 
 main_deployment_file: cf-mysql-deployment/cf-mysql-deployment.yml
@@ -61,12 +61,6 @@ deployment_vars:
 imported_vars:
   - subsys: cf
     imports:
-      - name: cf_mysql_version
-        from: depl-vars
-        path: /cf_mysql_version
-      - name: cf_mysql_sha1
-        from: depl-vars
-        path: /cf_mysql_sha1
 
       - name: bpm_version
         from: depl-vars
@@ -113,7 +107,8 @@ imported_vars:
         path: /cf_admin_password
 
       - name: cf_main_app_domain
-        from: depl-vars
+        from: vars-file
+        file: private-config
         path: /app_domains/0/name
 
       - name: cf_network_name
