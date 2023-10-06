@@ -43,6 +43,7 @@
 - name: VM networking | traffic to GBE deployments ports is DNAT-ed to destination
   become: yes
   iptables:
+    action: insert
     table: nat
     chain: gstack-lb
     protocol: tcp
@@ -52,12 +53,14 @@
     to_destination: "{{ garden_vm_ip }}"
     comment: "DNAT ingress {{ rule.name }} traffic to Garden VM"
   with_items:
-    - name: Traefik HTTP
-      ingress_port: 80
+    # - name: CF-RabbitMQ
+    #   ingress_port: 5671
+    # - name: CF SSH
+    #   ingress_port: 2222
     - name: Traefik HTTPS
       ingress_port: 443
-    - name: CF SSH
-      ingress_port: 2222
+    - name: Traefik HTTP
+      ingress_port: 80
   loop_control: { loop_var: rule }
   tags: [ vm-networking, vm-networking-gstack-lb ]
 
@@ -79,8 +82,10 @@
       ingress_port: 80
     - name: Traefik HTTPS
       ingress_port: 443
-    - name: CF SSH
-      ingress_port: 2222
+    # - name: CF SSH
+    #   ingress_port: 2222
+    # - name: CF-RabbitMQ
+    #   ingress_port: 5671
   loop_control: { loop_var: rule }
   tags: [ vm-networking, vm-networking-gstack-lb ]
 
