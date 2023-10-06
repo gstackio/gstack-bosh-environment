@@ -20,12 +20,12 @@ The sudo password is the one relevant for becoming `root` on the target host.
 
 ### With inventory file
 
-Given that your target bare metal host is `11.22.33.44`, edit your
-`inventory.cfg` file as follows.
+Given that your target bare metal host is `11.22.33.44` and SSH user is
+`ubuntu` on this machine, edit your `inventory.cfg` file as follows.
 
 ```ini
 [dedibox]
-11.22.33.44
+11.22.33.44   ansible_user=ubuntu
 ```
 
 Then run the following command.
