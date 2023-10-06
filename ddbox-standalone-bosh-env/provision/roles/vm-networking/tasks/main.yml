@@ -73,7 +73,7 @@
     destination: "{{ garden_vm_ip }}"
     destination_port: "{{ rule.ingress_port }}"
     jump: SNAT
-    to_source: 192.168.50.1
+    to_source: "{{ vbox_host_ip }}"
     comment: "SNAT from LB the ingress {{ rule.name }} traffic from private networks to Garden VM"
   with_items:
     - name: Traefik HTTP
@@ -100,7 +100,7 @@
     # jump: MASQUERADE
     # comment: "MASQUERADE the DNAT-ed traffic originating from private net {{ source }}"
     jump: SNAT
-    to_source: 192.168.50.1
+    to_source: "{{ vbox_host_ip }}"
     comment: "SNAT the DNAT-ed traffic from private net {{ source }}"
   with_items:
     - 10.0.0.0/8
@@ -121,7 +121,7 @@
     jump: ACCEPT
     comment: "ACCEPT normal traffic to vboxnets"
   with_items:
-    - "192.168.50.1"
+    - "{{ vbox_host_ip }}"
     - "!192.168.0.0/16"
   loop_control: { loop_var: source }
   tags: [ vm-networking, vm-networking-gstack-lb ]
