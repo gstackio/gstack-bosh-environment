@@ -46,7 +46,6 @@
     table: nat
     chain: gstack-lb
     protocol: tcp
-    # destination: "{{ hostvars[inventory_hostname]['ansible_' + external_interface].ipv4.address }}"
     destination: "{{ hostvars[inventory_hostname].ansible_default_ipv4.address }}"
     destination_port: "{{ rule.ingress_port }}"
     jump: DNAT
@@ -131,7 +130,6 @@
   iptables:
     table: nat
     chain: POSTROUTING
-    # out_interface: "{{ external_interface }}"
     out_interface: "{{ hostvars[inventory_hostname].ansible_default_ipv4.alias }}"
     source: "{{ source }}"
     jump: MASQUERADE

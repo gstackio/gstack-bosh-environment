@@ -1,8 +1,5 @@
 ---
 
-# external_interface: eno1
-# external_interface: eno3 # on 'dedbibox-prod' host
-
 vm_networking_expected_state: present # or 'absent'
 
 vbox_host_ip: "192.168.50.1"
